@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./network-configuration.nix
     ];
 
   # luks encryption
@@ -57,7 +58,15 @@
     firefox
     git
     pass
+    gnupg
+    termite
+    mutt
+    haskellPackages.xmonad-contrib
+    termite
+    toxic
+    rtv
   ];
+
 
   # List services that you want to enable:
 
@@ -71,6 +80,7 @@
   services.xserver.enable = true;
   services.xserver.layout = "de";
   services.xserver.xkbOptions = "eurosign:e";
+  services.xserver.synaptics.enable = true;
 
   # Enable XMonad
   services.xserver.windowManager.xmonad.enable = true;
@@ -78,8 +88,7 @@
   # Enable the KDE Desktop Environment.
   # services.xserver.displayManager.kdm.enable = true;
   # services.xserver.desktopManager.kde4.enable = true;
-
-
+  
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.florian= {
     isNormalUser = true;
