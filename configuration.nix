@@ -88,6 +88,10 @@
     extraGroups = [ "wheel" "networmanager" ];
   };
 
+  # zsh
+
+  programs.zsh.enable = true;
+  users.defaultUserShell = "/run/current-system/sw/bin/zsh";
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "16.09";
 
