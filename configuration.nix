@@ -87,7 +87,6 @@
     isNormalUser = true;
     uid = 1000;
     createHome = true;
-    group = "florian";
     extraGroups = [ "wheel" "networmanager" ];
   };
 
