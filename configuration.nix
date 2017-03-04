@@ -16,28 +16,14 @@
     { name = "luksroot"; device = "/dev/sda2"; preLVM = true; } 
   ];
 
-# # File systems
-# fileSystems."/" = {
-#   mountPoint = "/";
-#   device = "/dev/mapper/MyVol-root";
-# }; 
-
-# fileSystems."/boot" = {
-#   mountPoint = "/boot";
-#   device = "/dev/sda1";
-# }; 
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
   boot.loader.grub.version = 2;
-  # boot.loader.grub.efiSupport = true;
-  # boot.loader.grub.efiInstallAsRemovable = true;
-  # boot.loader.efi.efiSysMountPoint = "/boot/efi";
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
   # networking.hostName = "nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Select internationalisation properties.
   i18n = {
@@ -62,9 +48,12 @@
     termite
     mutt
     haskellPackages.xmonad-contrib
+    haskellPackages.xmonad-extras
     termite
     toxic
     rtv
+    xsel
+    python
   ];
 
 
@@ -77,13 +66,17 @@
   # services.printing.enable = true;
 
   # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "de";
-  services.xserver.xkbOptions = "eurosign:e";
-  services.xserver.synaptics.enable = true;
+  services.xserver = {
+  enable = true;
+  layout = "de";
+  xkbOptions = "eurosign:e";
+  synaptics.enable = true;
+  synaptics.twoFingerScroll = true;
 
   # Enable XMonad
-  services.xserver.windowManager.xmonad.enable = true;
+  windowManager.xmonad.enable = true;
+  windowManager.xmonad.enableContribAndExtras = true;
+ }; 
 
   # Enable the KDE Desktop Environment.
   # services.xserver.displayManager.kdm.enable = true;
@@ -93,7 +86,8 @@
   users.extraUsers.florian= {
     isNormalUser = true;
     uid = 1000;
-    home = "/home/florian";
+    createHome = true;
+    group = "florian";
     extraGroups = [ "wheel" "networmanager" ];
   };
 
