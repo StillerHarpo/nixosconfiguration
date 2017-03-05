@@ -23,6 +23,11 @@
   # Define on which hard drive you want to install Grub.
   boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 
+  boot.extraModprobeConfig = ''
+    options snd slots=snd-hda-intel 
+    options snd_hda_intel enable=0,1
+  '';
+  boot.blacklistedKernelModules = [ "snd_pcsp" ];
   # networking.hostName = "nixos"; # Define your hostname.
 
   # Select internationalisation properties.
@@ -54,8 +59,18 @@
     rtv
     xsel
     python
+    python3
+    python27Packages.pip
+    zathura
   ];
-
+  
+  fonts = {
+    enableFontDir = true;
+    fonts = with pkgs; [
+      terminus_font
+      dejavu_fonts
+    ];
+  };
 
   # List services that you want to enable:
 
@@ -87,7 +102,7 @@
     isNormalUser = true;
     uid = 1000;
     createHome = true;
-    extraGroups = [ "wheel" "networmanager" ];
+    extraGroups = [ "wheel" "networmanager" "audio" ];
   };
 
   # zsh
