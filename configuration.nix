@@ -44,7 +44,7 @@
   # $ nix-env -qaP | grep wget
   environment.systemPackages = with pkgs; [
     wget
-    vim
+    (vimHugeX.override { python = python3; })
     sudo
     firefox
     git
@@ -79,6 +79,22 @@
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
+   
+  # Go in hibernate at lid
+  services.logind.extraConfig = "HandleLidSwitch=ignore"; 
+  powerManagement.enable = false;
+  services.acpid.enable = true;
+  # Dont hibernate after lidopen
+  services.acpid.lidEventCommands = 
+    ''
+      if [[ $(cat /var/local/lid) == "1" ]]
+      then
+        echo 0 > /var/local/lid
+        systemctl hibernate
+      else
+        echo 1 > /var/local/lid
+      fi
+    '';
 
   # Enable the X11 windowing system.
   services.xserver = {
