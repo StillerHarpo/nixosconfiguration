@@ -25,7 +25,7 @@
 
   boot.extraModprobeConfig = ''
     options snd slots=snd-hda-intel 
-    options snd_hda_intel enable=0,1
+    options snd_hda_intel enable=1,1
   '';
   boot.blacklistedKernelModules = [ "snd_pcsp" ];
   # networking.hostName = "nixos"; # Define your hostname.
@@ -42,6 +42,7 @@
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
+  nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     wget
     (vimHugeX.override { python = python3; })
@@ -62,6 +63,10 @@
     python3
     python27Packages.pip
     zathura
+    spotify
+    mpv
+    rlwrap
+    translate-shell
   ];
   
   fonts = {
@@ -119,6 +124,16 @@
     uid = 1000;
     createHome = true;
     extraGroups = [ "wheel" "networmanager" "audio" ];
+  };
+
+  # Bluetooth sound
+ 
+  hardware = { 
+    pulseaudio = { 
+      enable = true; 
+      package = pkgs.pulseaudioFull;
+    }; 
+    bluetooth.enable = true;
   };
 
   # zsh
