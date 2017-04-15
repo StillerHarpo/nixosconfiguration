@@ -7,27 +7,35 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ./network-configuration.nix
+      /etc/nixos/hardware-configuration.nix
+      /etc/nixos/network-configuration.nix
     ];
 
   # luks encryption
-  boot.initrd.luks.devices = [ 
-    { name = "luksroot"; device = "/dev/sda2"; preLVM = true; } 
-  ];
+  boot = {
+    initrd = {
+      luks.devices = [ 
+        { name = "luksroot"; device = "/dev/sda2"; preLVM = true; } 
+      ];
+      postDeviceCommands = "sleep 5";
+    };
 
+    # Use the GRUB 2 boot loader.
+    loader.grub = {
+      enable = true;
+      version = 2;
 
-  # Use the GRUB 2 boot loader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.version = 2;
-  # Define on which hard drive you want to install Grub.
-  boot.loader.grub.device = "/dev/sda"; # or "nodev" for efi only
+      # Define on which hard drive you want to install Grub.
+      device = "/dev/sda"; # or "nodev" for efi only
+    };
+    extraModprobeConfig = ''
+      options snd slots=snd-hda-intel 
+      options snd_hda_intel enable=1,1
+    '';
+    blacklistedKernelModules = [ "snd_pcsp" ];
+    resumeDevice = "/dev/disk/by-label/swap";
+  };
 
-  boot.extraModprobeConfig = ''
-    options snd slots=snd-hda-intel 
-    options snd_hda_intel enable=1,1
-  '';
-  boot.blacklistedKernelModules = [ "snd_pcsp" ];
   # networking.hostName = "nixos"; # Define your hostname.
 
   # Select internationalisation properties.
@@ -86,48 +94,56 @@
   # services.printing.enable = true;
    
   # Go in hibernate at lid
-  services.logind.extraConfig = "HandleLidSwitch=ignore"; 
   powerManagement.enable = false;
-  services.acpid.enable = true;
-  # Dont hibernate after lidopen
-  services.acpid.lidEventCommands = 
-    ''
-      if [[ $(cat /var/local/lid) == "1" ]]
-      then
-        echo 0 > /var/local/lid
-        systemctl hibernate
-      else
-        echo 1 > /var/local/lid
-      fi
-    '';
+  services = {
+    logind.extraConfig = "HandleLidSwitch=ignore"; 
+    acpid = { 
+      enable = true;
+      # only hibernate ad lid-close, not after lid-open
+      lidEventCommands = 
+        ''
+          if [[ $(cat /var/local/lid) == "1" ]]
+          then
+            echo 0 > /var/local/lid
+            systemctl hibernate
+          else
+            echo 1 > /var/local/lid
+          fi
+        '';
+    };
 
-  # Enable the X11 windowing system.
-  services.xserver = {
-  enable = true;
-  layout = "de";
-  xkbOptions = "eurosign:e";
-  synaptics.enable = true;
-  synaptics.twoFingerScroll = true;
+    # Enable the X11 windowing system.
+    xserver = {
+      enable = true;
+      layout = "de";
+      xkbOptions = "eurosign:e";
+      synaptics = { 
+        enable = true;
+        twoFingerScroll = true;
+      };
+      # Enable XMonad
+      windowManager.xmonad = {
+        enable = true;
+        enableContribAndExtras = true;
+      };
+    }; 
+  }; 
 
-  # Enable XMonad
-  windowManager.xmonad.enable = true;
-  windowManager.xmonad.enableContribAndExtras = true;
- }; 
+  # zsh
+  programs.zsh.enable = true;
+  users = {  
+    defaultUserShell = "/run/current-system/sw/bin/zsh";
 
-  # Enable the KDE Desktop Environment.
-  # services.xserver.displayManager.kdm.enable = true;
-  # services.xserver.desktopManager.kde4.enable = true;
-  
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.extraUsers.florian= {
-    isNormalUser = true;
-    uid = 1000;
-    createHome = true;
-    extraGroups = [ "wheel" "networmanager" "audio" ];
+    # Define a user account. Don't forget to set a password with ‘passwd’.
+    extraUsers.florian= {
+      isNormalUser = true;
+      uid = 1000;
+      createHome = true;
+      extraGroups = [ "wheel" "networmanager" "audio" ];
+    };
   };
 
   # Bluetooth sound
- 
   hardware = { 
     pulseaudio = { 
       enable = true; 
@@ -136,10 +152,6 @@
     bluetooth.enable = true;
   };
 
-  # zsh
-
-  programs.zsh.enable = true;
-  users.defaultUserShell = "/run/current-system/sw/bin/zsh";
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "16.09";
 
