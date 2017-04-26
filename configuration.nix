@@ -8,7 +8,6 @@
   imports =
     [ # Include the results of the hardware scan.
       /etc/nixos/hardware-configuration.nix
-      /etc/nixos/network-configuration.nix
     ];
 
   # luks encryption
@@ -75,8 +74,12 @@
     mpv
     rlwrap
     translate-shell
+    you-get
+    pandoc
+    texlive.combined.scheme-full
   ];
   
+
   fonts = {
     enableFontDir = true;
     fonts = with pkgs; [
@@ -151,8 +154,12 @@
     }; 
     bluetooth.enable = true;
   };
+  
+  networking.wireless.enable = true;  
 
+  system = {
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "16.09";
-
+    stateVersion = "17.03";
+    activationScripts.wpa_supplicant="ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
+  };
 }
