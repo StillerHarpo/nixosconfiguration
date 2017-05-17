@@ -40,7 +40,7 @@
   # Select internationalisation properties.
   i18n = {
     consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "de";
+    consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };
 
@@ -50,9 +50,9 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
   nixpkgs.config.allowUnfree = true;
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; ([
     wget
-    (vimHugeX.override { python = python3; })
+    (import ./vim.nix)
     sudo
     firefox
     git
@@ -60,8 +60,6 @@
     gnupg
     termite
     mutt
-    haskellPackages.xmonad-contrib
-    haskellPackages.xmonad-extras
     termite
     toxic
     rtv
@@ -77,7 +75,18 @@
     you-get
     pandoc
     texlive.combined.scheme-full
-  ];
+    stack
+    busybox
+    unclutter
+    nix-repl
+    steam
+  ] 
+  ++ (with haskellPackages; [
+    xmonad-contrib
+    xmonad-extras
+    ncurses
+  ]));
+
   
 
   fonts = {
@@ -103,22 +112,27 @@
     acpid = { 
       enable = true;
       # only hibernate ad lid-close, not after lid-open
-      lidEventCommands = 
-        ''
-          if [[ $(cat /var/local/lid) == "1" ]]
-          then
-            echo 0 > /var/local/lid
-            systemctl hibernate
-          else
-            echo 1 > /var/local/lid
-          fi
-        '';
+      lidEventCommands = ''
+        echo "before sleep" >> /tmp/lidCommands
+        sleep 5
+        echo "after sleep" >> /tmp/lidCommands
+        LID_STATE=$(awk '{print$NF}' /proc/acpi/button/lid/LID/state)
+        echo "lidCom:">> /tmp/lidCommands
+        echo $LID_STATE >> /tmp/lidCommands
+        if [[ $LID_STATE == "closed" ]]; then
+          echo "in if" >> /tmp/lidCommands
+          systemctl hibernate 
+        fi
+      '';
+      powerEventCommands = ''
+        systemctl hibernate
+      '';
     };
 
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
-      layout = "de";
+      layout = "us";
       xkbOptions = "eurosign:e";
       synaptics = { 
         enable = true;
@@ -131,9 +145,10 @@
       };
     }; 
   }; 
-
-  # zsh
-  programs.zsh.enable = true;
+  programs = {
+    # zsh
+    zsh.enable = true;
+  };
   users = {  
     defaultUserShell = "/run/current-system/sw/bin/zsh";
 
@@ -151,8 +166,11 @@
     pulseaudio = { 
       enable = true; 
       package = pkgs.pulseaudioFull;
+      support32Bit = true;
     }; 
+    opengl.driSupport32Bit = true;
     bluetooth.enable = true;
+    bumblebee.enable = true;
   };
   
   networking.wireless.enable = true;  
