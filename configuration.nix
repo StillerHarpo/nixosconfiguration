@@ -74,17 +74,21 @@
     translate-shell
     you-get
     pandoc
-    texlive.combined.scheme-full
+    (texlive.combine {inherit (texlive) scheme-full pgf collection-basic;})
     stack
-    busybox
+    #busybox
     unclutter
     nix-repl
     steam
+    bc
+    anki
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
     xmonad-extras
     ncurses
+    hdevtools
+    hlint
   ]));
 
   
@@ -108,32 +112,16 @@
   # Go in hibernate at lid
   powerManagement.enable = false;
   services = {
-    logind.extraConfig = "HandleLidSwitch=ignore"; 
-    acpid = { 
-      enable = true;
-      # only hibernate ad lid-close, not after lid-open
-      lidEventCommands = ''
-        echo "before sleep" >> /tmp/lidCommands
-        sleep 5
-        echo "after sleep" >> /tmp/lidCommands
-        LID_STATE=$(awk '{print$NF}' /proc/acpi/button/lid/LID/state)
-        echo "lidCom:">> /tmp/lidCommands
-        echo $LID_STATE >> /tmp/lidCommands
-        if [[ $LID_STATE == "closed" ]]; then
-          echo "in if" >> /tmp/lidCommands
-          systemctl hibernate 
-        fi
-      '';
-      powerEventCommands = ''
-        systemctl hibernate
-      '';
-    };
-
+    logind.extraConfig = ''
+      HandleLidSwitch=hibernate
+      HandleLidSwitchDocked=hibernate
+      HandlePowerKey=hibernate
+    '';
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
       layout = "us";
-      xkbOptions = "eurosign:e";
+      xkbOptions = "eurosign:e, caps:escape";
       synaptics = { 
         enable = true;
         twoFingerScroll = true;
