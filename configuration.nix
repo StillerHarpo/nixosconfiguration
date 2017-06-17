@@ -149,6 +149,8 @@
     };
   };
 
+  security.sudo.wheelNeedsPassword = false;
+
   # Bluetooth sound
   hardware = { 
     pulseaudio = { 
