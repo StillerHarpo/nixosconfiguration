@@ -48,7 +48,9 @@ vim_configurable.customize {
       set relativenumber
       highlight LineNr ctermbg=002b36
       set conceallevel=0 
-      
+     
+      "use space for tap 
+      set expandtab
       " turn of annoying latex-suite stuff
       let g:Imap_FreezeImap=1
       
@@ -73,8 +75,10 @@ vim_configurable.customize {
       let g:UltiSnipsJumpForwardTrigger="<c-b>"
       let g:UltiSnipsJumpBackwardTrigger="<c-z>"
       
-      "you complete me
+      "haskell-vim
+      let g:haskell_indent_disable = 1
       
+      "you complete me
       let g:ycm_filetype_blacklist = {} 
       
       "spell checking

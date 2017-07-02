@@ -82,6 +82,7 @@
     steam
     bc
     anki
+    R
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
@@ -110,7 +111,7 @@
   # services.printing.enable = true;
    
   # Go in hibernate at lid
-  powerManagement.enable = false;
+  # powerManagement.enable = false;
   services = {
     logind.extraConfig = ''
       HandleLidSwitch=hibernate
