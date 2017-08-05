@@ -66,7 +66,6 @@
     xsel
     python
     python3
-    python27Packages.pip
     zathura
     spotify
     mpv
@@ -82,7 +81,9 @@
     steam
     bc
     anki
-    R
+    cabal2nix
+    nix-prefetch-git
+    cabal-install 
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
