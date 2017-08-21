@@ -49,7 +49,7 @@
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  nixpkgs.config.allowUnfree = true;
+
   environment.systemPackages = with pkgs; ([
     wget
     (import ./vim.nix)
@@ -73,7 +73,7 @@
     translate-shell
     you-get
     pandoc
-    (texlive.combine {inherit (texlive) scheme-full pgf collection-basic;})
+    (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
     stack
     #busybox
     unclutter
@@ -84,6 +84,7 @@
     cabal2nix
     nix-prefetch-git
     cabal-install 
+    unstable.google-chrome
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
@@ -93,7 +94,22 @@
     hlint
   ]));
 
-  
+  nixpkgs.config = 
+  {
+    # Allow proprietary packages
+    allowUnfree = true;
+
+    # Create an alias for the unstable channel
+    packageOverrides = pkgs: 
+    {
+      unstable = import <nixos-unstable> 
+      { 
+        # pass the nixpkgs config to the unstable alias
+        # to ensure `allowUnfree = true;` is propagated:
+        config = config.nixpkgs.config; 
+      };
+    };
+  };
 
   fonts = {
     enableFontDir = true;
