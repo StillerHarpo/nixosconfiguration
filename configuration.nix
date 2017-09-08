@@ -5,34 +5,15 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      /etc/nixos/hardware-configuration.nix
-    ];
-
-  # luks encryption
-  boot = {
-    initrd = {
-      luks.devices = [ 
-        { name = "luksroot"; device = "/dev/sda2"; preLVM = true; } 
-      ];
-      postDeviceCommands = "sleep 5";
-    };
+  boot = { 
+    resumeDevice = "/dev/disk/by-label/swap";
+    initrd.postDeviceCommands = "sleep 5";
 
     # Use the GRUB 2 boot loader.
     loader.grub = {
       enable = true;
       version = 2;
-
-      # Define on which hard drive you want to install Grub.
-      device = "/dev/sda"; # or "nodev" for efi only
     };
-    extraModprobeConfig = ''
-      options snd slots=snd-hda-intel 
-      options snd_hda_intel enable=1,1
-    '';
-    blacklistedKernelModules = [ "snd_pcsp" ];
-    resumeDevice = "/dev/disk/by-label/swap";
   };
 
   # networking.hostName = "nixos"; # Define your hostname.
@@ -127,23 +108,12 @@
   # Enable CUPS to print documents.
   # services.printing.enable = true;
    
-  # Go in hibernate at lid
-  # powerManagement.enable = false;
   services = {
-    logind.extraConfig = ''
-      HandleLidSwitch=hibernate
-      HandleLidSwitchDocked=hibernate
-      HandlePowerKey=hibernate
-    '';
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
       layout = "us";
       xkbOptions = "eurosign:e, caps:escape";
-      synaptics = { 
-        enable = true;
-        twoFingerScroll = true;
-      };
       # Enable XMonad
       windowManager.xmonad = {
         enable = true;
@@ -167,25 +137,12 @@
     };
   };
 
+  # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
 
-  # Bluetooth sound
-  hardware = { 
-    pulseaudio = { 
-      enable = true; 
-      package = pkgs.pulseaudioFull;
-      support32Bit = true;
-    }; 
-    opengl.driSupport32Bit = true;
-    bluetooth.enable = true;
-    bumblebee.enable = true;
-  };
+  hardware.opengl.driSupport32Bit = true;  
   
-  networking.wireless.enable = true;  
 
-  system = {
   # The NixOS release to be compatible with for stateful data such as databases.
-    stateVersion = "17.03";
-    activationScripts.wpa_supplicant="ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
-  };
+  system.stateVersion = "17.03";
 }
