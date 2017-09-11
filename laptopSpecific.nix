@@ -7,6 +7,12 @@
     # luks encryption
     initrd.luks.devices.luksroot.device = "/dev/sda2";
 
+    # Use the GRUB 2 boot loader.
+    loader.grub = {
+      enable = true;
+      version = 2;
+    };
+
     # Define on which hard drive you want to install Grub.
     loader.grub.device = "/dev/sda"; # or "nodev" for efi only
 

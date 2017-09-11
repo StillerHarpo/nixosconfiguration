@@ -9,11 +9,6 @@
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
 
-    # Use the GRUB 2 boot loader.
-    loader.grub = {
-      enable = true;
-      version = 2;
-    };
   };
 
   # networking.hostName = "nixos"; # Define your hostname.
