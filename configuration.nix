@@ -66,6 +66,7 @@
     nix-prefetch-git
     cabal-install 
     unstable.google-chrome
+    unstable.R
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
