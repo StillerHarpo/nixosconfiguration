@@ -27,4 +27,7 @@
     wantedBy = [ "multi-user.target" ];
     script = "${pkgs.hdparm}/sbin/hdparm -Y /dev/sda /dev/sdc";
   };
+
+  # Supposedly better for the SSD.
+  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
 }
