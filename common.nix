@@ -48,6 +48,7 @@
     rlwrap
     translate-shell
     you-get
+    xosd
     pandoc
     (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
     stack
