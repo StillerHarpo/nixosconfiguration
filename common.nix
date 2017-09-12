@@ -58,8 +58,9 @@
     bc
     anki
     cabal2nix
-    nix-prefetch-git
     cabal-install 
+    nix-prefetch-git
+    calcurse 
     unstable.google-chrome
     unstable.R
   ] 
