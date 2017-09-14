@@ -38,10 +38,9 @@
     mutt
     termite
     toxic
-    rtv
+    unstable.rtv
     xsel
     python
-    python3
     zathura
     spotify
     mpv
@@ -52,9 +51,7 @@
     pandoc
     (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
     stack
-    #busybox
     unclutter
-    nix-repl
     steam
     bc
     anki
