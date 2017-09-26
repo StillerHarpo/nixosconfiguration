@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-
+  imports = [ ./pci-passthrough.nix ];
   environment.systemPackages = with pkgs; [ 
     lm_sensors 
     hdparm ];

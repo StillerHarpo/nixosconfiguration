@@ -61,6 +61,7 @@
     calcurse 
     unstable.google-chrome
     unstable.R
+    torbrowser
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
