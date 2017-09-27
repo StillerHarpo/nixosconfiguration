@@ -33,8 +33,6 @@
     };
   };
 
-  services.xserver.videoDrivers = [ "nvidia" ];
-
   # Supposedly better for the SSD.
   fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
 }

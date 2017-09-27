@@ -52,7 +52,7 @@
     (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
     stack
     unclutter
-    steam
+    (unstable.steam.override { newStdcpp = true; })
     bc
     anki
     cabal2nix
