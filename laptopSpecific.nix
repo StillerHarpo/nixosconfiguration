@@ -46,7 +46,6 @@
       package = pkgs.pulseaudioFull;
       support32Bit = true;
     }; 
-    opengl.driSupport32Bit = true;
     bluetooth.enable = true;
     bumblebee.enable = true;
   };
