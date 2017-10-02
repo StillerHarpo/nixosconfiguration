@@ -32,4 +32,5 @@
       "${pkgs.OVMF}/FV/OVMF.fd:${pkgs.OVMF}/FV/OVMF_VARS.fd"
     ]
   '';
+  # networking.bridges.br0.interfaces = [ "enp10s0" ];
 }

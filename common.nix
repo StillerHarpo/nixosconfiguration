@@ -62,6 +62,8 @@
     unstable.google-chrome
     unstable.R
     torbrowser
+    dunst
+    libnotify
   ] 
   ++ (with haskellPackages; [
     xmonad-contrib
@@ -108,8 +110,9 @@
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
-      layout = "us";
-      xkbOptions = "eurosign:e, caps:escape";
+      layout = "us,de";
+      xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
+      monitorSection = ''Option "DPMS" "false"'';
       # Enable XMonad
       windowManager.xmonad = {
         enable = true;
