@@ -29,7 +29,7 @@
     hdparm = {
       description = "stop unused hdds";
       wantedBy = [ "multi-user.target" ];
-      script = "${pkgs.hdparm}/sbin/hdparm -Y /dev/sda /dev/sdc";
+      script = "${pkgs.hdparm}/sbin/hdparm -Y /dev/sda /dev/sdc /dev/sr0";
     };
   };
 
