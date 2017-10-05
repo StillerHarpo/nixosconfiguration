@@ -14,7 +14,7 @@
     }; 
     # luks encryption
     initrd.luks.devices.luksroot.device = "/dev/sdd2";
-
+    kernelPackages = pkgs.linuxPackages_4_12;
     kernelModules = [ "it87" ];
   };
 
