@@ -32,11 +32,5 @@
       "${pkgs.OVMF}/FV/OVMF.fd:${pkgs.OVMF}/FV/OVMF_VARS.fd"
     ]
   '';
-  networking = {
-    firewall.trustedInterfaces = [ "virbr1" "virbr2" ];
-    interfaces = { 
-      virbr1.mtu = 9000;
-      virbr2.mtu = 9000;
-    };
-  };
+  networking.firewall.trustedInterfaces = [ "virbr1" ];
 }
