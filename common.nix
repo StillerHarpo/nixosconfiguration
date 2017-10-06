@@ -139,8 +139,14 @@
   # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
 
-  hardware.opengl.driSupport32Bit = true;  
-  
+  hardware = {
+    pulseaudio = { 
+      enable = true; 
+      package = pkgs.pulseaudioFull;
+      support32Bit = true;
+    }; 
+    opengl.driSupport32Bit = true;  
+  }; 
 
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "17.03";
