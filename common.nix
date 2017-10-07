@@ -29,6 +29,7 @@
   environment.systemPackages = with pkgs; ([
     wget
     (import ./vim.nix)
+    (import ./emacs.nix)
     sudo
     firefox
     git
