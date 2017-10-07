@@ -15,6 +15,7 @@ in
     haskell-mode
     flycheck 
     evil
+    yasnippet
   ]) ++ (with epkgs.elpaPackages; [ 
     auctex         # ; LaTeX mode
     beacon         # ; highlight my cursor when scrolling
