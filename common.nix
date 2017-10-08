@@ -25,7 +25,7 @@
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-
+  
   environment.systemPackages = with pkgs; ([
     wget
     (import ./vim.nix)
@@ -114,12 +114,20 @@
       layout = "us,de";
       xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
       monitorSection = ''Option "DPMS" "false"'';
+      serverLayoutSection =
+      ''
+        Option          "BlankTime"     "0"
+        Option          "StandbyTime"   "0"
+        Option          "SuspendTime"   "0"
+        Option          "OffTime"       "0"
+     '';
       # Enable XMonad
       windowManager.xmonad = {
         enable = true;
         enableContribAndExtras = true;
       };
     }; 
+    hoogle.enable = true;
   }; 
   programs = {
     # zsh

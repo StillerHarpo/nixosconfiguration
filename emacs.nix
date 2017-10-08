@@ -16,6 +16,7 @@ in
     flycheck 
     evil
     yasnippet
+    nlinum-relative
   ]) ++ (with epkgs.elpaPackages; [ 
     auctex         # ; LaTeX mode
     beacon         # ; highlight my cursor when scrolling
