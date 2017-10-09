@@ -16,7 +16,12 @@
     initrd.luks.devices.luksroot.device = "/dev/sdd2";
     kernelPackages = pkgs.linuxPackages_4_12;
     kernelModules = [ "it87" ];
+    # preventing kernel error message 
+    blacklistedKernelModules = [ "sp5100_tco" ];
   };
+
+  # i don't use bluetooth(preventing kernel error message)
+  hardware.pulseaudio.configFile = ./default.pa;
 
   systemd.services= { 
     fancontrol = {
