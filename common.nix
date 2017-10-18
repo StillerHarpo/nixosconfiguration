@@ -62,7 +62,7 @@
     calcurse 
     unstable.google-chrome
     unstable.R
-    torbrowser
+    unstable.torbrowser
     dunst
     libnotify
   ] 

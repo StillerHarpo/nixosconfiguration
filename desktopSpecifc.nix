@@ -2,9 +2,16 @@
 
 {
   imports = [ ./pci-passthrough.nix ];
-  environment.systemPackages = with pkgs; [ 
-    lm_sensors 
-    hdparm ];
+  environment = {
+    systemPackages = with pkgs; [ 
+      lm_sensors 
+      hdparm
+    ];
+    # prevent dbus error
+    variables = {
+      NO_AT_BRIDGE = "1";
+    };
+  };
 
   boot = {
     # Use the systemd-boot EFI boot loader.
@@ -33,11 +40,13 @@
     # stop unused hdds
     hdparm = {
       description = "stop unused hdds";
-      wantedBy = [ "multi-user.target" ];
-      script = "${pkgs.hdparm}/sbin/hdparm -Y /dev/sda /dev/sdc /dev/sr0";
+      after = [ "suspend.target" ];
+      wantedBy = [ "multi-user.target" "suspend.target"];
+      script = "${pkgs.hdparm}/sbin/hdparm -Y /dev/sda /dev/sdc";
     };
   };
 
   # Supposedly better for the SSD.
-  fileSystems."/".options = [ "noatime" "nodiratime" "discard" ];
+  fileSystems."/".options = [ "noatime" "nodiratime" ];
+  
 }
