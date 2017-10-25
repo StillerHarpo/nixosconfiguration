@@ -1,7 +1,7 @@
 with import <nixpkgs> {};
 
 let
-  myEmacs = pkgs.emacs25-nox; 
+  myEmacs = pkgs.emacs25;
   emacsWithPackages = (pkgs.emacsPackagesNgGen myEmacs).emacsWithPackages; 
 in
   emacsWithPackages (epkgs: (with epkgs.melpaStablePackages; [ 
@@ -14,6 +14,8 @@ in
     nix-sandbox
     haskell-mode
     flycheck 
+    elpy
+    py-autopep8
     evil
     yasnippet
     nlinum-relative

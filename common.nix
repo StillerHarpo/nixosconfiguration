@@ -29,7 +29,7 @@
   environment.systemPackages = with pkgs; ([
     wget
     (import ./vim.nix)
-    (import ./emacs.nix)
+#   (import ./emacs.nix)
     sudo
     firefox
     git
@@ -39,7 +39,7 @@
     mutt
     termite
     toxic
-    unstable.rtv
+    rtv
     xsel
     python
     zathura
@@ -127,6 +127,10 @@
         enableContribAndExtras = true;
       };
     }; 
+    emacs = {
+      enable=true;
+      package = import ./emacs.nix;
+    };
     hoogle.enable = true;
   }; 
   programs = {
