@@ -5,6 +5,7 @@
 { config, pkgs, ... }:
 
 {
+  imports = [ ./enviroments.nix ];
   boot = { 
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
