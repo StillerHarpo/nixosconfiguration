@@ -42,7 +42,6 @@
     toxic
     rtv
     xsel
-    python
     zathura
     spotify
     mpv
@@ -66,14 +65,7 @@
     unstable.torbrowser
     dunst
     libnotify
-  ] 
-  ++ (with haskellPackages; [
-    xmonad-contrib
-    xmonad-extras
-    ncurses
-    hdevtools
-    hlint
-  ]));
+  ]);
 
   nixpkgs.config = 
   {
