@@ -19,6 +19,8 @@ in
     evil
     yasnippet
     nlinum-relative
+    ess
+    exec-path-from-shell
   ]) ++ (with epkgs.elpaPackages; [ 
     auctex         # ; LaTeX mode
     beacon         # ; highlight my cursor when scrolling

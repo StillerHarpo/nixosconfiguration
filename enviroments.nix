@@ -31,8 +31,18 @@ let
     ]; 
   };
 
+  renv = pkgs.myEnvFun {
+    name = "r-env";
+    buildInputs = with pkgs; ([
+      R 
+    ] ++
+    (with rPackages; [
+      MASS
+    ]));
+  }; 
+
 in
 
 {
-  environment.systemPackages = [ python3env python2env xmonadenv ];
+  environment.systemPackages = [ python3env python2env xmonadenv renv ];
 }  

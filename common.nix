@@ -40,7 +40,7 @@
     mutt
     termite
     toxic
-    rtv
+    unstable.rtv
     xsel
     zathura
     spotify
@@ -138,12 +138,15 @@
       isNormalUser = true;
       uid = 1000;
       createHome = true;
-      extraGroups = [ "wheel" "networmanager" "audio" ];
+      extraGroups = [ "wheel" "networmanager" "audio" "docker" ];
     };
   };
 
   # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
+
+  # docker
+  virtualisation.docker.enable=true;
 
   hardware = {
     pulseaudio = { 
