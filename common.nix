@@ -40,7 +40,7 @@
     mutt
     termite
     toxic
-    unstable.rtv
+    rtv
     xsel
     zathura
     spotify
@@ -53,16 +53,16 @@
     (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
     stack
     unclutter
-    (unstable.steam.override { newStdcpp = true; })
+    #(unstable.steam.override { newStdcpp = true; })
+    steam
     bc
     anki
     cabal2nix
     cabal-install 
     nix-prefetch-git
     calcurse 
-    unstable.google-chrome
-    unstable.R
-    unstable.torbrowser
+    google-chrome
+    torbrowser
     dunst
     libnotify
   ]);
@@ -125,6 +125,10 @@
       package = import ./emacs.nix;
     };
     hoogle.enable = true;
+    postgresql = {
+      enable = true;
+      package = pkgs.postgresql100;
+    };
   }; 
   programs = {
     # zsh
@@ -158,5 +162,5 @@
   }; 
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "17.03";
+  system.stateVersion = "17.09";
 }

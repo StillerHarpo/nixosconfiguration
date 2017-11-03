@@ -37,7 +37,7 @@ let
       R 
     ] ++
     (with rPackages; [
-      MASS
+      MASS xtable tikzDevice
     ]));
   }; 
 
