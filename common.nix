@@ -162,7 +162,7 @@
 	spotify = ''fish -c "spotify&"'';
 	steam = ''fish -c "steam&"'';
 	anki =  ''fish -c "anki&"'';
-	netflix = ''fish -c "google-chrome-stable "netflix.com""'';
+	netflix = ''fish -c "google-chrome-stable "netflix.com"&"'';
       };
       shellInit = ''
         export VISUAL='vim'
