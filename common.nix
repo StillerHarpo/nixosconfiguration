@@ -158,6 +158,11 @@
         python3-env = "load-env-python3-env fish";
         r-env = "load-env-r-env fish";
 	compilerbau-env = "load-env-compilerbau-env fish";
+	# start gui programms in background
+	spotify = ''fish -c "spotify&"'';
+	steam = ''fish -c "steam&"'';
+	anki =  ''fish -c "anki&"'';
+	netflix = ''fish -c "google-chrome-stable "netflix.com""'';
       };
       shellInit = ''
         export VISUAL='vim'
