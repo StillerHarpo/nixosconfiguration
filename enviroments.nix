@@ -31,6 +31,16 @@ let
     ]; 
   };
 
+  compilerbauenv = pkgs.myEnvFun {
+    name = "compilerbau-env";
+    buildInputs = [
+      (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
+        alex
+        hdevtools hlint
+      ]))
+    ]; 
+  };
+
   renv = pkgs.myEnvFun {
     name = "r-env";
     buildInputs = with pkgs; ([
@@ -44,5 +54,5 @@ let
 in
 
 {
-  environment.systemPackages = [ python3env python2env xmonadenv renv ];
+  environment.systemPackages = [ python3env python2env xmonadenv renv compilerbauenv ];
 }  
