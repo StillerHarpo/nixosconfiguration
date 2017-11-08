@@ -38,7 +38,7 @@
       spotify = ''zsh -c "spotify&"'';
       steam = ''zsh -c "steam&"'';
       anki =  ''zsh -c "anki&"'';
-      netlix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
+      netflix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
     };
     shellInit = ''
       export VISUAL='vim'
