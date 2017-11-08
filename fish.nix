@@ -27,10 +27,10 @@
       python3-env = "load-env-python3-env fish";
       r-env = "load-env-r-env fish";
       comilerbau-env = "load-env-compilerbau-env fish";
-      # sart gui programms in background
-      spoify = ''fish -c "spotify&"'';
-      stem = ''fish -c "steam&"'';
-      ank =  ''fish -c "anki&"'';
+      # start gui programms in background
+      spotify = ''fish -c "spotify&"'';
+      steam = ''fish -c "steam&"'';
+      anki =  ''fish -c "anki&"'';
       netlix = ''fish -c "google-chrome-stable "netflix.com"&"'';
     };
     shellInit = ''

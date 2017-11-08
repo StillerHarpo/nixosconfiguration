@@ -34,7 +34,11 @@
       python3-env = "load-env-python3-env zsh";
       r-env = "load-env-r-env zsh";
       comilerbau-env = "load-env-compilerbau-env zsh";
-      netlix = ''google-chrome-stable "netflix.com"&'';
+      # start gui programms in background
+      spotify = ''zsh -c "spotify&"'';
+      steam = ''zsh -c "steam&"'';
+      anki =  ''zsh -c "anki&"'';
+      netlix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
     };
     shellInit = ''
       export VISUAL='vim'
