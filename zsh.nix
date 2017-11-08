@@ -28,12 +28,12 @@
       slock = "killall unclutter; slock; unclutter -grab &"; #with unclutter, slock dont work
       trans = "rlwrap trans"; # to use history in tranlation shell
       jupyter = "jupyter notebook ~/Dokumente/Uni/angewandteStatistik";
-      # use fish in enviroments
-      xmonad-env = "load-env-xmonad-env fish";
-      python2-env = "load-env-python2-env fish";
-      python3-env = "load-env-python3-env fish";
-      r-env = "load-env-r-env fish";
-      comilerbau-env = "load-env-compilerbau-env fish";
+      # use zsh in enviroments
+      xmonad-env = "load-env-xmonad-env zsh";
+      python2-env = "load-env-python2-env zsh";
+      python3-env = "load-env-python3-env zsh";
+      r-env = "load-env-r-env zsh";
+      comilerbau-env = "load-env-compilerbau-env zsh";
       netlix = ''google-chrome-stable "netflix.com"&'';
     };
     shellInit = ''
