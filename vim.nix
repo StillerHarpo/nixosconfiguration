@@ -97,6 +97,7 @@ vim_configurable.customize {
         {names = [
           "tabular"
           "vim-markdown"
+          "vim-nix"
           "UltiSnips"
           "vim-snippets"
           "youcompleteme"
