@@ -69,17 +69,28 @@ vim_configurable.customize {
       let g:syntastic_tex_checkers = []
       "let g:syntastic_tex_chktex_args = "-n all"
       
-      "make UltiSnips compatible with ycm
-      
-      let g:UltiSnipsExpandTrigger="<c-k>"
-      let g:UltiSnipsJumpForwardTrigger="<c-b>"
-      let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-      
+      "UltiSnips
+      let g:UltiSnipsExpandTrigger="<c-tab>"
+      let g:UltiSnipsJumpForwardTrigger="<c-tab>"
+      let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+      let g:ulti_expand_or_jump_res = 0
+      function! CleverTab()"{{{
+      call UltiSnips#ExpandSnippetOrJump()
+      if g:ulti_expand_or_jump_res
+        return ""
+      else
+        if pumvisible()
+            return "\<c-n>"
+        else
+            return neocomplete#start_manual_complete()
+        endif
+      endif
+      endfunction"}}}
+      inoremap <silent> <tab> <c-r>=CleverTab()<cr>
+      snoremap <silent> <tab> <esc>:call UltiSnips#ExpandSnippetOrJump()<cr>
+
       "haskell-vim
       let g:haskell_indent_disable = 1
-      
-      "you complete me
-      let g:ycm_filetype_blacklist = {} 
       
       "spell checking
       setlocal spell spelllang=en,de
@@ -92,10 +103,12 @@ vim_configurable.customize {
       hi SyntasticWarning term=reverse ctermfg=15 ctermbg=11  
 
       "haskell auto completion
-      let g:ycm_semantic_triggers = {'haskell' : ['.']}
       let g:necoghc_enable_detailed_browse = 1
       let g:haskellmode_completion_ghc = 0
       autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+      "necomplete
+      let g:neocomplete#enable_at_startup = 1
     '';
     vam = { 
       knownPlugins = pkgs.vimPlugins;
@@ -106,7 +119,7 @@ vim_configurable.customize {
           "vim-nix"
           "UltiSnips"
           "vim-snippets"
-          "youcompleteme"
+          "neocomplete"
           "latex-box"
           "ctrlp"
           "Syntastic"
