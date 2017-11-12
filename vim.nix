@@ -90,6 +90,12 @@ vim_configurable.customize {
       hi SyntasticError term=reverse ctermfg=15 ctermbg=250
       hi clear SyntasticWarning
       hi SyntasticWarning term=reverse ctermfg=15 ctermbg=11  
+
+      "haskell auto completion
+      let g:ycm_semantic_triggers = {'haskell' : ['.']}
+      let g:necoghc_enable_detailed_browse = 1
+      let g:haskellmode_completion_ghc = 0
+      autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
     '';
     vam = { 
       knownPlugins = pkgs.vimPlugins;
@@ -105,6 +111,8 @@ vim_configurable.customize {
           "ctrlp"
           "Syntastic"
           "haskell-vim"
+          "neco-ghc"
+          "ghcmod" "vimproc"
       ];}
      ]; 
     };

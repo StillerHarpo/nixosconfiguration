@@ -26,7 +26,7 @@ let
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         xmonad xmonad-contrib xmonad-extras
-        hdevtools hlint
+        hdevtools hlint ghc-mod
       ]))
     ]; 
   };
@@ -35,8 +35,8 @@ let
     name = "compilerbau-env";
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
-        alex
-        hdevtools hlint
+        alex happy
+        hdevtools hlint ghc-mod
       ]))
     ]; 
   };
