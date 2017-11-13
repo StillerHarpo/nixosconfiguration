@@ -114,6 +114,7 @@ vim_configurable.customize {
       knownPlugins = pkgs.vimPlugins;
       pluginDictionaries = [
         {names = [
+          "vim-airline"
           "tabular"
           "vim-markdown"
           "vim-nix"
