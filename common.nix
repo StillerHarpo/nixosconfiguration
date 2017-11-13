@@ -65,6 +65,7 @@
     torbrowser
     dunst
     libnotify
+    dmenu
   ]);
 
   nixpkgs.config = 
