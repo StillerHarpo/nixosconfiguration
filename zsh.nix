@@ -30,10 +30,11 @@
       jupyter = "jupyter notebook ~/Dokumente/Uni/angewandteStatistik";
       # use zsh in enviroments
       xmonad-env = "load-env-xmonad-env zsh";
+      compilerbau-env = "load-env-compilerbau-env zsh";
+      writeScheme-env = "load-env-writeScheme-env zsh";
       python2-env = "load-env-python2-env zsh";
       python3-env = "load-env-python3-env zsh";
       r-env = "load-env-r-env zsh";
-      compilerbau-env = "load-env-compilerbau-env zsh";
       # start gui programms in background
       spotify = ''zsh -c "spotify&"'';
       steam = ''zsh -c "steam&"'';

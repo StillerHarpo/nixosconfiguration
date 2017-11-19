@@ -41,6 +41,16 @@ let
     ]; 
   };
 
+  writeschemeenv= pkgs.myEnvFun {
+    name = "writeScheme-env";
+    buildInputs = [
+      (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
+        parsec 
+        hdevtools hlint ghc-mod
+      ]))
+    ]; 
+  };
+
   renv = pkgs.myEnvFun {
     name = "r-env";
     buildInputs = with pkgs; ([
@@ -54,5 +64,8 @@ let
 in
 
 {
-  environment.systemPackages = [ python3env python2env xmonadenv renv compilerbauenv ];
+  environment.systemPackages = [ python3env python2env 
+                                 xmonadenv compilerbauenv writeschemeenv
+                                 renv 
+                               ];
 }  
