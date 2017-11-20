@@ -32,6 +32,7 @@
       xmonad-env = "load-env-xmonad-env zsh";
       compilerbau-env = "load-env-compilerbau-env zsh";
       writeScheme-env = "load-env-writeScheme-env zsh";
+      idris-env = "load-env-idris-env zsh";
       python2-env = "load-env-python2-env zsh";
       python3-env = "load-env-python3-env zsh";
       r-env = "load-env-r-env zsh";

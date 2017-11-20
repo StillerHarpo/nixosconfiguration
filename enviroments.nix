@@ -51,6 +51,15 @@ let
     ]; 
   };
 
+  idrisenv = pkgs.myEnvFun {
+    name = "idris-env";
+    buildInputs = [
+      (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
+        idris
+      ]))
+    ]; 
+  };
+
   renv = pkgs.myEnvFun {
     name = "r-env";
     buildInputs = with pkgs; ([
@@ -67,5 +76,6 @@ in
   environment.systemPackages = [ python3env python2env 
                                  xmonadenv compilerbauenv writeschemeenv
                                  renv 
+                                 idrisenv
                                ];
 }  
