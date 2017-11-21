@@ -66,6 +66,7 @@ vim_configurable.customize {
       
       " syntax checkers
       let g:syntastic_haskell_checkers = ['hdevtools', 'hlint']
+      let g:syntastic_haskell_hdevtools_post_args = "-S"
       let g:syntastic_tex_checkers = []
       "let g:syntastic_tex_chktex_args = "-n all"
       
@@ -91,6 +92,7 @@ vim_configurable.customize {
 
       "haskell-vim
       let g:haskell_indent_disable = 1
+
       
       "spell checking
       setlocal spell spelllang=en,de
