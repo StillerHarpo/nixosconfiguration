@@ -26,7 +26,7 @@ let
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         xmonad xmonad-contrib xmonad-extras
-        hdevtools hlint ghc-mod
+        hdevtools hlint ghc-mod cabal-install
       ]))
     ]; 
   };
@@ -36,7 +36,7 @@ let
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         alex happy
-        hdevtools hlint ghc-mod
+        hdevtools hlint ghc-mod cabal-install
       ]))
     ]; 
   };
@@ -46,7 +46,7 @@ let
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         parsec 
-        hdevtools hlint ghc-mod
+        hdevtools hlint ghc-mod cabal-install
       ]))
     ]; 
   };

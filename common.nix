@@ -57,8 +57,6 @@
     steam
     bc
     anki
-    cabal2nix
-    cabal-install 
     nix-prefetch-git
     calcurse 
     google-chrome
