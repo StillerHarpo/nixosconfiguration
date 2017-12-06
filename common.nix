@@ -65,6 +65,8 @@
     dunst
     libnotify
     dmenu
+    # haskell
+    cabal2nix ghc
   ]);
 
   nixpkgs.config = 
