@@ -40,6 +40,7 @@
     mutt
     termite
     toxic
+    newsbeuter
     rtv
     xsel
     zathura
