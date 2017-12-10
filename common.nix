@@ -33,6 +33,7 @@
 #   (import ./emacs.nix)
     sudo
     firefox
+    qutebrowser
     git
     pass
     gnupg
