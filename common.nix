@@ -123,7 +123,7 @@
         enableContribAndExtras = true;
       };
     }; 
-    unclutter.enable = true;
+    unclutter-xfixes.enable = true;
     emacs = {
       enable=true;
       package = import ./emacs.nix;
