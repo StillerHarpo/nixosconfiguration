@@ -123,6 +123,7 @@
         enableContribAndExtras = true;
       };
     }; 
+    unclutter.enable = true;
     emacs = {
       enable=true;
       package = import ./emacs.nix;
@@ -133,13 +134,13 @@
       package = pkgs.postgresql100;
     };
   }; 
-    
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.florian= {
-      isNormalUser = true;
-      uid = 1000;
-      createHome = true;
-      extraGroups = [ "wheel" "networmanager" "audio" "docker" ];
+    isNormalUser = true;
+    uid = 1000;
+    createHome = true;
+    extraGroups = [ "wheel" "networmanager" "audio" "docker" ];
   };
 
   # passwordless sudo
