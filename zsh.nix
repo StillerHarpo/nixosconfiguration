@@ -8,7 +8,7 @@
     ohMyZsh = {
       enable = true;
       theme = "agnoster";
-      plugins = [ "vi-mode" "per-directory-history" "pass" ];
+      plugins = [ "vi-mode" "per-directory-history" "pass" "nix" ];
     };  
     shellAliases = {
       emacs = "emacsclient -c";
@@ -41,6 +41,7 @@
       steam = ''zsh -c "steam&"'';
       anki =  ''zsh -c "anki&"'';
       netflix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
+      nix-shell = ''nix-shell --run zsh'';
     };
     shellInit = ''
       export VISUAL='vim'
@@ -55,6 +56,12 @@
           mpv --no-video ytdl://ytsearch10:"$@"
       }
       # )
+    '';
+    promptInit = ''
+      if [ $SHELL != "/run/current-system/sw/bin/zsh" ] 
+      then
+        PROMPT='%K{green}%F{black} nix-shell %F{green}%K{black}$(echo "\ue0b0")%k%f'$PROMPT
+      fi 
     '';
   };
   users.defaultUserShell = "/run/current-system/sw/bin/zsh";

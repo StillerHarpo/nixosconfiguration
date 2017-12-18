@@ -67,7 +67,7 @@
     libnotify
     dmenu
     # haskell
-    cabal2nix ghc
+    cabal2nix cabal-install ghc
   ]);
 
   nixpkgs.config = 
