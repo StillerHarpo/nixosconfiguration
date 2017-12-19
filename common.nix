@@ -39,7 +39,6 @@
     gnupg
     termite
     mutt
-    termite
     toxic
     newsbeuter
     rtv
@@ -53,8 +52,6 @@
     xosd
     pandoc
     (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
-    stack
-    unclutter
     #(unstable.steam.override { newStdcpp = true; })
     steam
     bc
@@ -66,6 +63,7 @@
     dunst
     libnotify
     dmenu
+    wmctrl
     # haskell
     cabal2nix cabal-install ghc
   ]);
