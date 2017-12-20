@@ -40,6 +40,7 @@
       spotify = ''zsh -c "spotify&"'';
       steam = ''zsh -c "steam&"'';
       anki =  ''zsh -c "anki&"'';
+      qutebrowser = ''zsh -c "qutebrowser --target window&"'';
       netflix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
       nix-shell = ''nix-shell --run zsh'';
     };
