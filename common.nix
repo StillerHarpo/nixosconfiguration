@@ -38,7 +38,7 @@
     pass
     gnupg
     termite
-    mutt
+    neomutt
     toxic
     newsbeuter
     rtv
