@@ -16,7 +16,7 @@
       ll = "ls -a";
       srg = "sr google";
       srw = "sr wikipedia";
-      rtv = ''nix-shell -p python -p pythonPackages.six --run "export BROWSER=linkopen; export EDITOR=vim; export PAGER=less;rtv --asci"'';
+      rtv = ''export BROWSER=linkopen; export EDITOR=vim; export PAGER=less;rtv'';
       vimread = "vim -RNu ~/.vimreadrc"; 
       randomYoutube = "mpv (shuf /var/tmp/youtubeVideos)";
       "." ="cd ..";

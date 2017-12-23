@@ -41,7 +41,7 @@
     neomutt
     toxic
     newsbeuter
-    rtv
+    unstable.rtv
     xsel
     zathura
     spotify
