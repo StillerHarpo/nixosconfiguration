@@ -34,6 +34,7 @@
     sudo
     firefox
     qutebrowser
+    w3m
     git
     pass
     gnupg
