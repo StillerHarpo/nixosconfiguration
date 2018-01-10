@@ -31,6 +31,7 @@
     wget
     (import ./vim.nix)
 #   (import ./emacs.nix)
+    shellcheck
     sudo
     firefox
     qutebrowser
