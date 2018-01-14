@@ -39,8 +39,9 @@
     # stop unused hdds
     hdparm = {
       description = "stop unused hdds";
-      after = [ "suspend.target" ];
-      wantedBy = [ "multi-user.target" "suspend.target"];
+      after = [ "hibernate.target" "suspend.target" ];
+      partOf = [ "hibernate.target" "suspend.target" ];
+      wantedBy = [ "multi-user.target" "suspend.target" "hibernate.target" ];
       script = "${pkgs.hdparm}/sbin/hdparm -Y /dev/sda /dev/sdc";
     };
   };
