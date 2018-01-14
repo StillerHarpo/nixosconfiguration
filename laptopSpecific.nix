@@ -27,10 +27,10 @@
   # powerManagement.enable = false;
   services = {
     # Go in hibernate at lid
+      #  HandlePowerKey=hibernate
     logind.extraConfig = ''
       HandleLidSwitch=hibernate
       HandleLidSwitchDocked=hibernate
-      HandlePowerKey=hibernate
     '';
     # mouse pad
     xserver.synaptics = {
