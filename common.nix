@@ -69,6 +69,8 @@
     wmctrl
     weechat
     idea.idea-community
+    unclutter-xfixes
+    psmisc
     # haskell
     cabal2nix cabal-install ghc
   ]);
