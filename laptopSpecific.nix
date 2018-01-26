@@ -27,8 +27,8 @@
   # powerManagement.enable = false;
   services = {
     # Go in hibernate at lid
-      #  HandlePowerKey=hibernate
     logind.extraConfig = ''
+      HandlePowerKey=ignore
       HandleLidSwitch=hibernate
       HandleLidSwitchDocked=hibernate
     '';
