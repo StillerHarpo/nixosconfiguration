@@ -113,7 +113,7 @@ vim_configurable.customize {
       let g:neocomplete#enable_at_startup = 1
 
       "vimdiff show line
-      automcmd FilterWritePre * if &diff | setlocal wrap< | endif
+      " automcmd FilterWritePre * if &diff | setlocal wrap< | endif
     '';
     vam = { 
       knownPlugins = pkgs.vimPlugins;
