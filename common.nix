@@ -129,7 +129,7 @@
     unclutter-xfixes.enable = true;
     emacs = {
       enable=true;
-      package = import ./emacs.nix;
+      #  package = import ./emacs.nix;
     };
     hoogle.enable = true;
     postgresql = {

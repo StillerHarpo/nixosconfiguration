@@ -11,7 +11,7 @@
       plugins = [ "vi-mode" "per-directory-history" "pass" "nix" ];
     };  
     shellAliases = {
-      emacs = "emacsclient -c";
+#     emacs = "emacsclient -c";
       ls = "ls -lh --color=auto";
       ll = "ls -a";
       srg = "sr google";
