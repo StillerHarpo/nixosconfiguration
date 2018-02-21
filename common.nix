@@ -45,6 +45,7 @@
     newsbeuter
     unstable.rtv
     xsel
+    ag
     zathura
     spotify
     mpv
@@ -66,6 +67,8 @@
     libnotify
     dmenu
     wmctrl
+    weechat
+    idea.idea-community
     # haskell
     cabal2nix cabal-install ghc
   ]);
