@@ -18,14 +18,14 @@
 
     # sound
     extraModprobeConfig = ''
-      options snd slots=snd-hda-intel 
+      options snd slots=snd-hda-intel
       options snd_hda_intel enable=1,1
     '';
     blacklistedKernelModules = [ "snd_pcsp" ];
   };
-  
+
   # powerManagement.enable = false;
-  services = { 
+  services = {
     # Go in hibernate at lid
     logind.extraConfig = ''
       HandleLidSwitch=hibernate
@@ -33,20 +33,20 @@
       HandlePowerKey=hibernate
     '';
     # mouse pad
-    xserver.synaptics = { 
+    xserver.synaptics = {
       enable = true;
       twoFingerScroll = true;
     };
   };
 
   # Bluetooth sound
-  hardware = { 
+  hardware = {
     bluetooth.enable = true;
     bumblebee.enable = true;
   };
 
   # wifi
-  networking.wireless.enable = true;  
+  networking.wireless.enable = true;
   system.activationScripts.wpa_supplicant=
    "ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
 }

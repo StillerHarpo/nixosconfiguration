@@ -9,15 +9,19 @@
       enable = true;
       theme = "agnoster";
       plugins = [ "vi-mode" "per-directory-history" "pass" "nix" ];
-    };  
+    };
     shellAliases = {
+
+Reviewed-by: Florian Engel <floriaengel39@gmail.com>
+Reviewed-by: Florian Engel <floriaengel39@gmail.com>
+
 #     emacs = "emacsclient -c";
       ls = "ls -lh --color=auto";
       ll = "ls -a";
       srg = "sr google";
       srw = "sr wikipedia";
       rtv = ''export BROWSER=linkopen; export EDITOR=vim; export PAGER=less;rtv'';
-      vimread = "vim -RNu ~/.vimreadrc"; 
+      vimread = "vim -RNu ~/.vimreadrc";
       randomYoutube = "mpv (shuf /var/tmp/youtubeVideos)";
       "." ="cd ..";
       ".." = "cd ../..";
@@ -59,12 +63,12 @@
     '';
     promptInit = ''
       WORKSPACE=$(wmctrl -d | grep "*" | cut -f1 -d' ')
-      if [ $SHELL != "/run/current-system/sw/bin/zsh" ] 
+      if [ $SHELL != "/run/current-system/sw/bin/zsh" ]
       then
         PROMPT='%K{green}%F{black} nix-shell %F{green}%K{black}$(echo "\ue0b0")%k%f'$PROMPT
-      else 
+      else
         cd $(grep -e "^''${WORKSPACE} .*" ~/scripts/var/roots | cut -f2 -d' ')
-      fi 
+      fi
     '';
   };
   users.defaultUserShell = "/run/current-system/sw/bin/zsh";

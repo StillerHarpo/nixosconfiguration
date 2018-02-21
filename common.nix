@@ -6,7 +6,7 @@
 
 {
   imports = [ ./environments.nix ./zsh.nix ];
-  boot = { 
+  boot = {
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
 
@@ -26,7 +26,7 @@
 
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  
+
   environment.systemPackages = with pkgs; ([
     wget
     (import ./vim.nix)
@@ -60,7 +60,7 @@
     bc
     anki
     nix-prefetch-git
-    calcurse 
+    calcurse
     google-chrome
     torbrowser
     dunst
@@ -73,19 +73,19 @@
     cabal2nix cabal-install ghc
   ]);
 
-  nixpkgs.config = 
+  nixpkgs.config =
   {
     # Allow proprietary packages
     allowUnfree = true;
 
     # Create an alias for the unstable channel
-    packageOverrides = pkgs: 
+    packageOverrides = pkgs:
     {
-      unstable = import <nixos-unstable> 
-      { 
+      unstable = import <nixos-unstable>
+      {
         # pass the nixpkgs config to the unstable alias
         # to ensure `allowUnfree = true;` is propagated:
-        config = config.nixpkgs.config; 
+        config = config.nixpkgs.config;
       };
     };
   };
@@ -105,7 +105,7 @@
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
-   
+
   services = {
     # Enable the X11 windowing system.
     xserver = {
@@ -125,7 +125,7 @@
         enable = true;
         enableContribAndExtras = true;
       };
-    }; 
+    };
     unclutter-xfixes.enable = true;
     emacs = {
       enable=true;
@@ -136,7 +136,7 @@
       enable = true;
       package = pkgs.postgresql100;
     };
-  }; 
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.florian= {
@@ -153,13 +153,13 @@
   virtualisation.docker.enable=true;
 
   hardware = {
-    pulseaudio = { 
-      enable = true; 
+    pulseaudio = {
+      enable = true;
       package = pkgs.pulseaudioFull;
       support32Bit = true;
-    }; 
-    opengl.driSupport32Bit = true;  
-  }; 
+    };
+    opengl.driSupport32Bit = true;
+  };
 
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "17.09";

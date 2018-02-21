@@ -10,7 +10,7 @@
       srg = "sr google";
       srw = "sr wikipedia";
       rtv = ''nix-shell -p python -p pythonPackages.six --run "export BROWSER=linkopen; export EDITOR=vim; export PAGER=less;rtv --asci"'';
-      vimread = "vim -RNu ~/.vimreadrc"; 
+      vimread = "vim -RNu ~/.vimreadrc";
       randomYoutube = "mpv (shuf /var/tmp/youtubeVideos)";
       "." ="cd ..";
       ".." = "cd ../..";
@@ -39,9 +39,9 @@
       ~/sripts/nextApts
       fis_vi_key_bindings
       # play the youtube search list
-      function mm 
+      function mm
         mpv ytdl://ytsearch10:$argv
-      end 
+      end
       function mma
           mpv --no-video ytdl://ytsearch10:$argv
       end

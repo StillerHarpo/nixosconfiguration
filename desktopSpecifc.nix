@@ -3,8 +3,8 @@
 {
   imports = [ ./pci-passthrough.nix ];
   environment = {
-    systemPackages = with pkgs; [ 
-      lm_sensors 
+    systemPackages = with pkgs; [
+      lm_sensors
       hdparm
     ];
     # prevent dbus error
@@ -18,18 +18,18 @@
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
-    }; 
+    };
     # luks encryption
     initrd.luks.devices.luksroot.device = "/dev/sdd2";
     kernelModules = [ "it87" ];
-    # preventing kernel error message 
+    # preventing kernel error message
     blacklistedKernelModules = [ "sp5100_tco" ];
   };
 
   # i don't use bluetooth(preventing kernel error message)
   hardware.pulseaudio.configFile = ./default.pa;
 
-  systemd.services= { 
+  systemd.services= {
     fancontrol = {
       description = "fancontrol daemon";
       wantedBy = [ "multi-user.target" ];
@@ -48,5 +48,5 @@
 
   # Supposedly better for the SSD.
   fileSystems."/".options = [ "noatime" "nodiratime" ];
-  
+
 }

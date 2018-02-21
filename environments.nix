@@ -20,16 +20,16 @@ let
       flake8 jedi
     ]));
   };
-   
+
   xmonadenv = pkgs.myEnvFun {
     name = "xmonad-env";
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         xmonad xmonad-contrib xmonad-extras
-        hdevtools hlint cabal-install 
+        hdevtools hlint cabal-install
         # ghc-mod don't work with cabal 2.0
       ]))
-    ]; 
+    ];
   };
 
   compilerbauenv = pkgs.myEnvFun {
@@ -38,20 +38,20 @@ let
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         alex happy
         hdevtools hlint cabal-install
-        # ghc-mod 
+        # ghc-mod
       ]))
-    ]; 
+    ];
   };
 
   writeschemeenv= pkgs.myEnvFun {
     name = "writeScheme-env";
     buildInputs = [
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
-        parsec 
+        parsec
         hdevtools hlint cabal-install
-        # ghc-mod 
+        # ghc-mod
       ]))
-    ]; 
+    ];
   };
 
   idrisenv = pkgs.myEnvFun {
@@ -60,25 +60,25 @@ let
       (pkgs.haskellPackages.ghcWithPackages (hpkgs: with hpkgs; [
         idris
       ]))
-    ]; 
+    ];
   };
 
   renv = pkgs.myEnvFun {
     name = "r-env";
     buildInputs = with pkgs; ([
-      R 
+      R
     ] ++
     (with rPackages; [
       MASS xtable tikzDevice
     ]));
-  }; 
+  };
 
 in
 
 {
-  environment.systemPackages = [ python3env python2env 
+  environment.systemPackages = [ python3env python2env
                                  xmonadenv compilerbauenv writeschemeenv
-                                 renv 
+                                 renv
                                  idrisenv
                                ];
-}  
+}
