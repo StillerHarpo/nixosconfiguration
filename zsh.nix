@@ -11,10 +11,6 @@
       plugins = [ "vi-mode" "per-directory-history" "pass" "nix" ];
     };
     shellAliases = {
-
-Reviewed-by: Florian Engel <floriaengel39@gmail.com>
-Reviewed-by: Florian Engel <floriaengel39@gmail.com>
-
 #     emacs = "emacsclient -c";
       ls = "ls -lh --color=auto";
       ll = "ls -a";
