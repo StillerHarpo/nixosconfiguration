@@ -97,6 +97,7 @@
     fonts = with pkgs; [
       terminus_font
       dejavu_fonts
+      source-code-pro
     ];
   };
 
