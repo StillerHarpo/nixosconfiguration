@@ -55,8 +55,6 @@
     xosd
     pandoc
     (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
-    #(unstable.steam.override { newStdcpp = true; })
-    steam
     bc
     anki
     nix-prefetch-git
