@@ -58,6 +58,7 @@
     #(unstable.steam.override { newStdcpp = true; })
     steam
     bc
+    feh
     anki
     nix-prefetch-git
     calcurse
