@@ -42,7 +42,7 @@
     termite
     neomutt
     toxic
-    newsbeuter
+    newsboat
     unstable.rtv
     xsel
     ag
@@ -72,7 +72,7 @@
     unclutter-xfixes
     psmisc
     # haskell
-    cabal2nix cabal-install ghc
+    cabal2nix cabal-install
   ]);
 
   nixpkgs.config =
@@ -165,5 +165,5 @@
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "17.09";
+  system.stateVersion = "18.03";
 }

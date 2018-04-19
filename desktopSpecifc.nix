@@ -7,10 +7,6 @@
       lm_sensors
       hdparm
     ];
-    # prevent dbus error
-    variables = {
-      NO_AT_BRIDGE = "1";
-    };
   };
 
   boot = {
