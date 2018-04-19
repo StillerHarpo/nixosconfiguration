@@ -24,6 +24,12 @@
     blacklistedKernelModules = [ "snd_pcsp" ];
   };
 
+  nixpkgs.overlays = [
+    (self: super:
+    { mySteam = super.steamPackages.steam-chrootenv.override { withPrimus = true; }; } ) ];
+
+  environment.systemPackages = [ pkgs.mySteam ];
+
   # powerManagement.enable = false;
   services = {
     # Go in hibernate at lid

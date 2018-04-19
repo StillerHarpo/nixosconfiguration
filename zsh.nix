@@ -38,7 +38,6 @@
       r-env = "load-env-r-env zsh";
       # start gui programms in background
       spotify = ''zsh -c "spotify&"'';
-      steam = ''zsh -c "steam&"'';
       anki =  ''zsh -c "anki&"'';
       qutebrowser = ''zsh -c "qutebrowser --target window&"'';
       netflix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
