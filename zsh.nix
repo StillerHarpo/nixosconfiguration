@@ -27,7 +27,6 @@
       reboot = "closeAllWindows; reboot";
       slock = "killall unclutter; slock; unclutter -grab &"; #with unclutter, slock dont work
       trans = "rlwrap trans"; # to use history in tranlation shell
-      jupyter = "jupyter notebook ~/Dokumente/Uni/angewandteStatistik";
       # use zsh in enviroments
       xmonad-env = "load-env-xmonad-env zsh";
       compilerbau-env = "load-env-compilerbau-env zsh";
