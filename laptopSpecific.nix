@@ -22,6 +22,7 @@
       options snd_hda_intel enable=1,1
     '';
     blacklistedKernelModules = [ "snd_pcsp" ];
+    kernel.sysctl = { "vm.swappiness" = 15; };
   };
 
   nixpkgs.overlays = [
