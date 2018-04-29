@@ -36,15 +36,17 @@
     # Go in hibernate at lid
     logind.extraConfig = ''
       HandlePowerKey=ignore
-      HandleLidSwitch=hibernate
-      HandleLidSwitchDocked=hibernate
+      HandleLidSwitch=suspend
+      HandleLidSwitchDocked=suspend
     '';
     # mouse pad
     xserver.synaptics = {
       enable = true;
       twoFingerScroll = true;
     };
+    physlock.enable = true;
   };
+
 
   # Bluetooth sound
   hardware = {

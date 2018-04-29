@@ -25,7 +25,6 @@
       "...." = "cd ../../../..";
       poweroff = "closeAllWindows; poweroff";
       reboot = "closeAllWindows; reboot";
-      slock = "killall unclutter; slock; unclutter -grab &"; #with unclutter, slock dont work
       trans = "rlwrap trans"; # to use history in tranlation shell
       # use zsh in enviroments
       xmonad-env = "load-env-xmonad-env zsh";

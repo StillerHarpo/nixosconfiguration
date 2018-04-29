@@ -71,6 +71,7 @@
     unclutter-xfixes
     psmisc
     # haskell
+    ghc
     cabal2nix cabal-install
     stack2nix stack
   ]);
