@@ -5,7 +5,9 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./environments.nix ./zsh.nix ];
+  imports = [ ./environments.nix
+  ./zsh.nix
+  ../nixpkgs/nixos/modules/services/databases/monetdb.nix ];
   boot = {
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
@@ -90,6 +92,12 @@
         # to ensure `allowUnfree = true;` is propagated:
         config = config.nixpkgs.config;
       };
+      local = import ../nixpkgs
+      {
+        # pass the nixpkgs config to the unstable alias
+        # to ensure `allowUnfree = true;` is propagated:
+        config = config.nixpkgs.config;
+      };
     };
   };
 
@@ -139,6 +147,13 @@
     postgresql = {
       enable = true;
       package = pkgs.postgresql100;
+    };
+    monetdb = {
+      enable = true;
+      user = "florian";
+      group = "users";
+      package = pkgs.local.monetdb;
+      dataDir = "/home/florian/.var/lib";
     };
   };
 
