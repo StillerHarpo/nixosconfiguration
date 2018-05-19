@@ -72,11 +72,11 @@
     idea.idea-community
     unclutter-xfixes
     psmisc
-    # haskell
-    ghc
     ispell
+    # haskell
     # cabal2nix cabal-install
     # stack2nix stack
+    (haskellPackages.ghcWithPackages (self : with self; [ hlint hindent QuickCheck ]))
   ]);
 
   nixpkgs.config =
