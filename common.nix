@@ -76,7 +76,8 @@
     # haskell
     # cabal2nix cabal-install
     # stack2nix stack
-    (haskellPackages.ghcWithPackages (self : with self; [ hlint hindent QuickCheck megaparsec]))
+    (haskellPackages.ghcWithPackages (self : with self; [ hlint hindent QuickCheck
+                                                          megaparsec optparse-applicative]))
   ]);
 
   nixpkgs.config =
