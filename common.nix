@@ -76,8 +76,9 @@
     # haskell
     # cabal2nix cabal-install
     # stack2nix stack
-    (haskellPackages.ghcWithPackages (self : with self; [ hlint hindent QuickCheck
-                                                          megaparsec optparse-applicative]))
+    (haskellPackages.ghcWithPackages (self : with self;
+      [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+        adjunctions ]))
   ]);
 
   nixpkgs.config =
@@ -156,6 +157,15 @@
       group = "users";
       package = pkgs.local.monetdb;
       dataDir = "/home/florian/.var/lib";
+    };
+    redshift = with import ./cords.nix; {
+      enable = true;
+      brightness = {
+        day = "0.8";
+        night = "0.6";
+      };
+      temperature.night = 1000;
+      inherit latitude longitude;
     };
   };
 
