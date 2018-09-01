@@ -15,13 +15,25 @@
     kernelModules = [ "vfio" "vfio_iommu_type1" "vfio_pci" "vfio_virqfd" ];
 
     # CHANGE: Don't forget to put your own PCI IDs here
-      extraModprobeConfig ="options vfio-pci ids=1002:6798,1002:aaa0";
+    extraModprobeConfig ="options vfio-pci ids=1002:6798,1002:aaa0";
   };
+
   environment.systemPackages = with pkgs; [
     virtmanager
     qemu
     OVMF
+    looking-glass-client
   ];
+
+  systemd.services.sharedMem = {
+    description = "shared memory for looking glass";
+    wantedBy = [ "multi-user.target" ];
+    script = ''
+      touch /dev/shm/looking-glass
+      chown polkituser:libvirtd /dev/shm/looking-glass
+      chmod 660 /dev/shm/looking-glass
+    '';
+  };
 
   virtualisation.libvirtd.enable = true;
 
