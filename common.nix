@@ -78,7 +78,7 @@
     # stack2nix stack
     (haskellPackages.ghcWithPackages (self : with self;
       [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-        adjunctions ]))
+        adjunctions Agda ]))
   ]);
 
   nixpkgs.config =
