@@ -147,17 +147,6 @@
       #  package = import ./emacs.nix;
     };
     hoogle.enable = true;
-    postgresql = {
-      enable = true;
-      package = pkgs.postgresql100;
-    };
-    monetdb = {
-      enable = true;
-      user = "florian";
-      group = "users";
-      package = pkgs.local.monetdb;
-      dataDir = "/home/florian/.var/lib";
-    };
     redshift = with import ./cords.nix; {
       enable = true;
       brightness = {
