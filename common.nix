@@ -69,6 +69,7 @@
     dmenu
     wmctrl
     weechat
+    idris
     idea.idea-community
     unclutter-xfixes
     psmisc
