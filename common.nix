@@ -75,8 +75,8 @@
     psmisc
     ispell
     # haskell
-    # cabal2nix cabal-install
-    # stack2nix stack
+    cabal2nix cabal-install
+    stack2nix stack
     (haskellPackages.ghcWithPackages (self : with self;
       [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
         adjunctions Agda ]))
