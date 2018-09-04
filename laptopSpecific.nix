@@ -11,10 +11,14 @@
     loader.grub = {
       enable = true;
       version = 2;
-    };
 
-    # Define on which hard drive you want to install Grub.
-    loader.grub.device = "/dev/sda"; # or "nodev" for efi only
+      # Define on which hard drive you want to install Grub.
+      device = "/dev/sda"; # or "nodev" for efi only
+
+      # to prevent upgrade bug
+      configurationLimit = 3;
+
+    };
 
     # sound
     extraModprobeConfig = ''
