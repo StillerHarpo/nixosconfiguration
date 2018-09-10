@@ -43,6 +43,7 @@
     nvram = [
       "${pkgs.OVMF}/FV/OVMF.fd:${pkgs.OVMF}/FV/OVMF_VARS.fd"
     ]
+    user = "florian"
   '';
   networking.firewall.trustedInterfaces = [ "virbr1" ];
 }
