@@ -6,8 +6,7 @@
 
 {
   imports = [ ./environments.nix
-  ./zsh.nix
-  ../nixpkgs/nixos/modules/services/databases/monetdb.nix ];
+              ./zsh.nix ];
   boot = {
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
