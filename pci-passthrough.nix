@@ -18,6 +18,12 @@
     extraModprobeConfig ="options vfio-pci ids=1002:6798,1002:aaa0";
   };
 
+  # synchronize audio sample rate with windows
+  hardware.pulseaudio.daemon.config = {
+    default-sample-rate = 44100;
+    alternate-sample-rate = 48000;
+  };
+
   environment.systemPackages = with pkgs; [
     virtmanager
     qemu
