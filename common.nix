@@ -33,6 +33,7 @@
     (import ./vim.nix)
 #   (import ./emacs.nix)
     shellcheck
+    signal-desktop
     sudo
     firefox
     qutebrowser
