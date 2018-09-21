@@ -45,7 +45,7 @@
     neomutt
     toxic
     newsboat
-    unstable.rtv
+    rtv
     xsel
     ag
     unstable.zathura
