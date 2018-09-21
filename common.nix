@@ -48,7 +48,7 @@
     unstable.rtv
     xsel
     ag
-    zathura
+    unstable.zathura
     spotify
     mpv
     rlwrap
