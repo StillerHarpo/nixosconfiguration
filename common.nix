@@ -74,6 +74,8 @@
     unclutter-xfixes
     psmisc
     ispell
+    coq
+    racket
     # haskell
     cabal2nix cabal-install
     stack2nix stack
