@@ -67,6 +67,7 @@
     torbrowser
     dunst
     libnotify
+    unzip
     dmenu
     wmctrl
     weechat
