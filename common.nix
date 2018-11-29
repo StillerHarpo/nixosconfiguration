@@ -77,7 +77,7 @@
     psmisc
     ispell
     coq
-    racket
+    unstable.racket
     # haskell
     cabal2nix cabal-install
     stack2nix stack
