@@ -156,9 +156,9 @@
       enable = true;
       brightness = {
         day = "0.8";
-        night = "0.6";
+        night = "0.7";
       };
-      temperature.night = 1000;
+      temperature.night = 2000;
       inherit latitude longitude;
     };
   };
