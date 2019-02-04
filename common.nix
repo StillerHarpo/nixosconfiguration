@@ -51,7 +51,6 @@
     zathura
     spotify
     mpv
-    unzip
     rlwrap
     translate-shell
     you-get
