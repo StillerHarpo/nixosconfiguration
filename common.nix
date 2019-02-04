@@ -74,7 +74,11 @@
     idea.idea-community
     unclutter-xfixes
     psmisc
-    ispell
+    aspell
+    aspellDicts.de
+    aspellDicts.en
+    aspellDicts.en-computers
+    aspellDicts.en-science
     coq
     unstable.racket
     # haskell
