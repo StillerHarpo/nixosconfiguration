@@ -3,63 +3,34 @@
 { config, pkgs, ... }:
 
 {
-  boot = {
-    # luks encryption
-    initrd.luks.devices.luksroot.device = "/dev/sda2";
-
-    # Use the GRUB 2 boot loader.
-    loader.grub = {
-      enable = true;
-      version = 2;
-
-      # Define on which hard drive you want to install Grub.
-      device = "/dev/sda"; # or "nodev" for efi only
-
-      # to prevent upgrade bug
-      configurationLimit = 3;
-
-    };
-
-    # sound
-    extraModprobeConfig = ''
-      options snd slots=snd-hda-intel
-      options snd_hda_intel enable=1,1
-    '';
-    blacklistedKernelModules = [ "snd_pcsp" ];
-    kernel.sysctl = { "vm.swappiness" = 15; };
-  };
-
-  nixpkgs.overlays = [
-    (self: super:
-    { mySteam = super.steamPackages.steam-chrootenv.override { withPrimus = true; }; } ) ];
-
-  environment.systemPackages = [ pkgs.mySteam ];
+  # luks encryption
+  boot.initrd.luks.devices.luksroot.device = "/dev/disk/by-uuid/6d8ca465-1ff7-45a5-88d3-9aa0b4807cb7";
 
   # powerManagement.enable = false;
   services = {
     # Go in hibernate at lid
     logind.extraConfig = ''
       HandlePowerKey=ignore
-      HandleLidSwitch=suspend
-      HandleLidSwitchDocked=suspend
+      HandleLidSwitch=hibernate
+      HandleLidSwitchDocked=hibernate
     '';
     # mouse pad
-    xserver.synaptics = {
-      enable = true;
-      twoFingerScroll = true;
+    xserver = {
+      dpi = 180;
+      synaptics = {
+        enable = true;
+        twoFingerScroll = true;
+      };
     };
-    physlock.enable = true;
   };
-
-
   # Bluetooth sound
-  hardware = {
-    bluetooth.enable = true;
-    bumblebee.enable = true;
-  };
+  hardware.bluetooth.enable = true;
 
   # wifi
   networking.wireless.enable = true;
   system.activationScripts.wpa_supplicant=
    "ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
+
+  # big font for high resolution
+  i18n.consoleFont = "sun12x22";
 }

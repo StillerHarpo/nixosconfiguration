@@ -8,6 +8,11 @@
   imports = [ ./environments.nix
               ./zsh.nix ];
   boot = {
+    # Use the systemd-boot EFI boot loader.
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
 
@@ -17,7 +22,6 @@
 
   # Select internationalisation properties.
   i18n = {
-    consoleFont = "Lat2-Terminus16";
     consoleKeyMap = "us";
     defaultLocale = "en_US.UTF-8";
   };

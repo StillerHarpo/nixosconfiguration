@@ -10,11 +10,6 @@
   };
 
   boot = {
-    # Use the systemd-boot EFI boot loader.
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
     # luks encryption
     initrd.luks.devices.luksroot.device = "/dev/sdd2";
     kernelModules = [ "it87" ];
@@ -45,4 +40,5 @@
   # Supposedly better for the SSD.
   fileSystems."/".options = [ "noatime" "nodiratime" ];
 
+  i18n.consoleFont = "Lat2-Terminus16";
 }
