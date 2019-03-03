@@ -15,7 +15,6 @@
     };
     resumeDevice = "/dev/disk/by-label/swap";
     initrd.postDeviceCommands = "sleep 5";
-
   };
 
   # networking.hostName = "nixos"; # Define your hostname.
@@ -49,6 +48,7 @@
     neomutt
     toxic
     newsboat
+    poppler
     rtv
     xsel
     ag
