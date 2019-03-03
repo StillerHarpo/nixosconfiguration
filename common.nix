@@ -165,7 +165,7 @@
         day = "0.8";
         night = "0.7";
       };
-      temperature.night = 2000;
+      temperature.night = 1500;
       inherit latitude longitude;
     };
   };
