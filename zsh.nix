@@ -35,10 +35,13 @@
       python3-env = "load-env-python3-env zsh";
       r-env = "load-env-r-env zsh";
       # start gui programms in background
-      spotify = ''zsh -c "spotify&"'';
-      anki =  ''zsh -c "anki&"'';
-      qutebrowser = ''zsh -c "qutebrowser --target window&"'';
-      netflix = ''zsh -c "google-chrome-stable "netflix.com"&"'';
+      spotify = ''zsh -c "(spotify&) >/tmp/spotify.log 2>&1"'';
+      anki =  ''zsh -c "(anki&) >/tmp/anki.log 2>&1"'';
+      steam =  ''zsh -c "(steam&) >/tmp/steam.log 2>&1"'';
+      firefox =  ''zsh -c "(firefox&) >/tmp/firefox.log 2>&1"'';
+      qutebrowser = ''zsh -c "(qutebrowser --target window&) >/tmp/qutebrowser.log 2>&1"'';
+      netflix = ''zsh -c "(google-chrome-stable "netflix.com"&) >/tmp/google-chrome-table.log 2>&1"'';
+      eclipse = ''zsh -c "(eclipse&) >/tmp/eclipse.log 2>&1"'';
       nix-shell = ''nix-shell --run zsh'';
     };
     shellInit = ''
