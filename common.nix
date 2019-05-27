@@ -33,11 +33,13 @@
 
   environment.systemPackages = with pkgs; ([
     wget
+    direnv
     (import ./vim.nix)
 #   (import ./emacs.nix)
     shellcheck
-    signal-desktop
+    unstable.signal-desktop
     sudo
+    dzen2
     firefox
     qutebrowser
     w3m
@@ -46,6 +48,7 @@
     gnupg
     termite
     neomutt
+    mu
     toxic
     newsboat
     poppler
@@ -64,6 +67,7 @@
     bc
     feh
     anki
+    eclipses.eclipse-sdk
     nix-prefetch-git
     calcurse
     google-chrome
@@ -84,13 +88,13 @@
     aspellDicts.en-computers
     aspellDicts.en-science
     coq
-    unstable.racket
+    # unstable.racket
     # haskell
     cabal2nix cabal-install
     stack2nix stack
-    (haskellPackages.ghcWithPackages (self : with self;
-      [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-        adjunctions Agda ]))
+    #(haskellPackages.ghcWithPackages (self : with self;
+    #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+    #    adjunctions Agda ]))
   ]);
 
   nixpkgs.config =
@@ -175,7 +179,7 @@
     isNormalUser = true;
     uid = 1000;
     createHome = true;
-    extraGroups = [ "wheel" "networmanager" "audio" "docker" ];
+    extraGroups = [ "wheel" "networmanager" "audio" "docker" "video" ];
   };
 
   # passwordless sudo
@@ -205,5 +209,5 @@
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "18.09";
+  system.stateVersion = "19.03";
 }
