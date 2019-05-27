@@ -173,6 +173,10 @@
       temperature.night = 1500;
       inherit latitude longitude;
     };
+    compton = {
+      enable = true;
+      inactiveOpacity = "0.8";
+    };
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
