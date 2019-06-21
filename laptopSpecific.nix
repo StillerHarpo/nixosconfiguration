@@ -33,4 +33,51 @@
 
   # big font for high resolution
   i18n.consoleFont = "sun12x22";
+  systemd = {
+    targets.my-post-resume = {
+      description = "Post-Resume Actions";
+      requires = [ "my-post-resume.service" ];
+      after = [ "my-post-resume.service" ];
+      wantedBy = [ "sleep.target" ];
+      unitConfig.StopWhenUnneeded = true;
+    };
+    services = {
+      # Service executed before suspending/hibernating.
+      "my-pre-sleep" = {
+        description = "Pre-Sleep Actions";
+        wantedBy = [ "sleep.target" ];
+        before = [ "sleep.target" ];
+        script =
+          ''
+            ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
+          '';
+        serviceConfig = {
+          Type = "oneshot";
+          User = "florian";
+          Group = "users";
+        };
+      };
+      "my-post-resume" = {
+        description = "Post-Resume Actions";
+        after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        environment.DISPLAY = ":0";
+        script =
+          ''
+            if ${pkgs.xorg.xrandr}/bin/xrandr -q | grep HDMI2 | grep -v disconnected
+            then
+              ${pkgs.xorg.xrandr}/bin/xrandr --output eDP1 --mode 1920x1080
+              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI2 --mode 1920x1080 --left-of eDP1
+            else
+              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI2 --off
+              ${pkgs.xorg.xrandr}/bin/xrandr --output --eDP1 --mode 1920x1080
+            fi
+          '';
+        serviceConfig = {
+          Type = "oneshot";
+          User = "florian";
+          Group = "users";
+        };
+      };
+    };
+  };
 }
