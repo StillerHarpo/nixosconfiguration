@@ -137,13 +137,13 @@
 
   # Enable CUPS to print documents.
   # services.printing.enable = true;
-
   services = {
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
-      layout = "us,de";
+      layout = "us";
       xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
+      xkbVariant = "altgr-intl";
       monitorSection = ''Option "DPMS" "false"'';
       serverLayoutSection =
       ''

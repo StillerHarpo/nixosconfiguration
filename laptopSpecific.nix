@@ -63,13 +63,13 @@
         environment.DISPLAY = ":0";
         script =
           ''
-            if ${pkgs.xorg.xrandr}/bin/xrandr -q | grep HDMI2 | grep -v disconnected
+            if ${pkgs.xorg.xrandr}/bin/xrandr -q | grep HDMI-2 | grep -v disconnected
             then
-              ${pkgs.xorg.xrandr}/bin/xrandr --output eDP1 --mode 1920x1080
-              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI2 --mode 1920x1080 --left-of eDP1
+              ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --mode 1920x1080
+              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --mode 1920x1080 --left-of eDP-1
             else
-              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI2 --off
-              ${pkgs.xorg.xrandr}/bin/xrandr --output --eDP1 --mode 1920x1080
+              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --off
+              ${pkgs.xorg.xrandr}/bin/xrandr --output --eDP-1 --mode 1920x1080
             fi
           '';
         serviceConfig = {
