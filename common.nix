@@ -153,9 +153,17 @@
         Option          "OffTime"       "0"
      '';
       # Enable XMonad
-      windowManager.xmonad = {
+      windowManager = {
+        default = "xmonad";
+        xmonad = {
+          enable = true;
+          enableContribAndExtras = true;
+          extraPackages = haskellPackages: [haskellPackages.MissingH];
+        };
+      };
+      displayManager.auto = {
         enable = true;
-        enableContribAndExtras = true;
+        user = "florian";
       };
     };
     unclutter-xfixes.enable = true;
