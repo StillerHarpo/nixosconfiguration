@@ -159,7 +159,7 @@
         xmonad = {
           enable = true;
           enableContribAndExtras = true;
-          extraPackages = haskellPackages: [haskellPackages.MissingH];
+          extraPackages = haskellPackages: with haskellPackages; [MissingH protolude];
         };
       };
       displayManager.auto = {
