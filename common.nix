@@ -7,6 +7,7 @@
 {
   imports = [ ./environments.nix
               ./zsh.nix
+              ./pia-nm.nix
               ];
   boot = {
     # Use the systemd-boot EFI boot loader.

@@ -27,9 +27,10 @@
   hardware.bluetooth.enable = true;
 
   # wifi
-  networking.wireless.enable = true;
-  system.activationScripts.wpa_supplicant=
-   "ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
+  # networking.wireless.enable = true;
+  # boot.initrd.network.enable = true;
+  # system.activationScripts.wpa_supplicant=
+  #  "ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
 
   # big font for high resolution
   i18n.consoleFont = "sun12x22";

@@ -2,3 +2,5 @@ hardware-configuration.nix
 network-configuration.nix
 cords.nix
 result
+pia-pass.conf
+pia-user.conf
