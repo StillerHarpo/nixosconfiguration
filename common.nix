@@ -191,14 +191,13 @@ in
       #  package = import ./emacs.nix;
     };
     hoogle.enable = true;
-    redshift = with import ./cords.nix; {
+    redshift = {
       enable = true;
       brightness = {
         day = "0.8";
         night = "0.7";
       };
-      temperature.night = 1500;
-      inherit latitude longitude;
+      temperature.night = 1501;
     };
     compton = {
       enable = true;
