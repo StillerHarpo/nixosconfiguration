@@ -206,12 +206,17 @@ in
     };
   };
 
+  programs = {
+    adb.enable = true;
+    fuse.userAllowOther = true;
+  };
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.extraUsers.florian= {
     isNormalUser = true;
     uid = 1000;
     createHome = true;
-    extraGroups = [ "wheel" "networmanager" "audio" "docker" "video" ];
+    extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" ];
   };
 
   # passwordless sudo
