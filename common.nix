@@ -18,8 +18,6 @@ in
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-    resumeDevice = "/dev/disk/by-label/swap";
-    initrd.postDeviceCommands = "sleep 5";
   };
 
   # networking.hostName = "nixos"; # Define your hostname.
