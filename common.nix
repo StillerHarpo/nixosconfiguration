@@ -223,7 +223,13 @@ in
   security.sudo.wheelNeedsPassword = false;
 
   # docker
-  virtualisation.docker.enable=true;
+  virtualisation = {
+    docker.enable=true;
+    virtualbox = {
+      guest.enable = true;
+      host.enable = true;
+    };
+  };
 
   hardware = {
     pulseaudio = {
@@ -231,7 +237,10 @@ in
       package = pkgs.pulseaudioFull;
       support32Bit = true;
     };
-    opengl.driSupport32Bit = true;
+    opengl = {
+     driSupport32Bit = true;
+     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
+    };
   };
 
   nix = {
