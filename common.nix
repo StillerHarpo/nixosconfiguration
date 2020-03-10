@@ -189,6 +189,7 @@ in
     unclutter-xfixes.enable = true;
     emacs = {
       enable=true;
+      defaultEditor=true;
       #  package = import ./emacs.nix;
     };
     hoogle.enable = true;
