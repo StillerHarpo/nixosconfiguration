@@ -4,6 +4,9 @@
 
 { config, pkgs, ... }:
 
+let
+  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+in
 {
   imports = [ ./environments.nix
               ./zsh.nix
@@ -34,21 +37,32 @@
   # $ nix-env -qaP | grep wget
 
   environment.systemPackages = with pkgs; ([
+    mtpfs
+    clojure
+    leiningen
     wget
     direnv
+    cachix
+    # emacs
     (import ./vim.nix)
 #   (import ./emacs.nix)
     shellcheck
-    unstable.signal-desktop
+    local.signal-desktop
+    local.steam
+    local.minecraft
+    sshfs
     sudo
     dzen2
     firefox
     qutebrowser
+    local.mattermost-desktop
     w3m
     git
     pass
+    passff-host
     gnupg
-    termite
+    # termite
+    alacritty
     neomutt
     mu
     toxic
@@ -71,15 +85,14 @@
     anki
     eclipses.eclipse-sdk
     nix-prefetch-git
-    calcurse
-    google-chrome
     torbrowser
     dunst
+    local.youtube-dl
+    local.youtube-viewer
     libnotify
     unzip
-    dmenu
+    rofi
     wmctrl
-    weechat
     idris
     idea.idea-community
     unclutter-xfixes
@@ -92,11 +105,15 @@
     coq
     # unstable.racket
     # haskell
+    ghc
     cabal2nix cabal-install
-    stack2nix stack
+    # stack2nix
+    stack
+    (all-hies.unstableFallback.selection { selector = p: p; })
     #(haskellPackages.ghcWithPackages (self : with self;
     #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
     #    adjunctions Agda ]))
+    networkmanager_openvpn networkmanager_dmenu
   ]);
 
   nixpkgs.config =
