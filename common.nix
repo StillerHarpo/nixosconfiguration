@@ -23,10 +23,8 @@ in
   # networking.hostName = "nixos"; # Define your hostname.
 
   # Select internationalisation properties.
-  i18n = {
-    consoleKeyMap = "us";
-    defaultLocale = "en_US.UTF-8";
-  };
+  console.keyMap = "us";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
@@ -172,16 +170,18 @@ in
      '';
       # Enable XMonad
       windowManager = {
-        default = "xmonad";
         xmonad = {
           enable = true;
           enableContribAndExtras = true;
           extraPackages = haskellPackages: with haskellPackages; [MissingH protolude];
         };
       };
-      displayManager.auto = {
-        enable = true;
-        user = "florian";
+      displayManager = {
+        defaultSession = "none+xmonad";
+        lightdm.autoLogin = {
+          enable = true;
+          user = "florian";
+        };
       };
     };
     unclutter-xfixes.enable = true;
@@ -255,5 +255,5 @@ in
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "19.03";
+  system.stateVersion = "20.03";
 }

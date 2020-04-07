@@ -33,7 +33,7 @@
   #  "ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
 
   # big font for high resolution
-  i18n.consoleFont = "sun12x22";
+  console.font = "sun12x22";
   systemd = {
     targets.my-post-resume = {
       description = "Post-Resume Actions";
