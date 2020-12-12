@@ -56,6 +56,7 @@
       function mma() {
           mpv --no-video ytdl://ytsearch10:"$@"
       }
+      eval "$(direnv hook zsh)"
     '';
     promptInit = ''
       WORKSPACE=$(wmctrl -d | grep "*" | cut -f1 -d' ')
