@@ -26,14 +26,6 @@
       poweroff = "closeAllWindows; poweroff";
       reboot = "closeAllWindows; reboot";
       trans = "rlwrap trans"; # to use history in tranlation shell
-      # use zsh in enviroments
-      xmonad-env = "load-env-xmonad-env zsh";
-      compilerbau-env = "load-env-compilerbau-env zsh";
-      writeScheme-env = "load-env-writeScheme-env zsh";
-      idris-env = "load-env-idris-env zsh";
-      python2-env = "load-env-python2-env zsh";
-      python3-env = "load-env-python3-env zsh";
-      r-env = "load-env-r-env zsh";
       # start gui programms in background
       spotify = ''zsh -c "(spotify&) >/tmp/spotify.log 2>&1"'';
       anki =  ''zsh -c "(anki&) >/tmp/anki.log 2>&1"'';
