@@ -206,6 +206,7 @@ in
   };
 
   programs = {
+    slock.enable = true;
     adb.enable = true;
     fuse.userAllowOther = true;
   };
