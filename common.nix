@@ -8,8 +8,7 @@ let
   all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
 in
 {
-  imports = [ ./environments.nix
-              ./zsh.nix
+  imports = [./zsh.nix
               ./pia-nm.nix
               ];
   boot = {
@@ -178,7 +177,7 @@ in
       };
       displayManager = {
         defaultSession = "none+xmonad";
-        lightdm.autoLogin = {
+        autoLogin = {
           enable = true;
           user = "florian";
         };
@@ -199,9 +198,9 @@ in
       };
       temperature.night = 1501;
     };
-    compton = {
+    picom = {
       enable = true;
-      inactiveOpacity = "0.8";
+      inactiveOpacity = 0.8;
       opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
     };
   };
@@ -255,5 +254,5 @@ in
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "20.03";
+  system.stateVersion = "20.09";
 }
