@@ -31,85 +31,108 @@ in
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
 
-  environment.systemPackages = with pkgs; ([
-    mtpfs
-    clojure
-    leiningen
-    wget
-    direnv
-    cachix
-    # emacs
-    (import ./vim.nix)
-#   (import ./emacs.nix)
-    shellcheck
-    local.signal-desktop
-    local.steam
-    local.minecraft
-    sshfs
-    sudo
-    dzen2
-    firefox
-    qutebrowser
-    local.mattermost-desktop
-    w3m
-    git
-    pass
-    passff-host
-    gnupg
-    # termite
-    alacritty
-    neomutt
-    mu
-    toxic
-    newsboat
-    poppler
-    rtv
-    xsel
-    ag
-    zathura
-    spotify
-    mpv
-    rlwrap
-    translate-shell
-    you-get
-    xosd
-    pandoc
-    (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
-    bc
-    feh
-    anki
-    eclipses.eclipse-sdk
-    nix-prefetch-git
-    torbrowser
-    dunst
-    local.youtube-dl
-    local.youtube-viewer
-    libnotify
-    unzip
-    rofi
-    wmctrl
-    idris
-    idea.idea-community
-    unclutter-xfixes
-    psmisc
-    aspell
-    aspellDicts.de
-    aspellDicts.en
-    aspellDicts.en-computers
-    aspellDicts.en-science
-    coq
-    # unstable.racket
-    # haskell
-    ghc
-    cabal2nix cabal-install
-    # stack2nix
-    stack
-    (all-hies.unstableFallback.selection { selector = p: p; })
-    #(haskellPackages.ghcWithPackages (self : with self;
-    #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-    #    adjunctions Agda ]))
-    networkmanager_openvpn networkmanager_dmenu
-  ]);
+  environment = {
+    systemPackages = with pkgs; ([
+      mtpfs
+      clojure
+      leiningen
+      wget
+      direnv
+      cachix
+      # emacs
+      (import ./vim.nix)
+      #   (import ./emacs.nix)
+      shellcheck
+      local.signal-desktop
+      ##################### Games ###############
+      lutris                  # play windows games
+      multimc                 # minecraft launcher
+      local.steam             # play games
+      openjdk                 # java
+      vulkan-tools            # needed for lutris
+      ##################### Voice chats #########
+      jitsi
+      local.teamspeak_client
+      local.discord
+      local.element-desktop
+      local.slack
+      local.zoom-us
+      ###########################################
+      sshfs
+      sudo
+      dzen2
+      firefox
+      qutebrowser
+      local.mattermost-desktop
+      w3m
+      git
+      pass
+      passff-host
+      gnupg
+      pinentry-curses
+      pinentry-emacs
+      # termite
+      alacritty
+      neomutt
+      mu
+      toxic
+      newsboat
+      poppler
+      rtv
+      xsel
+      ag
+      zathura
+      spotify
+      mpv
+      rlwrap
+      translate-shell
+      you-get
+      xosd
+      pandoc
+      (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
+      python37Packages.pygments
+      bc
+      feh
+      anki
+      eclipses.eclipse-sdk
+      nix-prefetch-git
+      # torbrowser
+      dunst
+      local.youtube-dl
+      # local.youtube-viewer
+      # local.pipe-viewer
+      libnotify
+      unzip
+      rofi
+      wmctrl
+      idris
+      idea.idea-community
+      unclutter-xfixes
+      psmisc
+      aspell
+      aspellDicts.de
+      aspellDicts.en
+      aspellDicts.en-computers
+      aspellDicts.en-science
+      coq
+      # unstable.racket
+      # haskell
+      # ghc
+      cabal2nix
+      # cabal-install
+      local.haskellPackages.implicit-hie
+      local.niv
+      # stack2nix
+      # stack
+      haskellPackages.Agda
+      agdaPackages.standard-library
+      #(haskellPackages.ghcWithPackages (self : with self;
+      #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+      #    adjunctions Agda ]))
+      networkmanager_openvpn networkmanager_dmenu
+    ]);
+    pathsToLink = [ "/share/agda"];
+  };
 
   nixpkgs.config =
   {
