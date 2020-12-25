@@ -5,12 +5,13 @@
 { config, pkgs, ... }:
 
 let
-  all-hies = import (fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
+  all-hies = import (builtins.fetchTarball "https://github.com/infinisil/all-hies/tarball/master") {};
 in
 {
-  imports = [./zsh.nix
-              ./pia-nm.nix
-              ];
+  imports = [./home.nix
+             ./pia-nm.nix
+            ];
+
   boot = {
     # Use the systemd-boot EFI boot loader.
     loader = {
@@ -37,7 +38,6 @@ in
       clojure
       leiningen
       wget
-      direnv
       cachix
       # emacs
       (import ./vim.nix)
@@ -65,12 +65,9 @@ in
       qutebrowser
       local.mattermost-desktop
       w3m
-      git
       pass
       passff-host
-      gnupg
       pinentry-curses
-      pinentry-emacs
       # termite
       alacritty
       neomutt
@@ -207,10 +204,11 @@ in
       };
     };
     unclutter-xfixes.enable = true;
-    emacs = {
-      enable=true;
-      defaultEditor=true;
-      #  package = import ./emacs.nix;
+
+    printing.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns = true;
     };
     hoogle.enable = true;
     redshift = {
@@ -278,6 +276,10 @@ in
       "hie-nix.cachix.org-1:EjBSHzF6VmDnzqlldGXbi0RM3HdjfTU3yDRi9Pd0jTY="
     ];
     trustedUsers = [ "root" "florian" ];
+    extraOptions = ''
+      keep-outputs = true
+      keep-derivations = true
+    '';
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
