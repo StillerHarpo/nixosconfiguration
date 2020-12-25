@@ -27,7 +27,9 @@ in {
         (load "default.el")
       '';
       sessionVariables.SHELL = "~/.nix-profile/bin/zsh";
-      packages = [ pkgs.ripgrep # needed for doom searcch in project FIXME make it only availabe in doom
+      packages = with pkgs; [
+                   ripgrep # needed for doom search in project FIXME make it only availabe in doom
+                   afew # needed for notmuch update in emacs
                  ];
     };
     programs = {
@@ -44,10 +46,7 @@ in {
       msmtp.enable = true;
       # FIXME notmuch config can't be found by emacs
       # workaround: ln -s .config/notmuch/notmuchrc .notmuch-config
-      notmuch = {
-        enable = true;
-        hooks.preNew = "mbsync --all";
-      };
+      notmuch.enable = true;
       emacs = {
         enable = true;
         package = doom-emacs;
