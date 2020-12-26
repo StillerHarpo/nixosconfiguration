@@ -34,6 +34,9 @@ in
 
   environment = {
     systemPackages = with pkgs; ([
+      pavucontrol
+      arandr
+      networkmanagerapplet
       mtpfs
       clojure
       leiningen
