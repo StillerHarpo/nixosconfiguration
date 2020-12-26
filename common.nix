@@ -128,7 +128,7 @@ in
       #    adjunctions Agda ]))
       networkmanager_openvpn networkmanager_dmenu
     ]);
-    pathsToLink = [ "/share/agda"];
+    pathsToLink = [ "/share/agda" "/share/zsh" ];
   };
 
   nixpkgs.config =
