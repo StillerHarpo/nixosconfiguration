@@ -54,3 +54,72 @@
 ;; they are implemented.
 (setq +notmuch-mail-folder "~/Maildir/gmail")
 (setq +notmuch-sync-backend 'mbsync)
+
+(setq org-src-window-setup 'current-window)
+(setq org-agenda-files (list "~/Dokumente" "~/org"))
+(setq org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9)))
+
+(defun current-dreams ()
+  (interactive)
+  (find-file
+   (format-time-string
+    "~/Dokumente/Traeume/%Y/%B/Traeume_Vom_%d_%m_%Y.org"))
+  (auto-fill-mode))
+
+(defun youtube-feed ()
+  (interactive)
+    (let ((link (read-string "Link: ")))
+      (insert (shell-command-to-string (concat "~/scripts/youtubeFeed " link)))))
+
+;; NO spell check for embedded snippets
+(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
+  (let* ((rlt ad-return-value)
+         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
+         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
+         (case-fold-search t)
+         b e)
+    (when ad-return-value
+      (save-excursion
+        (setq b (re-search-backward begin-regexp nil t))
+        (if b (setq e (re-search-forward end-regexp nil t))))
+      (if (and b e (< (point) e)) (setq rlt nil)))
+    (setq ad-return-value rlt)))
+
+;; Browser function
+(setq mediareg (rx (or "youtube."
+                       "youtu.be"
+                       (and ".mp3" eol)
+                       (and ".mp4" eol)
+                       (and ".m4v$" eol)
+                       "v.redd.it")))
+
+  (setq org-highlight-latex-and-related '(latex script entities))
+
+  (setq browse-url-browser-function `((,mediareg . browse-url-mpv)
+                                        ;                                   ("." . eww-browse-url)))
+                                      ("." . browse-url-firefox-new-window)))
+
+  (defun browse (prog url)
+    (setq url (browse-url-encode-url url))
+    (start-process (concat prog url) nil prog url))
+  (defun browse-url-mpv (url &rest args) (browse "mpv" url))
+  (defun browse-url-firefox-new-window (url &rest agrs)
+    (browse-url-firefox url t))
+
+;; biblioraphy
+(setq reftex-default-bibliography '("~/Dokumente/bibliography/references.bib"))
+
+(setq org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org"
+      org-ref-default-bibliography reftex-default-bibliography
+      org-ref-pdf-directory "~/Dokumente/bibliography/bibtex-pdfs/")
+
+(setq bibtex-completion-bibliography reftex-default-bibliography
+      bibtex-completion-library-path org-ref-bibliography-notes
+      bibtex-completion-notes-path org-ref-pdf-directory)
+
+(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdfxe %f"))
+
+(setq rmh-elfeed-org-files (list "~/dotfiles/elfeed.org"))
+(after! elfeed
+  (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
