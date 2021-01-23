@@ -244,15 +244,6 @@ in
   # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
 
-  # docker
-  virtualisation = {
-    docker.enable=true;
-    virtualbox = {
-      guest.enable = true;
-      host.enable = true;
-    };
-  };
-
   hardware = {
     pulseaudio = {
       enable = true;
