@@ -267,6 +267,7 @@ in
   };
 
   nix = {
+    package = pkgs.nixFlakes;
     binaryCaches = [
       "https://cache.nixos.org/"
       "https://hie-nix.cachix.org"
@@ -278,6 +279,7 @@ in
     extraOptions = ''
       keep-outputs = true
       keep-derivations = true
+      experimental-features = nix-command flakes
     '';
   };
 
