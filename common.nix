@@ -71,8 +71,6 @@ in
       pass
       passff-host
       pinentry-curses
-      # termite
-      alacritty
       neomutt
       mu
       toxic
