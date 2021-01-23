@@ -1,4 +1,3 @@
-hardware-configuration.nix
 network-configuration.nix
 cords.nix
 result
