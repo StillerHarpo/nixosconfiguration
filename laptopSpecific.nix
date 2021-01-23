@@ -37,6 +37,18 @@
   # big font for high resolution
   console.font = "sun12x22";
 
+  services = {
+    # dhcpd4.extraConfig = ''
+    #    option subnet-mask 255.255.255.0;
+    #    option routers 10.0.0.100;
+    #    subnet 10.0.0.0 netmask 255.255.255.0 {
+    #      range 10.0.0.150 10.0.0.250;
+    #    }
+    # '';
+    batteryNotifier.enable = true;
+    synergy.server.enable = true;
+  };
+
   programs.light.enable = true;
 
   systemd = {
@@ -53,6 +65,7 @@
         description = "Pre-Sleep Actions";
         wantedBy = [ "sleep.target" ];
         before = [ "sleep.target" ];
+        environment.DISPLAY = ":0";
         script =
           ''
             ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true

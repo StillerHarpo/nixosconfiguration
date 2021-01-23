@@ -20,7 +20,10 @@ in
     };
   };
 
-  # networking.hostName = "nixos"; # Define your hostname.
+  networking = {
+    hostName = "nixos-thinkpad";
+    firewall.allowedTCPPorts = [ 24800 ];
+  };
 
   # Select internationalisation properties.
   console.keyMap = "us";
@@ -34,6 +37,8 @@ in
 
   environment = {
     systemPackages = with pkgs; ([
+      qt5.qtbase
+      barrier
       pavucontrol
       arandr
       networkmanagerapplet
