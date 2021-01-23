@@ -57,6 +57,10 @@ in {
         enable = true;
         package = doom-emacs;
       };
+      gpg = {
+        enable = true;
+        settings.keyserver = hkps://keys.openpgp.org;
+      };
     };
     accounts.email = {
       accounts.librem = import ./mail.nix {
