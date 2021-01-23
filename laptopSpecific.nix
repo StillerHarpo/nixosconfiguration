@@ -34,6 +34,9 @@
 
   # big font for high resolution
   console.font = "sun12x22";
+
+  programs.light.enable = true;
+
   systemd = {
     targets.my-post-resume = {
       description = "Post-Resume Actions";
