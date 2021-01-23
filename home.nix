@@ -1,9 +1,10 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   realName = "Florian Engel";
   mailAddress = "florianengel@librem.one";
   key = "4E2D9B26940E0DABF376B7AF76762421D45837DE";
+  defaultShell = "zsh";
   home-manager = builtins.fetchGit {
     url = "https://github.com/rycee/home-manager.git";
     # rev = "dd94a849df69fe62fe2cb23a74c2b9330f1189ed"; # CHANGEME
@@ -19,14 +20,19 @@ in {
   imports = [
      (import "${home-manager}/nixos")
      ./zsh.nix
+     ./defaultApplications.nix
+     (import ./alacritty.nix defaultShell)
   ];
-
   home-manager.users.florian= {
+    imports = [];
     home = {
       file.".emacs.d/init.el".text = ''
         (load "default.el")
       '';
-      sessionVariables.SHELL = "~/.nix-profile/bin/zsh";
+      sessionVariables = {
+        SHELL = defaultShell;
+        EDITOR = "vim";
+      };
       packages = with pkgs; [
                    ripgrep # needed for doom search in project FIXME make it only availabe in doom
                    afew # needed for notmuch update in emacs
