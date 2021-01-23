@@ -42,6 +42,7 @@
         export VISUAL='vim'
         export BROWSER='~/scripts/linkopen'
         export LIBVIRT_DEFAULT_URI="qemu:///system"
+        export PATH=~/bin:$PATH
         #TODO make it work (only works in ~/.zshrc) (
         #~/scripts/nextApts
         # play the youtube search list
