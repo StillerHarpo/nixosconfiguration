@@ -9,11 +9,11 @@
   # powerManagement.enable = false;
   services = {
     # Go in hibernate at lid
-    logind.extraConfig = ''
-      HandlePowerKey=ignore
-      HandleLidSwitch=hibernate
-      HandleLidSwitchDocked=hibernate
-    '';
+    logind = {
+      lidSwitch = "hibernate";
+      extraConfig = ''HandlePowerKey=hibernate
+                      RuntimeDirectorySize=30%'';
+    };
     # mouse pad
     xserver = {
       dpi = 180;
