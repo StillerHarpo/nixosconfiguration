@@ -66,6 +66,7 @@
    (format-time-string
     "~/Dokumente/Traeume/%Y/%B/Traeume_Vom_%d_%m_%Y.org"))
   (auto-fill-mode))
+(map! :leader :desc "Write current dream" :n "o t" #'current-dreams)
 
 (defun youtube-feed ()
   (interactive)
@@ -119,7 +120,45 @@
       bibtex-completion-notes-path org-ref-pdf-directory)
 
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdfxe %f"))
-
 (setq rmh-elfeed-org-files (list "~/dotfiles/elfeed.org"))
 (after! elfeed
   (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
+
+;; auto completion for agda
+(set-company-backend! 'agda2-mode 'company-capf)
+
+;; Sign messages by default.
+(add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
+(setq mml-secure-openpgp-sign-with-sender t)
+
+(map! :leader :desc "eshell" :n "o s" #'eshell
+              :desc "elfeed" :n "o f" #'elfeed
+              :desc "woman" :n "o w" #'woman)
+
+(map! :mode 'elfeed-search-mode :n "RET" #'elfeed-search-show-entry
+                                :n "b" #'elfeed-search-browse-url)
+
+(map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
+                                 :n "d" (cmd! (notmuch-search-add-tag "+trash"))
+                                 :n "t" #'notmuch-search-add-tag)
+
+(map! :leader :mode 'notmuch-message-mode :localleader :desc "send mail" "c" #'notmuch-mua-send-and-exit
+                                          :localleader :desc "attach file" "a" #'mml-attach-file
+                                          :localleader :desc "save as draf" "d" #'notmuch-draft-save)
+
+
+(after! notmuch
+  (setq notmuch-saved-searches
+        '((:name "inbox" :query "tag:inbox not tag:trash" :key "i")
+          (:name "unread" :query "tag:unread" :key "u")
+          (:name "flagged" :query "tag:flagged" :key "f")
+          (:name "must read" :query "not tag:rechnung not tag:agb not tag:anmeldung not tag:trash" :key "r")
+          (:name "sent" :query "tag:sent" :key "s")
+          (:name "drafts" :query "tag:draft" :key "d")
+          (:name "all mail" :query "*" :key "a")))
+
+  (setq message-default-mail-headers "Cc: \nBcc: \n")
+  ;; postponed message is put in the following draft directory
+  (setq message-auto-save-directory "~/Maildir/draft")
+  ;; change the directory to store the sent mail
+  (setq message-directory "~/Maildir/"))
