@@ -18,7 +18,7 @@
     };
     # mouse pad
     xserver = {
-      dpi = 180;
+      resolutions = [{x = "1920"; y = "1080";} {x = "2560"; y = 1440;}];
       synaptics = {
         enable = true;
         twoFingerScroll = true;
