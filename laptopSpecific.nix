@@ -61,6 +61,7 @@
     };
     services = {
       # Service executed before suspending/hibernating.
+      # FIXME not working
       "my-pre-sleep" = {
         description = "Pre-Sleep Actions";
         wantedBy = [ "sleep.target" ];
@@ -75,20 +76,25 @@
           User = "florian";
           Group = "users";
         };
+        enable = true;
       };
-      "my-post-resume" = {
+      "my-post-resume-hibernate" = {
         description = "Post-Resume Actions";
-        after = [ "suspend.target" "hibernate.target" "hybrid-sleep.target" ];
+        after = [ "hibernate.target" "hybrid-sleep.target" ];
         environment.DISPLAY = ":0";
         script =
           ''
-            if ${pkgs.xorg.xrandr}/bin/xrandr -q | grep HDMI-2 | grep -v disconnected
+            if ${pkgs.xorg.xrandr}/bin/xrandr -q | grep 'HDMI-2' | grep disconnected
             then
-              ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --mode 1920x1080
-              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --mode 1920x1080 --left-of eDP-1
+                ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --off
+                ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --mode 1920x1080
+            elif ${pkgs.xorg.xrandr}/bin/xrandr -q | grep 'eDP-1' -A1 | tail -n1 | grep -v '\*' # screen off
+            then
+                ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --mode 1920x1080
+                ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --mode 1920x1080 --above eDP-1 # put eDP-1 below
             else
-              ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --off
-              ${pkgs.xorg.xrandr}/bin/xrandr --output --eDP-1 --mode 1920x1080
+                ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --off
+                ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --mode 1920x1080
             fi
             ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
           '';
@@ -97,6 +103,22 @@
           User = "florian";
           Group = "users";
         };
+        enable = true;
+      };
+      "my-post-resume-suspend" = {
+        description = "Post-Resume Actions";
+        after = [ "suspend.target" ];
+        environment.DISPLAY = ":0";
+        script =
+          ''
+            ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
+          '';
+        serviceConfig = {
+          Type = "oneshot";
+          User = "florian";
+          Group = "users";
+        };
+        enable = true;
       };
     };
   };
