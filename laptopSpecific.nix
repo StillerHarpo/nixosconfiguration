@@ -122,4 +122,20 @@
       };
     };
   };
+  nix = {
+    buildMachines = [ {
+      hostName = "10.42.0.151";
+      system = "x86_64-linux";
+      sshUser = "root";
+      sshKey = "/home/florian/.ssh/nix_remote";
+      # if the builder supports building for multiple architectures,
+      # replace the previous line by, e.g.,
+      # systems = ["x86_64-linux" "aarch64-linux"];
+      maxJobs = 1;
+      speedFactor = 2;
+      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+      mandatoryFeatures = [ ];
+    }] ;
+    distributedBuilds = true;
+  };
 }
