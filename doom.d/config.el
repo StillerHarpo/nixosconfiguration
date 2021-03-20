@@ -119,9 +119,6 @@
       bibtex-completion-notes-path org-ref-pdf-directory)
 
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdfxe %f"))
-(setq rmh-elfeed-org-files (list "~/dotfiles/elfeed.org"))
-(after! elfeed
-  (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
 
 ;; auto completion for agda
 (set-company-backend! 'agda2-mode 'company-capf)
@@ -131,11 +128,7 @@
 (setq mml-secure-openpgp-sign-with-sender t)
 
 (map! :leader :desc "eshell" :n "o s" #'eshell
-              :desc "elfeed" :n "o f" #'elfeed
               :desc "woman" :n "o w" #'woman)
-
-(map! :mode 'elfeed-search-mode :n "RET" #'elfeed-search-show-entry
-                                :n "b" #'elfeed-search-browse-url)
 
 (map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
                                  :n "d" (cmd! (notmuch-search-add-tag "+trash"))
