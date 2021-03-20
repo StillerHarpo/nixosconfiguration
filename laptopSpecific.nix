@@ -26,8 +26,13 @@
     };
   };
   # Bluetooth sound
-  hardware.bluetooth.enable = true;
-
+  hardware = {
+    bluetooth.enable = true;
+    sane = {
+      enable = true;
+      extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
+    };
+  };
   # wifi
   # networking.wireless.enable = true;
   # boot.initrd.network.enable = true;
@@ -47,6 +52,12 @@
     # '';
     batteryNotifier.enable = true;
     synergy.server.enable = true;
+    printing.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns = true;
+    };
+    udev.packages = [ pkgs.utsushi ];
   };
 
   programs.light.enable = true;

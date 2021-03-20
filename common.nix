@@ -211,11 +211,6 @@ in
     };
     unclutter-xfixes.enable = true;
 
-    printing.enable = true;
-    avahi = {
-      enable = true;
-      nssmdns = true;
-    };
     hoogle.enable = true;
     redshift = {
       enable = true;
@@ -243,8 +238,10 @@ in
     isNormalUser = true;
     uid = 1000;
     createHome = true;
-    extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" ];
+    extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" "scan" "lp"];
   };
+
+  virtualisation.docker.enable = true;
 
   # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
