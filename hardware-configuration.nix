@@ -22,11 +22,6 @@
       fsType = "vfat";
     };
 
-  fileSystems."/mnt/freenas" = 
-    { device = "freenas.home.active-group.de:/mnt/share/storage";
-      fsType = "nfs";
-    };
-
   swapDevices =
     [ { device = "/dev/disk/by-uuid/f1429c26-3127-4932-8051-face01ca9ac8"; }
     ];
