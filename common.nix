@@ -37,6 +37,7 @@ in
 
   environment = {
     systemPackages = with pkgs; ([
+      local.idris2
       qt5.qtbase
       barrier
       pavucontrol
@@ -126,7 +127,7 @@ in
       local.haskellPackages.implicit-hie
       local.niv
       # stack2nix
-      # stack
+      unstable.stack
       haskellPackages.Agda
       agdaPackages.standard-library
       #(haskellPackages.ghcWithPackages (self : with self;
