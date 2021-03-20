@@ -70,26 +70,6 @@ vim_configurable.customize {
       let g:syntastic_tex_checkers = []
       "let g:syntastic_tex_chktex_args = "-n all"
 
-      "UltiSnips
-      let g:UltiSnipsExpandTrigger="<c-tab>"
-      let g:UltiSnipsJumpForwardTrigger="<c-tab>"
-      let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-      let g:ulti_expand_or_jump_res = 0
-      function! CleverTab()"{{{
-      call UltiSnips#ExpandSnippetOrJump()
-      if g:ulti_expand_or_jump_res
-        return ""
-      else
-        if pumvisible()
-            return "\<c-n>"
-        else
-            return neocomplete#start_manual_complete()
-        endif
-      endif
-      endfunction"}}}
-      inoremap <silent> <tab> <c-r>=CleverTab()<cr>
-      snoremap <silent> <tab> <esc>:call UltiSnips#ExpandSnippetOrJump()<cr>
-
       "haskell-vim
       let g:haskell_indent_disable = 1
 
@@ -123,7 +103,6 @@ vim_configurable.customize {
           "tabular"
           "vim-markdown"
           "vim-nix"
-          "UltiSnips"
           "vim-snippets"
           "neocomplete"
           "latex-box"
