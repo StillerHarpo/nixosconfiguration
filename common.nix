@@ -226,6 +226,7 @@ in
       inactiveOpacity = 0.8;
       opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
     };
+    postgresql.enable = true;
   };
 
   programs = {
