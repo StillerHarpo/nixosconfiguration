@@ -81,25 +81,23 @@ defaultShell:
       fi
    '';
   in {
-    home-manager.users.florian = {
-      home.file = {
-        "bin/darkTheme" = {
-          executable = true;
-          text = ''
+    home.file = {
+      "bin/darkTheme" = {
+        executable = true;
+        text = ''
             #!${pkgs.runtimeShell}
             ${createDir}
             ln -snf ${alacrittyDark} ${alacrittyConfLoc}/alacritty.yml
           '';
-        };
-        "bin/lightTheme" = {
-          executable = true;
-          text = ''
+      };
+      "bin/lightTheme" = {
+        executable = true;
+        text = ''
             #!${pkgs.runtimeShell}
             ${createDir}
             ln -snf ${alacrittyLight} ${alacrittyConfLoc}/alacritty.yml
           '';
-        };
       };
-      programs.alacritty.enable = true;
     };
+    programs.alacritty.enable = true;
   }
