@@ -3,10 +3,19 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./hibernate.nix ];
+  imports = [
+    ./hibernate.nix
+    ./linuxSpecific.nix
+  ];
 
   # luks encryption
   boot.initrd.luks.devices.luksroot.device = "/dev/disk/by-uuid/6d8ca465-1ff7-45a5-88d3-9aa0b4807cb7";
+
+
+  networking = {
+    hostName = "nixos-thinkpad";
+    firewall.allowedTCPPorts = [ 24800 ];
+  };
 
   # powerManagement.enable = false;
   services = {
