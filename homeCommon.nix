@@ -38,10 +38,11 @@ in {
     msmtp.enable = true;
     # FIXME notmuch config can't be found by emacs
     # workaround: ln -s .config/notmuch/notmuchrc .notmuch-config
-    notmuch.enable = true;
     emacs = {
       enable = true;
       package = doom-emacs;
     };
+
+
   };
 }

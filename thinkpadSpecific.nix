@@ -1,9 +1,15 @@
 # here are every configs that are used on my laptop but not on my workstation
 
 { config, pkgs, ... }:
-
+let
+  home-manager = builtins.fetchGit {
+    url = "https://github.com/rycee/home-manager.git";
+    ref = "release-20.09";
+  };
+in
 {
   imports = [
+    (import "${home-manager}/nixos")
     ./hibernate.nix
     ./linuxSpecific.nix
   ];

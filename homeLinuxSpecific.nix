@@ -22,6 +22,8 @@ in {
       settings.keyserver = hkps://keys.openpgp.org;
     };
   };
+
+  notmuch.enable = true;
   accounts.email = {
     accounts.librem = import ./mail.nix {
       inherit realName key;

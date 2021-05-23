@@ -5,7 +5,7 @@
 , imapHost ? "imap.${host}"
 , smtpHost ? "smtp.${host}"
 , realName
-, key
+, key ? ""
 , passName ? (if userName == address && host != ""
               then address
               else

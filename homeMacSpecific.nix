@@ -1,7 +1,8 @@
 { config, lib, pkgs, ... }:
 
 {
- imports = [
+  imports = [
     ./homeCommon.nix
- ];
+    ./zshMac.nix
+  ];
 }

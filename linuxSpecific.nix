@@ -100,6 +100,8 @@ in
     pathsToLink = [ "/share/agda" "/share/zsh" ];
   };
 
+  fonts.fonts = [ pkgs.terminus_font ];
+
   nixpkgs.config = {
     # Allow proprietary packages
     allowUnfree = true;
