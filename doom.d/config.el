@@ -120,6 +120,9 @@
       bibtex-completion-notes-path org-ref-pdf-directory)
 
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdfxe %f"))
+(setq rmh-elfeed-org-files (list "~/dotfiles/elfeed.org"))
+(after! elfeed
+  (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
 
 ;; auto completion for agda
 (set-company-backend! 'agda2-mode 'company-capf)
@@ -155,3 +158,7 @@
   (setq message-auto-save-directory "~/Maildir/draft")
   ;; change the directory to store the sent mail
   (setq message-directory "~/Maildir/"))
+
+(use-package! pinentry
+        :init (setq epa-pinentry-mode `loopback)
+               (pinentry-start))
