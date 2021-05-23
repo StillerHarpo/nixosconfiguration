@@ -53,7 +53,7 @@
 ;; they are implemented.
 (setq +notmuch-mail-folder "~/Maildir")
 (setq +notmuch-sync-backend 'mbsync)
-(setq +notmuch-search-oldest-first f)
+(setq +notmuch-search-oldest-first 'f)
 
 (setq org-src-window-setup 'current-window)
 (setq org-agenda-files (list "~/Dokumente" "~/org"))
