@@ -33,6 +33,18 @@
         twoFingerScroll = true;
       };
     };
+    borgbackup.jobs."florian" = {
+      paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" ];
+      repo = "borg@45.157.177.92:.";
+      encryption = {
+        mode = "repokey-blake2";
+        passCommand = "cat /root/borgbackup/passphrase";
+      };
+      environment.BORG_RSH = "ssh -i /root/.ssh/id_rsa";
+      compression = "auto,lzma";
+      startAt = "weekly";
+};
+
   };
   # Bluetooth sound
   hardware = {
@@ -69,7 +81,13 @@
     udev.packages = [ pkgs.utsushi ];
   };
 
-  programs.light.enable = true;
+  programs = {
+    light.enable = true;
+    ssh.knownHosts.tim = {
+      hostNames = [ "45.157.177.92" ];
+      publicKeyFile = ./backup.pub;
+    };
+  };
 
   systemd = {
     targets.my-post-resume = {
