@@ -37,15 +37,10 @@ in
 
   environment = {
     systemPackages = with pkgs; ([
-      local.idris2
-      qt5.qtbase
-      barrier
       pavucontrol
       arandr
       networkmanagerapplet
       mtpfs
-      clojure
-      leiningen
       wget
       cachix
       # emacs
@@ -54,25 +49,13 @@ in
       shellcheck
       local.signal-desktop
       ##################### Games ###############
-      lutris                  # play windows games
       multimc                 # minecraft launcher
       local.steam             # play games
       openjdk                 # java
-      vulkan-tools            # needed for lutris
-      ##################### Voice chats #########
-      jitsi
-      local.teamspeak_client
-      local.discord
-      local.element-desktop
-      local.slack
-      local.zoom-us
-      ###########################################
       sshfs
       sudo
       dzen2
       firefox
-      qutebrowser
-      local.mattermost-desktop
       w3m
       pass
       passff-host
@@ -80,7 +63,6 @@ in
       neomutt
       mu
       toxic
-      newsboat
       poppler
       rtv
       xsel
@@ -89,7 +71,6 @@ in
       spotify
       mpv
       rlwrap
-      translate-shell
       you-get
       xosd
       pandoc
@@ -98,33 +79,19 @@ in
       bc
       feh
       anki
-      eclipses.eclipse-sdk
       nix-prefetch-git
-      # torbrowser
       dunst
       local.youtube-dl
-      # local.youtube-viewer
-      # local.pipe-viewer
       libnotify
       unzip
       rofi
       wmctrl
-      idris
-      idea.idea-community
       unclutter-xfixes
       psmisc
-      coq
-      # unstable.racket
-      # haskell
-      # ghc
       cabal2nix
-      # cabal-install
       local.haskellPackages.implicit-hie
       local.niv
-      # stack2nix
       unstable.stack
-      haskellPackages.Agda
-      agdaPackages.standard-library
       #(haskellPackages.ghcWithPackages (self : with self;
       #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
       #    adjunctions Agda ]))
@@ -226,8 +193,6 @@ in
     createHome = true;
     extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" "scan" "lp"];
   };
-
-  virtualisation.docker.enable = true;
 
   # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
