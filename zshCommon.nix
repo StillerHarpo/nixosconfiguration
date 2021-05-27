@@ -31,8 +31,6 @@
     };
     initExtra = ''
         export VISUAL='vim'
-        export BROWSER='~/scripts/linkopen'
-        eval "$(direnv hook zsh)"
       '';
   };
 }

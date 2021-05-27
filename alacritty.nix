@@ -1,3 +1,4 @@
+# FIXME Use right font for mac
 defaultShell:
   { config, lib, pkgs, ... }:
 
