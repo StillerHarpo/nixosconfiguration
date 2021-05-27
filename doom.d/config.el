@@ -159,6 +159,5 @@
   ;; change the directory to store the sent mail
   (setq message-directory "~/Maildir/"))
 
-(use-package! pinentry
-        :init (setq epa-pinentry-mode `loopback)
-               (pinentry-start))
+(setq lsp-enable-file-watchers t
+      lsp-file-watch-threshold 16384)
