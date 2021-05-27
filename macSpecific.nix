@@ -11,14 +11,13 @@ in
     ./common.nix (import "${home-manager}/nix-darwin")
   ];
 
-
-
   environment.systemPackages = with pkgs; ([
     git
     slack
     niv
     pass
     bashInteractive_5
+    haskell-language-server
   ]);
 
   users.users.florianengel = {
