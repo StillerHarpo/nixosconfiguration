@@ -8,7 +8,7 @@ let
 in {
   imports = [
     ./homeCommon.nix
-    ./zsh.nix
+    ./zshLinux.nix
     ./defaultApplications.nix
   ];
 
@@ -21,9 +21,10 @@ in {
       enable = true;
       settings.keyserver = hkps://keys.openpgp.org;
     };
+
+    notmuch.enable = true;
   };
 
-  notmuch.enable = true;
   accounts.email = {
     accounts.librem = import ./mail.nix {
       inherit realName key;
