@@ -12,7 +12,8 @@ let
 in
 {
   imports = [
-     ./pia-nm.nix
+     # ./pia-nm.nix
+     ./pia-openvpn.nix
      ./common.nix
   ];
   home-manager.users.florian = import ./homeLinuxSpecific.nix;
