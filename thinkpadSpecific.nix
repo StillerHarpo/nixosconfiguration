@@ -39,6 +39,9 @@ in
         twoFingerScroll = true;
       };
     };
+
+    paperless.enable = true;
+
     borgbackup.jobs."florian" = {
       paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" ];
       repo = "borg@45.157.177.92:.";
