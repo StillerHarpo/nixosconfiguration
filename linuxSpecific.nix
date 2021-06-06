@@ -56,6 +56,7 @@ in
       sudo
       dzen2
       firefox
+      chromium
       w3m
       pass
       passff-host
