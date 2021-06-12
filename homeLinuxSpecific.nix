@@ -26,11 +26,18 @@ in {
   };
 
   accounts.email = {
+    accounts.posteo = import ./mail.nix {
+      inherit realName key;
+      addressPrefix = "engelflorian";
+      host = "posteo.de";
+      imapHost = "posteo.de";
+      smtpHost = "posteo.de";
+      primary = true;
+    };
     accounts.librem = import ./mail.nix {
       inherit realName key;
       addressPrefix = "florianengel";
       host = "librem.one";
-      primary = true;
     };
     accounts.gmail = import ./mail.nix {
       inherit realName key;
