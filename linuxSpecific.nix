@@ -208,6 +208,8 @@ in
         unload-module module-role-cork
         load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
         load-module module-switch-on-connect
+        load-module module-bluetooth-policy
+        load-module module-bluetooth-discover
       '';
     };
     opengl = {
