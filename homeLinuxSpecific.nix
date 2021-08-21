@@ -45,18 +45,12 @@ in {
       passName = "gmailMu4e";
       host = "gmail.com";
     };
-    accounts.uni = import ./mail.nix {
+    accounts.cpMed = import ./mail.nix {
       inherit realName key;
-      address = "florian.engel@student.uni-tuebingen.de";
-      userName = "zxmvm60";
-      imapHost = "mailserv.uni-tuebingen.de";
-      smtpHost = "smtpserv.uni-tuebingen.de";
-    };
-    accounts.arbeit = import ./mail.nix {
-      inherit realName key;
+      address = "engel@cp-med.com";
       addressPrefix = "florian.engel";
-      host = "active-group.de";
-      userName = "engel";
+      passName = "arbeitNotmuch";
+      host = "gmail.com";
     };
   };
   services = {
