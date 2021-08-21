@@ -158,6 +158,7 @@
   (setq message-auto-save-directory "~/Maildir/draft")
   ;; change the directory to store the sent mail
   (setq message-directory "~/Maildir/"))
+  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox")))
 
 (setq lsp-enable-file-watchers t
       lsp-file-watch-threshold 16384)
