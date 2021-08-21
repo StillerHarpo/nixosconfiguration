@@ -16,5 +16,13 @@
       source-code-pro
     ];
   };
+
+  nix = {
+    package = pkgs.nixUnstable;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+   };
+
   # services.postgresql.enable = true;
 }

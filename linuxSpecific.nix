@@ -2,20 +2,17 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-unstable, pkgs-master, ... }:
 
-let
-  home-manager = builtins.fetchGit {
-    url = "https://github.com/rycee/home-manager.git";
-    ref = "release-20.09";
-  };
-in
 {
   imports = [
-     ./pia-nm.nix
      ./common.nix
   ];
-  home-manager.users.florian = import ./homeLinuxSpecific.nix;
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.florian = import ./homeLinuxSpecific.nix;
+  };
 
   boot = {
     # Use the systemd-boot EFI boot loader.
@@ -43,11 +40,9 @@ in
       mtpfs
       wget
       cachix
-      # emacs
-      (import ./vim.nix)
-      #   (import ./emacs.nix)
+      vim
       shellcheck
-      local.signal-desktop
+      pkgs-master.signal-desktop
       ##################### Games ###############
       multimc                 # minecraft launcher
       openjdk                 # java
@@ -63,7 +58,7 @@ in
       mu
       toxic
       poppler
-      rtv
+      tuir
       xsel
       ag
       zathura
@@ -80,7 +75,7 @@ in
       anki
       nix-prefetch-git
       dunst
-      local.youtube-dl
+      pkgs-master.youtube-dl
       libnotify
       unzip
       rofi
@@ -88,9 +83,9 @@ in
       unclutter-xfixes
       psmisc
       cabal2nix
-      local.haskellPackages.implicit-hie
-      local.niv
-      unstable.stack
+      pkgs-master.haskellPackages.implicit-hie
+      pkgs-master.niv
+      pkgs-unstable.stack
       #(haskellPackages.ghcWithPackages (self : with self;
       #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
       #    adjunctions Agda ]))
@@ -101,29 +96,12 @@ in
 
   fonts.fonts = [ pkgs.terminus_font ];
 
-  nixpkgs.config = {
-    # Allow proprietary packages
-    allowUnfree = true;
-
-    # Create an alias for the unstable channel
-    packageOverrides = pkgs:
-    {
-      unstable = import <nixos-unstable>
-      {
-        # pass the nixpkgs config to the unstable alias
-        # to ensure `allowUnfree = true;` is propagated:
-        config = config.nixpkgs.config;
-      };
-      local = import ../nixpkgs
-      {
-        # pass the nixpkgs config to the unstable alias
-        # to ensure `allowUnfree = true;` is propagated:
-        config = config.nixpkgs.config;
-      };
-    };
+  # FIXME use nix sops
+  # location = import ./cords.nix;
+  location = {
+    latitude = 0.0;
+    longitude = 0.0;
   };
-
-  location = import ./cords.nix;
 
   # List services that you want to enable:
 
