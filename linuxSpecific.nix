@@ -50,7 +50,6 @@ in
       local.signal-desktop
       ##################### Games ###############
       multimc                 # minecraft launcher
-      local.steam             # play games
       openjdk                 # java
       sshfs
       sudo
@@ -183,6 +182,7 @@ in
   };
 
   programs = {
+    steam.enable = true;
     slock.enable = true;
     adb.enable = true;
     fuse.userAllowOther = true;
