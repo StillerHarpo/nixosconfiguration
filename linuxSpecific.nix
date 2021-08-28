@@ -90,6 +90,8 @@
       #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
       #    adjunctions Agda ]))
       networkmanager_openvpn networkmanager_dmenu
+      git-crypt
+      slack
     ]);
     pathsToLink = [ "/share/agda" "/share/zsh" ];
   };
