@@ -167,6 +167,7 @@
     slock.enable = true;
     adb.enable = true;
     fuse.userAllowOther = true;
+    gnupg.dirmngr.enable = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
