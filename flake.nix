@@ -14,19 +14,23 @@
 
     let
       system = "x86_64-linux";
-      mkPkgs = pkgs: pkgs {
-        inherit system;
+      mkPkgs = pkgs: overlays: pkgs {
+        inherit system overlays;
         config.allowUnfree = true;
-
       };
+      pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
 
     in {
       nixosConfigurations.nixos-thinkpad = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
-          pkgs = mkPkgs (import nixpkgs);
-          pkgs-unstable = mkPkgs (import nixpkgs-unstable);
-          pkgs-master = mkPkgs (import nixpkgs-master);
+        pkgs = mkPkgs (import nixpkgs) [
+          (_: _: with pkgs-unstable; {
+            inherit sane-drivers sane-backends xsane hplip; })
+        ];
+        inherit pkgs-unstable;
+        pkgs-master = mkPkgs (import nixpkgs-master) [];
+        sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
       };
       modules = [
         nixpkgs.nixosModules.notDetected

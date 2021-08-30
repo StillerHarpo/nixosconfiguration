@@ -1,13 +1,18 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager, lib, ... }:
+{ config, pkgs, home-manager, sane-unstable, pkgs-unstable, lib, ... }:
 {
+
+  disabledModules = [ "services/hardware/sane.nix" ];
+
   imports = [
     ./hibernate.nix
     ./linuxSpecific.nix
+    sane-unstable
+#    "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix"
   ];
 
-  environment.systemPackages = [ pkgs.tigervnc ];
+  environment.systemPackages = [ pkgs.tigervnc  pkgs-unstable.xsane ];
 
   boot = {
     initrd = {
@@ -75,14 +80,19 @@
     };
 
   };
+
   # Bluetooth sound
   hardware = {
     bluetooth.enable = true;
-    sane = {
-      enable = true;
-      extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
-    };
+     sane = {
+       enable = true;
+       extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
+       drivers.scanSnap = {
+         enable = true;
+       };
+     };
   };
+
   # wifi
   # networking.wireless.enable = true;
   # boot.initrd.network.enable = true;
