@@ -25,7 +25,10 @@ in {
 
     direnv = {
       enable = true;
-      nix-direnv.enable = true;
+      nix-direnv = {
+        enable = true;
+        enableFlakes = true;
+      };
     };
     mbsync.enable = true;
     msmtp.enable = true;

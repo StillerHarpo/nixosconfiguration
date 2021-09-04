@@ -19,16 +19,16 @@
         config.allowUnfree = true;
       };
       pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
+      pkgs = mkPkgs (import nixpkgs) [
+        (_: _: with pkgs-unstable; {
+          inherit sane-drivers sane-backends xsane hplip; })
+      ];
 
     in {
       nixosConfigurations.nixos-thinkpad = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
-        pkgs = mkPkgs (import nixpkgs) [
-          (_: _: with pkgs-unstable; {
-            inherit sane-drivers sane-backends xsane hplip; })
-        ];
-        inherit pkgs-unstable;
+        inherit pkgs pkgs-unstable;
         pkgs-master = mkPkgs (import nixpkgs-master) [];
         sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
       };
@@ -47,6 +47,20 @@
         ./thinkpadSpecific.nix
         sops-nix.nixosModules.sops
       ];
+      };
+      devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
+        returnShellEnv = true;
+        root = ./scripts/.;
+        withHoogle = false;
+        modifier = with pkgs; with haskellPackages; drv:
+          haskell.lib.overrideCabal drv (attrs: {
+            buildTools = (attrs.buildTools or [ ]) ++ [
+              cabal-install
+              haskell-language-server
+              brittany
+              hlint
+            ];
+          });
       };
 
     };

@@ -12,7 +12,14 @@
 #    "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix"
   ];
 
-  environment.systemPackages = [ pkgs.tigervnc  pkgs-unstable.xsane ];
+  environment.systemPackages = with pkgs; [
+    tigervnc
+    pkgs-unstable.xsane
+    (writers.writeHaskellBin
+      "scan"
+      { libraries = with haskellPackages; [turtle extra]; }
+      ./scripts/Scan.hs)
+  ];
 
   boot = {
     initrd = {
@@ -65,6 +72,8 @@
       };
     };
 
+    blueman.enable = true;
+
     # FIXME paperless.enable = true;
 
     borgbackup.jobs."florian" = {
@@ -94,6 +103,7 @@
   };
 
   # wifi
+  networking.networkmanager.enable = true;
   # networking.wireless.enable = true;
   # boot.initrd.network.enable = true;
   # system.activationScripts.wpa_supplicant=
