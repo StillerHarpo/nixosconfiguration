@@ -88,7 +88,7 @@ defaultShell:
         text = ''
             #!${pkgs.runtimeShell}
             ${createDir}
-            ln -snf ${alacrittyDark} ${alacrittyConfLoc}/alacritty.yml
+            cp ${alacrittyDark} ${alacrittyConfLoc}/alacritty.yml
           '';
       };
       "bin/lightTheme" = {
@@ -96,7 +96,7 @@ defaultShell:
         text = ''
             #!${pkgs.runtimeShell}
             ${createDir}
-            ln -snf ${alacrittyLight} ${alacrittyConfLoc}/alacritty.yml
+            cp ${alacrittyLight} ${alacrittyConfLoc}/alacritty.yml
           '';
       };
     };
