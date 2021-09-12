@@ -99,12 +99,7 @@
 
   fonts.fonts = [ pkgs.terminus_font ];
 
-  # FIXME use nix sops
-  # location = import ./cords.nix;
-  location = {
-    latitude = 0.0;
-    longitude = 0.0;
-  };
+  location = import ./cords.nix;
 
   # List services that you want to enable:
 
