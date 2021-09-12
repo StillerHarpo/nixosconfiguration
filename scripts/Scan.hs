@@ -142,7 +142,7 @@ scanimage source extraOptions = do
   sh $
     inproc
       "scanimage"
-      (["--batch", "-d", device, "--mode", "Color"]
+      (["--batch", "-d", device, "--mode", "Color", "--page-height", "0"]
        <> scanSourceOption source
        <> extraOptions)
       mempty
