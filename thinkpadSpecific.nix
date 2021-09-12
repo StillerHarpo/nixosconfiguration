@@ -1,18 +1,19 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager, sane-unstable, pkgs-unstable, lib, ... }:
+{ config, pkgs, home-manager, sane-unstable, paperless-ng, agenix, pkgs-unstable, lib, ... }:
 {
 
-  disabledModules = [ "services/hardware/sane.nix" ];
+  disabledModules = [ "services/hardware/sane.nix" "services/misc/paperless.nix" ];
 
   imports = [
     ./hibernate.nix
     ./linuxSpecific.nix
     sane-unstable
-#    "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix"
+    paperless-ng
   ];
 
   environment.systemPackages = with pkgs; [
+    agenix.defaultPackage.x86_64-linux
     tigervnc
     pkgs-unstable.xsane
     (writers.writeHaskellBin
@@ -55,6 +56,11 @@
     firewall.allowedTCPPorts = [ 24800 ];
   };
 
+  age = {
+    sshKeyPaths = [ "/home/florian/.ssh/id_rsa" ];
+    secrets.paperless.file = ./secrets/paperless.age;
+  };
+
   # powerManagement.enable = false;
   services = {
     # Go in hibernate at lid
@@ -74,7 +80,12 @@
 
     blueman.enable = true;
 
-    # FIXME paperless.enable = true;
+    paperless-ng = {
+      enable = true;
+      passwordFile = config.age.secrets.paperless.path;
+      consumptionDir = "/home/florian/Dokumente/scans";
+      consumptionDirIsPublic = true;
+    };
 
     borgbackup.jobs."florian" = {
       paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" ];

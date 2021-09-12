@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
-    sops-nix.url = github:Mic92/sops-nix;
+    agenix.url = "github:ryantm/agenix";
     nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
@@ -10,7 +10,7 @@
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
   };
-  outputs = { self, nixpkgs, home-manager, nixpkgs-unstable, sops-nix, nix-doom-emacs, nixpkgs-master }:
+  outputs = { self, nixpkgs, home-manager, nixpkgs-unstable, agenix, nix-doom-emacs, nixpkgs-master }:
 
     let
       system = "x86_64-linux";
@@ -21,16 +21,17 @@
       pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
       pkgs = mkPkgs (import nixpkgs) [
         (_: _: with pkgs-unstable; {
-          inherit sane-drivers sane-backends xsane hplip; })
+          inherit sane-drivers sane-backends xsane hplip paperless-ng; })
       ];
 
     in {
       nixosConfigurations.nixos-thinkpad = nixpkgs.lib.nixosSystem {
       inherit system;
       specialArgs = {
-        inherit pkgs pkgs-unstable;
+        inherit pkgs pkgs-unstable agenix;
         pkgs-master = mkPkgs (import nixpkgs-master) [];
         sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
+        paperless-ng = "${nixpkgs-unstable}/nixos/modules/services/misc/paperless-ng.nix";
       };
       modules = [
         nixpkgs.nixosModules.notDetected
@@ -45,7 +46,7 @@
           };
         }
         ./thinkpadSpecific.nix
-        sops-nix.nixosModules.sops
+        agenix.nixosModules.age
       ];
       };
       devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
