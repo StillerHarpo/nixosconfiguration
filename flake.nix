@@ -19,9 +19,13 @@
         config.allowUnfree = true;
       };
       pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
+      pkgs-master = mkPkgs (import nixpkgs-master) [];
       pkgs = mkPkgs (import nixpkgs) [
-        (_: _: with pkgs-unstable; {
-          inherit sane-drivers sane-backends xsane hplip paperless-ng; })
+        (_: super: with pkgs-unstable; {
+          inherit sane-drivers sane-backends xsane hplip;
+          inherit (pkgs-master) paperless-ng;
+          python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
+ })
       ];
 
     in {
@@ -31,7 +35,7 @@
         inherit pkgs pkgs-unstable agenix;
         pkgs-master = mkPkgs (import nixpkgs-master) [];
         sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
-        paperless-ng = "${nixpkgs-unstable}/nixos/modules/services/misc/paperless-ng.nix";
+        paperless-ng = "${nixpkgs-master}/nixos/modules/services/misc/paperless-ng.nix";
       };
       modules = [
         nixpkgs.nixosModules.notDetected
