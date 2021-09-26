@@ -57,7 +57,7 @@
   };
 
   age = {
-    sshKeyPaths = [ "/home/florian/.ssh/id_rsa" ];
+    sshKeyPaths = [ "/root/.ssh/id_rsa" ];
     secrets.paperless.file = ./secrets/paperless.age;
   };
 
