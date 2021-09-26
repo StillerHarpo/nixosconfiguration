@@ -103,12 +103,16 @@
 
   # Bluetooth sound
   hardware = {
-    bluetooth.enable = true;
-     sane = {
-       enable = true;
-       extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
-       drivers.scanSnap = {
-         enable = true;
+    bluetooth = {
+      enable = true;
+      # FIXME https://bbs.archlinux.org/viewtopic.php?id=267219&p=2 (A2DP not working before 5.60)
+      package = pkgs-unstable.bluez;
+    };
+    sane = {
+      enable = true;
+      extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
+      drivers.scanSnap = {
+        enable = true;
        };
      };
   };
