@@ -1,5 +1,6 @@
 {
   inputs = {
+    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-21.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
     agenix.url = "github:ryantm/agenix";
     nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
@@ -10,7 +11,7 @@
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
   };
-  outputs = { self, nixpkgs, home-manager, nixpkgs-unstable, agenix, nix-doom-emacs, nixpkgs-master }:
+  outputs = { self, nixpkgs, home-manager, nixpkgs-unstable, agenix, nix-doom-emacs, nixpkgs-master, nixpkgs-newest }:
 
     let
       system = "x86_64-linux";
@@ -20,10 +21,12 @@
       };
       pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
       pkgs-master = mkPkgs (import nixpkgs-master) [];
+      pkgs-newest = mkPkgs (import nixpkgs-newest) [];
       pkgs = mkPkgs (import nixpkgs) [
         (_: super: with pkgs-unstable; {
           inherit sane-drivers sane-backends xsane hplip;
           inherit (pkgs-master) paperless-ng;
+          inherit (pkgs-newest) steam signal;
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
  })
       ];

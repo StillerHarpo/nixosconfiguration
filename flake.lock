@@ -265,6 +265,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-newest": {
+      "locked": {
+        "lastModified": 1632639184,
+        "narHash": "sha256-fRLxre+gPxIkjFVj17O68pyAWU1cxT20XFOiulIWzRw=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "fd8a7fd07da0f3fc0e27575891f45c2f88e5dd44",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-21.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs-unstable": {
       "locked": {
         "lastModified": 1631381596,
@@ -431,6 +447,7 @@
         "nix-doom-emacs": "nix-doom-emacs",
         "nixpkgs": "nixpkgs_3",
         "nixpkgs-master": "nixpkgs-master",
+        "nixpkgs-newest": "nixpkgs-newest",
         "nixpkgs-unstable": "nixpkgs-unstable"
       }
     },
