@@ -58,7 +58,10 @@
 
   age = {
     sshKeyPaths = [ "/root/.ssh/id_rsa" ];
-    secrets.paperless.file = ./secrets/paperless.age;
+    secrets = {
+      paperless.file = ./secrets/paperless.age;
+      birthdate.file = ./secrets/birthdate.age;
+    };
   };
 
   # powerManagement.enable = false;
@@ -84,6 +87,11 @@
       enable = true;
       passwordFile = config.age.secrets.paperless.path;
       consumptionDir = "/home/florian/Dokumente/scans";
+      extraConfig =
+        {
+          PAPERLESS_OCR_LANGUAGE = "deu+eng";
+          PAPERLESS_IGNORE_DATES = builtins.readFile config.age.secrets.birthdate.path;
+        };
       consumptionDirIsPublic = true;
     };
 
