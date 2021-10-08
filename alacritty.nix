@@ -82,23 +82,21 @@ defaultShell:
       fi
    '';
   in {
-    home.file = {
-      "bin/darkTheme" = {
-        executable = true;
-        text = ''
-            #!${pkgs.runtimeShell}
+    home.packages = with pkgs; with writers; [
+      (writeBashBin "darkTheme"
+        ''
+            ${feh}/bin/feh --bg-scale ~/scripts/var/black.png
             ${createDir}
             cp ${alacrittyDark} ${alacrittyConfLoc}/alacritty.yml
-          '';
-      };
-      "bin/lightTheme" = {
-        executable = true;
-        text = ''
-            #!${pkgs.runtimeShell}
+            emacsclient -e "(load-theme 'doom-gruvbox t)"
+        '')
+      (writeBashBin "lightTheme"
+        ''
+            ${feh}/bin/feh --bg-scale ~/scripts/var/white.png
             ${createDir}
             cp ${alacrittyLight} ${alacrittyConfLoc}/alacritty.yml
-          '';
-      };
-    };
+            emacsclient -e "(load-theme 'doom-gruvbox-light t)"
+        '')
+    ];
     programs.alacritty.enable = true;
   }
