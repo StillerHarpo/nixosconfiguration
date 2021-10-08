@@ -86,11 +86,11 @@
     paperless-ng = {
       enable = true;
       passwordFile = config.age.secrets.paperless.path;
-      consumptionDir = "/home/florian/Dokumente/scans";
+      consumptionDir = "/home/florian/Dokumente/paperlessInput";
       extraConfig =
         {
           PAPERLESS_OCR_LANGUAGE = "deu+eng";
-          PAPERLESS_IGNORE_DATES = builtins.readFile config.age.secrets.birthdate.path;
+          PAPERLESS_IGNORE_DATES = config.age.secrets.birthdate.path;
         };
       consumptionDirIsPublic = true;
     };
