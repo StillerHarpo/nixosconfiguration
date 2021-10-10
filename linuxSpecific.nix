@@ -6,8 +6,88 @@
 
 {
   imports = [
-     ./common.nix
+    ./common.nix
+    (with (import ./apparmor.nix); generate [
+      {
+        pkgs = with pkgs; [
+          imagemagick
+          pavucontrol
+          arandr
+          networkmanagerapplet
+          mtpfs
+          wget
+          cachix
+          vim
+          shellcheck
+          ##################### Games ###############
+          multimc                 # minecraft launcher
+          openjdk                 # java
+          sshfs
+          dzen2
+          firefox
+          chromium
+          w3m
+          passff-host
+          neomutt
+          mu
+          toxic
+          poppler
+          tuir
+          xsel
+          ag
+          zathura
+          spotify
+          mpv
+          rlwrap
+          you-get
+          xosd
+          pandoc
+          (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
+          python37Packages.pygments
+          bc
+          feh
+          anki
+          nix-prefetch-git
+          dunst
+          pkgs-master.youtube-dl
+          libnotify
+          unzip
+          rofi
+          wmctrl
+          unclutter-xfixes
+          psmisc
+          cabal2nix
+          pkgs-master.haskellPackages.implicit-hie
+          pkgs-master.niv
+          pkgs-unstable.stack
+          #(haskellPackages.ghcWithPackages (self : with self;
+          #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+          #    adjunctions Agda ]))
+          networkmanager_openvpn networkmanager_dmenu
+          git-crypt
+          slack
+        ];
+        profile = defaultProfile;
+      }
+      {
+        pkgs = [ pkgs.pass ];
+        profile = ''
+          file,
+          deny rw /home/florian/Dokumente/**,
+          deny rw /home/florian/.ssh/**,
+        '';
+      }
+    ])
   ];
+
+  environment.systemPackages = [ pkgs-master.signal-desktop pkgs.sudo ];
+  security.apparmor.policies.signal-desktop = {
+    profile = ''${pkgs-master.signal-desktop}/bin/signal-desktop {
+          capability,
+          ${(import ./apparmor.nix).defaultProfile}
+        }
+        '';
+  };
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -33,67 +113,6 @@
   # $ nix-env -qaP | grep wget
 
   environment = {
-    systemPackages = with pkgs; ([
-      imagemagick
-      pavucontrol
-      arandr
-      networkmanagerapplet
-      mtpfs
-      wget
-      cachix
-      vim
-      shellcheck
-      pkgs-master.signal-desktop
-      ##################### Games ###############
-      multimc                 # minecraft launcher
-      openjdk                 # java
-      sshfs
-      sudo
-      dzen2
-      firefox
-      chromium
-      w3m
-      pass
-      passff-host
-      neomutt
-      mu
-      toxic
-      poppler
-      tuir
-      xsel
-      ag
-      zathura
-      spotify
-      mpv
-      rlwrap
-      you-get
-      xosd
-      pandoc
-      (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
-      python37Packages.pygments
-      bc
-      feh
-      anki
-      nix-prefetch-git
-      dunst
-      pkgs-master.youtube-dl
-      libnotify
-      unzip
-      rofi
-      wmctrl
-      unclutter-xfixes
-      psmisc
-      cabal2nix
-      pkgs-master.haskellPackages.implicit-hie
-      pkgs-master.niv
-      pkgs-unstable.stack
-      #(haskellPackages.ghcWithPackages (self : with self;
-      #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-      #    adjunctions Agda ]))
-      networkmanager_openvpn networkmanager_dmenu
-      git-crypt
-      slack
-    ]);
     pathsToLink = [ "/share/agda" "/share/zsh" ];
   };
 

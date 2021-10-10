@@ -10,17 +10,33 @@
     ./linuxSpecific.nix
     sane-unstable
     paperless-ng
-  ];
+    (with (import ./apparmor.nix); generate [
+      {
+        pkgs = with pkgs; [
+          pkgs-unstable.xsane
+          (writers.writeHaskellBin
+            "scan"
+            { libraries = with haskellPackages; [turtle extra]; }
+            ./scripts/Scan.hs)
+        ];
+        profile = ''
+          file,
+          deny rw /home/florian/.password-store/**,
+          deny rw /home/florian/.gnupg/**,
+          deny rw /home/florian/.ssh/**,
+          '';
+      }
+      {
+        pkgs = with pkgs; [
+          agenix.defaultPackage.x86_64-linux
+          tigervnc
+        ];
+        profile = defaultProfile;
+      }
+    ])
+    ];
 
-  environment.systemPackages = with pkgs; [
-    agenix.defaultPackage.x86_64-linux
-    tigervnc
-    pkgs-unstable.xsane
-    (writers.writeHaskellBin
-      "scan"
-      { libraries = with haskellPackages; [turtle extra]; }
-      ./scripts/Scan.hs)
-  ];
+  security.apparmor.enable = true;
 
   boot = {
     initrd = {
