@@ -6,12 +6,16 @@
     nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
+    nixpkgs-borgbackup.url = "/home/florian/nixpkgs";
     home-manager = {
       url = "github:nix-community/home-manager/release-21.05";
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
   };
-  outputs = { self, nixpkgs, home-manager, nixpkgs-unstable, agenix, nix-doom-emacs, nixpkgs-master, nixpkgs-newest }:
+  outputs = {
+    self, nixpkgs, home-manager, nixpkgs-unstable, agenix, nix-doom-emacs
+    , nixpkgs-master, nixpkgs-newest, nixpkgs-borgbackup
+  }:
 
     let
       system = "x86_64-linux";
@@ -37,6 +41,7 @@
       specialArgs = {
         inherit pkgs pkgs-unstable agenix;
         pkgs-master = mkPkgs (import nixpkgs-master) [];
+        borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
         sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
         paperless-ng = "${nixpkgs-master}/nixos/modules/services/misc/paperless-ng.nix";
       };

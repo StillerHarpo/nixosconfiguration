@@ -1,14 +1,19 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager, sane-unstable, paperless-ng, agenix, pkgs-unstable, lib, ... }:
+{ config, pkgs, home-manager, sane-unstable, borgbackup-local
+, paperless-ng, agenix, pkgs-unstable, lib, ... }:
 {
 
-  disabledModules = [ "services/hardware/sane.nix" "services/misc/paperless.nix" ];
+  disabledModules = [
+    "services/hardware/sane.nix" "services/misc/paperless.nix"
+    "services/backup/borgbackup.nix"
+  ];
 
   imports = [
     ./hibernate.nix
     ./linuxSpecific.nix
     sane-unstable
+    borgbackup-local
     paperless-ng
     (with (import ./apparmor.nix); generate [
       {
@@ -121,6 +126,7 @@
       environment.BORG_RSH = "ssh -i /root/.ssh/id_rsa";
       compression = "auto,lzma";
       startAt = "weekly";
+      retryOnFail.enable = true;
     };
 
   };

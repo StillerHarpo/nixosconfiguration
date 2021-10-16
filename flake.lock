@@ -249,6 +249,17 @@
         "type": "indirect"
       }
     },
+    "nixpkgs-borgbackup": {
+      "locked": {
+        "narHash": "sha256-oHh63JdQnOcuNcxQPytGE/DBWLhqvC7fBeWtBheGffs=",
+        "path": "/home/florian/nixpkgs",
+        "type": "path"
+      },
+      "original": {
+        "path": "/home/florian/nixpkgs",
+        "type": "path"
+      }
+    },
     "nixpkgs-master": {
       "locked": {
         "lastModified": 1631463445,
@@ -446,6 +457,7 @@
         "home-manager": "home-manager",
         "nix-doom-emacs": "nix-doom-emacs",
         "nixpkgs": "nixpkgs_3",
+        "nixpkgs-borgbackup": "nixpkgs-borgbackup",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-newest": "nixpkgs-newest",
         "nixpkgs-unstable": "nixpkgs-unstable"
