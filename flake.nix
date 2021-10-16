@@ -6,7 +6,7 @@
     nix-doom-emacs.url = "github:vlaci/nix-doom-emacs";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
-    nixpkgs-borgbackup.url = "/home/florian/nixpkgs";
+    nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
     home-manager = {
       url = "github:nix-community/home-manager/release-21.05";
       inputs = { nixpkgs.follows = "nixpkgs"; };

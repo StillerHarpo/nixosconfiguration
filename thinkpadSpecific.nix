@@ -126,7 +126,7 @@
       environment.BORG_RSH = "ssh -i /root/.ssh/id_rsa";
       compression = "auto,lzma";
       startAt = "weekly";
-      retryOnFail.enable = true;
+      restartOnFail.enable = true;
     };
 
   };

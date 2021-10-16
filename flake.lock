@@ -251,13 +251,18 @@
     },
     "nixpkgs-borgbackup": {
       "locked": {
-        "narHash": "sha256-oHh63JdQnOcuNcxQPytGE/DBWLhqvC7fBeWtBheGffs=",
-        "path": "/home/florian/nixpkgs",
-        "type": "path"
+        "lastModified": 1634381026,
+        "narHash": "sha256-PmnjfcTCwuQmaNF5YbNMq0OJTkWOG/T6NPlSzLKGQlI=",
+        "owner": "StillerHarpo",
+        "repo": "nixpkgs",
+        "rev": "0a573c4b623861adc9d63e8158c5953dc7740f47",
+        "type": "github"
       },
       "original": {
-        "path": "/home/florian/nixpkgs",
-        "type": "path"
+        "owner": "StillerHarpo",
+        "ref": "borgbackup-restart",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "nixpkgs-master": {
