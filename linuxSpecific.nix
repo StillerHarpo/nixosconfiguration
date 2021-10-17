@@ -118,6 +118,7 @@
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
+    kernel.sysctl."kernel.yama.ptrace_scope" = 1;
   };
 
   # Select internationalisation properties.
