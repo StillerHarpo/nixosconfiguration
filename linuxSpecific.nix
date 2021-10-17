@@ -24,7 +24,6 @@
           openjdk                 # java
           sshfs
           dzen2
-          firefox
           chromium
           w3m
           passff-host
@@ -75,6 +74,25 @@
           file,
           deny rw /home/florian/Dokumente/**,
           deny rw /home/florian/.ssh/**,
+        '';
+      }
+      {
+        pkgs = [ pkgs.firefox ];
+        profile = ''
+          file,
+          network,
+    deny rw /root/.ssh/**,
+    deny rw /root/.ssh,
+    deny rw /root/.gnupg/**,
+    deny rw /root/.gnupg,
+    deny rw /home/florian/Dokumente/**,
+    deny rw /home/florian/Dokumente,
+    deny rw /home/florian/.ssh/**,
+    deny rw /home/florian/.ssh,
+    deny rw /home/florian/.gnupg/**,
+    deny rw /home/florian/.gnupg,
+    deny rw /home/florian/.password-store/**,
+    deny rw /home/florian/.password-store,
         '';
       }
     ])

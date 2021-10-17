@@ -15,7 +15,7 @@ in
 { defaultProfile = ''
     file,
     network,
-    capabilities,
+    capability,
     deny rw /root/.ssh/**,
     deny rw /root/.ssh,
     deny rw /root/.gnupg/**,
@@ -28,6 +28,8 @@ in
     deny rw /home/florian/.gnupg,
     deny rw /home/florian/.password-store/**,
     deny rw /home/florian/.password-store,
+    deny rw /home/florian/.mozilla/**,
+    deny rw /home/florian/.mozilla,
   '';
   generate =
     pkgsAppArmors:
