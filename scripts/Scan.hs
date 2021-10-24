@@ -19,6 +19,7 @@ import Data.Time.Format
 import System.IO(hSetBuffering, BufferMode(..), stdin)
 import Control.Monad.Catch
 import Control.Monad.Extra
+import Text.Read (readMaybe)
 
 data Env = Env { counter :: IORef Int
                , scanner :: Text }
@@ -112,17 +113,16 @@ convertNPictures i = do
   everyN pnms >>= traverse_ convert
   traverse_ rm pnms
 
-singlePage :: MyShell ()
-singlePage = scanimage Back [] >> convertPictures
+sourceToNumPicture :: ScanSource -> Int -> Int
+sourceToNumPicture source =
+  case source of
+    Back -> id
+    ADFDuplex -> (*2)
 
-multiplePages :: MyShell ()
-multiplePages = scanMultible Back >> convertMultiblePictures
-
-singleDuplexPage :: MyShell ()
-singleDuplexPage = scanimage ADFDuplex [] >> convertNPictures 2
-
-multipleDuplexPages :: MyShell ()
-multipleDuplexPages = scanMultible ADFDuplex >> convertMultiblePictures
+page :: ScanSource -> Int -> MyShell ()
+page scanSource i = do
+  scanMultible scanSource
+  convertNPictures (sourceToNumPicture scanSource i)
 
 scanMultible :: ScanSource -> MyShell ()
 scanMultible scanSource = do
@@ -153,29 +153,35 @@ scanSourceOption scanSource =
     Back -> []
     ADFDuplex -> ["--source", "ADF Duplex"]
 
+withPageNumbers :: ScanSource -> MyShell ()
+withPageNumbers scanSource = do
+  echo "Enter how many pages each document has (duplex pages count as one)"
+  liftIO getLine
+    >>= maybe
+      (echo "Invalid number" >> mainMenu)
+      (page scanSource)
+      . readMaybe
+
 mainMenu :: MyShell ()
 mainMenu = do
   echo "Press s for single pages"
   echo "Press d for single duplex page"
-  echo "Press m for multible single pages"
-  echo "Press a for multible duplex pages"
   echo "Press x,X,q or Q to exit the script"
+  let invalid = do
+        echo "You have entered an invallid selection!"
+        echo "Please try again!"
+        echo ""
+        echo "Press any key to continue..."
+        void $ liftIO getChar
+        mainMenu
   liftIO getChar >>= \case
-    's' -> singlePage
-    'd' -> singleDuplexPage
-    'm' -> multiplePages
-    'a' -> multipleDuplexPages
+    's' -> withPageNumbers Back
+    'd' -> withPageNumbers ADFDuplex
     'x' -> lift $ exit ExitSuccess
     'X' -> lift $ exit ExitSuccess
     'q' -> lift $ exit ExitSuccess
     'Q' -> lift $ exit ExitSuccess
-    _ -> do
-      echo "You have entered an invallid selection!"
-      echo "Please try again!"
-      echo ""
-      echo "Press any key to continue..."
-      void $ liftIO getChar
-      mainMenu
+    _ -> invalid
   mainMenu
 
 getMaxFile :: MonadIO m => Pattern Int -> m Int
