@@ -45,13 +45,13 @@ in {
       passName = "gmailMu4e";
       host = "gmail.com";
     };
-    accounts.cpMed = import ./mail.nix {
-      inherit realName key;
-      address = "engel@cp-med.com";
-      addressPrefix = "florian.engel";
-      passName = "arbeitNotmuch";
-      host = "gmail.com";
-    };
+#    accounts.cpMed = import ./mail.nix {
+#      inherit realName key;
+#      address = "engel@cp-med.com";
+#      addressPrefix = "florian.engel";
+#      passName = "arbeitNotmuch";
+#      host = "gmail.com";
+#    };
   };
   services = {
     emacs.enable = true;
