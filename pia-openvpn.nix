@@ -6,14 +6,20 @@ let countries = [
 in
 with builtins;
 {
-  networking.networkmanager.enable = true;
+
+  age = {
+    secrets = {
+      pia-user.file = ./secrets/pia-user.age;
+      pia-pass.file = ./secrets/pia-pass.age;
+    };
+  };
 
   services.openvpn.servers =
     foldl' (conf: country: {
       "${country}" = {
         authUserPass = {
-          username = readFile ./pia-user.conf;
-          password = readFile ./pia-pass.conf;
+          username = readFile config.age.secrets.pia-user.path;
+          password = readFile config.age.secrets.pia-pass.path;
         };
         config = ''
           client
