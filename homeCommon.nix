@@ -3,20 +3,13 @@
 let
   defaultShell = "zsh";
 
-  doom-emacs = pkgs.callPackage (builtins.fetchTarball {
-    url = https://github.com/vlaci/nix-doom-emacs/archive/master.tar.gz;
-  }) {
-    doomPrivateDir = ./doom.d;  # Directory containing your config.el init.el
-    # and packages.el files
-  };
 in {
   imports = [
     (import ./alacritty.nix defaultShell)
   ];
+
+
   home = {
-    file.".emacs.d/init.el".text = ''
-        (load "default.el")
-      '';
     sessionVariables = {
       SHELL = defaultShell;
       EDITOR = "vim";
@@ -27,22 +20,19 @@ in {
     ];
   };
 
- programs = {
+  programs = {
     git.enable = true;
 
     direnv = {
       enable = true;
-      enableNixDirenvIntegration = true;
+      nix-direnv = {
+        enable = true;
+        enableFlakes = true;
+      };
     };
     mbsync.enable = true;
     msmtp.enable = true;
     # FIXME notmuch config can't be found by emacs
     # workaround: ln -s .config/notmuch/notmuchrc .notmuch-config
-    emacs = {
-      enable = true;
-      package = doom-emacs;
-    };
-
-
   };
 }

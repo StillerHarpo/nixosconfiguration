@@ -1,26 +1,88 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, ... }:
-let
-  home-manager = builtins.fetchGit {
-    url = "https://github.com/rycee/home-manager.git";
-    ref = "release-20.09";
-  };
-in
+{ config, pkgs, home-manager, sane-unstable, borgbackup-local
+, paperless-ng, agenix, pkgs-unstable, lib, ... }:
 {
-  imports = [
-    (import "${home-manager}/nixos")
-    ./hibernate.nix
-    ./linuxSpecific.nix
+
+  disabledModules = [
+    "services/hardware/sane.nix" "services/misc/paperless.nix"
+    "services/backup/borgbackup.nix"
   ];
 
-  # luks encryption
-  boot.initrd.luks.devices.luksroot.device = "/dev/disk/by-uuid/6d8ca465-1ff7-45a5-88d3-9aa0b4807cb7";
+  imports = [
+    ./hibernate.nix
+    ./linuxSpecific.nix
+    sane-unstable
+    borgbackup-local
+    paperless-ng
+    (with (import ./apparmor.nix); generate [
+      {
+        pkgs = with pkgs; [
+          pkgs-unstable.xsane
+          (writers.writeHaskellBin
+            "scan"
+            { libraries = with haskellPackages; [turtle extra]; }
+            ./scripts/Scan.hs)
+        ];
+        profile = ''
+          file,
+          deny rw /home/florian/.password-store/**,
+          deny rw /home/florian/.gnupg/**,
+          deny rw /home/florian/.ssh/**,
+          '';
+      }
+      {
+        pkgs = with pkgs; [
+          agenix.defaultPackage.x86_64-linux
+          tigervnc
+        ];
+        profile = defaultProfile;
+      }
+    ])
+    ];
 
+  security.apparmor.enable = true;
+
+  boot = {
+    initrd = {
+      # luks encryption
+      luks.devices.luksroot.device = "/dev/disk/by-uuid/6d8ca465-1ff7-45a5-88d3-9aa0b4807cb7";
+      availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
+    };
+    kernelModules = [ "kvm-intel" ];
+    extraModulePackages = [ ];
+  };
+
+  fileSystems = {
+    "/" =
+      { device = "/dev/disk/by-uuid/f97f5f90-314e-434a-8585-42694d5cf202";
+        fsType = "ext4";
+      };
+
+    "/boot" =
+      { device = "/dev/disk/by-uuid/C998-C706";
+        fsType = "vfat";
+      };
+  };
+
+  swapDevices =
+    [ { device = "/dev/disk/by-uuid/f1429c26-3127-4932-8051-face01ca9ac8"; }
+    ];
+
+  nix.maxJobs = lib.mkDefault 8;
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   networking = {
     hostName = "nixos-thinkpad";
     firewall.allowedTCPPorts = [ 24800 ];
+  };
+
+  age = {
+    sshKeyPaths = [ "/root/.ssh/id_rsa" ];
+    secrets = {
+      paperless.file = ./secrets/paperless.age;
+      birthdate.file = ./secrets/birthdate.age;
+    };
   };
 
   # powerManagement.enable = false;
@@ -40,7 +102,19 @@ in
       };
     };
 
-    paperless.enable = true;
+    blueman.enable = true;
+
+    paperless-ng = {
+      enable = true;
+      passwordFile = config.age.secrets.paperless.path;
+      consumptionDir = "/home/florian/Dokumente/paperlessInput";
+      extraConfig =
+        {
+          PAPERLESS_OCR_LANGUAGE = "deu+eng";
+          PAPERLESS_IGNORE_DATES = config.age.secrets.birthdate.path;
+        };
+      consumptionDirIsPublic = true;
+    };
 
     borgbackup.jobs."florian" = {
       paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" ];
@@ -52,18 +126,29 @@ in
       environment.BORG_RSH = "ssh -i /root/.ssh/id_rsa";
       compression = "auto,lzma";
       startAt = "weekly";
-};
+      restartOnFail.enable = true;
+    };
 
   };
+
   # Bluetooth sound
   hardware = {
-    bluetooth.enable = true;
+    bluetooth = {
+      enable = true;
+      # FIXME https://bbs.archlinux.org/viewtopic.php?id=267219&p=2 (A2DP not working before 5.60)
+      package = pkgs-unstable.bluez;
+    };
     sane = {
       enable = true;
       extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
-    };
+      drivers.scanSnap = {
+        enable = true;
+       };
+     };
   };
+
   # wifi
+  networking.networkmanager.enable = true;
   # networking.wireless.enable = true;
   # boot.initrd.network.enable = true;
   # system.activationScripts.wpa_supplicant=

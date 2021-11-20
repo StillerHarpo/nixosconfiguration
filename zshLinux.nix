@@ -3,6 +3,10 @@
   programs.zsh = {
     shellAliases.ls = "ls -lh --color=auto";
     oh-my-zsh.theme = "agnoster";
+    initExtra = ''
+       export BROWSER='~/scripts/linkopen'
+       eval "$(direnv hook zsh)"
+    '';
     localVariables.PROMPT = ''
        WORKSPACE=$(wmctrl -d | grep "*" | cut -f1 -d' ')
        if [ $SHELL != "/run/current-system/sw/bin/zsh" ]

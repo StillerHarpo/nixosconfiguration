@@ -2,21 +2,115 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-unstable, pkgs-master, ... }:
 
-let
-  home-manager = builtins.fetchGit {
-    url = "https://github.com/rycee/home-manager.git";
-    ref = "release-20.09";
-  };
-in
 {
   imports = [
-     # ./pia-nm.nix
-     ./pia-openvpn.nix
-     ./common.nix
+    ./pia-openvpn.nix
+    ./common.nix
+    (with (import ./apparmor.nix); generate [
+      {
+        pkgs = with pkgs; [
+          imagemagick
+          pavucontrol
+          arandr
+          networkmanagerapplet
+          mtpfs
+          wget
+          cachix
+          vim
+          shellcheck
+          ##################### Games ###############
+          multimc                 # minecraft launcher
+          openjdk                 # java
+          sshfs
+          dzen2
+          chromium
+          w3m
+          passff-host
+          neomutt
+          mu
+          toxic
+          poppler
+          tuir
+          xsel
+          ag
+          zathura
+          spotify
+          mpv
+          rlwrap
+          you-get
+          xosd
+          pandoc
+          (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
+          python37Packages.pygments
+          bc
+          feh
+          anki
+          nix-prefetch-git
+          pkgs-master.youtube-dl
+          libnotify
+          unzip
+          rofi
+          wmctrl
+          unclutter-xfixes
+          psmisc
+          cabal2nix
+          pkgs-master.haskellPackages.implicit-hie
+          pkgs-master.niv
+          pkgs-unstable.stack
+          #(haskellPackages.ghcWithPackages (self : with self;
+          #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+          #    adjunctions Agda ]))
+          networkmanager_openvpn networkmanager_dmenu
+          git-crypt
+          slack
+        ];
+        profile = defaultProfile;
+      }
+      {
+        pkgs = [ pkgs.pass ];
+        profile = ''
+          file,
+          deny rw /home/florian/Dokumente/**,
+          deny rw /home/florian/.ssh/**,
+        '';
+      }
+      {
+        pkgs = [ pkgs.firefox ];
+        profile = ''
+          file,
+          network,
+    deny rw /root/.ssh/**,
+    deny rw /root/.ssh,
+    deny rw /root/.gnupg/**,
+    deny rw /root/.gnupg,
+    deny rw /home/florian/Dokumente/**,
+    deny rw /home/florian/Dokumente,
+    deny rw /home/florian/.ssh/**,
+    deny rw /home/florian/.ssh,
+    deny rw /home/florian/.gnupg/**,
+    deny rw /home/florian/.gnupg,
+    deny rw /home/florian/.password-store/**,
+    deny rw /home/florian/.password-store,
+        '';
+      }
+    ])
   ];
-  home-manager.users.florian = import ./homeLinuxSpecific.nix;
+
+  environment.systemPackages = [ pkgs-master.signal-desktop pkgs.sudo ];
+  security.apparmor.policies.signal-desktop = {
+    profile = ''${pkgs-master.signal-desktop}/bin/signal-desktop {
+          capability,
+          ${(import ./apparmor.nix).defaultProfile}
+        }
+        '';
+  };
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.florian = import ./homeLinuxSpecific.nix;
+  };
 
   boot = {
     # Use the systemd-boot EFI boot loader.
@@ -24,6 +118,7 @@ in
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
+    kernel.sysctl."kernel.yama.ptrace_scope" = 1;
   };
 
   # Select internationalisation properties.
@@ -37,93 +132,10 @@ in
   # $ nix-env -qaP | grep wget
 
   environment = {
-    systemPackages = with pkgs; ([
-      pavucontrol
-      arandr
-      networkmanagerapplet
-      mtpfs
-      wget
-      cachix
-      # emacs
-      (import ./vim.nix)
-      #   (import ./emacs.nix)
-      shellcheck
-      local.signal-desktop
-      ##################### Games ###############
-      multimc                 # minecraft launcher
-      local.steam             # play games
-      openjdk                 # java
-      sshfs
-      sudo
-      dzen2
-      firefox
-      w3m
-      pass
-      passff-host
-      pinentry-curses
-      neomutt
-      mu
-      toxic
-      poppler
-      rtv
-      xsel
-      ag
-      zathura
-      spotify
-      mpv
-      rlwrap
-      you-get
-      xosd
-      pandoc
-      (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
-      python37Packages.pygments
-      bc
-      feh
-      anki
-      nix-prefetch-git
-      dunst
-      local.youtube-dl
-      libnotify
-      unzip
-      rofi
-      wmctrl
-      unclutter-xfixes
-      psmisc
-      cabal2nix
-      local.haskellPackages.implicit-hie
-      local.niv
-      unstable.stack
-      #(haskellPackages.ghcWithPackages (self : with self;
-      #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-      #    adjunctions Agda ]))
-      networkmanager_openvpn networkmanager_dmenu
-    ]);
     pathsToLink = [ "/share/agda" "/share/zsh" ];
   };
 
   fonts.fonts = [ pkgs.terminus_font ];
-
-  nixpkgs.config = {
-    # Allow proprietary packages
-    allowUnfree = true;
-
-    # Create an alias for the unstable channel
-    packageOverrides = pkgs:
-    {
-      unstable = import <nixos-unstable>
-      {
-        # pass the nixpkgs config to the unstable alias
-        # to ensure `allowUnfree = true;` is propagated:
-        config = config.nixpkgs.config;
-      };
-      local = import ../nixpkgs
-      {
-        # pass the nixpkgs config to the unstable alias
-        # to ensure `allowUnfree = true;` is propagated:
-        config = config.nixpkgs.config;
-      };
-    };
-  };
 
   location = import ./cords.nix;
 
@@ -135,6 +147,7 @@ in
   # Enable CUPS to print documents.
   # services.printing.enable = true;
   services = {
+    dbus.packages = [ pkgs.gnome3.dconf ];
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
@@ -184,9 +197,11 @@ in
   };
 
   programs = {
+    steam.enable = true;
     slock.enable = true;
     adb.enable = true;
     fuse.userAllowOther = true;
+    gnupg.dirmngr.enable = true;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
@@ -209,6 +224,8 @@ in
         unload-module module-role-cork
         load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
         load-module module-switch-on-connect
+        load-module module-bluetooth-policy
+        load-module module-bluetooth-discover
       '';
     };
     opengl = {
@@ -233,5 +250,5 @@ in
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "20.09";
+  system.stateVersion = "21.05";
 }

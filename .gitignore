@@ -1,7 +1,2 @@
-network-configuration.nix
-cords.nix
-wifihotspot.nix
 result
-pia-pass.conf
-pia-user.conf
-nixos-containers.pub
+.direnv/**

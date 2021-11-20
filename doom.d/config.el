@@ -18,8 +18,9 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
+(setq doom-font (font-spec :family "monospace" :size 16 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "monospace" :size 18))
+
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -54,6 +55,11 @@
 (setq +notmuch-mail-folder "~/Maildir")
 (setq +notmuch-sync-backend 'mbsync)
 (setq +notmuch-search-oldest-first 'f)
+
+(setq mail-specify-envelope-from t
+      mail-envelope-from 'header
+      message-sendmail-envelope-from 'header)
+
 
 (setq org-src-window-setup 'current-window)
 (setq org-agenda-files (list "~/Dokumente" "~/org"))
@@ -158,7 +164,7 @@
   (setq message-auto-save-directory "~/Maildir/draft")
   ;; change the directory to store the sent mail
   (setq message-directory "~/Maildir/"))
+  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox")))
 
-(use-package! pinentry
-        :init (setq epa-pinentry-mode `loopback)
-               (pinentry-start))
+(setq lsp-enable-file-watchers t
+      lsp-file-watch-threshold 16384)

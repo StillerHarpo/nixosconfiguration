@@ -26,11 +26,18 @@ in {
   };
 
   accounts.email = {
+    accounts.posteo = import ./mail.nix {
+      inherit realName key;
+      addressPrefix = "engelflorian";
+      host = "posteo.de";
+      imapHost = "posteo.de";
+      smtpHost = "posteo.de";
+      primary = true;
+    };
     accounts.librem = import ./mail.nix {
       inherit realName key;
       addressPrefix = "florianengel";
       host = "librem.one";
-      primary = true;
     };
     accounts.gmail = import ./mail.nix {
       inherit realName key;
@@ -38,19 +45,13 @@ in {
       passName = "gmailMu4e";
       host = "gmail.com";
     };
-    accounts.uni = import ./mail.nix {
-      inherit realName key;
-      address = "florian.engel@student.uni-tuebingen.de";
-      userName = "zxmvm60";
-      imapHost = "mailserv.uni-tuebingen.de";
-      smtpHost = "smtpserv.uni-tuebingen.de";
-    };
-    accounts.arbeit = import ./mail.nix {
-      inherit realName key;
-      addressPrefix = "florian.engel";
-      host = "active-group.de";
-      userName = "engel";
-    };
+#    accounts.cpMed = import ./mail.nix {
+#      inherit realName key;
+#      address = "engel@cp-med.com";
+#      addressPrefix = "florian.engel";
+#      passName = "arbeitNotmuch";
+#      host = "gmail.com";
+#    };
   };
   services = {
     emacs.enable = true;
@@ -58,6 +59,54 @@ in {
       enable = true;
       defaultCacheTtl = 1800;
       enableSshSupport = true;
+      # pinentryFlavor = "qt";
+    };
+  };
+  gtk = {
+    enable = true;
+    iconTheme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome3.adwaita-icon-theme;
+    };
+    theme = {
+      name = "Adwaita-dark";
+      package = pkgs.gnome3.adwaita-icon-theme;
+    };
+  };
+  services.dunst = {
+    enable = true;
+    iconTheme = {
+      name = "Adwaita";
+      package = pkgs.gnome3.adwaita-icon-theme;
+      size = "16x16";
+    };
+    settings = {
+      global = {
+        monitor = 0;
+        geometry = "600x50-10+10";
+        shrink = "yes";
+        transparency = 10;
+        padding = 16;
+        horizontal_padding = 16;
+        font = "JetBrainsMono Nerd Font 10";
+        line_height = 4;
+        format = ''<b>%s</b>\n%b'';
+      };
+      urgency_low = {
+        frame_color = "#222222";
+        background = "#111111";
+        foreground = "#11AA11";
+      };
+      urgency_normal = {
+        frame_color = "#222222";
+        background = "#111111";
+        foreground = "#11AA11";
+      };
+      urgency_critical = {
+        frame_color = "#222222";
+        background = "#111111";
+        foreground = "#AA1111";
+      };
     };
   };
 }
