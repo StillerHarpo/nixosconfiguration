@@ -47,7 +47,6 @@
           feh
           anki
           nix-prefetch-git
-          dunst
           pkgs-master.youtube-dl
           libnotify
           unzip
