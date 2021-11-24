@@ -11,6 +11,7 @@
     (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
+          pamixer
           imagemagick
           pavucontrol
           arandr
@@ -194,6 +195,15 @@
       inactiveOpacity = 0.8;
       opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
     };
+    pipewire = {
+      enable = true;
+      media-session.config.bluez-monitor.properties.bluez5.msbc-support = true;
+      alsa = {
+        enable = true;
+        support32Bit = true;
+      };
+      pulse.enable = true;
+    };
   };
 
   programs = {
@@ -215,24 +225,11 @@
   # passwordless sudo
   security.sudo.wheelNeedsPassword = false;
 
-  hardware = {
-    pulseaudio = {
-      enable = true;
-      package = pkgs.pulseaudioFull;
-      support32Bit = true;
-      extraConfig = ''
-        unload-module module-role-cork
-        load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1
-        load-module module-switch-on-connect
-        load-module module-bluetooth-policy
-        load-module module-bluetooth-discover
-      '';
-    };
-    opengl = {
-     driSupport32Bit = true;
-     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
-    };
+  hardware.opengl = {
+    driSupport32Bit = true;
+    extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
   };
+
 
   nix = {
     binaryCaches = [

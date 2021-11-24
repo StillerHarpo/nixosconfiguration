@@ -41,7 +41,10 @@
     ])
     ];
 
-  security.apparmor.enable = true;
+  security = {
+    apparmor.enable = true;
+    rtkit.enable = true;
+  };
 
   boot = {
     initrd = {
@@ -137,6 +140,7 @@
       enable = true;
       # FIXME https://bbs.archlinux.org/viewtopic.php?id=267219&p=2 (A2DP not working before 5.60)
       package = pkgs-unstable.bluez;
+      hsphfpd.enable = true;
     };
     sane = {
       enable = true;
