@@ -12,6 +12,7 @@
       {
         pkgs = with pkgs; [
           pamixer
+          aria
           imagemagick
           pavucontrol
           arandr
