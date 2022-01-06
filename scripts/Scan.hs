@@ -1,13 +1,15 @@
+{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Werror #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 module Main where
 
 import Prelude hiding (FilePath)
 import Turtle hiding (stdin)
-import Turtle.Format
 import Control.Monad.Trans.Reader
 import Control.Monad.Trans.Class
 import Data.IORef
@@ -63,7 +65,7 @@ fileExistsError file = do
   printf ("counter was: "%d%"\n") curCount
   lift $ exit (ExitFailure 1)
 
-today :: (MonadIO m) => m Text
+today :: MonadIO m => m Text
 today = T.pack . formatTime defaultTimeLocale "%d_%m_%Y" <$> date
 
 getFileName :: MyShell Text
@@ -81,13 +83,13 @@ checkFile file = do
 
 convert :: [FilePath] -> MyShell ()
 convert inputs = do
-  outputT <- getFileName
-  let output = fromText outputT
+  fnT <- getFileName
+  let fn = fromText fnT
   case traverse toText inputs of
         Right inputTs -> do
-           checkFile output
-           printf ("Writing "%fp%"\n") output
-           procs "convert" (inputTs <> ["-quality", "100", outputT]) mempty
+           checkFile fn
+           printf ("Writing "%fp%"\n") fn
+           procs "convert" (inputTs <> ["-quality", "100", fnT]) mempty
            incCounter
         _ -> throwM EncodingError
 
@@ -105,13 +107,13 @@ convertMultiblePictures = do
 
 convertNPictures :: Int -> MyShell ()
 convertNPictures i = do
-  pnms <- getPnmsSorted
+  pnmsSorted <- getPnmsSorted
   let everyN pnms
         | length pnms >= i = (take i pnms :) <$> everyN (drop i pnms)
         | null pnms = pure []
         | otherwise = throwM (PnmsNotDevidableByError i)
-  everyN pnms >>= traverse_ convert
-  traverse_ rm pnms
+  everyN pnmsSorted >>= traverse_ convert
+  traverse_ rm pnmsSorted
 
 sourceToNumPicture :: ScanSource -> Int -> Int
 sourceToNumPicture source =
@@ -136,16 +138,30 @@ data ScanSource =
   Back
   | ADFDuplex
 
+isExitKey :: Char -> Bool
+isExitKey = (`elem` ['q', 'Q', 'X', 'x'])
+
 scanimage :: ScanSource -> [Text] -> MyShell ()
 scanimage source extraOptions = do
   device <- asks scanner
-  sh $
-    inproc
-      "scanimage"
-      (["--batch", "-d", device, "--mode", "Color", "--page-height", "0"]
-       <> scanSourceOption source
-       <> extraOptions)
-      mempty
+  catch
+    ( sh $
+        inproc
+          "scanimage"
+          ( ["--batch", "-d", device, "--mode", "Color", "--page-height", "0"]
+              <> scanSourceOption source
+              <> extraOptions
+          )
+          mempty
+    )
+    ( \(_ :: SomeException) -> do
+        echo "press q,Q,X,x to quit press any other key to try again"
+        liftIO getChar
+          >>= ( \case
+                  (isExitKey -> True) -> mainMenu
+                  _ -> scanimage source extraOptions
+              )
+    )
 
 scanSourceOption :: ScanSource -> [Text]
 scanSourceOption scanSource =
@@ -177,10 +193,7 @@ mainMenu = do
   liftIO getChar >>= \case
     's' -> withPageNumbers Back
     'd' -> withPageNumbers ADFDuplex
-    'x' -> lift $ exit ExitSuccess
-    'X' -> lift $ exit ExitSuccess
-    'q' -> lift $ exit ExitSuccess
-    'Q' -> lift $ exit ExitSuccess
+    (isExitKey -> True) -> lift $ exit ExitSuccess
     _ -> invalid
   mainMenu
 
