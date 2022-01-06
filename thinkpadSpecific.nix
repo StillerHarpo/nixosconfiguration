@@ -81,7 +81,7 @@
   };
 
   age = {
-    sshKeyPaths = [ "/root/.ssh/id_rsa" ];
+    identityPaths = [ "/root/.ssh/id_rsa" ];
     secrets = {
       paperless.file = ./secrets/paperless.age;
       birthdate.file = ./secrets/birthdate.age;
