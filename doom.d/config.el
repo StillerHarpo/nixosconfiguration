@@ -168,3 +168,19 @@
 
 (setq lsp-enable-file-watchers t
       lsp-file-watch-threshold 16384)
+
+;;; org roam config
+(setq org-roam-directory (file-truename "~/Dokumente/org-roam"))
+(setq org-roam-capture-templates
+      '(("d" "default" plain "%?" :target
+         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :unnarrowed t)
+        ("t" "traueme" plain "Zeit :: %^{von}-%^{bis}\n* Traum 1\n%?" :target
+         (file+head "%<%Y%m%d%H%M%S>-Traueme.org" "#+title: Träume vom %<%d.%m.%Y>\n")
+         :unnarrowed t)))
+
+(setq org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* %<%H:%M> :: %?"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: %<%Y-%m-%d>\n"))))

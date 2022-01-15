@@ -11,6 +11,7 @@
     (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
+          sqlite
           gimp
           pamixer
           aria
