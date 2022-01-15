@@ -1,11 +1,11 @@
 # here are every configs that are used on my laptop but not on my workstation
 
 { config, pkgs, home-manager, sane-unstable, borgbackup-local
-, paperless-ng, agenix, pkgs-unstable, lib, ... }:
+, agenix, pkgs-unstable, lib, ... }:
 {
 
   disabledModules = [
-    "services/hardware/sane.nix" "services/misc/paperless.nix"
+    "services/hardware/sane.nix"
     "services/backup/borgbackup.nix"
   ];
 
@@ -14,7 +14,6 @@
     ./linuxSpecific.nix
     sane-unstable
     borgbackup-local
-    paperless-ng
     (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
