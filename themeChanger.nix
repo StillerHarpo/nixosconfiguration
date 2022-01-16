@@ -2,6 +2,8 @@
 defaultShell:
   { config, lib, pkgs, ... }:
 
+  with import ./converters.nix {inherit config lib pkgs;};
+
   let
     alacrittyCommon = {
       env.TERM = "xterm-256color";
@@ -11,7 +13,7 @@ defaultShell:
     };
     alacrittyConf =
       colors: builtins.toFile "alacritty.yml"
-        (lib.replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON ({inherit colors;} // alacrittyCommon)));
+        (toAlacrittyJSON ({inherit colors;} // alacrittyCommon));
     alacrittyDark = alacrittyConf {
       # Default colors
       primary = {
@@ -81,6 +83,10 @@ defaultShell:
           mkdir ${alacrittyConfLoc}
       fi
    '';
+    rofiConf =
+      colors: builtins.toFile "rofi.rsi"
+        toRofiRasi ({inherit colors;} // alacrittyCommon);
+
   in {
     home.packages = with pkgs; with writers; [
       (writeBashBin "darkTheme"
@@ -98,5 +104,4 @@ defaultShell:
             emacsclient -e "(load-theme 'doom-gruvbox-light t)"
         '')
     ];
-    programs.alacritty.enable = true;
   }

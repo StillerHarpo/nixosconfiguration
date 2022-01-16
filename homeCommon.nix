@@ -5,7 +5,7 @@ let
 
 in {
   imports = [
-    (import ./alacritty.nix defaultShell)
+    (import ./themeChanger.nix defaultShell)
   ];
 
 
@@ -21,6 +21,7 @@ in {
   };
 
   programs = {
+    alacritty.enable = true;
     git.enable = true;
 
     direnv = {
