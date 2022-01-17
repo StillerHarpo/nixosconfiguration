@@ -62,7 +62,7 @@
 
 
 (setq org-src-window-setup 'current-window)
-(setq org-agenda-files (list "~/Dokumente" "~/org"))
+(setq org-agenda-files (list "~/Dokumente" "~/org" "~/Dokumente/org-roam/daily/"))
 (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
 
