@@ -126,7 +126,7 @@
       bibtex-completion-notes-path org-ref-pdf-directory)
 
 (setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdfxe %f"))
-(setq rmh-elfeed-org-files (list "~/dotfiles/elfeed.org"))
+(setq rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
 (after! elfeed
   (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
 
