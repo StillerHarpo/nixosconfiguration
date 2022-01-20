@@ -77,30 +77,45 @@ defaultShell:
       };
     };
     alacrittyConfLoc = "~/.config/alacritty";
-    createDir = ''
+    alacrittyConfPath = "${alacrittyConfLoc}/alacritty.yml";
+    rofiCommon.window.fullscreen = true;
+    rofiConf =
+      theme: builtins.toFile "rofi.rasi"
+        (toRofiRasi ({configuration = {inherit theme;};} // rofiCommon));
+    rofiDark = rofiConf "gruvbox-dark";
+    rofiLight = rofiConf "gruvbox-light";
+    rofiConfLoc = "~/.config/rofi";
+    rofiConfPath = "${rofiConfLoc}/config.rasi";
+    prepareFiles = ''
       if [ ! -d ${alacrittyConfLoc} ]
       then
           mkdir ${alacrittyConfLoc}
       fi
+      # make it writable
+      # (cp from nix store generates non writable file otherwise)
+      touch ${alacrittyConfPath}
+      if [ ! -d ${rofiConfLoc} ]
+      then
+          mkdir ${rofiConfLoc}
+      fi
+      touch ${rofiConfPath}
    '';
-    rofiConf =
-      colors: builtins.toFile "rofi.rsi"
-        toRofiRasi ({inherit colors;} // alacrittyCommon);
-
   in {
     home.packages = with pkgs; with writers; [
       (writeBashBin "darkTheme"
         ''
             ${feh}/bin/feh --bg-scale ~/scripts/var/black.png
-            ${createDir}
-            cp ${alacrittyDark} ${alacrittyConfLoc}/alacritty.yml
+            ${prepareFiles}
+            cp ${alacrittyDark} ${alacrittyConfPath}
+            cp ${rofiDark} ${rofiConfPath}
             emacsclient -e "(load-theme 'doom-gruvbox t)"
         '')
       (writeBashBin "lightTheme"
         ''
             ${feh}/bin/feh --bg-scale ~/scripts/var/white.png
-            ${createDir}
-            cp ${alacrittyLight} ${alacrittyConfLoc}/alacritty.yml
+            ${prepareFiles}
+            cp ${alacrittyLight} ${alacrittyConfPath}
+            cp ${rofiLight} ${rofiConfPath}
             emacsclient -e "(load-theme 'doom-gruvbox-light t)"
         '')
     ];
