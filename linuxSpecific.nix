@@ -111,6 +111,8 @@
         }
         '';
   };
+
+  systemd.packages = [ pkgs.dconf ];
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
