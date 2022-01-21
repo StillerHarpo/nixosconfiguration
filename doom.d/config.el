@@ -181,5 +181,5 @@
          :target (file+head "%<%Y-%m-%d>.org"
                             "#+title: %<%Y-%m-%d>\n"))
         ("t" "traueme" plain "#+zeit: %^{von}-%^{bis}\n* Traum 1\n%?" :target
-         (file+head "%<%Y%m%d%H%M%S>-Traueme.org" "#+title: Träume vom %<%d.%m.%Y>\n")
-         :unnarrowed t)))
+         (file+head "%<%Y-%m-%d>-Traueme.org" "#+title: Träume vom %<%d.%m.%Y>\n")
+        :unnarrowed t)))
