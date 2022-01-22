@@ -172,9 +172,9 @@
 ;;; org roam config
 (setq org-roam-directory (file-truename "~/Dokumente/org-roam"))
 (setq org-roam-capture-templates
-      '("d" "default" plain "%?" :target
+      '(("d" "default" plain "%?" :target
         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
-        :unnarrowed t))
+        :unnarrowed t)))
 (setq org-roam-dailies-capture-templates
       '(("d" "default" entry
          "* %<%H:%M> :: %?"
