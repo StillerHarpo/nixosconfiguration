@@ -192,3 +192,5 @@
         :unnarrowed t)))
 
 (setq org-read-date-force-compatible-dates nil)
+
+(setq org-modules '(ol-bibtex org-habit))
