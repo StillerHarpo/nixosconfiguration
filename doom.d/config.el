@@ -178,6 +178,9 @@
 (setq org-roam-capture-templates
       '(("d" "default" plain "%?" :target
         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
+        :unnarrowed t)
+        ("l" "location" plain "* %A %?" :target
+        (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
         :unnarrowed t)))
 (setq org-roam-dailies-capture-templates
       '(("d" "default" entry
