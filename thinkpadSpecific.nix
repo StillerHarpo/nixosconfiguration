@@ -32,10 +32,20 @@
       }
       {
         pkgs = with pkgs; [
-          agenix.defaultPackage.x86_64-linux
           tigervnc
         ];
         profile = defaultProfile;
+      }
+      {
+        pkgs = with pkgs; [
+          agenix.defaultPackage.x86_64-linux
+        ];
+          profile = ''
+            file,
+            deny rw /home/florian/.password-store/**,
+            deny rw /home/florian/.gnupg/**,
+            deny rw /home/florian/.ssh/**,
+          '';
       }
     ])
     ];
