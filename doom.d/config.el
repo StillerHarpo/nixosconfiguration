@@ -171,6 +171,10 @@
 
 ;;; org roam config
 (setq org-roam-directory (file-truename "~/Dokumente/org-roam"))
+(setq org-capture-templates
+      '(("d" "default" entry
+         (file+headline +org-capture-todo-file "Inbox")
+         "* [ ] %?\n%A\n" :prepend t)))
 (setq org-roam-capture-templates
       '(("d" "default" plain "%?" :target
         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
