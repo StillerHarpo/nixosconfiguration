@@ -190,3 +190,5 @@
         ("t" "traueme" plain "#+zeit: %^{von}-%^{bis}\n* Traum 1\n%?" :target
          (file+head "%<%Y-%m-%d>-Traueme.org" "#+title: Träume vom %<%d.%m.%Y>\n")
         :unnarrowed t)))
+
+(setq org-read-date-force-compatible-dates nil)
