@@ -30,6 +30,8 @@ in
     deny rw /home/florian/.password-store,
     deny rw /home/florian/.mozilla/**,
     deny rw /home/florian/.mozilla,
+    deny rw /home/florian/Maildir/**,
+    deny rw /home/florian/Maildir,
   '';
   generate =
     pkgsAppArmors:
