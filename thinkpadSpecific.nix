@@ -129,7 +129,7 @@
     };
 
     borgbackup.jobs."florian" = {
-      paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" ];
+      paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" "/home/florian/MailDir" ];
       repo = "borg@45.157.177.92:.";
       encryption = {
         mode = "repokey-blake2";
