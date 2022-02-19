@@ -22,7 +22,15 @@ in {
       settings.keyserver = hkps://keys.openpgp.org;
     };
 
-    notmuch.enable = true;
+    notmuch =
+      let
+        notmuchTags = with builtins; toFile "notmuchTags" (readFile ./notmuchTags);
+      in {
+        enable = true;
+        hooks.postNew = ''
+          notmuch tag --input=${notmuchTags}
+        '';
+      };
   };
 
   accounts.email = {
