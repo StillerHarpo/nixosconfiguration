@@ -141,6 +141,24 @@
       restartOnFail.enable = true;
     };
 
+    syncthing = {
+      enable = true;
+      user = "florian";
+      dataDir = "/home/florian/.syncthing";
+      devices."android".id = "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+      folders = {
+        "android-photos" = {
+          path = "/home/florian/android/photos";
+          devices = [ "android" ];
+        };
+        "android-org" = {
+          path = "/home/florian/android/org";
+          devices = [ "android" ];
+        };
+      };
+
+    };
+
   };
 
   # Bluetooth sound
