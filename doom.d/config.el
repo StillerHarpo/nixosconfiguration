@@ -65,6 +65,10 @@
 (setq org-agenda-files (list "~/android/org/" "~/org" "~/Dokumente/org-roam/" "~/Dokumente/org-roam/daily"))
 (setq org-refile-targets '((nil :maxlevel . 9)
                              (org-agenda-files :maxlevel . 9)))
+;; automatic saves of org buffers
+(advice-add 'org-refile :after 'org-save-all-org-buffers)
+(advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
+
 
 (defun current-dreams ()
   (interactive)
