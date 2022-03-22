@@ -129,7 +129,13 @@
     };
 
     borgbackup.jobs."florian" = {
-      paths = [  "/home/florian/Dokumente" "/home/florian/.password-store" "/home/florian/MailDir" ];
+      paths = [
+        "/var/lib/paperless/media/documents/archive"
+        "/home/florian/Dokumente"
+        "/home/florian/.password-store"
+        "/home/florian/Maildir"
+        "/home/florian/android"
+      ];
       repo = "borg@45.157.177.92:.";
       encryption = {
         mode = "repokey-blake2";
