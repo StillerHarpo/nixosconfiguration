@@ -13,6 +13,7 @@
         pkgs = with pkgs; [
           sqlite
           tesseract4
+          poppler_utils
           gimp
           pamixer
           aria
