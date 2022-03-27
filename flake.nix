@@ -42,8 +42,9 @@
       pkgs = mkPkgs (import nixpkgs) [
         (_: super: with pkgs-unstable; {
           inherit sane-drivers sane-backends xsane hplip;
-          inherit (pkgs-newest) steam signal;
+          inherit (pkgs-newest) signal;
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
+          steam = pkgs-newest.steam.override { extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ]; };
  })
       ];
 
