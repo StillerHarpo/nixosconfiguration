@@ -45,33 +45,33 @@
           inherit (pkgs-newest) signal;
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
           steam = pkgs-newest.steam.override { extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ]; };
- })
+        })
       ];
 
     in {
       nixosConfigurations.nixos-thinkpad = nixpkgs.lib.nixosSystem {
-      inherit system;
-      specialArgs = {
-        inherit pkgs pkgs-unstable agenix;
-        pkgs-master = mkPkgs (import nixpkgs-master) [];
-        borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
-        sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
-      };
-      modules = [
-        nixpkgs.nixosModules.notDetected
-        home-manager.nixosModules.home-manager
-        {
-          home-manager.users.florian = { pkgs, ... }: {
-            imports = [ nix-doom-emacs.hmModule ];
-            programs.doom-emacs = {
-              enable = true;
-              doomPrivateDir = ./doom.d;
+        inherit system;
+        specialArgs = {
+          inherit pkgs pkgs-unstable agenix;
+          pkgs-master = mkPkgs (import nixpkgs-master) [];
+          borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
+          sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
+        };
+        modules = [
+          nixpkgs.nixosModules.notDetected
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.users.florian = { pkgs, ... }: {
+              imports = [ nix-doom-emacs.hmModule ];
+              programs.doom-emacs = {
+                enable = true;
+                doomPrivateDir = ./doom.d;
+              };
             };
-          };
-        }
-        ./thinkpadSpecific.nix
-        agenix.nixosModules.age
-      ];
+          }
+          ./thinkpadSpecific.nix
+          agenix.nixosModules.age
+        ];
       };
       devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
         returnShellEnv = true;
