@@ -195,6 +195,7 @@
     #      range 10.0.0.150 10.0.0.250;
     #    }
     # '';
+    mullvad-vpn.enable = true;
     batteryNotifier.enable = true;
     synergy.server.enable = true;
     printing.enable = true;

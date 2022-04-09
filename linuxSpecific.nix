@@ -11,6 +11,7 @@
     (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
+          mullvad-vpn
           sqlite
           tesseract4
           poppler_utils
