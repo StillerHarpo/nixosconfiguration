@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, pkgs-unstable, pkgs-master, ... }:
+{ config, pkgs, pkgs-unstable, pkgs-master, agenix, ... }:
 
 {
   imports = [
@@ -90,6 +90,8 @@
       }
     ])
   ];
+
+  age.secrets.florian.file = ./secrets/florian.age;
 
   environment.systemPackages = [ pkgs-master.signal-desktop pkgs.sudo ];
   security.apparmor.policies.signal-desktop = {
@@ -208,16 +210,19 @@
     gnupg.dirmngr.enable = true;
   };
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.extraUsers.florian= {
-    isNormalUser = true;
-    uid = 1000;
-    createHome = true;
-    extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" "scan" "lp"];
+  users = {
+    mutableUsers = false;
+    users = {
+      florian = {
+        isNormalUser = true;
+        passwordFile = config.age.secrets.florian.path;
+        extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" "scan" "lp"];
+      };
+      playground = {
+        isNormalUser = true;
+      };
+    };
   };
-
-  # passwordless sudo
-  security.sudo.wheelNeedsPassword = false;
 
   hardware.opengl = {
     driSupport32Bit = true;
