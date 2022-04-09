@@ -71,6 +71,7 @@
           networkmanager_openvpn networkmanager_dmenu
           git-crypt
           slack
+          nixopsUnstable
         ];
         profile = defaultProfile;
       }

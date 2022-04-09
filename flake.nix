@@ -73,6 +73,16 @@
           agenix.nixosModules.age
         ];
       };
+      nixopsConfigurations.default = {
+        inherit nixpkgs;
+        network.storage.memory = {};
+        desktop =
+          { config, pkgs, ... }:
+          {
+            imports = [ ./desktopSpecific.nix ];
+            deployment.targetHost = "192.168.178.24";
+          };
+      };
       devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
         returnShellEnv = true;
         root = ./scripts/.;
