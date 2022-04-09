@@ -2,12 +2,11 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, pkgs-unstable, pkgs-master, agenix, ... }:
+{ config, pkgs, pkgs-unstable, pkgs-master, agenix, defaultShell, ... }:
 
 {
   imports = [
-    ./pia-openvpn.nix
-    ./common.nix
+    ../configuration.nix
     (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
@@ -93,7 +92,7 @@
     ])
   ];
 
-  age.secrets.florian.file = ./secrets/florian.age;
+  age.secrets.florian.file = thinkpad/secrets/florian.age;
 
   environment.systemPackages = [ pkgs-master.signal-desktop pkgs.sudo ];
   security.apparmor.policies.signal-desktop = {
@@ -108,7 +107,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    users.florian = import ./homeLinuxSpecific.nix;
+    users.florian = import ./home.nix defaultShell;
   };
 
   boot = {

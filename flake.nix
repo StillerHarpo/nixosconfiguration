@@ -56,6 +56,7 @@
           pkgs-master = mkPkgs (import nixpkgs-master) [];
           borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
           sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
+          defaultShell = "zsh";
         };
         modules = [
           nixpkgs.nixosModules.notDetected
@@ -69,7 +70,7 @@
               };
             };
           }
-          ./thinkpadSpecific.nix
+          ./linux/thinkpad/configuration.nix
           agenix.nixosModules.age
         ];
       };
@@ -79,7 +80,7 @@
         desktop =
           { config, pkgs, ... }:
           {
-            imports = [ ./desktopSpecific.nix ];
+            imports = [ .linux/desktop/configuration.nix ];
             deployment.targetHost = "192.168.178.24";
           };
       };

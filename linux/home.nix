@@ -1,3 +1,4 @@
+defaultShell:
 { config, lib, pkgs, ... }:
 
 let
@@ -7,9 +8,10 @@ let
 
 in {
   imports = [
-    ./homeCommon.nix
-    ./zshLinux.nix
+    (import ../home.nix defaultShell)
+    ./thinkpad/zsh.nix
     ./defaultApplications.nix
+    (import ./themeChanger.nix defaultShell)
   ];
 
   programs = {
@@ -24,7 +26,7 @@ in {
 
     notmuch =
       let
-        notmuchTags = with builtins; toFile "notmuchTags" (readFile ./notmuchTags);
+        notmuchTags = with builtins; toFile "notmuchTags" (readFile ../notmuchTags);
       in {
         enable = true;
         hooks.postNew = ''

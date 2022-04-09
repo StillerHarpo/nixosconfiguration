@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, defaultShell, ... }:
 let
   home-manager = builtins.fetchGit {
     url = "https://github.com/rycee/home-manager.git";
@@ -8,7 +8,7 @@ in
 {
 
   imports = [
-    ./common.nix (import "${home-manager}/nix-darwin")
+    ../configuration.nix (import "${home-manager}/nix-darwin")
   ];
 
   environment.systemPackages = with pkgs; ([
@@ -25,7 +25,7 @@ in
     home = "/Users/florianengel";
   };
 
-  home-manager.users.florianengel = import ./homeMacSpecific.nix;
+  home-manager.users.florianengel = import ./home.nix defaultShell;
 
   nixpkgs.config = {
     # Allow proprietary packages

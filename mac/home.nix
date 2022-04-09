@@ -8,8 +8,8 @@ let
 in
 {
   imports = [
-    ./homeCommon.nix
-    ./zshMac.nix
+    ../home.nix
+    ./zsh.nix
   ];
   config.home.file."Applications/Home Manager Apps".source = "${appEnv}/Applications";
 }

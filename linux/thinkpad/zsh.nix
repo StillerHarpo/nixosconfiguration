@@ -1,5 +1,5 @@
 {
-  imports = [ ./zshCommon.nix ];
+  imports = [ ../../zsh.nix ];
   programs.zsh = {
     shellAliases.ls = "ls -lh --color=auto";
     oh-my-zsh.theme = "agnoster";

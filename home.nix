@@ -1,13 +1,7 @@
-{ config, lib, pkgs, ... }:
+defaultShell:
+{ config, lib, pkgs,  ... }:
 
-let
-  defaultShell = "zsh";
-
-in {
-  imports = [
-    (import ./themeChanger.nix defaultShell)
-  ];
-
+{
 
   home = {
     sessionVariables = {
