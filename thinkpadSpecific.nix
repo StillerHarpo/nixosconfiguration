@@ -23,12 +23,7 @@
             { libraries = with haskellPackages; [turtle extra]; }
             ./scripts/Scan.hs)
         ];
-        profile = ''
-          file,
-          deny rw /home/florian/.password-store/**,
-          deny rw /home/florian/.gnupg/**,
-          deny rw /home/florian/.ssh/**,
-          '';
+        profile = generateFileRules [];
       }
       {
         pkgs = with pkgs; [
@@ -41,10 +36,8 @@
           agenix.defaultPackage.x86_64-linux
         ];
           profile = ''
-            file,
-            deny rw /home/florian/.password-store/**,
-            deny rw /home/florian/.gnupg/**,
-            deny rw /home/florian/.ssh/**,
+            ${generateFileRules []}
+            ${pkgs.openssh}/* cix,
           '';
       }
     ])

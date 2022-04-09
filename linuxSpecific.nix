@@ -77,28 +77,15 @@
       {
         pkgs = [ pkgs.pass ];
         profile = ''
-          file,
-          deny rw /home/florian/Dokumente/**,
-          deny rw /home/florian/.ssh/**,
+          ${generateFileRules ["pass"]}
+          ${pkgs.gnupg}/* cix,
         '';
       }
       {
         pkgs = [ pkgs.firefox ];
         profile = ''
-          file,
           network,
-    deny rw /root/.ssh/**,
-    deny rw /root/.ssh,
-    deny rw /root/.gnupg/**,
-    deny rw /root/.gnupg,
-    deny rw /home/florian/Dokumente/**,
-    deny rw /home/florian/Dokumente,
-    deny rw /home/florian/.ssh/**,
-    deny rw /home/florian/.ssh,
-    deny rw /home/florian/.gnupg/**,
-    deny rw /home/florian/.gnupg,
-    deny rw /home/florian/.password-store/**,
-    deny rw /home/florian/.password-store,
+          ${generateFileRules ["firefox"]}
         '';
       }
     ])
