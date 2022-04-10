@@ -1,7 +1,7 @@
 # here are every configs that are used on my laptop but not on my workstation
 
 { config, pkgs, home-manager, sane-unstable, borgbackup-local
-, agenix, pkgs-unstable, lib, ... }:
+, defaultShell, pkgs-master, agenix, pkgs-unstable, lib, ... }:
 {
 
   disabledModules = [
@@ -15,7 +15,7 @@
     ../configuration.nix
     sane-unstable
     borgbackup-local
-    (with (import ../apparmor.nix); generate [
+    (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
           pkgs-unstable.xsane
@@ -28,9 +28,85 @@
       }
       {
         pkgs = with pkgs; [
+          mullvad-vpn
+          sqlite
+          tesseract4
+          poppler_utils
+          gimp
+          pamixer
+          aria
+          imagemagick
+          pavucontrol
+          arandr
+          networkmanagerapplet
+          mtpfs
+          wget
+          cachix
+          vim
+          shellcheck
+          ##################### Games ###############
+          multimc                 # minecraft launcher
+          openjdk                 # java
+          sshfs
+          dzen2
+          chromium
+          w3m
+          passff-host
+          neomutt
+          mu
+          toxic
+          poppler
+          tuir
+          xsel
+          ag
+          zathura
+          spotify
+          mpv
+          rlwrap
+          you-get
+          xosd
+          pandoc
+          (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
+          python37Packages.pygments
+          bc
+          feh
+          anki
+          nix-prefetch-git
+          pkgs-master.youtube-dl
+          libnotify
+          unzip
+          rofi
+          wmctrl
+          unclutter-xfixes
+          psmisc
+          cabal2nix
+          pkgs-master.haskellPackages.implicit-hie
+          pkgs-master.niv
+          pkgs-unstable.stack
+          #(haskellPackages.ghcWithPackages (self : with self;
+          #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+          #    adjunctions Agda ]))
+          networkmanager_openvpn networkmanager_dmenu
+          git-crypt
+          slack
+          nixopsUnstable
           tigervnc
         ];
         profile = defaultProfile;
+      }
+      {
+        pkgs = [ pkgs.pass ];
+        profile = ''
+          ${generateFileRules ["pass"]}
+          ${pkgs.gnupg}/* cix,
+        '';
+      }
+      {
+        pkgs = [ pkgs.firefox ];
+        profile = ''
+          network,
+          ${generateFileRules ["firefox"]}
+        '';
       }
       {
         pkgs = with pkgs; [
@@ -41,8 +117,28 @@
             ${pkgs.openssh}/* cix,
           '';
       }
+      {
+        pkgs = [ pkgs-master.signal-desktop ];
+        profile = ''
+          capability,
+          ${(import ./apparmor.nix).defaultProfile}
+        '';
+      }
     ])
     ];
+
+  fonts.fonts = [ pkgs.terminus_font ];
+
+  location = import ./cords.nix;
+
+
+  systemd.packages = [ pkgs.dconf ];
+
+  home-manager.users.florian = import ./home/configuration.nix defaultShell;
+
+  environment = {
+    pathsToLink = [ "/share/agda" "/share/zsh" ];
+  };
 
   security = {
     apparmor.enable = true;
@@ -60,13 +156,31 @@
   age = {
     identityPaths = [ "/root/.ssh/id_rsa" ];
     secrets = {
+      florian.file = ./secrets/florian.age;
       paperless.file = ./secrets/paperless.age;
       birthdate.file = ./secrets/birthdate.age;
     };
   };
 
+  users = {
+    users = {
+      florian = {
+        passwordFile = config.age.secrets.florian.path;
+        extraGroups = [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp"];
+      };
+      playground = {
+        isNormalUser = true;
+      };
+    };
+  };
+
   # powerManagement.enable = false;
   services = {
+
+    pipewire.media-session.config.bluez-monitor.properties.bluez5.msbc-support = true;
+
+    unclutter-xfixes.enable = true;
+
     # Go in hibernate at lid
     logind = {
       lidSwitch = "hibernate";
@@ -76,6 +190,8 @@
     # mouse pad
     xserver = {
       resolutions = [{x = "1920"; y = "1080";} {x = "2560"; y = 1440;}];
+      windowManager.xmonad.extraPackages = haskellPackages:
+        with haskellPackages; [MissingH protolude];
       synaptics = {
         enable = true;
         twoFingerScroll = true;
@@ -83,6 +199,21 @@
     };
 
     blueman.enable = true;
+
+    hoogle.enable = true;
+    redshift = {
+      enable = true;
+      brightness = {
+        day = "0.8";
+        night = "0.7";
+      };
+      temperature.night = 1501;
+    };
+    picom = {
+      enable = true;
+      inactiveOpacity = 0.8;
+      opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
+    };
 
     paperless-ng = {
       enable = true;
@@ -187,6 +318,10 @@
       hostNames = [ "45.157.177.92" ];
       publicKeyFile = ./backup.pub;
     };
+    slock.enable = true;
+    adb.enable = true;
+    fuse.userAllowOther = true;
+    gnupg.dirmngr.enable = true;
   };
 
   systemd = {

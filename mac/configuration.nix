@@ -28,8 +28,6 @@ in
   home-manager.users.florianengel = import ./home.nix defaultShell;
 
   nixpkgs.config = {
-    # Allow proprietary packages
-    allowUnfree = true;
     overlays = [
       (self: super: {
          bashInteractive = super.bashInteractive_5;

@@ -8,8 +8,8 @@ let
 
 in {
   imports = [
-    (import ../home.nix defaultShell)
-    ./thinkpad/zsh.nix
+    (import ../../../home.nix defaultShell)
+    ./zsh.nix
     ./defaultApplications.nix
     (import ./themeChanger.nix defaultShell)
   ];
@@ -26,7 +26,7 @@ in {
 
     notmuch =
       let
-        notmuchTags = with builtins; toFile "notmuchTags" (readFile ../notmuchTags);
+        notmuchTags = with builtins; toFile "notmuchTags" (readFile ./notmuchTags);
       in {
         enable = true;
         hooks.postNew = ''

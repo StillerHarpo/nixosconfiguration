@@ -2,7 +2,7 @@ defaultShell:
 # FIXME Use right font for mac
 { config, lib, pkgs, ... }:
 
-with import ../converters.nix {inherit config lib pkgs;};
+with import ../../../converters.nix {inherit config lib pkgs;};
 
 let
   alacrittyCommon = {

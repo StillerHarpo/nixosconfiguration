@@ -1,114 +1,9 @@
-# Edit this configuration file to define what should be installed on
-# your system.  Help is available in the configuration.nix(5) man page
-# and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, pkgs-unstable, pkgs-master, agenix, defaultShell, ... }:
+{ config, home-manager, pkgs, ... }:
 
 {
   imports = [
     ../configuration.nix
-    (with (import ./apparmor.nix); generate [
-      {
-        pkgs = with pkgs; [
-          mullvad-vpn
-          sqlite
-          tesseract4
-          poppler_utils
-          gimp
-          pamixer
-          aria
-          imagemagick
-          pavucontrol
-          arandr
-          networkmanagerapplet
-          mtpfs
-          wget
-          cachix
-          vim
-          shellcheck
-          ##################### Games ###############
-          multimc                 # minecraft launcher
-          openjdk                 # java
-          sshfs
-          dzen2
-          chromium
-          w3m
-          passff-host
-          neomutt
-          mu
-          toxic
-          poppler
-          tuir
-          xsel
-          ag
-          zathura
-          spotify
-          mpv
-          rlwrap
-          you-get
-          xosd
-          pandoc
-          (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
-          python37Packages.pygments
-          bc
-          feh
-          anki
-          nix-prefetch-git
-          pkgs-master.youtube-dl
-          libnotify
-          unzip
-          rofi
-          wmctrl
-          unclutter-xfixes
-          psmisc
-          cabal2nix
-          pkgs-master.haskellPackages.implicit-hie
-          pkgs-master.niv
-          pkgs-unstable.stack
-          #(haskellPackages.ghcWithPackages (self : with self;
-          #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-          #    adjunctions Agda ]))
-          networkmanager_openvpn networkmanager_dmenu
-          git-crypt
-          slack
-          nixopsUnstable
-        ];
-        profile = defaultProfile;
-      }
-      {
-        pkgs = [ pkgs.pass ];
-        profile = ''
-          ${generateFileRules ["pass"]}
-          ${pkgs.gnupg}/* cix,
-        '';
-      }
-      {
-        pkgs = [ pkgs.firefox ];
-        profile = ''
-          network,
-          ${generateFileRules ["firefox"]}
-        '';
-      }
-    ])
   ];
-
-  age.secrets.florian.file = thinkpad/secrets/florian.age;
-
-  environment.systemPackages = [ pkgs-master.signal-desktop pkgs.sudo ];
-  security.apparmor.policies.signal-desktop = {
-    profile = ''${pkgs-master.signal-desktop}/bin/signal-desktop {
-          capability,
-          ${(import ./apparmor.nix).defaultProfile}
-        }
-        '';
-  };
-
-  systemd.packages = [ pkgs.dconf ];
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    users.florian = import ./home.nix defaultShell;
-  };
 
   boot = {
     # Use the systemd-boot EFI boot loader.
@@ -129,21 +24,6 @@
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
 
-  environment = {
-    pathsToLink = [ "/share/agda" "/share/zsh" ];
-  };
-
-  fonts.fonts = [ pkgs.terminus_font ];
-
-  location = import ./cords.nix;
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
   services = {
     dbus.packages = [ pkgs.gnome3.dconf ];
     # Enable the X11 windowing system.
@@ -165,7 +45,6 @@
         xmonad = {
           enable = true;
           enableContribAndExtras = true;
-          extraPackages = haskellPackages: with haskellPackages; [MissingH protolude];
         };
       };
       displayManager = {
@@ -176,25 +55,9 @@
         };
       };
     };
-    unclutter-xfixes.enable = true;
 
-    hoogle.enable = true;
-    redshift = {
-      enable = true;
-      brightness = {
-        day = "0.8";
-        night = "0.7";
-      };
-      temperature.night = 1501;
-    };
-    picom = {
-      enable = true;
-      inactiveOpacity = 0.8;
-      opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
-    };
     pipewire = {
       enable = true;
-      media-session.config.bluez-monitor.properties.bluez5.msbc-support = true;
       alsa = {
         enable = true;
         support32Bit = true;
@@ -205,10 +68,6 @@
 
   programs = {
     steam.enable = true;
-    slock.enable = true;
-    adb.enable = true;
-    fuse.userAllowOther = true;
-    gnupg.dirmngr.enable = true;
   };
 
   users = {
@@ -216,11 +75,7 @@
     users = {
       florian = {
         isNormalUser = true;
-        passwordFile = config.age.secrets.florian.path;
-        extraGroups = [ "adbusers" "wheel" "networkmanager" "audio" "docker" "video" "scan" "lp"];
-      };
-      playground = {
-        isNormalUser = true;
+        extraGroups = [ "audio" "video" ];
       };
     };
   };
@@ -244,6 +99,11 @@
       keep-outputs = true
       keep-derivations = true
     '';
+  };
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.

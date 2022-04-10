@@ -39,13 +39,17 @@
       pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
       pkgs-master = mkPkgs (import nixpkgs-master) [];
       pkgs-newest = mkPkgs (import nixpkgs-newest) [];
+      steamOverlay =
+        _: super: with pkgs-unstable; {
+          steam = pkgs-newest.steam.override { extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ]; };
+        };
       pkgs = mkPkgs (import nixpkgs) [
         (_: super: with pkgs-unstable; {
           inherit sane-drivers sane-backends xsane hplip;
           inherit (pkgs-newest) signal;
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
-          steam = pkgs-newest.steam.override { extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ]; };
         })
+        steamOverlay
       ];
 
     in {
@@ -80,13 +84,20 @@
         desktop =
           { config, pkgs, ... }:
           {
-            imports = [ .linux/desktop/configuration.nix ];
+            imports = [
+              home-manager.nixosModules.home-manager
+              ./linux/desktop/configuration.nix
+            ];
             deployment.targetHost = "192.168.178.24";
+            nixpkgs.config = {
+              allowUnfree = true;
+              overalys = [ steamOverlay ];
+            };
           };
       };
       devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
         returnShellEnv = true;
-        root = ./scripts/.;
+        root = ./.;
         withHoogle = false;
         modifier = with pkgs; with haskellPackages; drv:
           haskell.lib.overrideCabal drv (attrs: {
@@ -95,6 +106,7 @@
               haskell-language-server
               brittany
               hlint
+              x11
             ];
           });
       };

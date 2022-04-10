@@ -1,0 +1,6 @@
+cradle:
+  cabal:
+    - path: "./scripts/Scan.hs"
+      component: "scripts:exe:scans"
+    - path: "./linux/desktop/home/xmonad.hs"
+      component: "scripts:exe:xmonadConf"

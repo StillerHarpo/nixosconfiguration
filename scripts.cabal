@@ -21,7 +21,7 @@ maintainer:         engelflorian@posteo.de
 -- category:
 
 executable scans
-    main-is:          Scan.hs
+    main-is:          scripts/Scan.hs
 
     -- Modules included in this executable, other than Main.
     -- other-modules:
@@ -30,3 +30,12 @@ executable scans
     -- other-extensions:
     build-depends:    base, turtle, transformers, foldl, text, time, exceptions, extra
     default-language: Haskell2010
+
+executable xmonadConf
+  main-is:             linux/desktop/home/xmonad.hs
+  -- other-extensions:
+  build-depends:       base,
+                       xmonad,
+                       xmonad-contrib
+  -- hs-source-dirs:
+  default-language:    Haskell2010
