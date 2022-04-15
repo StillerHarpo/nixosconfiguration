@@ -10,5 +10,5 @@ main = xmonad
     layoutHook = noBorders Full,
     startupHook = do
       setWMName "LG3D"
-      spawnOn "1" "sleep 5; steam"
+      spawnOn "1" "sleep 5; steamLoginWrapper"
   }

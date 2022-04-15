@@ -1,4 +1,4 @@
-{ config, home-manager, pkgs, ... }:
+{ config, home-manager, pkgs, agenix, ... }:
 
 {
   imports = [
@@ -85,6 +85,7 @@
     extraPackages32 = with pkgs.pkgsi686Linux; [ libva ];
   };
 
+  age.identityPaths = [ "/root/.ssh/id_rsa" ];
 
   nix = {
     binaryCaches = [

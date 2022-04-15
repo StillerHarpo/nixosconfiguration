@@ -153,13 +153,10 @@
     firewall.allowedTCPPorts = [ 24800 ];
   };
 
-  age = {
-    identityPaths = [ "/root/.ssh/id_rsa" ];
-    secrets = {
-      florian.file = ./secrets/florian.age;
-      paperless.file = ./secrets/paperless.age;
-      birthdate.file = ./secrets/birthdate.age;
-    };
+  age.secrets = {
+    florian.file = ./secrets/florian.age;
+    paperless.file = ./secrets/paperless.age;
+    birthdate.file = ./secrets/birthdate.age;
   };
 
   users = {

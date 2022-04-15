@@ -86,6 +86,7 @@
           {
             imports = [
               home-manager.nixosModules.home-manager
+              agenix.nixosModules.age
               ./linux/desktop/configuration.nix
             ];
             deployment.targetHost = "192.168.178.24";
