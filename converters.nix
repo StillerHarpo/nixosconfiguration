@@ -47,4 +47,15 @@ in
     ]);
   toAlacrittyJSON = attrs:
     (replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON attrs));
+  toGtk3Ini = generators.toINI {
+    mkKeyValue = key: value:
+      let
+        value' = if isBool value then
+          (if value then "true" else "false")
+        else
+          toString value;
+      in "${key}=${value'}";
+  };
+  toDconfIni = generators.toINI { mkKeyValue = key: value: "${key}=${toString (hm.gvariant.mkValue value)}"; };
+
 }

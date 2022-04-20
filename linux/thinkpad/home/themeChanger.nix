@@ -84,8 +84,40 @@ let
       (toRofiRasi ({configuration = {inherit theme;};} // rofiCommon));
   rofiDark = rofiConf "gruvbox-dark";
   rofiLight = rofiConf "gruvbox-light";
+  gtk3Conf =
+    theme: builtins.toFile "settings.ini"
+      (toGtk3Ini { Settings = { gtk-icon-theme-name = theme; gtk-theme-name = theme; }; });
+  gtk3ConfDark = gtk3Conf "Adwaita-dark";
+  gtk3ConfLight = gtk3Conf "Adwaita";
+  gtk2Conf =
+    theme: builtins.toFile ".gtkrc-2.0"
+      ''
+      gtk-icon-theme-name = "${theme}"
+      gtk-theme-name = "${theme}"
+      '';
+  gtk2ConfDark = gtk2Conf "Adwaita-dark";
+  gtk2ConfLight = gtk2Conf "Adwaita";
+  gtk2ConfPath = "~/.gtkrc-2.0";
+  dconf =
+    theme: builtins.toFile "tc-${theme}.ini"
+      (toDconfIni {
+        "org/gnome/desktop/interface" = {
+          gtk-theme = theme;
+          icon-theme = theme;
+        };
+      });
+  dconfDark = dconf "Adwaita-dark";
+  dconfLight = dconf "Adwaita";
   rofiConfLoc = "~/.config/rofi";
   rofiConfPath = "${rofiConfLoc}/config.rasi";
+  gtk3ConfLoc  = "~/.config/gtk-3.0";
+  gtk3ConfPath = "${gtk3ConfLoc}/settings.ini";
+  xsettingsd =
+    theme: builtins.toFile ".xsettingsd"
+      ''Net/ThemeName "${theme}"'';
+  xsettingsdDark = xsettingsd "Adwaita-dark";
+  xsettingsdLight = xsettingsd "Adwaita";
+  xsettingsdPath = "~/.xsettingsd";
   prepareFiles = ''
       if [ ! -d ${alacrittyConfLoc} ]
       then
@@ -99,16 +131,37 @@ let
           mkdir ${rofiConfLoc}
       fi
       touch ${rofiConfPath}
+      if [ ! -d ${gtk3ConfLoc} ]
+      then
+          mkdir ${gtk3ConfLoc}
+      fi
+      touch ${gtk3ConfPath}
+      touch ${gtk2ConfPath}
+      touch ${xsettingsdPath}
    '';
+  runXsettings = ''
+      if [ $(pgrep xsettingsd) ]
+      then
+         killall -HUP xsettingsd
+      else
+         ${pkgs.xsettingsd}/bin/xsettingsd &
+      fi
+  '';
 in {
   home.packages = with pkgs; with writers; [
+    gnome3.adwaita-icon-theme
     (writeBashBin "darkTheme"
       ''
             ${feh}/bin/feh --bg-scale ~/scripts/var/black.png
             ${prepareFiles}
             cp ${alacrittyDark} ${alacrittyConfPath}
             cp ${rofiDark} ${rofiConfPath}
+            cp ${gtk2ConfDark} ${gtk2ConfPath}
+            cp ${gtk3ConfDark} ${gtk3ConfPath}
+            ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
             emacsclient -e "(load-theme 'doom-gruvbox t)"
+            cp ${xsettingsdDark} ${xsettingsdPath}
+            ${runXsettings}
         '')
     (writeBashBin "lightTheme"
       ''
@@ -116,7 +169,12 @@ in {
             ${prepareFiles}
             cp ${alacrittyLight} ${alacrittyConfPath}
             cp ${rofiLight} ${rofiConfPath}
+            cp ${gtk2ConfLight} ${gtk2ConfPath}
+            cp ${gtk3ConfLight} ${gtk3ConfPath}
+            ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
             emacsclient -e "(load-theme 'doom-gruvbox-light t)"
+            cp ${xsettingsdLight} ${xsettingsdPath}
+            ${runXsettings}
         '')
   ];
 }
