@@ -372,6 +372,21 @@
         "type": "github"
       }
     },
+    "nur": {
+      "locked": {
+        "lastModified": 1650681389,
+        "narHash": "sha256-76az6Z4umzHZcMi2N9cdL5gJkxagsJEHveO4+l7wAdU=",
+        "owner": "nix-community",
+        "repo": "NUR",
+        "rev": "bd3cf2bcbd62f3bc66e90c1dd5a00fa933cb861e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "NUR",
+        "type": "github"
+      }
+    },
     "ob-racket": {
       "flake": false,
       "locked": {
@@ -479,7 +494,8 @@
         "nixpkgs-borgbackup": "nixpkgs-borgbackup",
         "nixpkgs-master": "nixpkgs-master",
         "nixpkgs-newest": "nixpkgs-newest",
-        "nixpkgs-unstable": "nixpkgs-unstable"
+        "nixpkgs-unstable": "nixpkgs-unstable",
+        "nur": "nur"
       }
     },
     "rotate-text": {

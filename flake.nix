@@ -23,11 +23,13 @@
       url = "github:nix-community/home-manager/release-21.11";
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
+    nur.url = "github:nix-community/NUR";
   };
   outputs = {
     self, nixpkgs, home-manager, nixpkgs-unstable, agenix
     , emacs-overlay , doom-emacs, nix-doom-emacs
     , nixpkgs-master, nixpkgs-newest, nixpkgs-borgbackup
+    , nur
   }:
 
     let
@@ -50,6 +52,7 @@
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
         })
         steamOverlay
+        nur.overlay
       ];
 
     in {
