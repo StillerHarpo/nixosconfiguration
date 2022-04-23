@@ -16,6 +16,19 @@ executable xmonadDesktop
   default-language: Haskell2010
 
 executable xmonadThinkpad
-  main-is:          linux/thinkpad/home/xmonad.hs
-  build-depends:    base, xmonad, xmonad-contrib, missingH, protolude
+  main-is:          linux/thinkpad/home/xmonad/xmonad.hs
+  build-depends:    base,
+                    xmonad,
+                    xmonad-contrib,
+                    MissingH,
+                    protolude,
+                    containers,
+                    data-default,
+                    text,
+                    nixosconf
   default-language: Haskell2010
+
+library
+  hs-source-dirs:   linux/thinkpad/home/xmonad/lib
+  build-depends:    base, protolude
+  exposed-modules:  Bookmarks
