@@ -11,6 +11,7 @@ in {
     (import ../../../home.nix defaultShell)
     ./zsh.nix
     ./defaultApplications.nix
+    ../../home/configuration.nix
     (import ./themeChanger.nix defaultShell)
   ];
 
@@ -72,6 +73,15 @@ in {
       # pinentryFlavor = "qt";
     };
   };
+
+
+  xsession.windowManager.xmonad = {
+    config = ./xmonad/xmonad.hs;
+    libFiles."Bookmarks.hs" = ./xmonad/lib/Bookmarks.hs;
+    extraPackages = haskellPackages:
+      with haskellPackages; [MissingH protolude];
+  };
+
   services.dunst = {
     enable = true;
     iconTheme = {

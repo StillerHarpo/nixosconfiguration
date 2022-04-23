@@ -1,3 +1,4 @@
 cords.nix filter=git-crypt diff=git-crypt
 private.nix filter=git-crypt diff=git-crypt
 notmuchTags filter=git-crypt diff=git-crypt
+Bookmarks.hs filter=git-crypt diff=git-crypt
