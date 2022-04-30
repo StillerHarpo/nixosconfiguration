@@ -28,6 +28,8 @@
       }
       {
         pkgs = with pkgs; [
+          xclip
+          remmina
           mullvad-vpn
           sqlite
           tesseract4
@@ -173,7 +175,6 @@
 
   # powerManagement.enable = false;
   services = {
-
     pipewire.media-session.config.bluez-monitor.properties.bluez5.msbc-support = true;
 
     unclutter-xfixes.enable = true;
@@ -262,6 +263,15 @@
     };
 
   };
+
+  # openvnp
+  environment.etc."office.ovpn".source = ./office.ovpn;
+
+  services.openvpn.servers.officeVPN = {
+    config = '' config /etc/office.ovpn '';
+    autoStart = false;
+  };
+
 
   # Bluetooth sound
   hardware = {
