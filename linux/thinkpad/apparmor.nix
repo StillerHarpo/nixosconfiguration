@@ -31,7 +31,7 @@ rec {
         deny rw /root/.gnupg/**,
         deny rw /root/.gnupg,
         ''
-      else "privateFiles"}
+      else ""}
         deny rw /home/florian/Dokumente/**,
         deny rw /home/florian/Dokumente,
     ${if !elem "pass" allows

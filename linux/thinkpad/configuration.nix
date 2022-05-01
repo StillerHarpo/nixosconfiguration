@@ -99,8 +99,7 @@
       {
         pkgs = [ pkgs.pass ];
         profile = ''
-          ${generateFileRules ["pass"]}
-          ${pkgs.gnupg}/* cix,
+          ${generateFileRules ["pass" "gnupg"]}
         '';
       }
       {
@@ -115,8 +114,7 @@
           agenix.defaultPackage.x86_64-linux
         ];
           profile = ''
-            ${generateFileRules []}
-            ${pkgs.openssh}/* cix,
+            ${generateFileRules ["ssh"]}
           '';
       }
       {
