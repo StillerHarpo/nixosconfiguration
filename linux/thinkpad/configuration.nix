@@ -80,7 +80,6 @@
           rofi
           wmctrl
           unclutter-xfixes
-          psmisc
           cabal2nix
           pkgs-master.haskellPackages.implicit-hie
           pkgs-master.niv
@@ -95,6 +94,12 @@
           tigervnc
         ];
         profile = defaultProfile;
+      }
+      { pkgs = [ pkgs.psmisc ];
+        profile = ''
+          signal,
+          ${defaultProfile}
+       '';
       }
       {
         pkgs = [ pkgs.pass ];
