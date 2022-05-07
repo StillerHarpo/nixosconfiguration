@@ -31,6 +31,7 @@
     };
     initExtra = ''
         export VISUAL='vim'
+        export PATH=~/checkpad/checkpad-ssh:$PATH
       '';
   };
 }
