@@ -8,114 +8,12 @@
 
 {-# LANGUAGE ViewPatterns #-}
 import Protolude
-    ( (++),
-      zip,
-      otherwise,
-      ($),
-      join,
-      Eq((==)),
-      Monad(return, (>>), (>>=)),
-      Functor(fmap),
-      Ord((>)),
-      Read,
-      Show,
-      Typeable,
-      IsString,
-      Applicative(pure),
-      Foldable(elem, length),
-      Traversable(mapM),
-      Semigroup((<>)),
-      Bool(..),
-      Int,
-      Maybe(Just),
-      IO,
-      until,
-      fromMaybe,
-      concat,
-      when,
-      not,
-      (&&),
-      reverse,
-      take,
-      any,
-      unless,
-      initSafe,
-      gets,
-      void,
-      const,
-      catch,
-      (<$>),
-      readFile,
-      (>=>),
-      (.),
-      show,
-      map,
-      Bifunctor(second),
-      MonadReader(ask),
-      IOException,
-      Text,
-      Bits((.|.)),
-      MonadIO(..) )
 import qualified Data.Text as T
-
-
+import Data.Word (Word32)
 import Data.Default ( Default(def) )
 import           Data.List (last)
 import qualified Data.Map as M
 import XMonad
-    ( getClassHint,
-      withDisplay,
-      WindowSpace,
-      whenJust,
-      (|||),
-      doF,
-      reveal,
-      liftX,
-      sendMessage,
-      io,
-      windows,
-      xK_9,
-      xK_1,
-      xK_e,
-      xK_w,
-      xK_o,
-      xK_i,
-      xK_p,
-      xK_d,
-      xK_a,
-      xK_s,
-      xK_l,
-      xK_h,
-      xK_k,
-      xK_j,
-      xK_g,
-      composeAll,
-      xK_f,
-      xK_u,
-      xK_m,
-      xK_n,
-      xK_v,
-      shiftMask,
-      xK_Return,
-      xK_y,
-      xK_x,
-      (<+>),
-      spawn,
-      mod4Mask,
-      xmonad,
-      ClassHint(resClass),
-      XState(windowset),
-      Resize(Expand, Shrink),
-      SomeMessage(SomeMessage),
-      WindowSet,
-      ManageHook,
-      X,
-      XConfig(terminal, modMask, workspaces, layoutHook, logHook,
-              startupHook, handleEventHook, manageHook),
-      Mirror(Mirror),
-      Full(Full),
-      Window,
-      ExtensionClass(initialValue) )
 import XMonad.Actions.CycleWS ( swapNextScreen, nextScreen )
 import XMonad.Actions.FindEmptyWorkspace ( viewEmptyWorkspace )
 import XMonad.Actions.SpawnOn ( manageSpawn )
@@ -392,14 +290,20 @@ actionMenu :: (Window -> X()) -- ^ the action
            -> X ()
 actionMenu action viewEmpty = do
   time <- clockText
+  with <- getScreenWidth
+  let font = if with == 2560
+                 then "mono 18"
+                 else "mono 14"
   let menuMapFunction =
         menuMapArgsDefault "rofi"
                            [ "-dmenu"
+                           , "-font"
+                           , font
                            , "-i"
                            , "-p"
                            , "window"
                            , "-mesg"
-                           , time]
+                           , time ]
                            defaultAction
   join (windowMap >>= menuMapFunction)
     where
@@ -431,6 +335,9 @@ runOrShift = actionMenu action False
           windows $ delWin idx w
           windows $ W.insertUp w
           insertUp w
+
+getScreenWidth :: X Word32
+getScreenWidth = rect_width . screenRect . W.screenDetail . W.current . windowset <$> get
 
 -- | Returns the window name as will be listed in dmenu.
 --   Tagged with the workspace ID, to guarantee uniqueness, and to let

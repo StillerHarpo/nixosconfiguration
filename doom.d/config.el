@@ -18,8 +18,8 @@
 ;;
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
-(setq doom-font (font-spec :family "monospace" :size 16 :weight 'semi-light)
-      doom-variable-pitch-font (font-spec :family "monospace" :size 18))
+(setq doom-font (font-spec :family "monospace" :size 18 :weight 'semi-light)
+      doom-variable-pitch-font (font-spec :family "monospace" :size 20))
 
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
@@ -198,3 +198,32 @@
 (setq org-read-date-force-compatible-dates nil)
 
 (setq org-modules '(ol-bibtex org-habit))
+
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
+
+;; Font size adjustment
+(defun hoagie-adjust-font-size (frame)
+  "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored.
+If I let Windows handle DPI everything looks blurry."
+  ;; Using display names is unreliable...switched to checking the resolution
+  (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
+         (monitor-name (cdr (fourth attrs)))
+         (width-mm (second (third attrs)))
+         (width-px (fourth (first attrs)))
+         (size 13)) ;; default for first screen at work
+    (when (eq width-px 2560) ;; middle display at work
+      (setq size 11))
+    (when (eq width-px 1920) ;; laptop screen
+      (setq size 12))
+    (when (eq 531 width-mm)
+      (setq size 9)) ;; External monitor at home
+    (when (eq 1095 width-mm)
+      (setq size 15)) ;; television
+    (when (eq (length (display-monitor-attributes-list)) 1) ;; override everything if no external monitors!
+      (setq size 10))
+    (set-frame-font (format "Consolas %s" size))
+    ))
+(add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+
+(cdr (frame-monitor-attributes))
+(set-frame-font (format "monospace %s" 20))

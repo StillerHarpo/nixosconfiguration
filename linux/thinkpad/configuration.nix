@@ -190,7 +190,6 @@
     };
     # mouse pad
     xserver = {
-      resolutions = [{x = "1920"; y = "1080";} {x = "2560"; y = 1440;}];
       windowManager.xmonad.extraPackages = haskellPackages:
         with haskellPackages; [MissingH protolude];
       synaptics = {
