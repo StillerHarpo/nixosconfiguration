@@ -168,6 +168,7 @@
     users = {
       florian = {
         passwordFile = config.age.secrets.florian.path;
+        description = "Florian Engel";
         extraGroups = [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp"];
       };
       playground = {
