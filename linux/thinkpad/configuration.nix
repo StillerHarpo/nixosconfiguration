@@ -411,10 +411,9 @@
   };
   nix = {
     buildMachines = [ {
-      hostName = "10.42.0.151";
+      hostName = "192.168.178.24";
       system = "x86_64-linux";
       sshUser = "root";
-      sshKey = "/home/florian/.ssh/nix_remote";
       maxJobs = 1;
       speedFactor = 2;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
