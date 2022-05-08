@@ -48,7 +48,7 @@ instance Exception CustomError
 type MyShell a = ReaderT Env Shell a
 
 _PDFS_DIR :: FilePath
-_PDFS_DIR = "/home/florian/Dokumente/paperlessInput/"
+_PDFS_DIR = "/home/florian/paperlessInput/"
 
 getCounter :: MyShell Int
 getCounter = asks counter >>= liftIO . readIORef

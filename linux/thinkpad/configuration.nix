@@ -24,7 +24,7 @@
             { libraries = with haskellPackages; [turtle extra]; }
             ../../scripts/Scan.hs)
         ];
-        profile = generateFileRules [];
+        profile = generateFileRules ["paperless"];
       }
       {
         pkgs = with pkgs; [
@@ -92,6 +92,7 @@
           slack
           nixopsUnstable
           tigervnc
+          pkgs-master.signal-desktop
         ];
         profile = defaultProfile;
       }
@@ -122,15 +123,8 @@
             ${generateFileRules ["ssh"]}
           '';
       }
-      {
-        pkgs = [ pkgs-master.signal-desktop ];
-        profile = ''
-          capability,
-          ${(import ./apparmor.nix).defaultProfile}
-        '';
-      }
     ])
-    ];
+  ];
 
   fonts.fonts = [ pkgs.terminus_font ];
 
@@ -146,7 +140,16 @@
   };
 
   security = {
-    apparmor.enable = true;
+    apparmor = {
+      enable = true;
+      policies = with import ./apparmor.nix; {
+        steam.profile = getProfiles [pkgs.steam] defaultProfile;
+        paperless.profile = getProfiles [pkgs.paperless-ng] ''
+           network,
+           ${generateFileRules ["paperless"]}
+        '';
+      };
+    };
     rtkit.enable = true;
   };
 
@@ -219,7 +222,7 @@
     paperless-ng = {
       enable = true;
       passwordFile = config.age.secrets.paperless.path;
-      consumptionDir = "/home/florian/Dokumente/paperlessInput";
+      consumptionDir = "/home/florian/paperlessInput";
       extraConfig =
         {
           PAPERLESS_OCR_LANGUAGE = "deu+eng";

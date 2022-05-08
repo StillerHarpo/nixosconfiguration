@@ -1,5 +1,5 @@
 with builtins;
-let
+rec {
   getProfiles = pkgs: rule:
     foldl'
       (rulesPkgs: pkg:
@@ -11,8 +11,6 @@ let
       )
       ""
       pkgs;
-in
-rec {
   generateFileRules = allows:
     ''
     file,
@@ -32,8 +30,20 @@ rec {
         deny rw /root/.gnupg,
         ''
       else ""}
+    ${if !elem "docs" allows
+      then ''
         deny rw /home/florian/Dokumente/**,
         deny rw /home/florian/Dokumente,
+        ''
+      else ""}
+    ${if !elem "paperless" allows
+      then ''
+        deny rw /home/florian/paperlessInput/**,
+        deny rw /home/florian/paperlessInput,
+        deny rw /var/lib/paperless,
+        deny rw /var/lib/paperless/**,
+        ''
+      else ""}
     ${if !elem "pass" allows
       then ''
         deny rw /home/florian/.password-store/**,
