@@ -1,6 +1,13 @@
 cradle:
   cabal:
     - path: "./scripts/Scan.hs"
-      component: "scripts:exe:scans"
+      component: "nixosconf:exe:scans"
+
     - path: "./linux/desktop/home/xmonad.hs"
-      component: "scripts:exe:xmonadConf"
+      component: "nixosconf:exe:xmonadDesktop"
+
+    - path: "./linux/thinkpad/home/xmonad/xmonad.hs"
+      component: "nixosconf:exe:xmonadThinkpad"
+
+    - path: "linux/thinkpad/home/xmonad/lib"
+      component: "lib:nixosconf"
