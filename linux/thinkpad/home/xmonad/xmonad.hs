@@ -76,7 +76,8 @@ main = xmonad
       , ((mod4Mask .|. shiftMask, xK_Return) , spawnOnEmpty termCommand)
       , ((mod4Mask              , xK_v)      , spawn        emacs)
       , ((mod4Mask .|. shiftMask, xK_v)      , spawnOnEmpty emacs)
-      , ((mod4Mask              , xK_n)      , spawn "networkmanager_dmenu")
+      , ((mod4Mask              , xK_n)      ,
+         runProcess "networkmanager_dmenu" . ("-font":) . (:[]) =<< getFontFromScreenWidth )
       , ((mod4Mask              , xK_m)      , spawn "slock systemctl suspend -i")
       , ((mod4Mask              , xK_u)      , spawn "slock")
       , ((mod4Mask              , xK_f)      , composeAll [ runOrShift
@@ -130,6 +131,8 @@ main = xmonad
                         ++ " || systemctl --user start redshift.service"
         toggleMonitor = "~/scripts/toggleMonitor"
 
+runProcess :: Text  -> [Text] -> X ()
+runProcess x args = void $ runProcessWithInput (T.unpack x) (map T.unpack args) ""
 
 -- Key scripts --
 myDzenConfig :: Int -> Text -> X ()
@@ -283,6 +286,13 @@ browser url = "firefox -new-window \"" <> urlWithSearch <> "\""
                    then url
                    else "duckduckgo.com\\?q=" <> replaceSpaces url
 
+getFontFromScreenWidth :: X Text
+getFontFromScreenWidth = do
+  getScreenWidth
+    <&> \case
+      2560 -> "mono 20"
+      _ -> "mono 16"
+
 -- | Calls dmenuMap to grab the appropriate Window or program, and hands it off to action
 --   if found .
 actionMenu :: (Window -> X()) -- ^ the action
@@ -290,10 +300,7 @@ actionMenu :: (Window -> X()) -- ^ the action
            -> X ()
 actionMenu action viewEmpty = do
   time <- clockText
-  with <- getScreenWidth
-  let font = if with == 2560
-                 then "mono 18"
-                 else "mono 14"
+  font <- getFontFromScreenWidth
   let menuMapFunction =
         menuMapArgsDefault "rofi"
                            [ "-dmenu"

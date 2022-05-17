@@ -191,4 +191,10 @@ in {
       };
     };
   };
+
+  xdg.configFile."networkmanager-dmenu/config.ini".text = lib.generators.toINI {} {
+    dmenu.dmenu_command = "rofi";
+    dmenu_passphrase.rofi_obscure = true;
+    editor.terminal = "alacritty";
+  };
 }
