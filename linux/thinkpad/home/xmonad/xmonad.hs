@@ -80,7 +80,7 @@ main =
                              ((0, 0x1008ff12), mute),
                              ((mod4Mask, 0x63), clock),
                              ((mod4Mask, xK_x), spawn toggleRedshift),
-                             ((mod4Mask, xK_y), spawn toggleMonitor),
+                             ((mod4Mask, xK_y), toggleMonitor),
                              ((mod4Mask, xK_Return), spawn termCommand),
                              ((mod4Mask .|. shiftMask, xK_Return), spawnOnEmpty termCommand),
                              ((mod4Mask, xK_v), spawn emacs),
@@ -155,7 +155,63 @@ main =
       "systemctl --user is-active redshift.service"
         ++ " && systemctl --user stop redshift.service"
         ++ " || systemctl --user start redshift.service"
-    toggleMonitor = "scripts/toggleMonitor"
+
+data MonitorStatus = MonitorOn | MonitorOff | MonitorDisconnected
+  deriving (Eq)
+
+displayStatus :: Text -> IO MonitorStatus
+displayStatus display =
+  readFile (pathPrefix <> T.unpack display <> "/status") >>= \case
+    (T.strip -> "disconnected") -> pure MonitorDisconnected
+    _ ->
+      readFile (pathPrefix <> T.unpack display <> "/enabled") >>= \case
+        (T.strip -> "disabled") -> pure MonitorOff
+        _ -> pure MonitorOn
+  where
+    pathPrefix = "/sys/class/drm/card0-"
+
+isConnected :: Text -> IO Bool
+isConnected t = (/= MonitorDisconnected) <$> displayStatus t
+
+findM :: Monad m => (a -> m Bool) -> [a] -> m (Maybe a)
+findM p = foldr (\x -> ifM (p x) (pure $ Just x)) (pure Nothing)
+
+toggleMonitor :: X ()
+toggleMonitor = do
+  liftIO
+    (findM isConnected ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2"])
+    >>= maybe
+      (pure ())
+      ( \extMonitor -> do
+          eDP1Status <- liftIO (displayStatus "eDP-1")
+          if eDP1Status == MonitorOn
+            then do
+              runProcess
+                "xrandr"
+                [ "--output",
+                  sysToRandr extMonitor,
+                  "--auto",
+                  "--output",
+                  "eDP-1",
+                  "--off"
+                ]
+            else
+              runProcess
+                "xrandr"
+                [ "--output",
+                  "eDP-1",
+                  "--auto",
+                  "--below",
+                  sysToRandr extMonitor,
+                  "--output",
+                  sysToRandr extMonitor,
+                  "--primary"
+                ]
+      )
+  where
+    sysToRandr "HDMI-A-1" = "HDMI-1"
+    sysToRandr "HDMI-A-2" = "HDMI-2"
+    sysToRandr x = x
 
 runProcess :: Text -> [Text] -> X ()
 runProcess x args = void $ runProcessWithInput (T.unpack x) (map T.unpack args) ""
