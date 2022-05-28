@@ -211,6 +211,12 @@
         enable = true;
         twoFingerScroll = true;
       };
+      xautolock = {
+        enable = true;
+        locker = "${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none";
+        killtime = 200;
+        killer = "/run/current-system/systemd/bin/systemctl hibernate";
+      };
     };
 
     blueman.enable = true;

@@ -89,7 +89,7 @@ main =
                                runProcess "networkmanager_dmenu" . ("-font" :) . (: []) =<< getFontFromScreenWidth
                              ),
                              ((mod4Mask, xK_m), spawn "slock systemctl suspend -i"),
-                             ((mod4Mask, xK_u), spawn "slock"),
+                             ((mod4Mask, xK_u), spawn "xautolock -locknow"),
                              ( (mod4Mask, xK_f),
                                composeAll
                                  [ runOrShift,
