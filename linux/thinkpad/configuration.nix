@@ -126,6 +126,15 @@
     ])
   ];
 
+  boot = {
+    # Use the systemd-boot EFI boot loader.
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernel.sysctl."kernel.yama.ptrace_scope" = 1;
+  };
+
   fonts.fonts = [ pkgs.terminus_font ];
 
   location = import ./cords.nix;

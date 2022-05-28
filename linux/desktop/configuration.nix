@@ -4,6 +4,21 @@
 
   imports = [ ../configuration.nix ];
 
+  boot.loader = {
+    systemd-boot.enable = false;
+    efi = {
+      canTouchEfiVariables = true;
+      efiSysMountPoint = "/boot";
+    };
+    grub = {
+      devices = [ "nodev" ];
+      enable = true;
+      efiSupport = true;
+      version = 2;
+      useOSProber = true;
+    };
+  };
+
   boot = {
     initrd = {
       availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
@@ -67,6 +82,7 @@
          pass=$(cat  ${pass})
          steam -login "$user" "$pass"
        '')
+    pkgs.grub2
   ];
 
   hardware = {

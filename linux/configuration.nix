@@ -5,15 +5,6 @@
     ../configuration.nix
   ];
 
-  boot = {
-    # Use the systemd-boot EFI boot loader.
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-    kernel.sysctl."kernel.yama.ptrace_scope" = 1;
-  };
-
   # Select internationalisation properties.
   console.keyMap = "us";
   i18n.defaultLocale = "en_US.UTF-8";
