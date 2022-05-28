@@ -309,7 +309,10 @@ programms =
     ("pavucontrol", "pavucontrol"),
     ("arandr", "arandr"),
     ("blueman-manager", "blueman-manager"),
-    ("vncviewer", "vncviewer"),
+    ("mullvad-gui", "mullvad-gui"),
+    ("polymc", "polymc"),
+    ("windows-vnc", "vncviewer 192.168.178.24:5900"),
+    ("linux-vnc", "vncviewer localhost:9900"),
     ("home-assistent", "chromium --new-window \"http://192.168.178.26:8123\"/"),
     ("netflix", "chromium --new-window \"https://netflix.com\"/")
   ]
