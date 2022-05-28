@@ -46,8 +46,9 @@
           cachix
           vim
           shellcheck
-          ##################### Games ###############
-          multimc                 # minecraft launcher
+          #############
+          ######## Games ###############
+          pkgs-unstable.polymc                 # minecraft launcher
           openjdk                 # java
           sshfs
           dzen2
