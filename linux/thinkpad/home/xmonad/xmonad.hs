@@ -1,6 +1,7 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
@@ -8,6 +9,8 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 import Bookmarks (bookmarks)
+import Xrandr
+import Utils
 import Data.Default (Default (def))
 import Data.List (last)
 import qualified Data.Map as M
@@ -156,37 +159,15 @@ main =
         ++ " && systemctl --user stop redshift.service"
         ++ " || systemctl --user start redshift.service"
 
-data MonitorStatus = MonitorOn | MonitorOff | MonitorDisconnected
-  deriving (Eq)
-
-displayStatus :: Text -> IO MonitorStatus
-displayStatus display =
-  readFile (pathPrefix <> T.unpack display <> "/status") >>= \case
-    (T.strip -> "disconnected") -> pure MonitorDisconnected
-    _ ->
-      readFile (pathPrefix <> T.unpack display <> "/enabled") >>= \case
-        (T.strip -> "disabled") -> pure MonitorOff
-        _ -> pure MonitorOn
-  where
-    pathPrefix = "/sys/class/drm/card0-"
-
-isConnected :: Text -> IO Bool
-isConnected t = (/= MonitorDisconnected) <$> displayStatus t
-
-findM :: Monad m => (a -> m Bool) -> [a] -> m (Maybe a)
-findM p = foldr (\x -> ifM (p x) (pure $ Just x)) (pure Nothing)
-
-toggleMonitor :: X ()
-toggleMonitor = do
-  liftIO
-    (findM isConnected ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2"])
+toggleMonitor :: MonadIO m => m ()
+toggleMonitor =
+  findM (fmap isConnected . monitorStatus) ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2"]
     >>= maybe
       (pure ())
-      ( \extMonitor -> do
-          eDP1Status <- liftIO (displayStatus "eDP-1")
-          if eDP1Status == MonitorOn
-            then do
-              runProcess
+      ( \extMonitor ->
+          ifM
+            (isEnabled <$> monitorStatus "eDP-1")
+            ( runProcess
                 "xrandr"
                 [ "--output",
                   sysToRandr extMonitor,
@@ -195,26 +176,9 @@ toggleMonitor = do
                   "eDP-1",
                   "--off"
                 ]
-            else
-              runProcess
-                "xrandr"
-                [ "--output",
-                  "eDP-1",
-                  "--auto",
-                  "--below",
-                  sysToRandr extMonitor,
-                  "--output",
-                  sysToRandr extMonitor,
-                  "--primary"
-                ]
+            )
+            (runProcess "xrandr" (toEnableOption extMonitor))
       )
-  where
-    sysToRandr "HDMI-A-1" = "HDMI-1"
-    sysToRandr "HDMI-A-2" = "HDMI-2"
-    sysToRandr x = x
-
-runProcess :: Text -> [Text] -> X ()
-runProcess x args = void $ runProcessWithInput (T.unpack x) (map T.unpack args) ""
 
 -- Key scripts --
 myDzenConfig :: Int -> Text -> X ()

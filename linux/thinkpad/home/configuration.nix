@@ -150,7 +150,11 @@ in {
 
   xsession.windowManager.xmonad = {
     config = ./xmonad/xmonad.hs;
-    libFiles."Bookmarks.hs" = ./xmonad/lib/Bookmarks.hs;
+    libFiles = {
+      "Bookmarks.hs" = ./xmonad/lib/Bookmarks.hs;
+      "Utils.hs" = ./xmonad/lib/Utils.hs;
+      "Xrandr.hs" = ./xmonad/lib/Xrandr.hs;
+    };
     extraPackages = haskellPackages:
       with haskellPackages; [MissingH protolude];
   };

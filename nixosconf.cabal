@@ -5,6 +5,7 @@ version:            0.1.0.0
 author:             Florian Engel
 maintainer:         engelflorian@posteo.de
 
+
 executable scans
   main-is:          scripts/Scan.hs
   build-depends:    base, turtle, transformers, foldl, text, time, exceptions, extra
@@ -30,5 +31,5 @@ executable xmonadThinkpad
 
 library
   hs-source-dirs:   linux/thinkpad/home/xmonad/lib
-  build-depends:    base, protolude
-  exposed-modules:  Bookmarks
+  build-depends:    base, protolude, text, xmonad-contrib
+  exposed-modules:  Bookmarks, Xrandr, Utils

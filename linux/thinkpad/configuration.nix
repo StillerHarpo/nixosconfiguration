@@ -2,6 +2,18 @@
 
 { config, pkgs, home-manager, sane-unstable, borgbackup-local
 , defaultShell, pkgs-master, agenix, pkgs-unstable, lib, ... }:
+
+let
+  xrandr = "${pkgs.xorg.xrandr}/bin/xrandr";
+  monitorChanger = pkgs.writers.writeHaskellBin
+    "monitor-changer"
+    { libraries = [ (pkgs.haskellPackages.callCabal2nix "utils" ./../.. {}) ]; }
+    ''
+      import Xrandr
+
+      main = updateMonitor
+    '';
+in
 {
 
   disabledModules = [
@@ -338,7 +350,10 @@
       enable = true;
       nssmdns = true;
     };
-    udev.packages = [ pkgs.utsushi ];
+    udev = {
+      packages = [ pkgs.utsushi ];
+      extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${monitorChanger}"'';
+    };
   };
 
   programs = {
@@ -386,18 +401,6 @@
         environment.DISPLAY = ":0";
         script =
           ''
-            if ${pkgs.xorg.xrandr}/bin/xrandr -q | grep 'HDMI-2' | grep disconnected
-            then
-                ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --off
-                ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --mode 1920x1080
-            elif ${pkgs.xorg.xrandr}/bin/xrandr -q | grep 'eDP-1' -A1 | tail -n1 | grep -v '\*' # screen off
-            then
-                ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --mode 1920x1080
-                ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --mode 1920x1080 --above eDP-1 # put eDP-1 below
-            else
-                ${pkgs.xorg.xrandr}/bin/xrandr --output eDP-1 --off
-                ${pkgs.xorg.xrandr}/bin/xrandr --output HDMI-2 --mode 1920x1080
-            fi
             ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
           '';
         serviceConfig = {
