@@ -386,7 +386,7 @@ in
         environment.DISPLAY = ":0";
         script =
           ''
-            ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
+            ${pkgs.pamixer}/bin/pamixer -m
           '';
         serviceConfig = {
           Type = "oneshot";
@@ -401,7 +401,7 @@ in
         environment.DISPLAY = ":0";
         script =
           ''
-            ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
+            ${pkgs.pamixer}/bin/pamixer -u
           '';
         serviceConfig = {
           Type = "oneshot";
@@ -416,7 +416,7 @@ in
         environment.DISPLAY = ":0";
         script =
           ''
-            ${pkgs.pulseaudio}/bin/pactl set-sink-mute @DEFAULT_SINK@ true
+            ${pkgs.pamixer}/bin/pamixer -u
           '';
         serviceConfig = {
           Type = "oneshot";
