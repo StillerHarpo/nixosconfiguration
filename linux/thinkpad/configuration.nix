@@ -228,6 +228,7 @@ in
         locker = "${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none";
         killtime = 200;
         killer = "/run/current-system/systemd/bin/systemctl hibernate";
+        extraOptions = [ "-detectsleep" ];
       };
     };
 
@@ -387,6 +388,7 @@ in
         script =
           ''
             ${pkgs.pamixer}/bin/pamixer -m
+            ${pkgs.xautolock}/bin/xautolock -disable
           '';
         serviceConfig = {
           Type = "oneshot";
@@ -402,6 +404,7 @@ in
         script =
           ''
             ${pkgs.pamixer}/bin/pamixer -u
+            ${pkgs.xautolock}/bin/xautolock -enable
           '';
         serviceConfig = {
           Type = "oneshot";
@@ -417,6 +420,7 @@ in
         script =
           ''
             ${pkgs.pamixer}/bin/pamixer -u
+            ${pkgs.xautolock}/bin/xautolock -enable
           '';
         serviceConfig = {
           Type = "oneshot";
