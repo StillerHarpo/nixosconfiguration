@@ -105,18 +105,18 @@
                        (and ".m4v$" eol)
                        "v.redd.it")))
 
-  (setq org-highlight-latex-and-related '(latex script entities))
+(setq org-highlight-latex-and-related '(latex script entities))
 
-  (setq browse-url-browser-function `((,mediareg . browse-url-mpv)
+(setq browse-url-browser-function `((,mediareg . browse-url-mpv)
                                         ;                                   ("." . eww-browse-url)))
-                                      ("." . browse-url-firefox-new-window)))
+                                    ("." . browse-url-firefox-new-window)))
 
-  (defun browse (prog url)
-    (setq url (browse-url-encode-url url))
-    (start-process (concat prog url) nil prog url))
-  (defun browse-url-mpv (url &rest args) (browse "mpv" url))
-  (defun browse-url-firefox-new-window (url &rest agrs)
-    (browse-url-firefox url t))
+(defun browse (prog url)
+  (setq url (browse-url-encode-url url))
+  (start-process (concat prog url) nil prog url))
+(defun browse-url-mpv (url &rest args) (browse "mpv" url))
+(defun browse-url-firefox-new-window (url &rest agrs)
+  (browse-url-firefox url t))
 
 ;; biblioraphy
 (setq reftex-default-bibliography '("~/Dokumente/bibliography/references.bib"))
