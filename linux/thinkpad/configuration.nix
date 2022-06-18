@@ -175,7 +175,10 @@ in
     rtkit.enable = true;
   };
 
-  nix.maxJobs = lib.mkDefault 8;
+  nix = {
+    maxJobs = lib.mkDefault 8;
+    autoOptimiseStore = true;
+  };
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   networking = {
