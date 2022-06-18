@@ -16,7 +16,7 @@
   # $ nix-env -qaP | grep wget
 
   services = {
-    dbus.packages = [ pkgs.gnome3.dconf ];
+    dbus.packages = [ pkgs.dconf ];
     # Enable the X11 windowing system.
     xserver = {
       enable = true;

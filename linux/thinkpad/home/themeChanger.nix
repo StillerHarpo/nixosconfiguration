@@ -81,7 +81,7 @@ let
   rofiCommon.window.fullscreen = true;
   rofiConf =
     theme: builtins.toFile "rofi.rasi"
-      (toRofiRasi ({configuration = {inherit theme;};} // rofiCommon));
+      (toRofiRasi rofiCommon + "\n@theme \"${theme}\"");
   rofiDark = rofiConf "gruvbox-dark";
   rofiLight = rofiConf "gruvbox-light";
   gtk3Conf =

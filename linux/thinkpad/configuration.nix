@@ -73,7 +73,7 @@ in
           poppler
           tuir
           xsel
-          ag
+          silver-searcher
           zathura
           spotify
           mpv
@@ -100,7 +100,7 @@ in
           #(haskellPackages.ghcWithPackages (self : with self;
           #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
           #    adjunctions Agda ]))
-          networkmanager_openvpn networkmanager_dmenu
+          networkmanager-openvpn networkmanager_dmenu
           git-crypt
           slack
           nixopsUnstable
@@ -248,7 +248,7 @@ in
       opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
     };
 
-    paperless-ng = {
+    paperless = {
       enable = true;
       passwordFile = config.age.secrets.paperless.path;
       consumptionDir = "/home/florian/paperlessInput";

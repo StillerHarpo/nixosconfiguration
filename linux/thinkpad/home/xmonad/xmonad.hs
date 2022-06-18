@@ -11,13 +11,12 @@
 import Bookmarks (bookmarks)
 import Xrandr
 import Utils
-import Data.Default (Default (def))
 import Data.List (last)
 import qualified Data.Map as M
 import qualified Data.Text as T
 import Data.Word (Word32)
 import Protolude
-import XMonad
+import XMonad hiding (ifM)
 import XMonad.Actions.CycleWS (nextScreen, swapNextScreen)
 import XMonad.Actions.FindEmptyWorkspace (viewEmptyWorkspace)
 import XMonad.Actions.MessageFeedback (sendMessageB)

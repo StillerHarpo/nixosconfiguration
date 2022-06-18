@@ -1,7 +1,7 @@
 {
   inputs = {
-    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-21.11";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixos-hardware.url = github:NixOS/nixos-hardware/master;
     agenix.url = "github:ryantm/agenix";
     emacs-overlay.url = "github:nix-community/emacs-overlay/master";
@@ -21,7 +21,7 @@
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
     home-manager = {
-      url = "github:nix-community/home-manager/release-21.11";
+      url = "github:nix-community/home-manager/release-22.05";
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
     nur.url = "github:nix-community/NUR";
@@ -117,7 +117,7 @@
               haskell-language-server
               brittany
               hlint
-              x11
+              xlibsWrapper
             ];
           });
       };
