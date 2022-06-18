@@ -22,10 +22,8 @@
   boot = {
     initrd = {
       availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
-      kernelModules = [ "amdgpu" ];
     };
     kernelModules = [ "kvm-amd" ];
-    kernelParams = [ "radeon.si_support=0" "amdgpu.si_support=1" ];
   };
 
   fileSystems."/" =
@@ -50,7 +48,6 @@
       permitRootLogin = "yes";
       passwordAuthentication = false;
     };
-    xserver.videoDrivers = [ "amdgpu" ];
   };
 
   home-manager.users.florian = import ./home/configuration.nix;
@@ -85,12 +82,5 @@
     pkgs.grub2
   ];
 
-  hardware = {
-    opengl.extraPackages = with pkgs; [
-      rocm-opencl-icd
-      rocm-opencl-runtime
-    ];
-
-    enableRedistributableFirmware = true;
-  };
+  hardware.enableRedistributableFirmware = true;
 }

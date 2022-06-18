@@ -2,6 +2,7 @@
   inputs = {
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-21.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
+    nixos-hardware.url = github:NixOS/nixos-hardware/master;
     agenix.url = "github:ryantm/agenix";
     emacs-overlay.url = "github:nix-community/emacs-overlay/master";
     doom-emacs = {
@@ -29,7 +30,7 @@
     self, nixpkgs, home-manager, nixpkgs-unstable, agenix
     , emacs-overlay , doom-emacs, nix-doom-emacs
     , nixpkgs-master, nixpkgs-newest, nixpkgs-borgbackup
-    , nur
+    , nur, nixos-hardware
   }:
 
     let
@@ -67,6 +68,7 @@
         };
         modules = [
           nixpkgs.nixosModules.notDetected
+          nixos-hardware.nixosModules.lenovo-thinkpad-t480s
           home-manager.nixosModules.home-manager
           {
             home-manager.users.florian = { pkgs, ... }: {
@@ -87,8 +89,13 @@
         desktop =
           { config, pkgs, ... }:
           {
-            imports = [
+            imports = with nixos-hardware.nixosModules; [
               home-manager.nixosModules.home-manager
+              common-pc
+              common-pc-hdd
+              common-pc-ssd
+              common-cpu-amd
+              common-gpu-amd-southern-islands
               agenix.nixosModules.age
               ./linux/desktop/configuration.nix
             ];

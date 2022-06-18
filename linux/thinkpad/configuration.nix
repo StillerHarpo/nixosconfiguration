@@ -219,10 +219,6 @@ in
       resolutions = [{x = 2560; y = 1440;} {x = 1920; y = 1080;} ];
       windowManager.xmonad.extraPackages = haskellPackages:
         with haskellPackages; [MissingH protolude];
-      synaptics = {
-        enable = true;
-        twoFingerScroll = true;
-      };
       xautolock = {
         enable = true;
         locker = "${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none";
