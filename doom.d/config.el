@@ -142,7 +142,9 @@
 (setq mml-secure-openpgp-sign-with-sender t)
 
 (map! :leader :desc "eshell" :n "o s" #'eshell
-              :desc "woman" :n "o w" #'woman)
+              :desc "woman" :n "o w" #'woman
+              :desc "elfeed" :n "o e" #'elfeed)
+
 
 (map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
                                  :n "d" (cmd! (notmuch-search-add-tag "+trash"))
@@ -152,6 +154,7 @@
                                           :localleader :desc "attach file" "a" #'mml-attach-file
                                           :localleader :desc "save as draf" "d" #'notmuch-draft-save)
 
+(map! :mode 'elfeed-search-mode :n "b" #'elfeed-search-browse-url)
 
 (after! notmuch
   (setq notmuch-saved-searches
