@@ -102,7 +102,7 @@
             deployment.targetHost = "192.168.178.24";
             nixpkgs.config = {
               allowUnfree = true;
-              overalys = [ steamOverlay ];
+              overlays = [ steamOverlay ];
             };
           };
       };
