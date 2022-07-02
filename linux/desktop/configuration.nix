@@ -66,8 +66,14 @@
   };
 
   age.secrets = {
-    steamuser.file = ./secrets/steamuser.age;
-    steampass.file = ./secrets/steampass.age;
+    steamuser = {
+      file = ./secrets/steamuser.age;
+      user = "florian";
+    };
+    steampass = {
+      file = ./secrets/steampass.age;
+      user = "florian";
+    };
   };
 
   environment.systemPackages = [
