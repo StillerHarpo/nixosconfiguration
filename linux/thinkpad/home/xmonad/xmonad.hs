@@ -343,7 +343,7 @@ browser :: Text -> Text
 browser url = "firefox -new-window \"" <> urlWithSearch <> "\""
   where
     urlWithSearch =
-      if T.any (== '.') url && not (T.any (== ' ') url)
+      if (T.any (== '.') url || T.isInfixOf "localhost" url) && not (T.any (== ' ') url)
         then url
         else "duckduckgo.com\\?q=" <> replaceSpaces url
 
