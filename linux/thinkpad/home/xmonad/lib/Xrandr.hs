@@ -27,7 +27,7 @@ updateMonitor :: MonadIO m => m ()
 updateMonitor = do
   toDisable <-
     filterM
-      (fmap (\x -> isEnabled x && not (isConnected x)) . monitorStatus)
+      (fmap (not . isConnected) <$> monitorStatus)
       ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2"]
   let disableOptions =
         concatMap (\x -> ["--output", sysToRandr x, "--off"]) toDisable
@@ -48,13 +48,18 @@ sysToRandr x = x
 
 toEnableOption :: Text -> [Text]
 toEnableOption extMonitor =
-  eDP1EnableOption
-    <> [ "--below",
-         sysToRandr extMonitor,
-         "--output",
-         sysToRandr extMonitor,
-         "--primary"
-       ]
+  [ "--output",
+    sysToRandr extMonitor,
+    "--auto",
+    "--primary",
+    "--above",
+    "eDP-1",
+    "--auto",
+    -- I don't understand why this is nessecary
+    "--output",
+    "eDP-1",
+    "--auto"
+  ]
 
 findM :: Monad m => (a -> m Bool) -> [a] -> m (Maybe a)
 findM p = foldr (\x -> ifM (p x) (pure $ Just x)) (pure Nothing)
