@@ -294,6 +294,10 @@ in
           path = "/home/florian/android/org";
           devices = [ "android" ];
         };
+        "android-backups" = {
+          path = "/home/florian/android/backups";
+          devices = [ "android" ];
+        };
       };
 
     };
