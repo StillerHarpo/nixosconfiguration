@@ -106,6 +106,7 @@ in
           nixopsUnstable
           tigervnc
           pkgs-master.signal-desktop
+          pkgs-master.teamspeak_client
         ];
         profile = defaultProfile;
       }
