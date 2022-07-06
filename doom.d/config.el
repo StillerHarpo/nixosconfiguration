@@ -158,20 +158,20 @@
 
 (after! notmuch
   (setq notmuch-saved-searches
-        '((:name "inbox" :query "tag:inbox not tag:trash" :key "i")
+        '((:name "inbox" :query "tag:inbox and not tag:trash and date:3M..today" :key "i")
           (:name "unread" :query "tag:unread" :key "u")
           (:name "flagged" :query "tag:flagged" :key "f")
-          (:name "must read" :query "not tag:rechnung not tag:agb not tag:anmeldung not tag:trash" :key "r")
+          (:name "must read" :query "not tag:rechnung and not tag:agb and not tag:anmeldung and not tag:trash and date:3M..today" :key "r")
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
-          (:name "all mail" :query "*" :key "a")))
+          (:name "all mail" :query "date:3M..today" :key "a")))
 
   (setq message-default-mail-headers "Cc: \nBcc: \n")
   ;; postponed message is put in the following draft directory
   (setq message-auto-save-directory "~/Maildir/draft")
   ;; change the directory to store the sent mail
   (setq message-directory "~/Maildir/"))
-  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox")))
+  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox and date:3M..today")))
 
 (setq lsp-enable-file-watchers t
       lsp-file-watch-threshold 16384)
