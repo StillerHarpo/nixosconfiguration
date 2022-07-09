@@ -41,6 +41,7 @@ in
       {
         pkgs = with pkgs; [
           xclip
+          (kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller]))
           remmina
           mullvad-vpn
           sqlite
