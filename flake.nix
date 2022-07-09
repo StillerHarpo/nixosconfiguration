@@ -51,6 +51,16 @@
           inherit sane-drivers sane-backends xsane hplip;
           inherit (pkgs-newest) signal;
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
+          monitorChanger = super.writers.writeHaskellBin
+            "monitor-changer"
+            { libraries =  with super; [
+                (haskell.lib.overrideCabal (haskellPackages.callCabal2nix "utils" ./. {}) (_: { prePatch = "substituteInPlace linux/thinkpad/home/xmonad/lib/Xrandr.hs --replace 'xrandr' '${super.xorg.xrandr}/bin/xrandr'" ; }))
+              ];
+            }
+            ''
+              import Xrandr
+              main = updateMonitor
+            '';
         })
         steamOverlay
         nur.overlay

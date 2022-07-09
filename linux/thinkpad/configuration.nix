@@ -3,17 +3,6 @@
 { config, pkgs, home-manager, sane-unstable, borgbackup-local
 , defaultShell, pkgs-master, agenix, pkgs-unstable, lib, ... }:
 
-let
-  xrandr = "${pkgs.xorg.xrandr}/bin/xrandr";
-  monitorChanger = pkgs.writers.writeHaskellBin
-    "monitor-changer"
-    { libraries = [ (pkgs.haskellPackages.callCabal2nix "utils" ./../.. {}) ]; }
-    ''
-      import Xrandr
-
-      main = updateMonitor
-    '';
-in
 {
 
   disabledModules = [
