@@ -376,63 +376,41 @@ in
   };
 
   systemd = {
-    targets.my-post-resume = {
-      description = "Post-Resume Actions";
-      requires = [ "my-post-resume.service" ];
-      after = [ "my-post-resume.service" ];
-      wantedBy = [ "sleep.target" ];
-      unitConfig.StopWhenUnneeded = true;
-    };
-    services = {
+    services = let
+      targets = [ "hibernate.target" "hybrid-sleep.target"  "suspend.target" "sleep.target"  "suspend-then-hibernate.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        User = "florian";
+        Group = "users";
+      };
+      environment = {
+        DISPLAY = ":0";
+#        DBUS_SESSION_BUS_ADDRESS = "unix:path=/run/user/1000/bus";
+      };
+    in {
       # Service executed before suspending/hibernating.
       # FIXME not working
       "my-pre-sleep" = {
         description = "Pre-Sleep Actions";
-        wantedBy = [ "sleep.target" ];
-        before = [ "sleep.target" ];
-        environment.DISPLAY = ":0";
+        before = targets;
+        wantedBy = targets;
         script =
           ''
-            ${pkgs.pamixer}/bin/pamixer -m
             ${pkgs.xautolock}/bin/xautolock -disable
           '';
-        serviceConfig = {
-          Type = "oneshot";
-          User = "florian";
-          Group = "users";
-        };
+        inherit serviceConfig environment;
         enable = true;
       };
-      "my-post-resume-hibernate" = {
+      "my-post-resume" = {
         description = "Post-Resume Actions";
-        after = [ "hibernate.target" "hybrid-sleep.target" ];
-        environment.DISPLAY = ":0";
+        after = targets;
+        wantedBy = targets;
         script =
           ''
-            ${pkgs.pamixer}/bin/pamixer -u
             ${pkgs.xautolock}/bin/xautolock -enable
+            ${pkgs.monitorChanger}/bin/monitor-changer
           '';
-        serviceConfig = {
-          Type = "oneshot";
-          User = "florian";
-          Group = "users";
-        };
-        enable = true;
-      };
-      "my-post-resume-suspend" = {
-        description = "Post-Resume Actions";
-        after = [ "suspend.target" ];
-        environment.DISPLAY = ":0";
-        script =
-          ''
-            ${pkgs.pamixer}/bin/pamixer -u
-            ${pkgs.xautolock}/bin/xautolock -enable
-          '';
-        serviceConfig = {
-          Type = "oneshot";
-          User = "florian";
-          Group = "users";
-        };
+        inherit serviceConfig environment;
         enable = true;
       };
     };
