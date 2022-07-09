@@ -1,0 +1,10 @@
+cabal-version:      2.4
+name:               my-common
+version:            0.1.0.0
+
+author:             Florian Engel
+maintainer:         engelflorian@posteo.de
+
+library
+  build-depends:    base, protolude, text, xmonad-contrib
+  exposed-modules:  Bookmarks, Xrandr, Utils

@@ -4,6 +4,7 @@ import XMonad.Hooks.SetWMName ( setWMName )
 import XMonad.Layout.NoBorders ( noBorders )
 import XMonad.Hooks.EwmhDesktops ( ewmh )
 
+main :: IO ()
 main = xmonad
   $ ewmh def
   { workspaces = ["1"],

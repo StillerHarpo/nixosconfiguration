@@ -1,23 +1,27 @@
 cabal-version:      2.4
-name:               nixosconf
+name:               haskell
 version:            0.1.0.0
 
 author:             Florian Engel
 maintainer:         engelflorian@posteo.de
 
+executable monitor-changer
+  main-is:          monitor-changer/MonitorChanger.hs
+  build-depends:    base, haskell,
+  default-language: Haskell2010
 
 executable scans
-  main-is:          scripts/Scan.hs
+  main-is:          scans/Scan.hs
   build-depends:    base, turtle, transformers, foldl, text, time, exceptions, extra
   default-language: Haskell2010
 
-executable xmonadDesktop
-  main-is:          linux/desktop/home/xmonad.hs
+executable xmonad-desktop
+  main-is:          xmonad-desktop/xmonad.hs
   build-depends:    base, xmonad, xmonad-contrib
   default-language: Haskell2010
 
-executable xmonadThinkpad
-  main-is:          linux/thinkpad/home/xmonad/xmonad.hs
+executable xmonad-thinkpad
+  main-is:          xmonad-thinkpad/xmonad.hs
   build-depends:    base,
                     xmonad,
                     xmonad-contrib,
@@ -26,10 +30,10 @@ executable xmonadThinkpad
                     containers,
                     data-default,
                     text,
-                    nixosconf
+                    haskell
   default-language: Haskell2010
 
 library
-  hs-source-dirs:   linux/thinkpad/home/xmonad/lib
+  hs-source-dirs:   my-common
   build-depends:    base, protolude, text, xmonad-contrib
   exposed-modules:  Bookmarks, Xrandr, Utils

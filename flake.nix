@@ -51,16 +51,23 @@
           inherit sane-drivers sane-backends xsane hplip;
           inherit (pkgs-newest) signal;
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
-          monitorChanger = super.writers.writeHaskellBin
-            "monitor-changer"
-            { libraries =  with super; [
-                (haskell.lib.overrideCabal (haskellPackages.callCabal2nix "utils" ./. {}) (_: { prePatch = "substituteInPlace linux/thinkpad/home/xmonad/lib/Xrandr.hs --replace 'xrandr' '${super.xorg.xrandr}/bin/xrandr'" ; }))
-              ];
-            }
-            ''
-              import Xrandr
-              main = updateMonitor
-            '';
+        })
+        (self: super: {
+          haskellPackages = super.haskellPackages.extend (_: hSuper: {
+            my-common =
+              super.haskell.lib.overrideCabal
+                (hSuper.callCabal2nix "my-common" ./haskell/my-common {})
+                (_: { prePatch =
+                        "substituteInPlace Xrandr.hs --replace 'xrandr' '${super.xorg.xrandr}/bin/xrandr'" ;
+                    });
+          });
+          monitor-changer =
+            super.writers.writeHaskellBin
+              "monitor-changer"
+              {
+                libraries = [self.haskellPackages.my-common];
+              }
+              ./haskell/monitor-changer/MonitorChanger.hs;
         })
         steamOverlay
         nur.overlay
@@ -118,7 +125,7 @@
       };
       devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
         returnShellEnv = true;
-        root = ./.;
+        root = ./haskell;
         withHoogle = false;
         modifier = with pkgs; with haskellPackages; drv:
           haskell.lib.overrideCabal drv (attrs: {

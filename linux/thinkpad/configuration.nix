@@ -23,7 +23,7 @@
           (writers.writeHaskellBin
             "scan"
             { libraries = with haskellPackages; [turtle extra]; }
-            ../../scripts/Scan.hs)
+            ../../haskell/scans/Scan.hs)
         ];
         profile = generateFileRules ["paperless"];
       }
@@ -348,7 +348,7 @@
     };
     udev = {
       packages = [ pkgs.utsushi ];
-      extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${monitorChanger}"'';
+      extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${pkgs.monitor-changer}"'';
     };
   };
 
@@ -397,7 +397,7 @@
         script =
           ''
             ${pkgs.xautolock}/bin/xautolock -enable
-            ${pkgs.monitorChanger}/bin/monitor-changer
+            ${pkgs.monitor-changer}/bin/monitor-changer
           '';
         inherit serviceConfig environment;
         enable = true;

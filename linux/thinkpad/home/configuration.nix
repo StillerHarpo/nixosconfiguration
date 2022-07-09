@@ -149,14 +149,9 @@ in {
   };
 
   xsession.windowManager.xmonad = {
-    config = ./xmonad/xmonad.hs;
-    libFiles = {
-      "Bookmarks.hs" = ./xmonad/lib/Bookmarks.hs;
-      "Utils.hs" = ./xmonad/lib/Utils.hs;
-      "Xrandr.hs" = ./xmonad/lib/Xrandr.hs;
-    };
+    config = ../../../haskell/xmonad-thinkpad/xmonad.hs;
     extraPackages = haskellPackages:
-      with haskellPackages; [MissingH protolude];
+      with haskellPackages; [my-common MissingH protolude];
   };
 
   services.dunst = {

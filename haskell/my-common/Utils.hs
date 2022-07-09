@@ -1,7 +1,7 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 module Utils where
 
-import XMonad.Util.Run (runProcessWithInput, safeSpawn)
+import XMonad.Util.Run (runProcessWithInput)
 import Protolude
 import qualified Data.Text as T
 

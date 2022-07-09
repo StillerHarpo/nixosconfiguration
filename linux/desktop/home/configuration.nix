@@ -3,5 +3,6 @@
 {
   imports = [ ../../home/configuration.nix ];
 
-  xsession.windowManager.xmonad.config = ./xmonad.hs;
+  xsession.windowManager.xmonad.config =
+    ../../../haskell/xmonad-desktop/xmonad.hs;
 }
