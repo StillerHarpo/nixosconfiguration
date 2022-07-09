@@ -40,6 +40,7 @@ in
       }
       {
         pkgs = with pkgs; [
+          ical2org
           xclip
           (kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller]))
           remmina
