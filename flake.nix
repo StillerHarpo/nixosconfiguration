@@ -81,7 +81,7 @@
           pkgs-master = mkPkgs (import nixpkgs-master) [];
           borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
           sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
-          defaultShell = "zsh";
+          defaultShell = "${pkgs.zsh}/bin/zsh";
         };
         modules = [
           nixpkgs.nixosModules.notDetected

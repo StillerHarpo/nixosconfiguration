@@ -12,8 +12,10 @@ let
     live_config_reload = true;
   };
   alacrittyConf =
-    colors: builtins.toFile "alacritty.yml"
-      (toAlacrittyJSON ({inherit colors;} // alacrittyCommon));
+    colors: pkgs.writeTextFile {
+      name = "alacritty.yml";
+      text = toAlacrittyJSON ({inherit colors;} // alacrittyCommon);
+    };
   alacrittyDark = alacrittyConf {
     # Default colors
     primary = {
