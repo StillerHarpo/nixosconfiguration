@@ -50,6 +50,7 @@
         (_: super: with pkgs-unstable; {
           inherit sane-drivers sane-backends xsane hplip;
           inherit (pkgs-newest) signal;
+          kodi = super.kodi // { packages = super.kodi.packages // { inherit (pkgs-master.kodi.packages) invidious; }; };
           python3Packages = super.python3Packages // {inherit (pkgs-master.python3Packages) gunicorn; };
         })
         (self: super: {

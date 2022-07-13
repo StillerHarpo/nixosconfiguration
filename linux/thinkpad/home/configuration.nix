@@ -196,4 +196,8 @@ in {
     dmenu_passphrase.rofi_obscure = true;
     editor.terminal = "alacritty";
   };
+  home.file.".kodi/userdata/addon_data/plugin.video.invidious/settings.xml".source = ./kodi/invidious.xml;
+  home.file.".kodi/userdata/keymaps/vim.xml".source = ./kodi/vim.xml;
+  home.file.".kodi/userdata/addon_data/skin.estuary/settings.xml".source = ./kodi/estuary.xml;
+  home.file.".kodi/userdata/sources.xml".source = ./kodi/sources.xml;
 }

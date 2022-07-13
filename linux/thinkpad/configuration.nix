@@ -31,7 +31,7 @@
         pkgs = with pkgs; [
           ical2org
           xclip
-          (kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller]))
+          (pkgs-master.kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller kodiPkgs.invidious]))
           remmina
           mullvad-vpn
           sqlite
