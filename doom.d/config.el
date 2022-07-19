@@ -218,3 +218,5 @@ If I let Windows handle DPI everything looks blurry."
     (set-frame-font (format "monospace %s" size))
     ))
 (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+
+(setq org-log-into-drawer "LOGBOOK")
