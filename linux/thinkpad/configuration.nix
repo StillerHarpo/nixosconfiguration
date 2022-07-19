@@ -285,6 +285,14 @@
           path = "/home/florian/android/backups";
           devices = [ "android" ];
         };
+        "org-roam" = {
+          path = "/home/florian/Dokumente/org-roam";
+          devices = [ "android" ];
+          versioning = {
+            type = "simple";
+            params.keep = "5";
+          };
+        };
       };
 
     };
