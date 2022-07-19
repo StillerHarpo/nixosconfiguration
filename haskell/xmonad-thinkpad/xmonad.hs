@@ -261,6 +261,7 @@ programms =
   [ ("firefox", "firefox"),
     ("chromium", "chromium"),
     ("anki", "anki"),
+    ("kodi", "kodi"),
     ("signal", "signal-desktop"),
     ("spotify", "spotify"),
     ("steam", "steam"),
