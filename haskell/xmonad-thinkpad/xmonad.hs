@@ -277,7 +277,9 @@ programms =
     ("polymc", "polymc"),
     ("windows-vnc", "vncviewer 192.168.178.24:5900"),
     ("linux-vnc", "vncviewer localhost:9900"),
-    ("netflix", "chromium --new-window \"https://netflix.com\"/")
+    ("netflix", "chromium --new-window \"https://netflix.com\"/"),
+    ("remmina", "remmina"),
+    ("slack", "slack")
   ]
     ++ map (second browser) bookmarks
   where
