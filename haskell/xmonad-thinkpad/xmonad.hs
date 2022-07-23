@@ -6,7 +6,6 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE NoImplicitPrelude #-}
 
 import Bookmarks (bookmarks)
 import Xrandr
@@ -23,7 +22,7 @@ import XMonad.Actions.MessageFeedback (sendMessageB)
 import qualified XMonad.Actions.Search as T
 import XMonad.Actions.SpawnOn (manageSpawn)
 import XMonad.Actions.UpdatePointer (updatePointer)
-import XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook)
+import XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhFullscreen)
 import XMonad.Hooks.SetWMName (setWMName)
 import XMonad.Hooks.UrgencyHook
   ( UrgencyHook (..),
@@ -64,7 +63,7 @@ main :: IO ()
 main =
   xmonad $
     withUrgencyHook LibNotifyUrgencyHook $
-      ewmh
+      ewmhFullscreen
         def
           { terminal = termCommand,
             modMask = mod4Mask,
@@ -74,8 +73,7 @@ main =
             manageHook = myManageHooks,
             startupHook = do
               setWMName "LG3D"
-              spawn "feh --bg-scale ~/black.png",
-            handleEventHook = handleEventHook def <+> fullscreenEventHook
+              spawn "feh --bg-scale ~/black.png"
           }
         `additionalKeys` ( [ ((0, 0x1008ff13), volume Plus),
                              ((0, 0x1008ff11), volume Minus),
