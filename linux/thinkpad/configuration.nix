@@ -199,6 +199,8 @@
 
     unclutter-xfixes.enable = true;
 
+    tlp.enable = true;
+
     # Go in hibernate at lid
     logind = {
       lidSwitch = "hibernate";
