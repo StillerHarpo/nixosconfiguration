@@ -323,6 +323,28 @@
   networking.networkmanager = {
     enable = true;
     dns = "none";
+    dispatcherScripts = [
+      {
+        source =
+          let nmcli = "${pkgs.networkmanager}/bin/nmcli";
+              lanInterface = "enp0s31f6";
+          in pkgs.writeText "wlan_auto_toggle" ''
+          if [ "$1" = "${lanInterface}" ]; then
+              case "$2" in
+                  up)
+                      ${nmcli} radio wifi off
+                      ;;
+                  down)
+                      ${nmcli} radio wifi on
+                      ;;
+              esac
+          elif [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
+              nmcli radio wifi on
+          fi
+        '';
+        type = "basic";
+      }
+    ];
   };
 
   # big font for high resolution
