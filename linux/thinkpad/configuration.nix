@@ -325,11 +325,10 @@
   };
 
   # wifi
-  networking.networkmanager.enable = true;
-  # networking.wireless.enable = true;
-  # boot.initrd.network.enable = true;
-  # system.activationScripts.wpa_supplicant=
-  #  "ln -sfn /etc/nixos/wpa_supplicant.conf /etc/wpa_supplicant.conf";
+  networking.networkmanager = {
+    enable = true;
+    dns = "none";
+  };
 
   # big font for high resolution
   console.font = "sun12x22";
