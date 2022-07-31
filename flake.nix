@@ -2,23 +2,22 @@
   inputs = {
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs-old.url = "github:NixOS/nixpkgs?rev=d17a56d90ecbd1b8fc908d49598fb854ef188461";
     nixos-hardware.url = github:NixOS/nixos-hardware/master;
     agenix.url = "github:ryantm/agenix";
-    emacs-overlay.url = "github:nix-community/emacs-overlay/master";
+    emacs-overlay.url = "github:nix-community/emacs-overlay?rev=e007354fcc0f492878d85b85334ab3baa08a273b";
     doom-emacs = {
-      url = "github:hlissner/doom-emacs/develop";
+      url = "github:hlissner/doom-emacs?rev=35865ef5e89442e3809b8095199977053dd4210f";
       flake = false;
     };
     nix-doom-emacs = {
-      url = "github:nix-community/nix-doom-emacs/master";
+      url = "github:nix-community/nix-doom-emacs?rev=6860a32b4bb158db85371efd7df0fe35ebcecb9b";
       inputs = {
         doom-emacs.follows = "doom-emacs";
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-old";
         emacs-overlay.follows = "emacs-overlay";
       };
     };
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
     home-manager = {
       url = "github:nix-community/home-manager/release-22.05";
@@ -27,10 +26,10 @@
     nur.url = "github:nix-community/NUR";
   };
   outputs = {
-    self, nixpkgs, home-manager, nixpkgs-unstable, agenix
+    self, nixpkgs, home-manager, agenix
     , emacs-overlay , doom-emacs, nix-doom-emacs
-    , nixpkgs-master, nixpkgs-newest, nixpkgs-borgbackup
-    , nur, nixos-hardware
+    , nixpkgs-newest, nixpkgs-borgbackup
+    , nur, nixos-hardware, ...
   }:
 
     let
@@ -39,18 +38,14 @@
         inherit system overlays;
         config.allowUnfree = true;
       };
-      pkgs-unstable = mkPkgs (import nixpkgs-unstable) [];
-      pkgs-master = mkPkgs (import nixpkgs-master) [];
       pkgs-newest = mkPkgs (import nixpkgs-newest) [];
       steamOverlay =
-        _: super: with pkgs-unstable; {
+        _: super: {
           steam = pkgs-newest.steam.override { extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ]; };
         };
       pkgs = mkPkgs (import nixpkgs) [
-        (_: super: with pkgs-unstable; {
-          inherit sane-drivers sane-backends xsane hplip;
-          inherit (pkgs-newest) signal;
-          kodi = super.kodi // { packages = super.kodi.packages // { inherit (pkgs-master.kodi.packages) invidious; }; };
+        (_: super: {
+          inherit (pkgs-newest) signal youtube-dl;
         })
         (self: super: {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {

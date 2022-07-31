@@ -1,12 +1,11 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager, sane-unstable, borgbackup-local
-, defaultShell, pkgs-master, agenix, pkgs-unstable, lib, ... }:
+{ config, pkgs, home-manager,  borgbackup-local
+, defaultShell, agenix, lib, ... }:
 
 {
 
   disabledModules = [
-    "services/hardware/sane.nix"
     "services/backup/borgbackup.nix"
   ];
 
@@ -14,12 +13,11 @@
     ./hardware.nix
     ./hibernate.nix
     ../configuration.nix
-    sane-unstable
     borgbackup-local
     (with (import ./apparmor.nix); generate [
       {
         pkgs = with pkgs; [
-          pkgs-unstable.xsane
+          xsane
           (writers.writeHaskellBin
             "scan"
             { libraries = with haskellPackages; [turtle extra]; }
@@ -31,7 +29,7 @@
         pkgs = with pkgs; [
           ical2org
           xclip
-          (pkgs-master.kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller kodiPkgs.invidious]))
+          (kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller kodiPkgs.invidious]))
           remmina
           mullvad-vpn
           sqlite
@@ -51,7 +49,7 @@
           shellcheck
           #############
           ######## Games ###############
-          pkgs-unstable.polymc                 # minecraft launcher
+          polymc                 # minecraft launcher
           openjdk                 # java
           sshfs
           dzen2
@@ -78,16 +76,14 @@
           feh
           anki
           nix-prefetch-git
-          pkgs-master.youtube-dl
+          youtube-dl
           libnotify
           unzip
           rofi
           wmctrl
           unclutter-xfixes
           cabal2nix
-          pkgs-master.haskellPackages.implicit-hie
-          pkgs-master.niv
-          pkgs-unstable.stack
+          niv
           #(haskellPackages.ghcWithPackages (self : with self;
           #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
           #    adjunctions Agda ]))
@@ -96,8 +92,7 @@
           slack
           nixopsUnstable
           tigervnc
-          pkgs-master.signal-desktop
-          pkgs-master.teamspeak_client
+          signal-desktop
         ];
         profile = defaultProfile;
       }
@@ -313,8 +308,6 @@
   hardware = {
     bluetooth = {
       enable = true;
-      # FIXME https://bbs.archlinux.org/viewtopic.php?id=267219&p=2 (A2DP not working before 5.60)
-      package = pkgs-unstable.bluez;
       hsphfpd.enable = true;
     };
     sane = {
@@ -336,13 +329,6 @@
   console.font = "sun12x22";
 
   services = {
-    # dhcpd4.extraConfig = ''
-    #    option subnet-mask 255.255.255.0;
-    #    option routers 10.0.0.100;
-    #    subnet 10.0.0.0 netmask 255.255.255.0 {
-    #      range 10.0.0.150 10.0.0.250;
-    #    }
-    # '';
     mullvad-vpn.enable = true;
     batteryNotifier.enable = true;
     synergy.server.enable = true;
