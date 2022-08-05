@@ -270,6 +270,7 @@
       user = "florian";
       dataDir = "/home/florian/.syncthing";
       devices."android".id = "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+      devices."macos".id = "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
       folders = {
         "android-photos" = {
           path = "/home/florian/android/photos";
@@ -291,6 +292,11 @@
             params.keep = "5";
           };
         };
+        "macos" = {
+          path = "/home/florian/syncthing-macos";
+          devices = [ "macos" ];
+        };
+
       };
 
     };
