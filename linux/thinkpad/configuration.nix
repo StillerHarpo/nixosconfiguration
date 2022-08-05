@@ -346,7 +346,7 @@
                       ;;
               esac
           elif [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
-              nmcli radio wifi on
+              ${nmcli} radio wifi on
           fi
         '';
         type = "basic";
