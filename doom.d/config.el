@@ -107,10 +107,10 @@
 
 (setq org-highlight-latex-and-related '(latex script entities))
 
-(setq browse-url-browser-function `((,mediareg . browse-url-mpv)
+(setq browse-url-handlers `((,mediareg . browse-url-mpv)
                                         ;                                   ("." . eww-browse-url)))
                                     ("." . browse-url-firefox-new-window)))
-
+(setq browse-url-browser-function 'browse-url-default-browser)
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
   (start-process (concat prog url) nil prog url))
