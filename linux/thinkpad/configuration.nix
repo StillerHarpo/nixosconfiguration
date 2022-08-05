@@ -93,6 +93,7 @@
           nixopsUnstable
           tigervnc
           signal-desktop
+          teamspeak_client
         ];
         profile = defaultProfile;
       }
