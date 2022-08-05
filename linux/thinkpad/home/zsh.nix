@@ -1,19 +1,26 @@
 {
   imports = [ ../../../zsh.nix ];
   programs.zsh = {
-    shellAliases.ls = "ls -lh --color=auto";
+    shellAliases = {
+      ls = "ls -lh --color=auto";
+      rtv = ''export BROWSER=linkopen; export EDITOR=vim; export PAGER=less;rtv'';
+    };
     oh-my-zsh.theme = "agnoster";
     initExtra = ''
        export BROWSER='~/scripts/linkopen'
        eval "$(direnv hook zsh)"
+       precmd_in_nix_shell() {
+         if echo "$PATH" | grep -qc '/nix/store'; then
+           PROMPT='%K{green}%F{black} nix-shell %F{green}%K{black}$(echo "\ue0b0")%k%f%{%f%b%k%}$(build_prompt) '
+         else
+           PROMPT='%{%f%b%k%}$(build_prompt) '
+         fi
+       }
+       add-zsh-hook precmd precmd_in_nix_shell
     '';
     localVariables.PROMPT = ''
-       WORKSPACE=$(wmctrl -d | grep "*" | cut -f1 -d' ')
-       if [ $SHELL != "/run/current-system/sw/bin/zsh" ]
+       if echo "$PATH" | grep -qc '/nix/store'
        then
-         PROMPT='%K{green}%F{black} nix-shell %F{green}%K{black}$(echo "\ue0b0")%k%f'$PROMPT
-       else
-         cd $(grep -e "^''${WORKSPACE} .*" ~/scripts/var/roots | cut -f2 -d' ')
        fi
     '';
   };
