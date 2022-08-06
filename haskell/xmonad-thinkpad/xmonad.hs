@@ -1,20 +1,19 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 
-import Bookmarks (bookmarks)
-import Xrandr
-import Utils
+import Bookmarks (workBookmarks, bookmarks)
 import Data.List (last)
 import qualified Data.Map as M
 import qualified Data.Text as T
 import Data.Word (Word32)
 import Protolude
+import Utils
 import XMonad hiding (ifM)
 import XMonad.Actions.CycleWS (nextScreen, swapNextScreen)
 import XMonad.Actions.FindEmptyWorkspace (viewEmptyWorkspace)
@@ -22,7 +21,7 @@ import XMonad.Actions.MessageFeedback (sendMessageB)
 import qualified XMonad.Actions.Search as T
 import XMonad.Actions.SpawnOn (manageSpawn)
 import XMonad.Actions.UpdatePointer (updatePointer)
-import XMonad.Hooks.EwmhDesktops (ewmh, fullscreenEventHook, ewmhFullscreen)
+import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen, fullscreenEventHook)
 import XMonad.Hooks.SetWMName (setWMName)
 import XMonad.Hooks.UrgencyHook
   ( UrgencyHook (..),
@@ -48,6 +47,7 @@ import qualified XMonad.Util.ExtensibleState as XS
 import XMonad.Util.NamedWindows (getName)
 import XMonad.Util.Run (runProcessWithInput, safeSpawn)
 import XMonad.Util.Stack (Zipper, insertUpZ, onFocusedZ)
+import Xrandr
 
 data LibNotifyUrgencyHook = LibNotifyUrgencyHook deriving (Read, Show)
 
@@ -280,6 +280,7 @@ programms =
     ("slack", "slack")
   ]
     ++ map (second browser) bookmarks
+    ++ map (second (browserWithProfile "work")) workBookmarks
   where
     startTerm s =
       termCommand <> " -t \"" <> s <> "\" -e \""
@@ -338,14 +339,18 @@ addCont w l@(ListStorage ws)
   | w `elem` ws = l
   | otherwise = ListStorage $ ws ++ [w]
 
--- | open url in browser
-browser :: Text -> Text
-browser url = "firefox -new-window \"" <> urlWithSearch <> "\""
+-- | open url in browser with specified profile
+browserWithProfile :: Text -> Text -> Text
+browserWithProfile profile url = "firefox -P " <> profile <> " -new-window \"" <> urlWithSearch <> "\""
   where
     urlWithSearch =
       if (T.any (== '.') url || T.isInfixOf "localhost" url) && not (T.any (== ' ') url)
         then url
         else "duckduckgo.com\\?q=" <> replaceSpaces url
+
+-- | open url in browser
+browser :: Text -> Text
+browser = browserWithProfile "default"
 
 getFontFromScreenWidth :: X Text
 getFontFromScreenWidth = do
