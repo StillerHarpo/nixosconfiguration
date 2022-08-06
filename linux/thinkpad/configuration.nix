@@ -90,7 +90,6 @@
           networkmanager-openvpn networkmanager_dmenu
           git-crypt
           slack
-          nixopsUnstable
           tigervnc
           signal-desktop
           teamspeak_client
@@ -119,6 +118,7 @@
       {
         pkgs = with pkgs; [
           agenix.defaultPackage.x86_64-linux
+          deploy-rs
         ];
         profile = ''
             ${generateFileRules ["ssh"]}

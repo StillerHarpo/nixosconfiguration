@@ -11,7 +11,7 @@
       efiSysMountPoint = "/boot";
     };
     grub = {
-      devices = [ "nodev" ];
+      device = "nodev";
       enable = true;
       efiSupport = true;
       version = 2;
@@ -26,10 +26,16 @@
     kernelModules = [ "kvm-amd" ];
   };
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/550f9ea8-74b0-4775-ac06-f178089dc9a4";
-      fsType = "ext4";
-    };
+  fileSystems = {
+    "/" =
+      { device = "/dev/disk/by-uuid/550f9ea8-74b0-4775-ac06-f178089dc9a4";
+        fsType = "ext4";
+      };
+    "/boot" =
+      { device = "/dev/disk/by-uuid/EDCD-D594";
+        fsType = "vfat";
+      };
+  };
 
   swapDevices =
     [ { device = "/dev/disk/by-uuid/db9038db-4602-4d7e-9a4f-5d56f43c8db5"; }
@@ -68,11 +74,11 @@
   age.secrets = {
     steamuser = {
       file = ./secrets/steamuser.age;
-      user = "florian";
+      owner = "florian";
     };
     steampass = {
       file = ./secrets/steampass.age;
-      user = "florian";
+      owner = "florian";
     };
   };
 

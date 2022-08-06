@@ -24,12 +24,16 @@
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
     nur.url = "github:nix-community/NUR";
+    deploy-rs = {
+      url = "github:serokell/deploy-rs";
+      inputs = { nixpkgs.follows = "nixpkgs"; };
+    };
   };
   outputs = {
     self, nixpkgs, home-manager, agenix
     , emacs-overlay , doom-emacs, nix-doom-emacs
     , nixpkgs-newest, nixpkgs-borgbackup
-    , nur, nixos-hardware, ...
+    , nur, nixos-hardware, deploy-rs, ...
   }:
 
     let
@@ -46,6 +50,7 @@
       pkgs = mkPkgs (import nixpkgs) [
         (_: super: {
           inherit (pkgs-newest) signal youtube-dl;
+          deploy-rs = deploy-rs.defaultPackage."${system}";
         })
         (self: super: {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {
@@ -69,56 +74,62 @@
       ];
 
     in {
-      nixosConfigurations.nixos-thinkpad = nixpkgs.lib.nixosSystem {
-        inherit system;
-        specialArgs = {
-          inherit pkgs pkgs-unstable agenix;
-          pkgs-master = mkPkgs (import nixpkgs-master) [];
-          borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
-          sane-unstable = "${nixpkgs-unstable}/nixos/modules/services/hardware/sane.nix";
-          defaultShell = "${pkgs.zsh}/bin/zsh";
-        };
-        modules = [
-          nixpkgs.nixosModules.notDetected
-          nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-          home-manager.nixosModules.home-manager
-          {
-            home-manager.users.florian = { pkgs, ... }: {
-              imports = [ nix-doom-emacs.hmModule ];
-              programs.doom-emacs = {
-                enable = true;
-                doomPrivateDir = ./doom.d;
-              };
-            };
-          }
-          ./linux/thinkpad/configuration.nix
-          agenix.nixosModules.age
-        ];
-      };
-      nixopsConfigurations.default = {
-        inherit nixpkgs;
-        network.storage.memory = {};
-        desktop =
-          { config, pkgs, ... }:
-          {
-            imports = with nixos-hardware.nixosModules; [
-              home-manager.nixosModules.home-manager
-              common-pc
-              common-pc-hdd
-              common-pc-ssd
-              common-cpu-amd
-              common-gpu-amd-southern-islands
-              agenix.nixosModules.age
-              ./linux/desktop/configuration.nix
-            ];
-            deployment.targetHost = "192.168.178.24";
-            nixpkgs.config = {
-              allowUnfree = true;
-              overlays = [ steamOverlay ];
-            };
+      nixosConfigurations = {
+        nixos-thinkpad = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit pkgs agenix;
+            borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
+            defaultShell = "${pkgs.zsh}/bin/zsh";
           };
+          modules = [
+            nixpkgs.nixosModules.notDetected
+            nixos-hardware.nixosModules.lenovo-thinkpad-t480s
+            home-manager.nixosModules.home-manager
+            {
+              home-manager.users.florian = { pkgs, ... }: {
+                imports = [ nix-doom-emacs.hmModule ];
+                programs.doom-emacs = {
+                  enable = true;
+                  doomPrivateDir = ./doom.d;
+                };
+              };
+            }
+            ./linux/thinkpad/configuration.nix
+            agenix.nixosModules.age
+          ];
+        };
+        desktop = nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit pkgs agenix;
+          };
+          inherit system;
+          modules = with nixos-hardware.nixosModules; [
+            nixpkgs.nixosModules.notDetected
+            common-pc
+            common-pc-hdd
+            common-pc-ssd
+            common-cpu-amd
+            common-gpu-amd-southern-islands
+            home-manager.nixosModules.home-manager
+            ./linux/desktop/configuration.nix
+            agenix.nixosModules.age
+          ];
+        };
+
+      deploy.nodes.desktop = {
+        hostname = "192.168.178.24";
+        profiles.system = {
+          user = "root";
+          sshUser = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.desktop;
+        };
       };
-      devShell.x86_64-linux = pkgs.haskellPackages.developPackage {
+
+      # This is highly advised, and will prevent many possible mistakes
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
+      devShells.x86_64-linux.default = pkgs.haskellPackages.developPackage {
         returnShellEnv = true;
         root = ./haskell;
         withHoogle = false;
