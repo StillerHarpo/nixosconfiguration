@@ -113,8 +113,8 @@
 (setq browse-url-browser-function 'browse-url-default-browser)
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
-  (start-process (concat prog url) nil prog url))
-(defun browse-url-mpv (url &rest args) (browse "mpv" url))
+  (apply #'start-process (append `(,(concat prog url) nil) prog '(url))))
+(defun browse-url-mpv (url &rest args) (browse '("mpv" "--save-position-on-quit") url))
 (defun browse-url-firefox-new-window (url &rest agrs)
   (browse-url-firefox url t))
 
