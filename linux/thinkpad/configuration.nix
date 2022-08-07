@@ -360,12 +360,7 @@
   services = {
     mullvad-vpn.enable = true;
     batteryNotifier.enable = true;
-    synergy.server.enable = true;
     printing.enable = true;
-    avahi = {
-      enable = true;
-      nssmdns = true;
-    };
     udev = {
       packages = [ pkgs.utsushi ];
       extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${pkgs.monitor-changer}"'';
