@@ -74,6 +74,9 @@
       ];
 
     in {
+
+      legacyPackages.x86_64-linux = pkgs;
+
       nixosConfigurations = {
         nixos-thinkpad = nixpkgs.lib.nixosSystem {
           inherit system;
@@ -94,6 +97,7 @@
                   doomPrivateDir = ./doom.d;
                 };
               };
+              nix.registry.self.flake = self;
             }
             ./linux/thinkpad/configuration.nix
             agenix.nixosModules.age
