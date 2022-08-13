@@ -1,13 +1,11 @@
+{pkgs, ...}:
 {
   imports = [ ../../../zsh.nix ];
   programs.zsh = {
-    shellAliases = {
-      ls = "ls -lh --color=auto";
-      rtv = ''export BROWSER=linkopen; export EDITOR=vim; export PAGER=less;rtv'';
-    };
+    shellAliases.ls = "ls -lh --color=auto";
     oh-my-zsh.theme = "agnoster";
     initExtra = ''
-       export BROWSER='~/scripts/linkopen'
+       export BROWSER='${(import ../scripts pkgs).linkopen}/bin/linkopen'
        eval "$(direnv hook zsh)"
        precmd_in_nix_shell() {
          if echo "$PATH" | grep -qc '/nix/store'; then
