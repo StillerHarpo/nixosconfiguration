@@ -219,3 +219,5 @@ If I let Windows handle DPI everything looks blurry."
 (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
 (setq org-log-into-drawer "LOGBOOK")
+
+(setq vterm-shell "zsh")
