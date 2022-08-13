@@ -344,6 +344,13 @@
                   down)
                       ${nmcli} radio wifi on
                       ;;
+                  *)
+                      if [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
+                          echo "Lan is $2 (not up/down)"
+                          echo "Enabeling wifi"
+                          ${nmcli} radio wifi on
+                      fi
+                      ;;
               esac
           elif [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
               ${nmcli} radio wifi on
@@ -413,6 +420,10 @@
           ''
             ${pkgs.xautolock}/bin/xautolock -enable
             ${pkgs.monitor-changer}/bin/monitor-changer
+            if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
+              echo "Enabeling wifi"
+              ${pkgs.networkmanager}/bin/nmcli radio wifi on
+            fi
           '';
         inherit serviceConfig environment;
         enable = true;
