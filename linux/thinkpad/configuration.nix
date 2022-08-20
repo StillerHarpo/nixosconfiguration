@@ -401,26 +401,12 @@
 #        DBUS_SESSION_BUS_ADDRESS = "unix:path=/run/user/1000/bus";
       };
     in {
-      # Service executed before suspending/hibernating.
-      # FIXME not working
-      "my-pre-sleep" = {
-        description = "Pre-Sleep Actions";
-        before = targets;
-        wantedBy = targets;
-        script =
-          ''
-            ${pkgs.xautolock}/bin/xautolock -disable
-          '';
-        inherit serviceConfig environment;
-        enable = true;
-      };
       "my-post-resume" = {
         description = "Post-Resume Actions";
         after = targets;
         wantedBy = targets;
         script =
           ''
-            ${pkgs.xautolock}/bin/xautolock -enable
             ${pkgs.monitor-changer}/bin/monitor-changer
             if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
               echo "Enabeling wifi"
