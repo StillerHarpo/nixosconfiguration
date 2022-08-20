@@ -1,4 +1,3 @@
-defaultShell:
 # FIXME Use right font for mac
 { config, lib, pkgs, ... }:
 
@@ -8,7 +7,7 @@ let
   alacrittyCommon = {
     env.TERM = "xterm-256color";
     window.dynamic_title = true;
-    shell.program = defaultShell;
+    shell.program = pkgs.myshell;
     live_config_reload = true;
   };
   alacrittyConf =

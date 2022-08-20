@@ -1,4 +1,4 @@
-{ config, lib, pkgs, defaultShell, ... }:
+{ config, lib, pkgs, ... }:
 let
   home-manager = builtins.fetchGit {
     url = "https://github.com/rycee/home-manager.git";
@@ -25,7 +25,7 @@ in
     home = "/Users/florianengel";
   };
 
-  home-manager.users.florianengel = import ./home.nix defaultShell;
+  home-manager.users.florianengel = import ./home.nix pkgs.myshell;
 
   nixpkgs.config = {
     overlays = [

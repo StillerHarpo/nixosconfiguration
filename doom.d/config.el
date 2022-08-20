@@ -113,7 +113,6 @@
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
   (apply #'start-process (append `(,(concat (car prog) " " url) nil) prog `(,url))))
-(defun browse-url-mpv (url &rest args) (browse '("mpv" "--save-position-on-quit") url))
 (defun browse-url-firefox-new-window (url &rest agrs)
   (browse-url-firefox url t))
 
@@ -128,7 +127,6 @@
       bibtex-completion-library-path org-ref-bibliography-notes
       bibtex-completion-notes-path org-ref-pdf-directory)
 
-(setq org-latex-pdf-process (list "latexmk -shell-escape -bibtex -f -pdfxe %f"))
 (setq rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
 (after! elfeed
   (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
@@ -220,4 +218,27 @@ If I let Windows handle DPI everything looks blurry."
 
 (setq org-log-into-drawer "LOGBOOK")
 
-(setq vterm-shell "zsh")
+(setq langtool-mother-tongue "de-DE")
+
+(general-evil-define-key '(normal visual) 'vterm-mode-map
+          "p" 'vterm-yank
+          :prefix ","
+          "e" 'vterm-send-next-key
+          "c" 'vterm-clear)
+
+(defun with-nix-pathes (nix-path-alist)
+    "config that need nix-paths is called with this functions"
+  (let ((shell (cdr (assoc 'nix-zsh-path nix-path-alist)))
+         (latexmk (cdr (assoc 'nix-latexmk-path nix-path-alist)))
+         (mpv (cdr (assoc 'nix-mpv-path nix-path-alist)))
+         (jdk (cdr (assoc 'nix-jdk-path nix-path-alist)))
+         (languagetool (cdr (assoc 'nix-languagetool-path nix-path-alist))))
+     (defun browse-url-mpv (url &rest args) (browse `(,mpv "--save-position-on-quit") url))
+     (setq vterm-shell shell)
+     (setq org-latex-pdf-process (list (concat latexmk " -shell-escape -bibtex -f -pdfxe %f")))
+     (setq langtool-java-classpath (concat languagetool "/share/")
+           langtool-java-user-arguments `("-Dfile.encoding=UTF-8"
+                                          "-cp" ,(concat languagetool "/share/"))
+           langtool-java-bin jdk
+           langtool-language-tool-jar (concat languagetool "/share/languagetool-commandline.jar")
+           langtool-language-tool-server-jar (concat languagetool "/share/languagetool-server.jar"))))

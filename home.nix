@@ -1,11 +1,10 @@
-defaultShell:
 { config, lib, pkgs,  ... }:
 
 {
 
   home = {
     sessionVariables = {
-      SHELL = defaultShell;
+      SHELL = pkgs.myshell;
       EDITOR = "vim";
     };
     packages = with pkgs; [

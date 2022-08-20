@@ -51,6 +51,8 @@
         (_: super: {
           inherit (pkgs-newest) signal youtube-dl;
           deploy-rs = deploy-rs.defaultPackage."${system}";
+          mytexlive = with super; texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;};
+          myshell = "${super.zsh}/bin/zsh";
         })
         (self: super: {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {
@@ -83,18 +85,24 @@
           specialArgs = {
             inherit pkgs agenix;
             borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
-            defaultShell = "${pkgs.zsh}/bin/zsh";
           };
           modules = [
             nixpkgs.nixosModules.notDetected
             nixos-hardware.nixosModules.lenovo-thinkpad-t480s
             home-manager.nixosModules.home-manager
             {
-              home-manager.users.florian = { pkgs, ... }: {
+              home-manager.users.florian = { pkgs, config, ... }: {
                 imports = [ nix-doom-emacs.hmModule ];
                 programs.doom-emacs = {
                   enable = true;
                   doomPrivateDir = ./doom.d;
+                  extraConfig = ''
+                      (with-nix-pathes '((nix-zsh-path . "${pkgs.myshell}")
+                                        (nix-latexmk-path . "${pkgs.mytexlive}/bin/latexmk")
+                                        (nix-mpv-path . "${pkgs.mpv}/bin/mpv")
+                                        (nix-jdk-path . "${pkgs.jdk}/bin/java")
+                                        (nix-languagetool-path . "${pkgs.languagetool}")))
+                    '';
                 };
               };
               nix.registry.self.flake = self;

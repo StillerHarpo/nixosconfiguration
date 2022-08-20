@@ -1,7 +1,7 @@
 # here are every configs that are used on my laptop but not on my workstation
 
 { config, pkgs, home-manager,  borgbackup-local
-, defaultShell, agenix, lib, ... }:
+, agenix, lib, ... }:
 
 {
 
@@ -27,6 +27,7 @@
       }
       {
         pkgs = with pkgs; [
+          languagetool
           ical2org
           xclip
           (kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller kodiPkgs.invidious]))
@@ -70,7 +71,7 @@
           you-get
           xosd
           pandoc
-          (texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;})
+          mytexlive
           python37Packages.pygments
           bc
           feh
@@ -143,7 +144,7 @@
 
   systemd.packages = [ pkgs.dconf ];
 
-  home-manager.users.florian = import ./home/configuration.nix defaultShell;
+  home-manager.users.florian = import ./home/configuration.nix;
 
   environment = {
     pathsToLink = [ "/share/agda" "/share/zsh" ];

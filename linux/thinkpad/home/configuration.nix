@@ -1,4 +1,3 @@
-defaultShell:
 { config, lib, pkgs, ... }:
 
 let
@@ -8,11 +7,11 @@ let
 
 in {
   imports = [
-    (import ../../../home.nix defaultShell)
+    ../../../home.nix
     ./zsh.nix
     ./defaultApplications.nix
     ../../home/configuration.nix
-    (import ./themeChanger.nix defaultShell)
+    ./themeChanger.nix
   ];
 
   programs = {
