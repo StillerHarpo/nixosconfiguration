@@ -104,8 +104,17 @@
                                         (nix-languagetool-path . "${pkgs.languagetool}")))
                     '';
                 };
+                xdg = {
+                  enable = true;
+                  configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+                };
+                home.sessionVariables.NIX_PATH = "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
+                nix.registry.nixpkgs.flake = self;
               };
-              nix.registry.self.flake = self;
+              nix = {
+                registry.nixpkgs.flake = self;
+                nixPath = [ "nixpkgs=${nixpkgs.outPath}" ];
+              };
             }
             ./linux/thinkpad/configuration.nix
             agenix.nixosModules.age

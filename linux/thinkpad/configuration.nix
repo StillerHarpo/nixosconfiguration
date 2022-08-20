@@ -27,6 +27,7 @@
       }
       {
         pkgs = with pkgs; [
+          nix-index
           languagetool
           ical2org
           xclip
