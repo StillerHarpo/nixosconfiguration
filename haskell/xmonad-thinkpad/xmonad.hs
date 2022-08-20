@@ -7,7 +7,7 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-import Bookmarks (workBookmarks, bookmarks)
+import Bookmarks (bookmarks, workBookmarks)
 import Data.List (last)
 import qualified Data.Map as M
 import qualified Data.Text as T
@@ -88,8 +88,8 @@ main =
                              ( (mod4Mask, xK_n),
                                runProcess "networkmanager_dmenu" . ("-font" :) . (: []) =<< getFontFromScreenWidth
                              ),
-                             ((mod4Mask, xK_m), spawn "slock systemctl suspend -i"),
-                             ((mod4Mask, xK_u), spawn "xautolock -locknow"),
+                             ((mod4Mask, xK_m), spawn "systemctl suspend -i"),
+                             ((mod4Mask, xK_u), spawn "sleep 2 && xtrlock-pam -b none"),
                              ( (mod4Mask, xK_f),
                                composeAll
                                  [ runOrShift,

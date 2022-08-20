@@ -95,6 +95,7 @@
           tigervnc
           signal-desktop
           teamspeak_client
+          xtrlock-pam
         ];
         profile = defaultProfile;
       }
