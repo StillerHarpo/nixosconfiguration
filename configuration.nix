@@ -23,13 +23,6 @@
       experimental-features = nix-command flakes
     '';
     maxJobs = lib.mkDefault 8;
-    autoOptimiseStore = true;
-    gc = {
-      persistent = true;
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
   };
 
 }

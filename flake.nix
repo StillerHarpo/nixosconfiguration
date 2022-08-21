@@ -28,9 +28,13 @@
       url = "github:serokell/deploy-rs";
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
+    darwin = {
+      url = "github:lnl7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = {
-    self, nixpkgs, home-manager, agenix
+    self, nixpkgs, home-manager, agenix, darwin
     , emacs-overlay , doom-emacs, nix-doom-emacs
     , nixpkgs-newest, nixpkgs-borgbackup
     , nur, nixos-hardware, deploy-rs, ...
@@ -38,22 +42,27 @@
 
     let
       system = "x86_64-linux";
-      mkPkgs = pkgs: overlays: pkgs {
+      mkPkgs = system: pkgs: overlays: pkgs {
         inherit system overlays;
         config.allowUnfree = true;
       };
-      pkgs-newest = mkPkgs (import nixpkgs-newest) [];
+      mkPkgsLinux = pkgs: overlays: mkPkgs system pkgs overlays;
+      pkgs-newest = mkPkgsLinux (import nixpkgs-newest) [];
       steamOverlay =
         _: super: {
           steam = pkgs-newest.steam.override { extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ]; };
         };
-      pkgs = mkPkgs (import nixpkgs) [
+      myShellOverlay =
+        _: super: {
+          myshell = "${super.zsh}/bin/zsh";
+        };
+      pkgs = mkPkgsLinux (import nixpkgs) [
         (_: super: {
           inherit (pkgs-newest) signal youtube-dl;
           deploy-rs = deploy-rs.defaultPackage."${system}";
           mytexlive = with super; texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;};
-          myshell = "${super.zsh}/bin/zsh";
         })
+        myShellOverlay
         (self: super: {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {
             my-common =
@@ -166,5 +175,14 @@
           });
       };
 
+      darwinConfigurations."Florians-MBP" = darwin.lib.darwinSystem
+        (let system = "x86_64-darwin";
+         in {
+           pkgs = mkPkgs system (import nixpkgs) [myShellOverlay];
+           modules = [
+             ./mac/configuration.nix
+             home-manager.darwinModules.home-manager
+           ];
+         });
     };
 }

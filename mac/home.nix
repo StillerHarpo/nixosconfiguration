@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, home-manager, ... }:
 let
   appEnv = pkgs.buildEnv {
     name = "home-manager-applications";
@@ -11,5 +11,8 @@ in
     ../home.nix
     ./zsh.nix
   ];
-  config.home.file."Applications/Home Manager Apps".source = "${appEnv}/Applications";
+  config.home = {
+    stateVersion = "22.05";
+    file."Applications/Home Manager Apps".source = "${appEnv}/Applications";
+  };
 }

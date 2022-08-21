@@ -1,19 +1,12 @@
-{ config, lib, pkgs, ... }:
-let
-  home-manager = builtins.fetchGit {
-    url = "https://github.com/rycee/home-manager.git";
-    ref = "release-20.09";
-  };
-in
-{
+{ config, lib, pkgs, home-manager, ... }:
 
+{
   imports = [
-    ../configuration.nix (import "${home-manager}/nix-darwin")
+    ../configuration.nix
   ];
 
   environment.systemPackages = with pkgs; ([
     git
-    slack
     niv
     pass
     bashInteractive_5
@@ -25,22 +18,10 @@ in
     home = "/Users/florianengel";
   };
 
-  home-manager.users.florianengel = import ./home.nix pkgs.myshell;
-
-  nixpkgs.config = {
-    overlays = [
-      (self: super: {
-         bashInteractive = super.bashInteractive_5;
-      })
-    ];
-  };
-
-  # environment.shells = with pkgs; [ zsh bashInteractive ];
+  home-manager.users.florianengel = import ./home.nix;
 
   programs = {
     zsh.enable = true;
-   # bash.enable = true;
-#    gnupg.enable = true;
   };
 
   system.stateVersion = 4;

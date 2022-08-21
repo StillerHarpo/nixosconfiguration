@@ -86,6 +86,13 @@
       keep-outputs = true
       keep-derivations = true
     '';
+    autoOptimiseStore = true;
+    gc = {
+      persistent = true;
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
   };
 
   home-manager = {
