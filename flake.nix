@@ -129,6 +129,7 @@
             agenix.nixosModules.age
           ];
         };
+
         desktop = nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit pkgs agenix;
@@ -146,36 +147,36 @@
             agenix.nixosModules.age
           ];
         };
-
-        deploy.nodes.desktop = {
-          hostname = "192.168.178.24";
-          profiles.system = {
-            user = "root";
-            sshUser = "root";
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.desktop;
-          };
-        };
-
-        # This is highly advised, and will prevent many possible mistakes
-        checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-
-        devShells.x86_64-linux.default = pkgs.haskellPackages.developPackage {
-          returnShellEnv = true;
-          root = ./haskell;
-          withHoogle = false;
-          modifier = with pkgs; with haskellPackages; drv:
-            haskell.lib.overrideCabal drv (attrs: {
-              buildTools = (attrs.buildTools or [ ]) ++ [
-                cabal-install
-                haskell-language-server
-                brittany
-                hlint
-                xlibsWrapper
-              ];
-            });
-        };
-
       };
+
+      deploy.nodes.desktop = {
+        hostname = "192.168.178.24";
+        profiles.system = {
+          user = "root";
+          sshUser = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.desktop;
+        };
+      };
+
+      # This is highly advised, and will prevent many possible mistakes
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
+      devShells.x86_64-linux.default = pkgs.haskellPackages.developPackage {
+        returnShellEnv = true;
+        root = ./haskell;
+        withHoogle = false;
+        modifier = with pkgs; with haskellPackages; drv:
+          haskell.lib.overrideCabal drv (attrs: {
+            buildTools = (attrs.buildTools or [ ]) ++ [
+              cabal-install
+              haskell-language-server
+              brittany
+              hlint
+              xlibsWrapper
+            ];
+          });
+      };
+
       darwinConfigurations."Florians-MBP" = darwin.lib.darwinSystem
         (let system = "x86_64-darwin";
          in {

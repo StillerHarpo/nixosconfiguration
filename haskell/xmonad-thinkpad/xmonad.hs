@@ -397,7 +397,7 @@ actionMenu action viewEmpty = do
         <$> mapM keyValuePairs ws
       where
         keyValuePairs ws = mapM (keyValuePair ws) $ W.integrate' (W.stack ws)
-        keyValuePair ws w = (,w) <$> decorateName ws w
+        keyValuePair ws w = (,w) . T.toTitle . T.dropWhile (not . isAlpha) <$> decorateName ws w
         toAction = map $ second action
         openProgramms =
           map
