@@ -1,47 +1,47 @@
-{-# OPTIONS_GHC -Wall #-}
-{-# OPTIONS_GHC -Werror #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE LambdaCase #-}
+{-# OPTIONS_GHC -Wall #-}
+{-# OPTIONS_GHC -Werror #-}
 
 module Main where
 
-import Prelude hiding (FilePath)
-import Turtle hiding (stdin)
-import Control.Monad.Trans.Reader
-import Control.Monad.Trans.Class
-import Data.IORef
 import qualified Control.Foldl as Fold
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import Data.Semigroup(Max(..))
-import Data.Foldable(traverse_)
-import Data.Time.Format
-import System.IO(hSetBuffering, BufferMode(..), stdin)
 import Control.Monad.Catch
 import Control.Monad.Extra
-import Text.Read (readMaybe)
+import Control.Monad.Trans.Class
+import Control.Monad.Trans.Reader
+import Data.Foldable (traverse_)
+import Data.IORef
+import Data.Semigroup (Max (..))
+import qualified Data.Text as T
+import qualified Data.Text.IO as T
+import Data.Time.Format
+import System.IO (BufferMode (..), hSetBuffering, stdin)
 import System.IO.Extra (withTempDir, withTempFile)
+import Text.Read (readMaybe)
+import Turtle hiding (stdin)
+import Prelude hiding (FilePath)
 
-data Env = Env { counter :: IORef Int
-               , scanner :: Text
-               , tesseractConf :: Text }
+data Env = Env
+  { counter :: IORef Int,
+    scanner :: Text,
+    tesseractConf :: Text
+  }
 
-data CustomError =
-  FileExistError FilePath
+data CustomError
+  = FileExistError FilePath
   | DirNotExistsError FilePath
   | EncodingError
-  | NotDevidableByError Int
   | NoScanner
 
 instance Show CustomError where
   show = \case
-     FileExistError filePath -> T.unpack $ format ("Error file "%fp%" exist") filePath
-     DirNotExistsError filePath -> T.unpack $ format ("Directory "%fp%" does not exist") filePath
-     EncodingError -> "encodig failed"
-     NotDevidableByError n -> "internal error: number of input files should be devideable by " <> show n
-     NoScanner -> "Couldn't find scanner"
+    FileExistError filePath -> T.unpack $ format ("Error file " % fp % " exist") filePath
+    DirNotExistsError filePath -> T.unpack $ format ("Directory " % fp % " does not exist") filePath
+    EncodingError -> "encoding failed"
+    NoScanner -> "Couldn't find scanner"
 
 instance Exception CustomError
 
@@ -66,10 +66,10 @@ fileNumMatch :: Pattern Text -> Pattern Int
 fileNumMatch = ("./out" *> decimal <*)
 
 tifNumMatch :: Pattern Int
-tifNumMatch =  fileNumMatch ".tif"
+tifNumMatch = fileNumMatch ".tif"
 
 pdfNumMatch :: Pattern Int
-pdfNumMatch =  fileNumMatch ".pdf"
+pdfNumMatch = fileNumMatch ".pdf"
 
 delFile :: MonadIO io => FilePath -> io ()
 delFile file = do
@@ -88,16 +88,16 @@ runTesseract inputFile =
     _ -> throwM EncodingError
 
 liftFunReader :: Monad m => (m a -> m b) -> ReaderT s m a -> ReaderT s m b
-liftFunReader fun r =  ask >>= lift . fun . runReaderT r
+liftFunReader fun r = ask >>= lift . fun . runReaderT r
 
 getPdfsSorted :: MyShell [Text]
 getPdfsSorted = liftFunReader (sortOn (match pdfNumMatch)) getPdfs
 
 fileExistsError :: FilePath -> MyShell ()
 fileExistsError file = do
-  printf ("Error file"%fp%"exist"%"\n") file
+  printf ("Error file" % fp % "exist" % "\n") file
   curCount <- getCounter
-  printf ("counter was: "%d%"\n") curCount
+  printf ("counter was: " % d % "\n") curCount
   lift $ exit (ExitFailure 1)
 
 today :: MonadIO m => m Text
@@ -107,21 +107,21 @@ getFileName :: MyShell Text
 getFileName = do
   cur <- today
   curCount <- getCounter
-  pure $ format ("input_"%d%"_"%s%".pdf") curCount cur
+  pure $ format ("input_" % d % "_" % s % ".pdf") curCount cur
 
 checkFile :: FilePath -> MyShell ()
 checkFile file = do
   exists <- testfile file
   if exists
-  then fileExistsError file
-  else pure ()
+    then fileExistsError file
+    else pure ()
 
 convert :: [Text] -> MyShell ()
 convert inputs = do
   fnT <- getFileName
   let fn = fromText fnT
   checkFile fn
-  printf ("Writing "%fp%" from files "%s%"\n") fn (T.intercalate ", " inputs)
+  printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   procs "pdfunite" (inputs <> [fnT]) mempty
   mv fn (_PDFS_DIR <> fn)
   incCounter
@@ -144,7 +144,7 @@ convertNPictures i = do
   let everyN pdfs
         | length pdfs >= i = (take i pdfs :) <$> everyN (drop i pdfs)
         | null pdfs = pure []
-        | otherwise = throwM (NotDevidableByError i)
+        | otherwise = pure [pdfs]
   everyN pdfsSorted >>= traverse_ convert
   traverse_ (delFile . fromText) pdfsSorted
 
@@ -152,7 +152,7 @@ sourceToNumPicture :: ScanSource -> Int -> Int
 sourceToNumPicture source =
   case source of
     Back -> id
-    ADFDuplex -> (*2)
+    ADFDuplex -> (* 2)
 
 page :: ScanSource -> Int -> MyShell ()
 page scanSource i = do
@@ -161,14 +161,14 @@ page scanSource i = do
 
 scanMultible :: ScanSource -> MyShell ()
 scanMultible scanSource = do
-  start <- getMaxFile tifNumMatch
+  start <- getMaxTifFile tifNumMatch
   scanimage scanSource start
   echo "Press y or Y to add pages, any other char will finish scan"
   whenM (flip elem ['y', 'Y'] <$> liftIO getChar) $
     scanMultible scanSource
 
-data ScanSource =
-  Back
+data ScanSource
+  = Back
   | ADFDuplex
 
 isExitKey :: Char -> Bool
@@ -177,7 +177,7 @@ isExitKey = (`elem` ['q', 'Q', 'X', 'x'])
 isExitKeyStr :: String -> Bool
 isExitKeyStr = \case
   [] -> False
-  (c:cs) -> null cs && isExitKey c
+  (c : cs) -> null cs && isExitKey c
 
 mainMenuKeysHint :: MonadIO io => io ()
 mainMenuKeysHint = echo "press q,Q,X,x to enter main menu"
@@ -197,7 +197,7 @@ scanimage source start = do
   case exitCode of
     ExitSuccess -> pure ()
     (ExitFailure _) -> do
-      newStart <- getMaxFile tifNumMatch
+      newStart <- getMaxTifFile tifNumMatch
       echo "Exception occured"
       mainMenuKeysHint
       echo "Any other key will try again"
@@ -219,11 +219,11 @@ withPageNumbers scanSource = do
   mainMenuKeysHint
   liftIO getLine
     >>= \case
-          (readMaybe -> Just n) -> page scanSource n
-          (isExitKeyStr -> True) -> mainMenu
-          _ -> do
-             echo "Invalid number"
-             withPageNumbers scanSource
+      (readMaybe -> Just n) -> page scanSource n
+      (isExitKeyStr -> True) -> mainMenu
+      _ -> do
+        echo "Invalid number"
+        withPageNumbers scanSource
 
 mainMenu :: MyShell ()
 mainMenu = do
@@ -244,38 +244,49 @@ mainMenu = do
     _ -> invalid
   mainMenu
 
-getMaxFile :: MonadIO m => Pattern Int -> m Int
-getMaxFile fileParser =
-   fold
-     ((match fileParser <$>)
-      . toText <$> ls _PDFS_DIR)
-     (Fold.foldMap
-       (\case
-           Right [i] -> Max $ i + 1
-           _ -> 0 )
-       getMax)
+getMaxFile :: MonadIO m => FilePath -> Pattern Int -> m Int
+getMaxFile filePath fileParser =
+  fold
+    ( (match fileParser <$>)
+        . toText
+        <$> ls filePath
+    )
+    ( Fold.foldMap
+        ( \case
+            Right [i] -> Max $ i + 1
+            _ -> 0
+        )
+        getMax
+    )
+
+getMaxPdfFile :: MonadIO m => Pattern Int -> m Int
+getMaxPdfFile = getMaxFile _PDFS_DIR
+
+getMaxTifFile :: MonadIO m => Pattern Int -> m Int
+getMaxTifFile = getMaxFile "."
 
 main :: IO ()
 main = do
- hSetBuffering stdin NoBuffering
- unlessM (testdir _PDFS_DIR) (throwM $ DirNotExistsError _PDFS_DIR)
- t <- today
- initialCounter <- getMaxFile ("./input_" *> decimal <* text ("_" <> t <> ".pdf"))
- counter <- liftIO $ newIORef initialCounter
- mayScanner <-
-   fold
-     (inproc "scanimage" ["-L"] mempty
-      & grep (contains "epjitsu")
-      & sed (chars1 *> "epjitsu" <> (T.init <$> ends "'") <* chars1))
-     Fold.head
- case mayScanner of
-   Just (lineToText -> scanner) ->
-     withTempDir $ \dir ->
-       withTempFile $ \tesseractConfStr -> do
-         echo "writing tesseract config"
-         writeFile tesseractConfStr "tessedit_create_pdf 1"
-         cd $ fromText (T.pack dir)
-         pwd >>= printf ("current directory is now: "%fp%"\n")
-         let tesseractConf = T.pack tesseractConfStr
-         sh $ runReaderT mainMenu (Env{..})
-   Nothing -> throwM NoScanner
+  hSetBuffering stdin NoBuffering
+  unlessM (testdir _PDFS_DIR) (throwM $ DirNotExistsError _PDFS_DIR)
+  t <- today
+  initialCounter <- getMaxPdfFile ("./input_" *> decimal <* text ("_" <> t <> ".pdf"))
+  counter <- liftIO $ newIORef initialCounter
+  mayScanner <-
+    fold
+      ( inproc "scanimage" ["-L"] mempty
+          & grep (contains "epjitsu")
+          & sed (chars1 *> "epjitsu" <> (T.init <$> ends "'") <* chars1)
+      )
+      Fold.head
+  case mayScanner of
+    Just (lineToText -> scanner) ->
+      withTempDir $ \dir ->
+        withTempFile $ \tesseractConfStr -> do
+          echo "writing tesseract config"
+          writeFile tesseractConfStr "tessedit_create_pdf 1"
+          cd $ fromText (T.pack dir)
+          pwd >>= printf ("current directory is now: " % fp % "\n")
+          let tesseractConf = T.pack tesseractConfStr
+          sh $ runReaderT mainMenu (Env {..})
+    Nothing -> throwM NoScanner
