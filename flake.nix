@@ -105,6 +105,19 @@
                 programs.doom-emacs = {
                   enable = true;
                   doomPrivateDir = ./doom.d;
+                  emacsPackagesOverlay = _: super:
+                    {
+                      ob-ammonite = super.trivialBuild rec {
+                        pname = "ob-ammonite";
+                        version = "0.0.0";
+                        src = pkgs.fetchFromGitHub {
+                          owner = "zwild";
+                          repo = "ob-ammonite";
+                          rev = "39937dff395e70aff76a4224fa49cf2ec6c57cca";
+                          sha256 = "0m5rzpqxk7hrbxsgqplkg7h2p7gv6s1miymv5gvw0cz039skaf0s";
+                        };
+                      };
+                    };
                   extraConfig = ''
                       (with-nix-pathes '((nix-zsh-path . "${pkgs.myshell}")
                                         (nix-latexmk-path . "${pkgs.mytexlive}/bin/latexmk")
