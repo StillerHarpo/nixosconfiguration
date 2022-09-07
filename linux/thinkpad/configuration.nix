@@ -10,6 +10,7 @@
   ];
 
   imports = [
+    ./work-container.nix
     ./hardware.nix
     ./hibernate.nix
     ../configuration.nix

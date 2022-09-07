@@ -19,7 +19,7 @@
       };
     };
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
-    home-manager = {
+    home-manager-flake = {
       url = "github:nix-community/home-manager/release-22.05";
       inputs = { nixpkgs.follows = "nixpkgs"; };
     };
@@ -34,7 +34,7 @@
     };
   };
   outputs = {
-    self, nixpkgs, home-manager, agenix, darwin
+    self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay , doom-emacs, nix-doom-emacs
     , nixpkgs-newest, nixpkgs-borgbackup
     , nur, nixos-hardware, deploy-rs, ...
@@ -93,12 +93,13 @@
           inherit system;
           specialArgs = {
             inherit pkgs agenix;
+            home-manager-flake = home-manager-flake.nixosModule;
             borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
           };
           modules = [
             nixpkgs.nixosModules.notDetected
             nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-            home-manager.nixosModules.home-manager
+            home-manager-flake.nixosModules.home-manager
             {
               home-manager.users.florian = { pkgs, config, ... }: {
                 imports = [ nix-doom-emacs.hmModule ];

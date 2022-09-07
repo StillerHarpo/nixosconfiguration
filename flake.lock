@@ -238,7 +238,7 @@
         "type": "github"
       }
     },
-    "home-manager": {
+    "home-manager-flake": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
@@ -549,7 +549,7 @@
         "deploy-rs": "deploy-rs",
         "doom-emacs": "doom-emacs",
         "emacs-overlay": "emacs-overlay",
-        "home-manager": "home-manager",
+        "home-manager-flake": "home-manager-flake",
         "nix-doom-emacs": "nix-doom-emacs",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",

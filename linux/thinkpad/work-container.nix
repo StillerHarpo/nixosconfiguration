@@ -1,9 +1,12 @@
-{ config, lib, pkgs, home-manager, ... }:
+{ config, lib, pkgs, home-manager-flake, ... }:
 
 {
   # ...
-  containers.graphicalExample = let
-    userName = "work";
+  containers.work = let
+    hostCfg = config;
+    userName = "florian";
+    userUid = hostCfg.users.users."${userName}".uid;
+    xauth = "/tmp/work_xauth";
   in {
     # (1)
     bindMounts = {
@@ -12,16 +15,31 @@
         mountPoint = hostPath;
         isReadOnly = true;
       };
+      xAuthority = rec {
+        hostPath = xauth;
+        mountPoint = hostPath;
+        isReadOnly = true;
+      };
+#      vpnconfig = rec {
+#        hostPath = "/etc/office.ovpn";
+#        mountPoint = hostPath;
+#        isReadOnly = true;
+#      };
     };
 
-    config = {
-      imports = [
-        (import "${home-manager}/nixos")
-        ./desktop.nix
-      ];
+    enableTun = true;
+    privateNetwork = true;
+    hostAddress = "192.168.10.1";
+    localAddress = "192.168.10.2";
 
+    config = {
+      imports = [ home-manager-flake ];
       # (4)
-      users.users."${userName}".extraGroups = lib.mkForce [];
+      users.users."${userName}" = {
+        extraGroups = lib.mkForce [];
+        isNormalUser = true;
+        shell = pkgs.zsh;
+      };
 
       # (5)
       systemd.services.fix-nix-dirs = let
@@ -52,17 +70,49 @@
         firefox
       ];
 
+      environment.etc."office.ovpn".source = ./office.ovpn;
+
+      services.openvpn.servers.officeVPN = {
+        config = '' config /etc/office.ovpn '';
+        autoStart = true;
+      };
+
+#      networking.defaultGateway.address = "192.168.10.1";
+      networking.nameservers = [ "8.8.8.8" ];
+
       home-manager = {
         users."${userName}" = {
-          imports = [ ../../../zsh.nix ];
-
-          programs.ssh.enable = true;
-          # (4)
-          home.sessionVariables = {
-            DISPLAY                             = ":0";
+          #          # imports = [ ../../../zsh.nix ];
+          #
+          programs.zsh = {
+            enable = true;
+            oh-my-zsh.theme = "agnoster";
+            shellAliases = {
+              ll = "ls -a";
+              "." ="cd ..";
+              ".." = "cd ../..";
+              "..." = "cd ../../..";
+              "...." = "cd ../../../..";
+            };
+            enableAutosuggestions = true;
+            oh-my-zsh = {
+              enable = true;
+              plugins = [ "vi-mode" "per-directory-history" ];
+            };
           };
+          programs.ssh.enable = true;
+#          # (4)
+          home.sessionVariables = {
+            SHELL = "zsh";
+            DISPLAY = ":0";
+            XDG_RUNTIME_DIR = "/run/user/${toString userUid}";
+            XAUTHORITY  = xauth;
+          };
+          home.stateVersion = "22.05";
         };
       };
+
+      system.stateVersion = "22.05";
     };
   };
 }
