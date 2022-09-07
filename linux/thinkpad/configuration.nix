@@ -97,8 +97,25 @@
           signal-desktop
           teamspeak_client
           xtrlock-pam
+          ## better rust tools
+          ripgrep
+          bat
+          exa
+          fd
+          procs
+          delta
+          bottom
+          du-dust
+          grex
         ];
         profile = defaultProfile;
+      }
+      {
+        pkgs = [ pkgs.bandwhich ];
+        profile = ''
+          ptrace,
+          ${defaultProfile}
+        '';
       }
       { pkgs = [ pkgs.psmisc ];
         profile = ''

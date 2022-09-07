@@ -18,6 +18,7 @@ in {
     git = {
       userName = realName;
       userEmail = mailAddress;
+      delta.enable = true;
     };
     gpg = {
       enable = true;
