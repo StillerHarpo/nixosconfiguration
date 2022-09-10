@@ -403,7 +403,6 @@
       hostNames = [ "45.157.177.92" ];
       publicKeyFile = ./backup.pub;
     };
-    slock.enable = true;
     adb.enable = true;
     fuse.userAllowOther = true;
     gnupg.dirmngr.enable = true;
