@@ -8,7 +8,6 @@
       EDITOR = "vim";
     };
     packages = with pkgs; [
-      ripgrep # needed for doom search in project FIXME make it only availabe in doom
       afew # needed for notmuch update in emacs
     ];
   };
