@@ -175,6 +175,7 @@
 
 ;;; org roam config
 (setq org-roam-directory (file-truename "~/Dokumente/org-roam"))
+(setq org-roam-file-exclude-regexp ".stversions")
 (setq org-capture-templates
       '(("d" "default" entry
          (file+headline +org-capture-todo-file "Inbox")
