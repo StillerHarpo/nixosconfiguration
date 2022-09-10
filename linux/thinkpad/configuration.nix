@@ -28,6 +28,7 @@
       }
       {
         pkgs = with pkgs; [
+          scrot
           nix-index
           languagetool
           ical2org
