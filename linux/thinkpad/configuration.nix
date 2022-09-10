@@ -97,6 +97,7 @@
           signal-desktop
           teamspeak_client
           xtrlock-pam
+          fzf
           ## better rust tools
           ripgrep
           bat
