@@ -15,6 +15,10 @@ in {
   ];
 
   programs = {
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
     git = {
       userName = realName;
       userEmail = mailAddress;
