@@ -12,6 +12,7 @@ in {
     ./defaultApplications.nix
     ../../home/configuration.nix
     ./themeChanger.nix
+    ./firefox.nix
   ];
 
   programs = {
