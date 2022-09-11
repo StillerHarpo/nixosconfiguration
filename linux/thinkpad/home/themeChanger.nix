@@ -9,6 +9,29 @@ let
     window.dynamic_title = true;
     shell.program = pkgs.myshell;
     live_config_reload = true;
+    font = {
+      normal = {
+        family = "Iosevka Nerd Font Mono";
+        style = "Regular";
+      };
+
+      bold = {
+        family = "Iosevka Nerd Font Mono";
+        style = "Bold";
+      };
+
+      italic = {
+        family = "Iosevka Nerd Font Mono";
+        style = "Italic";
+      };
+
+      bold_italic = {
+        family = "Iosevka Nerd Font Mono";
+        style = "Bold Italic";
+      };
+
+      size = 11;
+    };
   };
   alacrittyConf =
     colors: pkgs.writeTextFile {

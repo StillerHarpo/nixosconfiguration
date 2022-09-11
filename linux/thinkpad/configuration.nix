@@ -159,7 +159,7 @@
     kernel.sysctl."kernel.yama.ptrace_scope" = 1;
   };
 
-  fonts.fonts = [ pkgs.terminus_font ];
+  fonts.fonts = with pkgs; [ terminus_font nerdfonts];
 
   location = import ./cords.nix;
 
