@@ -347,6 +347,7 @@
 
 
   # Bluetooth sound
+  systemd.user.services.telephony_client.enable = false;
   hardware = {
     bluetooth = {
       enable = true;
