@@ -1,14 +1,15 @@
 { config, lib, pkgs, home-manager-flake, ... }:
 
-{
-  # ...
-  containers.work = let
+let
     hostCfg = config;
     userName = "florian";
     userUid = hostCfg.users.users."${userName}".uid;
     xauth = "/tmp/work_xauth";
-  in {
-    # (1)
+    outerPkgs = pkgs;
+in {
+
+  containers.work = {
+    autoStart = true;
     bindMounts = {
       x11Display = rec {
         hostPath = "/tmp/.X11-unix";
@@ -20,11 +21,6 @@
         mountPoint = hostPath;
         isReadOnly = true;
       };
-#      vpnconfig = rec {
-#        hostPath = "/etc/office.ovpn";
-#        mountPoint = hostPath;
-#        isReadOnly = true;
-#      };
     };
 
     enableTun = true;
@@ -34,14 +30,12 @@
 
     config = {
       imports = [ home-manager-flake ];
-      # (4)
       users.users."${userName}" = {
         extraGroups = lib.mkForce [];
         isNormalUser = true;
         shell = pkgs.zsh;
       };
 
-      # (5)
       systemd.services.fix-nix-dirs = let
         profileDir = "/nix/var/nix/profiles/per-user/${userName}";
         gcrootsDir = "/nix/var/nix/gcroots/per-user/${userName}";
@@ -58,16 +52,15 @@
           Type = "oneshot";
         };
       };
-      # (2)
       hardware.opengl = {
         enable = true;
         extraPackages = hostCfg.hardware.opengl.extraPackages;
       };
 
-      # (3)
       environment.systemPackages = with pkgs; [
         git
         firefox
+        remmina
       ];
 
       environment.etc."office.ovpn".source = ./office.ovpn;
@@ -82,8 +75,10 @@
 
       home-manager = {
         users."${userName}" = {
-          #          # imports = [ ../../../zsh.nix ];
-          #
+          imports = [
+            ../../zsh.nix
+            home/firefox.nix
+          ];
           programs.zsh = {
             enable = true;
             oh-my-zsh.theme = "agnoster";
@@ -101,7 +96,6 @@
             };
           };
           programs.ssh.enable = true;
-#          # (4)
           home.sessionVariables = {
             SHELL = "zsh";
             DISPLAY = ":0";
@@ -109,10 +103,12 @@
             XAUTHORITY  = xauth;
           };
           home.stateVersion = "22.05";
+          nixpkgs.overlays = outerPkgs.overlays;
         };
       };
 
       system.stateVersion = "22.05";
+      nixpkgs.overlays = outerPkgs.overlays;
     };
   };
 }
