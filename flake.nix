@@ -135,6 +135,15 @@
                           sha256 = "0m5rzpqxk7hrbxsgqplkg7h2p7gv6s1miymv5gvw0cz039skaf0s";
                         };
                       };
+                     tramp-nspawn = super.trivialBuild rec {
+                       pname = "tramp-nspawn";
+                       version = "0.0.0";
+                       src = pkgs.fetchFromGitHub {
+                         owner = "emacs-straight" ;
+                         repo = pname;
+                         rev = "9977691242b50a853b351d6d234968c1c10f0af0";
+                         sha256 = "0m5fzpqxk7hrbxsgqplkg7h2p7gv6s1miymv3gvw0cz039skaf0s";
+                       };
                     };
                   extraConfig = ''
                       (with-nix-pathes '((nix-zsh-path . "${pkgs.myshell}")

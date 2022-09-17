@@ -227,6 +227,9 @@ If I let Windows handle DPI everything looks blurry."
           "e" 'vterm-send-next-key
           "c" 'vterm-clear)
 
+(use-package! tramp-nspawn
+   :config (tramp-nspawn-setup))
+
 (defun with-nix-pathes (nix-path-alist)
     "config that need nix-paths is called with this functions"
   (let ((shell (cdr (assoc 'nix-zsh-path nix-path-alist)))
