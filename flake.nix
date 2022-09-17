@@ -124,7 +124,7 @@
                 programs.doom-emacs = {
                   enable = true;
                   doomPrivateDir = ./doom.d;
-                  emacsPackage = (pkgs.emacsPackagesFor pkgs.emacsPgtkNativeComp).emacsWithPackages (epkgs: [ epkgs.vterm ]);
+                  emacsPackage = pkgs.emacsPgtkNativeComp;
                   emacsPackagesOverlay = _: super:
                     {
                       ob-ammonite = super.trivialBuild rec {
