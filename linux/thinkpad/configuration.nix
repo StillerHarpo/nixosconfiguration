@@ -407,7 +407,7 @@
     printing.enable = true;
     udev = {
       packages = [ pkgs.utsushi ];
-      extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${pkgs.monitor-changer}"'';
+      extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${pkgs.monitor-changer}/bin/monitor-changer"'';
     };
   };
 

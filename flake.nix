@@ -52,7 +52,7 @@
   };
   outputs = {
     self, nixpkgs, home-manager-flake, agenix, darwin
-    , emacs-overlay , doom-emacs, nix-doom-emacs
+    , emacs-overlay , nix-doom-emacs
     , nixpkgs-newest, nixpkgs-borgbackup
     , nur, nixos-hardware, deploy-rs, ...
   }:
@@ -214,7 +214,7 @@
            pkgs = mkPkgs system (import nixpkgs) [myShellOverlay];
            modules = [
              ./mac/configuration.nix
-             home-manager.darwinModules.home-manager
+             home-manager-flake.darwinModules.home-manager
            ];
          });
     };
