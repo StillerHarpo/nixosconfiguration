@@ -1,5 +1,4 @@
 { config, lib, pkgs, home-manager-flake, ... }:
-
 let
     hostCfg = config;
     userName = "florian";
@@ -8,8 +7,23 @@ let
     outerPkgs = pkgs;
 in {
 
+  networking = {
+    nat = {
+      enable = true;
+      internalInterfaces = ["ve-+"];
+      externalInterface = "+";
+    };
+    networkmanager = {
+      unmanaged = [ "interface-name:ve-*" ];
+    };
+  };
+
+  services.xserver.displayManager.sessionCommands = ''
+    xauth nextract - "$DISPLAY" | sed -e 's/^..../ffff/' | xauth -f "${xauth}" nmerge -
+  '';
+
   containers.work = {
-    autoStart = true;
+    # TODO and bind for file transfer
     bindMounts = {
       x11Display = rec {
         hostPath = "/tmp/.X11-unix";
