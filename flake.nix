@@ -80,6 +80,7 @@
           mytexlive = with super; texlive.combine {inherit (texlive) scheme-full pygmentex pgf collection-basic;};
         })
         myShellOverlay
+        emacs-overlay.overlay
         (self: super: {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {
             my-common =
@@ -123,6 +124,7 @@
                 programs.doom-emacs = {
                   enable = true;
                   doomPrivateDir = ./doom.d;
+                  emacsPackage = (pkgs.emacsPackagesFor pkgs.emacsPgtkNativeComp).emacsWithPackages (epkgs: [ epkgs.vterm ]);
                   emacsPackagesOverlay = _: super:
                     {
                       ob-ammonite = super.trivialBuild rec {

@@ -77,9 +77,11 @@
     binaryCaches = [
       "https://cache.nixos.org/"
       "https://hie-nix.cachix.org"
+      "https://nix-community.cachix.org"
     ];
     binaryCachePublicKeys = [
       "hie-nix.cachix.org-1:EjBSHzF6VmDnzqlldGXbi0RM3HdjfTU3yDRi9Pd0jTY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
     ];
     trustedUsers = [ "root" "florian" ];
     extraOptions = ''
