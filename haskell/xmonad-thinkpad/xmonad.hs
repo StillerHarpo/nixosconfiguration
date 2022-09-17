@@ -261,6 +261,7 @@ programms =
     ("anki", "anki"),
     ("kodi", "kodi"),
     ("signal", "signal-desktop"),
+    ("element", "element-desktop"),
     ("spotify", "spotify"),
     ("steam", "steam"),
     ("youtube", startTerm "youtube-viewer"),

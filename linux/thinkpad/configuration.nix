@@ -28,6 +28,7 @@
       }
       {
         pkgs = with pkgs; [
+          element-desktop
           scrot
           nix-index
           languagetool
