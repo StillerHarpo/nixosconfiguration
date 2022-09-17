@@ -35,6 +35,10 @@ in {
         mountPoint = hostPath;
         isReadOnly = true;
       };
+      checkpad = rec {
+        hostPath = "/home/florian/checkpad";
+        mountPoint = hostPath;
+      };
     };
 
     enableTun = true;
