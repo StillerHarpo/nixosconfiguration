@@ -28,6 +28,7 @@
       }
       {
         pkgs = with pkgs; [
+          file
           element-desktop
           scrot
           nix-index
