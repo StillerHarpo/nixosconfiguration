@@ -74,14 +74,6 @@
 (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
 
 
-(defun current-dreams ()
-  (interactive)
-  (find-file
-   (format-time-string
-    "~/Dokumente/Traeume/%Y/%B/Traeume_Vom_%d_%m_%Y.org"))
-  (auto-fill-mode))
-(map! :leader :desc "Write current dream" :n "o t" #'current-dreams)
-
 (defun youtube-feed ()
   (interactive)
     (let ((link (read-string "Link: ")))
