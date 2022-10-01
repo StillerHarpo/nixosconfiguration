@@ -52,10 +52,14 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+
+;; Mail configuration
 (setq +notmuch-mail-folder "~/Maildir")
 (setq +notmuch-sync-backend 'mbsync)
 (setq +notmuch-search-oldest-first 'f)
-
+;; save send mails
+(setq notmuch-fcc-dirs "Sent -unread +sent")
 (setq mail-specify-envelope-from t
       mail-envelope-from 'header
       message-sendmail-envelope-from 'header)
