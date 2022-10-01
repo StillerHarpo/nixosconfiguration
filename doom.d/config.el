@@ -53,45 +53,10 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-
-;; Mail configuration
-(setq +notmuch-mail-folder "~/Maildir")
-(setq +notmuch-sync-backend 'mbsync)
-(setq +notmuch-search-oldest-first 'f)
-;; save send mails
-(setq notmuch-fcc-dirs "Sent -unread +sent")
-(setq mail-specify-envelope-from t
-      mail-envelope-from 'header
-      message-sendmail-envelope-from 'header)
-
-
-(setq org-src-window-setup 'current-window)
-(setq org-agenda-files (list "~/android/org/" "~/org" "~/Dokumente/org-roam/" "~/Dokumente/org-roam/daily"))
-(setq org-refile-targets '((nil :maxlevel . 9)
-                             (org-agenda-files :maxlevel . 9)))
-;; automatic saves of org buffers
-(advice-add 'org-refile :after 'org-save-all-org-buffers)
-(advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
-
-
 (defun youtube-feed ()
   (interactive)
     (let ((link (read-string "Link: ")))
       (insert (shell-command-to-string (concat "~/scripts/youtubeFeed " link)))))
-
-;; NO spell check for embedded snippets
-(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
-  (let* ((rlt ad-return-value)
-         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
-         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
-         (case-fold-search t)
-         b e)
-    (when ad-return-value
-      (save-excursion
-        (setq b (re-search-backward begin-regexp nil t))
-        (if b (setq e (re-search-forward end-regexp nil t))))
-      (if (and b e (< (point) e)) (setq rlt nil)))
-    (setq ad-return-value rlt)))
 
 ;; Browser function
 (setq mediareg (rx (or "youtube."
@@ -100,8 +65,6 @@
                        (and ".mp4" eol)
                        (and ".m4v$" eol)
                        "v.redd.it")))
-
-(setq org-highlight-latex-and-related '(latex script entities))
 
 (setq browse-url-handlers `((,mediareg . browse-url-mpv)
                                         ;                                   ("." . eww-browse-url)))
@@ -114,10 +77,6 @@
 
 ;; biblioraphy
 (setq reftex-default-bibliography '("~/Dokumente/bibliography/references.bib"))
-
-(setq org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org"
-      org-ref-default-bibliography reftex-default-bibliography
-      org-ref-pdf-directory "~/Dokumente/bibliography/bibtex-pdfs/")
 
 (setq bibtex-completion-bibliography reftex-default-bibliography
       bibtex-completion-library-path org-ref-bibliography-notes
@@ -138,18 +97,25 @@
               :desc "woman" :n "o w" #'woman
               :desc "elfeed" :n "o e" #'elfeed)
 
-
-(map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
-                                 :n "d" (cmd! (notmuch-search-add-tag "+trash"))
-                                 :n "t" #'notmuch-search-add-tag)
-
-(map! :leader :mode 'notmuch-message-mode :localleader :desc "send mail" "c" #'notmuch-mua-send-and-exit
-                                          :localleader :desc "attach file" "a" #'mml-attach-file
-                                          :localleader :desc "save as draf" "d" #'notmuch-draft-save)
-
 (map! :mode 'elfeed-search-mode :n "b" #'elfeed-search-browse-url)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Mail configuration
 (after! notmuch
+  (map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
+        :n "d" (cmd! (notmuch-search-add-tag "+trash"))
+        :n "t" #'notmuch-search-add-tag)
+  (map! :leader :mode 'notmuch-message-mode :localleader :desc "send mail" "c" #'notmuch-mua-send-and-exit
+        :localleader :desc "attach file" "a" #'mml-attach-file
+        :localleader :desc "save as draft" "d" #'notmuch-draft-save)
+  (setq +notmuch-mail-folder "~/Maildir")
+  (setq +notmuch-sync-backend 'mbsync)
+  (setq +notmuch-search-oldest-first 'f)
+  ;; save send mails
+  (setq notmuch-fcc-dirs "Sent -unread +sent")
+  (setq mail-specify-envelope-from t
+        mail-envelope-from 'header
+        message-sendmail-envelope-from 'header)
   (setq notmuch-saved-searches
         '((:name "inbox" :query "tag:inbox and not tag:trash and date:3M..today" :key "i")
           (:name "unread" :query "tag:unread" :key "u")
@@ -158,18 +124,52 @@
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
           (:name "all mail" :query "date:3M..today" :key "a")))
-
   (setq message-default-mail-headers "Cc: \nBcc: \n")
   ;; postponed message is put in the following draft directory
   (setq message-auto-save-directory "~/Maildir/draft")
   ;; change the directory to store the sent mail
-  (setq message-directory "~/Maildir/"))
-  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox and date:3M..today")))
+  (setq message-directory "~/Maildir/")
+  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox and date:3M..today"))))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq lsp-enable-file-watchers t
       lsp-file-watch-threshold 16384)
 
-;;; org roam config
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org config
+(setq org-src-window-setup 'current-window)
+(setq org-agenda-files (list "~/android/org/" "~/org" "~/Dokumente/org-roam/" "~/Dokumente/org-roam/daily"))
+(setq org-refile-targets '((nil :maxlevel . 9)
+                             (org-agenda-files :maxlevel . 9)))
+;; NO spell check for embedded snippets
+(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
+  (let* ((rlt ad-return-value)
+         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
+         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
+         (case-fold-search t)
+         b e)
+    (when ad-return-value
+      (save-excursion
+        (setq b (re-search-backward begin-regexp nil t))
+        (if b (setq e (re-search-forward end-regexp nil t))))
+      (if (and b e (< (point) e)) (setq rlt nil)))
+    (setq ad-return-value rlt)))
+(setq org-highlight-latex-and-related '(latex script entities))
+(setq org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org"
+      org-ref-default-bibliography reftex-default-bibliography
+      org-ref-pdf-directory "~/Dokumente/bibliography/bibtex-pdfs/")
+;; automatic saves of org buffers
+(advice-add 'org-refile :after 'org-save-all-org-buffers)
+(advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
+
+(setq org-read-date-force-compatible-dates nil)
+(setq org-modules '(ol-bibtex org-habit))
+(add-hook 'org-mode-hook 'turn-on-auto-fill)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; org roam config
 (setq org-roam-directory (file-truename "~/Dokumente/org-roam"))
 (setq org-roam-file-exclude-regexp ".stversions")
 (setq org-capture-templates
@@ -191,12 +191,7 @@
         ("t" "traueme" plain "#+zeit: %^{von}-%^{bis}\n* Traum 1\n%?" :target
          (file+head "%<%Y-%m-%d>-Traueme.org" "#+title: ~ Träume vom %<%d.%m.%Y>\n")
         :unnarrowed t)))
-
-(setq org-read-date-force-compatible-dates nil)
-
-(setq org-modules '(ol-bibtex org-habit))
-
-(add-hook 'org-mode-hook 'turn-on-auto-fill)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Font size adjustment
 (defun hoagie-adjust-font-size (frame)
