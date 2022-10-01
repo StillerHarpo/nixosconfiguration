@@ -227,6 +227,25 @@ If I let Windows handle DPI everything looks blurry."
           "e" 'vterm-send-next-key
           "c" 'vterm-clear)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Only consider files with active date for agenda
+;; This speeds up the agenda
+(defun my/org-roam-filter-by-regex (regex)
+  (lambda (file)
+    (string-match regex (org-file-contents file))))
+
+(defun my/org-roam-list-notes-by-regex (regex)
+  (seq-filter
+   (my/org-roam-filter-by-regex regex)
+   (mapcar #'org-roam-node-file (org-roam-node-list))))
+
+(defun my/org-roam-refresh-agenda-list ()
+  (interactive)
+  (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}"))))
+
+(my/org-roam-refresh-agenda-list)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defun with-nix-pathes (nix-path-alist)
     "config that need nix-paths is called with this functions"
   (let ((shell (cdr (assoc 'nix-zsh-path nix-path-alist)))
