@@ -39,12 +39,10 @@
           remmina
           mullvad-vpn
           sqlite
-          tesseract4
           poppler_utils
           gimp
           pamixer
           aria
-          imagemagick
           pavucontrol
           arandr
           networkmanagerapplet
@@ -69,7 +67,6 @@
           tuir
           xsel
           silver-searcher
-          zathura
           spotify
           mpv
           rlwrap
@@ -79,7 +76,6 @@
           mytexlive
           python37Packages.pygments
           bc
-          feh
           anki
           nix-prefetch-git
           youtube-dl
@@ -102,20 +98,15 @@
           xtrlock-pam
           fzf
           ## better rust tools
-          ripgrep
-          bat
-          exa
-          fd
           procs
           delta
-          bottom
           du-dust
           grex
         ];
         profile = defaultProfile;
       }
       {
-        pkgs = [ pkgs.bandwhich ];
+        pkgs = with pkgs; [ bandwhich bottom ];
         profile = ''
           ptrace,
           ${defaultProfile}
@@ -147,6 +138,21 @@
         ];
         profile = ''
             ${generateFileRules ["ssh"]}
+          '';
+      }
+      {
+        pkgs = with pkgs; [
+          imagemagick
+          ripgrep
+          bat
+          exa
+          fd
+          tesseract4
+          zathura
+          feh
+        ];
+        profile = ''
+            ${generateFileRules ["docs"]}
           '';
       }
     ])
