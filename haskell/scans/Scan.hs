@@ -18,6 +18,7 @@ import Data.Semigroup (Max (..))
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import Data.Time.Format
+import System.Directory.Extra (doesFileExist)
 import System.IO (BufferMode (..), hSetBuffering, stdin)
 import System.IO.Extra (withTempDir, withTempFile)
 import Text.Read (readMaybe)
@@ -48,7 +49,7 @@ instance Exception CustomError
 type MyShell a = ReaderT Env Shell a
 
 _PDFS_DIR :: FilePath
-_PDFS_DIR = "/home/florian/paperlessInput/"
+_PDFS_DIR = "/home/florian/Dokumente/scans"
 
 getCounter :: MyShell Int
 getCounter = asks counter >>= liftIO . readIORef
@@ -59,8 +60,8 @@ incCounter = asks counter >>= liftIO . flip modifyIORef' (+ 1)
 getTifs :: Shell FilePath
 getTifs = mfilter ((== Just "tif") . snd . splitExtension) (ls ".")
 
-getPdfs :: MyShell Text
-getPdfs = lift getTifs >>= runTesseract
+getPdfAndTxt :: MyShell (Text, Text)
+getPdfAndTxt = lift getTifs >>= runTesseract
 
 fileNumMatch :: Pattern Text -> Pattern Int
 fileNumMatch = ("./out" *> decimal <*)
@@ -73,25 +74,35 @@ pdfNumMatch = fileNumMatch ".pdf"
 
 delFile :: MonadIO io => FilePath -> io ()
 delFile file = do
-  printf ("delting " % fp % "\n") file
+  printf ("deleting " % fp % "\n") file
   rm file
 
-runTesseract :: FilePath -> MyShell Text
+runTesseract :: FilePath -> MyShell (Text, Text)
 runTesseract inputFile =
   case (toText inputFile, toText (basename inputFile)) of
     (Right inputFileT, Right outputBaseT) -> do
       Env {..} <- ask
-      printf ("running tesseract on " % fp % "\n") inputFile
+      printf ("running tesseract on " % fp % "to generate pdf \n") inputFile
       procs "tesseract" [inputFileT, outputBaseT, "-l", "deu", tesseractConf] mempty
+      liftIO $
+        whenM
+          (not <$> doesFileExist (T.unpack $ outputBaseT <> ".pdf"))
+          (procs "tiff2pdf" [inputFileT] mempty)
+      printf ("running textcleaner on " % fp % "\n") inputFile
+      liftIO $
+        withTempFile $ \((<> ".tif") -> cleanedPicture) -> do
+          procs "textcleaner" [inputFileT, T.pack cleanedPicture] mempty
+          printf ("running tesseract on " % fp % "to generate textfile \n") (decodeString cleanedPicture)
+          procs "tesseract" [T.pack cleanedPicture, outputBaseT, "-l", "deu"] mempty
       delFile inputFile
-      pure (outputBaseT <> ".pdf")
+      pure (outputBaseT <> ".pdf", outputBaseT <> ".txt")
     _ -> throwM EncodingError
 
 liftFunReader :: Monad m => (m a -> m b) -> ReaderT s m a -> ReaderT s m b
 liftFunReader fun r = ask >>= lift . fun . runReaderT r
 
-getPdfsSorted :: MyShell [Text]
-getPdfsSorted = liftFunReader (sortOn (match pdfNumMatch)) getPdfs
+getPdfsAndTxtsSorted :: MyShell [(Text, Text)]
+getPdfsAndTxtsSorted = liftFunReader (sortOn (match pdfNumMatch . fst)) getPdfAndTxt
 
 fileExistsError :: FilePath -> MyShell ()
 fileExistsError file = do
@@ -103,11 +114,17 @@ fileExistsError file = do
 today :: MonadIO m => m Text
 today = T.pack . formatTime defaultTimeLocale "%d_%m_%Y" <$> date
 
-getFileName :: MyShell Text
-getFileName = do
+getFileNamePdf :: MyShell Text
+getFileNamePdf = do
   cur <- today
   curCount <- getCounter
   pure $ format ("input_" % d % "_" % s % ".pdf") curCount cur
+
+getFileNameTxt :: MyShell Text
+getFileNameTxt = do
+  cur <- today
+  curCount <- getCounter
+  pure $ format ("input_" % d % "_" % s % ".txt") curCount cur
 
 checkFile :: FilePath -> MyShell ()
 checkFile file = do
@@ -116,9 +133,18 @@ checkFile file = do
     then fileExistsError file
     else pure ()
 
-convert :: [Text] -> MyShell ()
-convert inputs = do
-  fnT <- getFileName
+convert :: [(Text, Text)] -> MyShell ()
+convert pdfsAndTxts = do
+  let pdfs = map fst pdfsAndTxts
+  let txts = map snd pdfsAndTxts
+  convertPdfs pdfs
+  convertTxts txts
+  traverse_ (delFile . fromText) pdfs
+  traverse_ (delFile . fromText) txts
+
+convertPdfs :: [Text] -> MyShell ()
+convertPdfs inputs = do
+  fnT <- getFileNamePdf
   let fn = fromText fnT
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
@@ -126,27 +152,35 @@ convert inputs = do
   mv fn (_PDFS_DIR <> fn)
   incCounter
 
+convertTxts :: [Text] -> MyShell ()
+convertTxts inputs = do
+  fnT <- getFileNameTxt
+  let fn = fromText fnT
+  checkFile fn
+  printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
+  liftIO $ traverse (readFile . T.unpack) inputs >>= writeFile (T.unpack fnT) . mconcat
+  mv fn (_PDFS_DIR <> fn)
+  incCounter
+
 convertPictures :: MyShell ()
 convertPictures = do
-  pdf <- getPdfs
-  convert [pdf]
+  (pdf, txt) <- getPdfAndTxt
+  convertPdfs [pdf]
+  convertTxts [txt]
   delFile (fromText pdf)
+  delFile (fromText txt)
 
 convertMultiblePictures :: MyShell ()
-convertMultiblePictures = do
-  pdfs <- getPdfsSorted
-  convert pdfs
-  traverse_ (delFile . fromText) pdfs
+convertMultiblePictures = getPdfsAndTxtsSorted >>= convert
 
 convertNPictures :: Int -> MyShell ()
 convertNPictures i = do
-  pdfsSorted <- getPdfsSorted
+  pdfsAndTxtsSorted <- getPdfsAndTxtsSorted
   let everyN pdfs
         | length pdfs >= i = (take i pdfs :) <$> everyN (drop i pdfs)
         | null pdfs = pure []
         | otherwise = pure [pdfs]
-  everyN pdfsSorted >>= traverse_ convert
-  traverse_ (delFile . fromText) pdfsSorted
+  everyN pdfsAndTxtsSorted >>= traverse_ convert
 
 sourceToNumPicture :: ScanSource -> Int -> Int
 sourceToNumPicture source =

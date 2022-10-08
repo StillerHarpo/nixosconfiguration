@@ -97,6 +97,7 @@
                 libraries = [self.haskellPackages.my-common];
               }
               ./haskell/monitor-changer/MonitorChanger.hs;
+          textcleaner = self.callPackage ./textcleaner {};
         })
         steamOverlay
         nur.overlay

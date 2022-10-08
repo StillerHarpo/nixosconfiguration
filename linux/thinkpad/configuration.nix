@@ -24,10 +24,11 @@
             { libraries = with haskellPackages; [turtle extra]; }
             ../../haskell/scans/Scan.hs)
         ];
-        profile = generateFileRules ["paperless"];
+        profile = generateFileRules ["docs"];
       }
       {
         pkgs = with pkgs; [
+          textcleaner
           file
           element-desktop
           scrot
