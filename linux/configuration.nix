@@ -71,6 +71,8 @@
     };
   };
 
+  services.snowflake-proxy.enable = true;
+
   age.identityPaths = [ "/root/.ssh/id_rsa" ];
 
   nix = {
