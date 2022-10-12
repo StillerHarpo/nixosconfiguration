@@ -83,8 +83,8 @@
       bibtex-completion-notes-path org-ref-pdf-directory)
 
 (setq rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
-(after! elfeed
-  (setq elfeed-search-filter "@6-days-ago +unread +favorite"))
+
+(setq elfeed-search-filter "@6-days-ago +unread +favorite")
 
 ;; auto completion for agda
 (set-company-backend! 'agda2-mode 'company-capf)
@@ -101,35 +101,35 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Mail configuration
-(after! notmuch
-  (map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
-        :n "d" (cmd! (notmuch-search-add-tag "+trash"))
-        :n "t" #'notmuch-search-add-tag)
-  (map! :leader :mode 'notmuch-message-mode :localleader :desc "send mail" "c" #'notmuch-mua-send-and-exit
-        :localleader :desc "attach file" "a" #'mml-attach-file
-        :localleader :desc "save as draft" "d" #'notmuch-draft-save)
-  (setq +notmuch-mail-folder "~/Maildir")
-  (setq +notmuch-sync-backend 'mbsync)
-  (setq +notmuch-search-oldest-first 'f)
-  ;; save send mails
-  (setq notmuch-fcc-dirs "Sent -unread +sent")
-  (setq mail-specify-envelope-from t
-        mail-envelope-from 'header
-        message-sendmail-envelope-from 'header)
-  (setq notmuch-saved-searches
-        '((:name "inbox" :query "tag:inbox and not tag:trash and date:3M..today" :key "i")
-          (:name "unread" :query "tag:unread" :key "u")
-          (:name "flagged" :query "tag:flagged" :key "f")
-          (:name "must read" :query "not tag:rechnung and not tag:agb and not tag:anmeldung and not tag:trash and date:3M..today" :key "r")
-          (:name "sent" :query "tag:sent" :key "s")
-          (:name "drafts" :query "tag:draft" :key "d")
-          (:name "all mail" :query "date:3M..today" :key "a")))
-  (setq message-default-mail-headers "Cc: \nBcc: \n")
-  ;; postponed message is put in the following draft directory
-  (setq message-auto-save-directory "~/Maildir/draft")
-  ;; change the directory to store the sent mail
-  (setq message-directory "~/Maildir/")
-  (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox and date:3M..today"))))
+
+(map! :mode 'notmuch-search-mode :n "RET" #'notmuch-search-show-thread
+      :n "d" (cmd! (notmuch-search-add-tag "+trash"))
+      :n "t" #'notmuch-search-add-tag)
+(map! :leader :mode 'notmuch-message-mode :localleader :desc "send mail" "c" #'notmuch-mua-send-and-exit
+      :localleader :desc "attach file" "a" #'mml-attach-file
+      :localleader :desc "save as draft" "d" #'notmuch-draft-save)
+(setq +notmuch-mail-folder "~/Maildir")
+(setq +notmuch-sync-backend 'mbsync)
+(setq +notmuch-search-oldest-first 'f)
+;; save send mails
+(setq notmuch-fcc-dirs "Sent -unread +sent")
+(setq mail-specify-envelope-from t
+      mail-envelope-from 'header
+      message-sendmail-envelope-from 'header)
+(setq notmuch-saved-searches
+      '((:name "inbox" :query "tag:inbox and not tag:trash and date:3M..today" :key "i")
+        (:name "unread" :query "tag:unread" :key "u")
+        (:name "flagged" :query "tag:flagged" :key "f")
+        (:name "must read" :query "not tag:rechnung and not tag:agb and not tag:anmeldung and not tag:trash and date:3M..today" :key "r")
+        (:name "sent" :query "tag:sent" :key "s")
+        (:name "drafts" :query "tag:draft" :key "d")
+        (:name "all mail" :query "date:3M..today" :key "a")))
+(setq message-default-mail-headers "Cc: \nBcc: \n")
+;; postponed message is put in the following draft directory
+(setq message-auto-save-directory "~/Maildir/draft")
+;; change the directory to store the sent mail
+(setq message-directory "~/Maildir/")
+(setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox and date:3M..today")))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq lsp-enable-file-watchers t
