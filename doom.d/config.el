@@ -78,10 +78,6 @@
 ;; biblioraphy
 (setq reftex-default-bibliography '("~/Dokumente/bibliography/references.bib"))
 
-(setq bibtex-completion-bibliography reftex-default-bibliography
-      bibtex-completion-library-path org-ref-bibliography-notes
-      bibtex-completion-notes-path org-ref-pdf-directory)
-
 (setq rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
 
 (setq elfeed-search-filter "@6-days-ago +unread +favorite")
@@ -158,6 +154,11 @@
 (setq org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org"
       org-ref-default-bibliography reftex-default-bibliography
       org-ref-pdf-directory "~/Dokumente/bibliography/bibtex-pdfs/")
+
+(setq bibtex-completion-bibliography reftex-default-bibliography
+      bibtex-completion-library-path org-ref-bibliography-notes
+      bibtex-completion-notes-path org-ref-pdf-directory)
+
 ;; automatic saves of org buffers
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
 (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
