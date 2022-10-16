@@ -40,7 +40,6 @@
           remmina
           mullvad-vpn
           sqlite
-          poppler_utils
           gimp
           pamixer
           aria
@@ -145,6 +144,7 @@
         pkgs = with pkgs; [
           imagemagick
           ripgrep
+          poppler_utils
           bat
           exa
           fd

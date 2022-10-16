@@ -91,7 +91,10 @@ runTesseract inputFile =
       printf ("running textcleaner on " % fp % "\n") inputFile
       liftIO $
         withTempFile $ \((<> ".tif") -> cleanedPicture) -> do
-          procs "textcleaner" [inputFileT, T.pack cleanedPicture] mempty
+          procs
+            "textcleaner"
+            ["-g", "-e", "normalize", "-f", "30", "-o", "12", "-s", "2", inputFileT, T.pack cleanedPicture]
+            mempty
           printf ("running tesseract on " % fp % "to generate textfile \n") (decodeString cleanedPicture)
           procs "tesseract" [T.pack cleanedPicture, outputBaseT, "-l", "deu"] mempty
       delFile inputFile
@@ -139,6 +142,7 @@ convert pdfsAndTxts = do
   let txts = map snd pdfsAndTxts
   convertPdfs pdfs
   convertTxts txts
+  incCounter
   traverse_ (delFile . fromText) pdfs
   traverse_ (delFile . fromText) txts
 
@@ -150,7 +154,6 @@ convertPdfs inputs = do
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   procs "pdfunite" (inputs <> [fnT]) mempty
   mv fn (_PDFS_DIR <> fn)
-  incCounter
 
 convertTxts :: [Text] -> MyShell ()
 convertTxts inputs = do
@@ -160,7 +163,6 @@ convertTxts inputs = do
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   liftIO $ traverse (readFile . T.unpack) inputs >>= writeFile (T.unpack fnT) . mconcat
   mv fn (_PDFS_DIR <> fn)
-  incCounter
 
 convertPictures :: MyShell ()
 convertPictures = do
@@ -169,6 +171,7 @@ convertPictures = do
   convertTxts [txt]
   delFile (fromText pdf)
   delFile (fromText txt)
+  incCounter
 
 convertMultiblePictures :: MyShell ()
 convertMultiblePictures = getPdfsAndTxtsSorted >>= convert
