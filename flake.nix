@@ -19,14 +19,9 @@
         flake-utils.follows = "flake-utils";
       };
     };
-    nix-doom-emacs = {
-      url = "github:nix-community/nix-doom-emacs";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        emacs-overlay.follows = "emacs-overlay";
-        flake-compat.follows = "flake-compat";
-        flake-utils.follows = "flake-utils";
-      };
+    doom-emacs = {
+      url = "github:doomemacs/doomemacs";
+      flake = false;
     };
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
     home-manager-flake = {
@@ -50,9 +45,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = {
+  outputs = inputs@{
     self, nixpkgs, home-manager-flake, agenix, darwin
-    , emacs-overlay , nix-doom-emacs
+    , emacs-overlay, doom-emacs
     , nixpkgs-newest, nixpkgs-borgbackup
     , nur, nixos-hardware, deploy-rs, ...
   }:
@@ -111,7 +106,7 @@
         nixos-thinkpad = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
-            inherit pkgs agenix;
+            inherit pkgs agenix inputs;
             home-manager-flake = home-manager-flake.nixosModule;
             borgbackup-local = "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
           };
@@ -120,39 +115,15 @@
             nixos-hardware.nixosModules.lenovo-thinkpad-t480s
             home-manager-flake.nixosModules.home-manager
             {
-              home-manager.users.florian = { pkgs, config, ... }: {
-                imports = [ nix-doom-emacs.hmModule ];
-                programs.doom-emacs = {
-                  enable = true;
-                  doomPrivateDir = ./doom.d;
-                  emacsPackage = pkgs.emacsPgtkNativeComp;
-                  emacsPackagesOverlay = _: super:
-                    {
-                      ob-ammonite = super.trivialBuild rec {
-                        pname = "ob-ammonite";
-                        version = "0.0.0";
-                        src = pkgs.fetchFromGitHub {
-                          owner = "zwild";
-                          repo = "ob-ammonite";
-                          rev = "39937dff395e70aff76a4224fa49cf2ec6c57cca";
-                          sha256 = "0m5rzpqxk7hrbxsgqplkg7h2p7gv6s1miymv5gvw0cz039skaf0s";
-                        };
-                      };
-                    };
-                  extraConfig = ''
-                      (with-nix-pathes '((nix-zsh-path . "${pkgs.myshell}")
-                                        (nix-latexmk-path . "${pkgs.mytexlive}/bin/latexmk")
-                                        (nix-mpv-path . "${pkgs.mpv}/bin/mpv")
-                                        (nix-jdk-path . "${pkgs.jdk}/bin/java")
-                                        (nix-languagetool-path . "${pkgs.languagetool}")))
-                    '';
+              home-manager = {
+                users.florian = { pkgs, config, ... }: {
+                  xdg = {
+                    enable = true;
+                    configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+                  };
+                  home.sessionVariables.NIX_PATH = "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
+                  nix.registry.nixpkgs.flake = self;
                 };
-                xdg = {
-                  enable = true;
-                  configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
-                };
-                home.sessionVariables.NIX_PATH = "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs$\{NIX_PATH:+:$NIX_PATH}";
-                nix.registry.nixpkgs.flake = self;
               };
               nix = {
                 registry.nixpkgs.flake = self;
