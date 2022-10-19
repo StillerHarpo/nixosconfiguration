@@ -53,7 +53,6 @@
           shellcheck
           #############
           ######## Games ###############
-          polymc                 # minecraft launcher
           openjdk                 # java
           sshfs
           dzen2

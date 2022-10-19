@@ -273,7 +273,6 @@ programms =
     ("arandr", "arandr"),
     ("blueman-manager", "blueman-manager"),
     ("mullvad-gui", "mullvad-gui"),
-    ("polymc", "polymc"),
     ("windows-vnc", "vncviewer 192.168.178.24:5900"),
     ("linux-vnc", "vncviewer localhost:9900"),
     ("netflix", "chromium --new-window \"https://netflix.com\"/"),
