@@ -28,6 +28,7 @@
       }
       {
         pkgs = with pkgs; [
+          libreoffice
           textcleaner
           file
           element-desktop
