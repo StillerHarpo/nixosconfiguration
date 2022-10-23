@@ -108,7 +108,7 @@
 (setq +notmuch-sync-backend 'mbsync)
 (setq +notmuch-search-oldest-first 'f)
 ;; save send mails
-(setq notmuch-fcc-dirs "Sent -unread +sent")
+(after! notmuch (setq notmuch-fcc-dirs "Sent -unread +sent"))
 (setq mail-specify-envelope-from t
       mail-envelope-from 'header
       message-sendmail-envelope-from 'header)
@@ -234,7 +234,7 @@ If I let Windows handle DPI everything looks blurry."
   (interactive)
   (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}"))))
 
-(my/org-roam-refresh-agenda-list)
+(after! org-roam (my/org-roam-refresh-agenda-list))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun with-nix-pathes (nix-path-alist)
