@@ -69,6 +69,9 @@
 (setq browse-url-handlers `((,mediareg . browse-url-mpv)
                             ("." . eww-browse-url)))
 
+(defun browse (prog url)
+  (setq url (browse-url-encode-url url))
+  (apply #'start-process (append `(,(concat (car prog) " " url) nil) prog `(,url))))
 (defun browse-url-firefox-new-window (url &rest agrs)
   (browse-url-firefox url t))
 
