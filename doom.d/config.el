@@ -67,13 +67,12 @@
                        "v.redd.it")))
 
 (setq browse-url-handlers `((,mediareg . browse-url-mpv)
-                                        ;                                   ("." . eww-browse-url)))
-                                    ("." . browse-url-firefox-new-window)))
-(defun browse (prog url)
-  (setq url (browse-url-encode-url url))
-  (apply #'start-process (append `(,(concat (car prog) " " url) nil) prog `(,url))))
+                            ("." . eww-browse-url)))
+
 (defun browse-url-firefox-new-window (url &rest agrs)
   (browse-url-firefox url t))
+
+(setq browse-url-secondary-browser-function 'browse-url-firefox-new-window)
 
 ;; biblioraphy
 (setq reftex-default-bibliography '("~/Dokumente/bibliography/references.bib"))
