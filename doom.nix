@@ -1,7 +1,9 @@
 { config, lib, pkgs, inputs, ... }:
 
 with lib; let
-  myemacs = pkgs.emacsPgtkNativeComp;
+  myemacs = with pkgs; (emacsPackagesFor emacsPgtkNativeComp).emacsWithPackages (
+    epkgs: [ epkgs.vterm ]
+  );
   # Taken from https://github.com/Mic92/dotfiles/blob/3e85e2b8a25f5dc16bb1b47e53566a4e8330974b/nixpkgs-config/modules/emacs/default.nix#L26
   daemonScript = pkgs.writeScript "emacs-daemon" ''
     #!${pkgs.zsh}/bin/zsh -l
