@@ -28,6 +28,10 @@ checkYoutubeStartpoint() {
 if echo "${1}" | grep -q -e \.mp3$ -e \.mp4$ -e \.m4v$ -e v\.redd\.it
 then
     mpv --really-quiet --no-osc -no-audio-display "${1}"
+elif echo "${1}" | grep -q -e v\.redd\.it
+then
+    redirect=$(curl -s -I "${1}" | grep ^location: | cut -d" " -f2)
+    mpv --really-quiet --no-osc -no-audio-display "${redirect}"
 elif echo "${1}" | grep -q -e m\.youtube\. 
 then
     link=$(echo "$1" | sed 's/m\.//' | sed 's/tube/pak/')
