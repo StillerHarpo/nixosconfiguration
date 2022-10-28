@@ -88,9 +88,6 @@ then
 elif echo "${1}" | grep -q -e www.reddit
 then
     tuir -l "${1}"
-elif [ "$color" = "black" ]
-then
-    firefox --new-window "${1}"
 else
     firefox --new-window "${1}"
-fi
+fi || firefox --new-window "${1}"
