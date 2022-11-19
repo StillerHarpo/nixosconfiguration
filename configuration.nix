@@ -2,19 +2,16 @@
 
 {
   environment.systemPackages = with pkgs; ([
-      aspell
-      aspellDicts.de
-      aspellDicts.en
-      aspellDicts.en-computers
-      aspellDicts.en-science
+    aspell
+    aspellDicts.de
+    aspellDicts.en
+    aspellDicts.en-computers
+    aspellDicts.en-science
   ]);
 
   fonts = {
     fontDir.enable = true;
-    fonts = with pkgs; [
-      dejavu_fonts
-      source-code-pro
-    ];
+    fonts = with pkgs; [ dejavu_fonts source-code-pro ];
   };
 
   nix = {

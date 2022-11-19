@@ -1,9 +1,7 @@
 { config, home-manager, pkgs, agenix, ... }:
 
 {
-  imports = [
-    ../configuration.nix
-  ];
+  imports = [ ../configuration.nix ];
 
   # Select internationalisation properties.
   console.keyMap = "us";
@@ -24,13 +22,12 @@
       xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
       xkbVariant = "altgr-intl";
       monitorSection = ''Option "DPMS" "false"'';
-      serverLayoutSection =
-      ''
+      serverLayoutSection = ''
         Option          "BlankTime"     "0"
         Option          "StandbyTime"   "0"
         Option          "SuspendTime"   "0"
         Option          "OffTime"       "0"
-     '';
+      '';
       # Enable XMonad
       windowManager = {
         xmonad = {
@@ -57,9 +54,7 @@
     };
   };
 
-  programs = {
-    steam.enable = true;
-  };
+  programs = { steam.enable = true; };
 
   users = {
     mutableUsers = false;

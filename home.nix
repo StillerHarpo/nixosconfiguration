@@ -7,9 +7,10 @@
       SHELL = pkgs.myshell;
       EDITOR = "vim";
     };
-    packages = with pkgs; [
-      afew # needed for notmuch update in emacs
-    ];
+    packages = with pkgs;
+      [
+        afew # needed for notmuch update in emacs
+      ];
   };
 
   programs = {

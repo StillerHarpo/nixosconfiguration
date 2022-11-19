@@ -3,23 +3,23 @@
 {
   programs.firefox = {
     enable = true;
-    extensions =
-      with pkgs.nur.repos.rycee.firefox-addons;
-      let ffreszoom = buildFirefoxXpiAddon rec {
-            pname = "ffreszoom";
-            version = "0.3.1";
-            addonId = "{b2e3360c-a72c-4ba4-813c-603a1fa34356}";
-            url = "https://addons.mozilla.org/firefox/downloads/file/1712974/ffreszoom-${version}-fx.xpi";
-            sha256 = "078h0x6xikg7dlzji32vfcchynmay56wixkhvw1b5rpyq2z8y3cn";
+    extensions = with pkgs.nur.repos.rycee.firefox-addons;
+      let
+        ffreszoom = buildFirefoxXpiAddon rec {
+          pname = "ffreszoom";
+          version = "0.3.1";
+          addonId = "{b2e3360c-a72c-4ba4-813c-603a1fa34356}";
+          url =
+            "https://addons.mozilla.org/firefox/downloads/file/1712974/ffreszoom-${version}-fx.xpi";
+          sha256 = "078h0x6xikg7dlzji32vfcchynmay56wixkhvw1b5rpyq2z8y3cn";
 
-            meta = with lib;
-              {
-                homepage = "https://github.com/notartom/ffreszoom";
-                description = "Sets the zoom level based on the screen resolution.";
-                license = licenses.gpl3;
-                platforms = platforms.all;
-              };
+          meta = with lib; {
+            homepage = "https://github.com/notartom/ffreszoom";
+            description = "Sets the zoom level based on the screen resolution.";
+            license = licenses.gpl3;
+            platforms = platforms.all;
           };
+        };
       in [
         user-agent-string-switcher
         tridactyl
@@ -66,7 +66,8 @@
       "network.allow-experiments" = false;
 
       # Disable Pocket Integration
-      "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
+      "browser.newtabpage.activity-stream.section.highlights.includePocket" =
+        false;
       "extensions.pocket.enabled" = false;
       "extensions.pocket.api" = "";
       "extensions.pocket.oAuthConsumerKey" = "";

@@ -21,25 +21,33 @@
 
   boot = {
     initrd = {
-      availableKernelModules = [ "ahci" "ohci_pci" "ehci_pci" "xhci_pci" "usbhid" "usb_storage" "sd_mod" "sr_mod" ];
+      availableKernelModules = [
+        "ahci"
+        "ohci_pci"
+        "ehci_pci"
+        "xhci_pci"
+        "usbhid"
+        "usb_storage"
+        "sd_mod"
+        "sr_mod"
+      ];
     };
     kernelModules = [ "kvm-amd" ];
   };
 
   fileSystems = {
-    "/" =
-      { device = "/dev/disk/by-uuid/550f9ea8-74b0-4775-ac06-f178089dc9a4";
-        fsType = "ext4";
-      };
-    "/boot" =
-      { device = "/dev/disk/by-uuid/EDCD-D594";
-        fsType = "vfat";
-      };
+    "/" = {
+      device = "/dev/disk/by-uuid/550f9ea8-74b0-4775-ac06-f178089dc9a4";
+      fsType = "ext4";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/EDCD-D594";
+      fsType = "vfat";
+    };
   };
 
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/db9038db-4602-4d7e-9a4f-5d56f43c8db5"; }
-    ];
+    [{ device = "/dev/disk/by-uuid/db9038db-4602-4d7e-9a4f-5d56f43c8db5"; }];
 
   networking = {
     useDHCP = false;
@@ -83,14 +91,14 @@
   };
 
   environment.systemPackages = [
-    (let user = config.age.secrets.steamuser.path;
-         pass = config.age.secrets.steampass.path;
-     in pkgs.writers.writeBashBin "steamLoginWrapper"
-       ''
-         user=$(cat ${user})
-         pass=$(cat  ${pass})
-         steam -login "$user" "$pass"
-       '')
+    (let
+      user = config.age.secrets.steamuser.path;
+      pass = config.age.secrets.steampass.path;
+    in pkgs.writers.writeBashBin "steamLoginWrapper" ''
+      user=$(cat ${user})
+      pass=$(cat  ${pass})
+      steam -login "$user" "$pass"
+    '')
     pkgs.grub2
   ];
 

@@ -9,9 +9,7 @@ in {
 
   options = {
 
-    workContainer = {
-      enable = mkEnableOption (lib.mdDoc "Work container");
-    };
+    workContainer = { enable = mkEnableOption (lib.mdDoc "Work container"); };
 
     userName = mkOption {
       type = types.str;
@@ -40,12 +38,10 @@ in {
     networking = {
       nat = {
         enable = true;
-        internalInterfaces = ["ve-+"];
+        internalInterfaces = [ "ve-+" ];
         externalInterface = "+";
       };
-      networkmanager = {
-        unmanaged = [ "interface-name:ve-*" ];
-      };
+      networkmanager = { unmanaged = [ "interface-name:ve-*" ]; };
     };
 
     security.polkit = {
@@ -62,9 +58,9 @@ in {
     };
 
     services.xserver.displayManager.sessionCommands = ''
-    xauth nextract - "$DISPLAY" | sed -e 's/^..../ffff/' | xauth -f "${xauth}" nmerge -
-    machinectl start work
-  '';
+      xauth nextract - "$DISPLAY" | sed -e 's/^..../ffff/' | xauth -f "${xauth}" nmerge -
+      machinectl start work
+    '';
 
     containers.work = {
       # TODO and bind for file transfer
@@ -89,7 +85,7 @@ in {
       config = {
         imports = [ home-manager-flake ];
         users.users."${userName}" = {
-          extraGroups = lib.mkForce [];
+          extraGroups = lib.mkForce [ ];
           isNormalUser = true;
           shell = pkgs.zsh;
         };
@@ -99,32 +95,26 @@ in {
           gcrootsDir = "/nix/var/nix/gcroots/per-user/${userName}";
         in {
           script = ''
-          #!${pkgs.stdenv.shell}
-          set -euo pipefail
+            #!${pkgs.stdenv.shell}
+            set -euo pipefail
 
-          mkdir -p ${profileDir} ${gcrootsDir}
-          chown ${userName}:root ${profileDir} ${gcrootsDir}
-        '';
+            mkdir -p ${profileDir} ${gcrootsDir}
+            chown ${userName}:root ${profileDir} ${gcrootsDir}
+          '';
           wantedBy = [ "multi-user.target" ];
-          serviceConfig = {
-            Type = "oneshot";
-          };
+          serviceConfig = { Type = "oneshot"; };
         };
         hardware.opengl = {
           enable = true;
           extraPackages = hostCfg.hardware.opengl.extraPackages;
         };
 
-        environment.systemPackages = with pkgs; [
-          git
-          firefox
-          remmina
-        ];
+        environment.systemPackages = with pkgs; [ git firefox remmina ];
 
         environment.etc."office.ovpn".source = ./office.ovpn;
 
         services.openvpn.servers.officeVPN = {
-          config = '' config /etc/office.ovpn '';
+          config = "config /etc/office.ovpn ";
           autoStart = true;
         };
 
@@ -133,16 +123,13 @@ in {
 
         home-manager = {
           users."${cfg.userName}" = {
-            imports = [
-              ../../zsh.nix
-              home/firefox.nix
-            ];
+            imports = [ ../../zsh.nix home/firefox.nix ];
             programs.zsh = {
               enable = true;
               oh-my-zsh.theme = "agnoster";
               shellAliases = {
                 ll = "ls -a";
-                "." ="cd ..";
+                "." = "cd ..";
                 ".." = "cd ../..";
                 "..." = "cd ../../..";
                 "...." = "cd ../../../..";
@@ -158,7 +145,7 @@ in {
               SHELL = "zsh";
               DISPLAY = ":0";
               XDG_RUNTIME_DIR = "/run/user/${toString cfg.uid}";
-              XAUTHORITY  = cfg.xauth;
+              XAUTHORITY = cfg.xauth;
             };
             home.stateVersion = "22.05";
             nixpkgs.overlays = outerPkgs.overlays;

@@ -1,13 +1,10 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager,  borgbackup-local
-, agenix, lib, ... }:
+{ config, pkgs, home-manager, borgbackup-local, agenix, lib, ... }:
 
 {
 
-  disabledModules = [
-    "services/backup/borgbackup.nix"
-  ];
+  disabledModules = [ "services/backup/borgbackup.nix" ];
 
   imports = [
     ./work-container.nix
@@ -16,149 +13,154 @@
     ../../doom.nix
     ../configuration.nix
     borgbackup-local
-    (with (import ./apparmor.nix); generate [
-      {
-        pkgs = with pkgs; [
-          xsane
-          (writers.writeHaskellBin
-            "scan"
-            { libraries = with haskellPackages; [turtle extra]; }
-            ../../haskell/scans/Scan.hs)
-        ];
-        profile = generateFileRules ["docs"];
-      }
-      {
-        pkgs = with pkgs; [
-          airshipper
-          libreoffice
-          textcleaner
-          file
-          element-desktop
-          scrot
-          nix-index
-          languagetool
-          ical2org
-          xclip
-          (kodi.withPackages (kodiPkgs: with kodiPkgs; [netflix steam-controller kodiPkgs.invidious]))
-          remmina
-          mullvad-vpn
-          sqlite
-          gimp
-          pamixer
-          aria
-          pavucontrol
-          arandr
-          networkmanagerapplet
-          mtpfs
-          wget
-          cachix
-          vim
-          shellcheck
-          #############
-          ######## Games ###############
-          openjdk                 # java
-          sshfs
-          dzen2
-          chromium
-          w3m
-          passff-host
-          neomutt
-          mu
-          toxic
-          poppler
-          tuir
-          xsel
-          silver-searcher
-          spotify
-          mpv
-          rlwrap
-          you-get
-          xosd
-          pandoc
-          mytexlive
-          python37Packages.pygments
-          bc
-          anki
-          nix-prefetch-git
-          youtube-dl
-          libnotify
-          unzip
-          rofi
-          wmctrl
-          unclutter-xfixes
-          cabal2nix
-          niv
-          #(haskellPackages.ghcWithPackages (self : with self;
-          #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-          #    adjunctions Agda ]))
-          networkmanager-openvpn networkmanager_dmenu
-          git-crypt
-          slack
-          tigervnc
-          signal-desktop
-          teamspeak_client
-          xtrlock-pam
-          fzf
-          ## better rust tools
-          procs
-          delta
-          du-dust
-          grex
-        ];
-        profile = defaultProfile;
-      }
-      {
-        pkgs = with pkgs; [ bandwhich bottom ];
-        profile = ''
-          ptrace,
-          ${defaultProfile}
-        '';
-      }
-      { pkgs = [ pkgs.psmisc ];
-        profile = ''
-          signal,
-          ${defaultProfile}
-       '';
-      }
-      {
-        pkgs = [ pkgs.pass ];
-        profile = ''
-          ${generateFileRules ["pass" "gnupg"]}
-        '';
-      }
-      {
-        pkgs = [ pkgs.firefox ];
-        profile = ''
-          network,
-          ${generateFileRules ["firefox"]}
-        '';
-      }
-      {
-        pkgs = with pkgs; [
-          agenix.defaultPackage.x86_64-linux
-          deploy-rs
-        ];
-        profile = ''
-            ${generateFileRules ["ssh"]}
+    (with (import ./apparmor.nix);
+      generate [
+        {
+          pkgs = with pkgs; [
+            xsane
+            (writers.writeHaskellBin "scan" {
+              libraries = with haskellPackages; [ turtle extra ];
+            } ../../haskell/scans/Scan.hs)
+          ];
+          profile = generateFileRules [ "docs" ];
+        }
+        {
+          pkgs = with pkgs; [
+            nixfmt
+            airshipper
+            libreoffice
+            textcleaner
+            file
+            element-desktop
+            scrot
+            nix-index
+            languagetool
+            ical2org
+            xclip
+            (kodi.withPackages (kodiPkgs:
+              with kodiPkgs; [
+                netflix
+                steam-controller
+                kodiPkgs.invidious
+              ]))
+            remmina
+            mullvad-vpn
+            sqlite
+            gimp
+            pamixer
+            aria
+            pavucontrol
+            arandr
+            networkmanagerapplet
+            mtpfs
+            wget
+            cachix
+            vim
+            shellcheck
+            #############
+            ######## Games ###############
+            openjdk # java
+            sshfs
+            dzen2
+            chromium
+            w3m
+            passff-host
+            neomutt
+            mu
+            toxic
+            poppler
+            tuir
+            xsel
+            silver-searcher
+            spotify
+            mpv
+            rlwrap
+            you-get
+            xosd
+            pandoc
+            mytexlive
+            python37Packages.pygments
+            bc
+            anki
+            nix-prefetch-git
+            youtube-dl
+            libnotify
+            unzip
+            rofi
+            wmctrl
+            unclutter-xfixes
+            cabal2nix
+            niv
+            #(haskellPackages.ghcWithPackages (self : with self;
+            #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
+            #    adjunctions Agda ]))
+            networkmanager-openvpn
+            networkmanager_dmenu
+            git-crypt
+            slack
+            tigervnc
+            signal-desktop
+            teamspeak_client
+            xtrlock-pam
+            fzf
+            ## better rust tools
+            procs
+            delta
+            du-dust
+            grex
+          ];
+          profile = defaultProfile;
+        }
+        {
+          pkgs = with pkgs; [ bandwhich bottom ];
+          profile = ''
+            ptrace,
+            ${defaultProfile}
           '';
-      }
-      {
-        pkgs = with pkgs; [
-          imagemagick
-          ripgrep
-          poppler_utils
-          bat
-          exa
-          fd
-          tesseract4
-          zathura
-          feh
-        ];
-        profile = ''
-            ${generateFileRules ["docs"]}
+        }
+        {
+          pkgs = [ pkgs.psmisc ];
+          profile = ''
+            signal,
+            ${defaultProfile}
           '';
-      }
-    ])
+        }
+        {
+          pkgs = [ pkgs.pass ];
+          profile = ''
+            ${generateFileRules [ "pass" "gnupg" ]}
+          '';
+        }
+        {
+          pkgs = [ pkgs.firefox ];
+          profile = ''
+            network,
+            ${generateFileRules [ "firefox" ]}
+          '';
+        }
+        {
+          pkgs = with pkgs; [ agenix.defaultPackage.x86_64-linux deploy-rs ];
+          profile = ''
+            ${generateFileRules [ "ssh" ]}
+          '';
+        }
+        {
+          pkgs = with pkgs; [
+            imagemagick
+            ripgrep
+            poppler_utils
+            bat
+            exa
+            fd
+            tesseract4
+            zathura
+            feh
+          ];
+          profile = ''
+            ${generateFileRules [ "docs" ]}
+          '';
+        }
+      ])
   ];
 
   boot = {
@@ -170,27 +172,24 @@
     kernel.sysctl."kernel.yama.ptrace_scope" = 1;
   };
 
-  fonts.fonts = with pkgs; [ terminus_font nerdfonts];
+  fonts.fonts = with pkgs; [ terminus_font nerdfonts ];
 
   location = import ./cords.nix;
-
 
   systemd.packages = [ pkgs.dconf ];
 
   home-manager.users.florian = import ./home/configuration.nix;
 
-  environment = {
-    pathsToLink = [ "/share/agda" "/share/zsh" ];
-  };
+  environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
 
   security = {
     apparmor = {
       enable = true;
       policies = with import ./apparmor.nix; {
-        steam.profile = getProfiles [pkgs.steam] defaultProfile;
-        paperless.profile = getProfiles [pkgs.paperless-ng] ''
-           network,
-           ${generateFileRules ["paperless"]}
+        steam.profile = getProfiles [ pkgs.steam ] defaultProfile;
+        paperless.profile = getProfiles [ pkgs.paperless-ng ] ''
+          network,
+          ${generateFileRules [ "paperless" ]}
         '';
       };
     };
@@ -215,17 +214,17 @@
       florian = {
         passwordFile = config.age.secrets.florian.path;
         description = "Florian Engel";
-        extraGroups = [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp"];
+        extraGroups =
+          [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
       };
-      playground = {
-        isNormalUser = true;
-      };
+      playground = { isNormalUser = true; };
     };
   };
 
   # powerManagement.enable = false;
   services = {
-    pipewire.media-session.config.bluez-monitor.properties.bluez5.msbc-support = true;
+    pipewire.media-session.config.bluez-monitor.properties.bluez5.msbc-support =
+      true;
 
     unclutter-xfixes.enable = true;
 
@@ -234,14 +233,27 @@
     # Go in hibernate at lid
     logind = {
       lidSwitch = "hibernate";
-      extraConfig = ''HandlePowerKey=hibernate
-                      RuntimeDirectorySize=30%'';
+      extraConfig = ''
+        HandlePowerKey=hibernate
+                              RuntimeDirectorySize=30%'';
     };
     # mouse pad
     xserver = {
-      resolutions = [{x = 2560; y = 1440;} {x = 1920; y = 1080;} ];
+      resolutions = [
+        {
+          x = 2560;
+          y = 1440;
+        }
+        {
+          x = 1920;
+          y = 1080;
+        }
+      ];
       windowManager.xmonad.extraPackages = haskellPackages:
-        with haskellPackages; [MissingH protolude];
+        with haskellPackages; [
+          MissingH
+          protolude
+        ];
       xautolock = {
         enable = true;
         locker = "${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none";
@@ -265,18 +277,22 @@
     picom = {
       enable = true;
       inactiveOpacity = 0.8;
-      opacityRules = [ "100:name = 'Dmenu'" "100:name = 'Rofi'" "100:class_g ?= 'Rofi'" "100:name = 'Notification'" ];
+      opacityRules = [
+        "100:name = 'Dmenu'"
+        "100:name = 'Rofi'"
+        "100:class_g ?= 'Rofi'"
+        "100:name = 'Notification'"
+      ];
     };
 
     paperless = {
       enable = true;
       passwordFile = config.age.secrets.paperless.path;
       consumptionDir = "/home/florian/paperlessInput";
-      extraConfig =
-        {
-          PAPERLESS_OCR_LANGUAGE = "deu+eng";
-          PAPERLESS_IGNORE_DATES = config.age.secrets.birthdate.path;
-        };
+      extraConfig = {
+        PAPERLESS_OCR_LANGUAGE = "deu+eng";
+        PAPERLESS_IGNORE_DATES = config.age.secrets.birthdate.path;
+      };
       consumptionDirIsPublic = true;
     };
 
@@ -303,8 +319,10 @@
       enable = true;
       user = "florian";
       dataDir = "/home/florian/.syncthing";
-      devices."android".id = "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
-      devices."macos".id = "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
+      devices."android".id =
+        "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+      devices."macos".id =
+        "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
       folders = {
         "android-photos" = {
           path = "/home/florian/android/photos";
@@ -340,10 +358,9 @@
   environment.etc."office.ovpn".source = ./office.ovpn;
 
   services.openvpn.servers.officeVPN = {
-    config = '' config /etc/office.ovpn '';
+    config = "config /etc/office.ovpn ";
     autoStart = false;
   };
-
 
   # Bluetooth sound
   systemd.user.services.telephony_client.enable = false;
@@ -354,22 +371,24 @@
     };
     sane = {
       enable = true;
-      extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin utsushi ];
-      drivers.scanSnap = {
-        enable = true;
-      };
+      extraBackends = with pkgs; [
+        epkowa
+        sane-airscan
+        hplipWithPlugin
+        utsushi
+      ];
+      drivers.scanSnap = { enable = true; };
     };
   };
 
   # wifi
   networking.networkmanager = {
     enable = true;
-    dispatcherScripts = [
-      {
-        source =
-          let nmcli = "${pkgs.networkmanager}/bin/nmcli";
-              lanInterface = "enp0s31f6";
-          in pkgs.writeText "wlan_auto_toggle" ''
+    dispatcherScripts = [{
+      source = let
+        nmcli = "${pkgs.networkmanager}/bin/nmcli";
+        lanInterface = "enp0s31f6";
+      in pkgs.writeText "wlan_auto_toggle" ''
         if [ "$1" = "${lanInterface}" ]; then
             case "$2" in
                 up)
@@ -390,9 +409,8 @@
             ${nmcli} radio wifi on
         fi
       '';
-        type = "basic";
-      }
-    ];
+      type = "basic";
+    }];
   };
 
   # big font for high resolution
@@ -404,7 +422,8 @@
     printing.enable = true;
     udev = {
       packages = [ pkgs.utsushi ];
-      extraRules = ''KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${pkgs.monitor-changer}/bin/monitor-changer"'';
+      extraRules = ''
+        KERNEL=="card0", SUBSYSTEM=="drm", ACTION=="change", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/home/florian/.Xauthority", RUN+="${pkgs.monitor-changer}/bin/monitor-changer"'';
     };
   };
 
@@ -421,35 +440,38 @@
 
   systemd = {
     services = let
-      targets = [ "hibernate.target" "hybrid-sleep.target"  "suspend.target" "sleep.target"  "suspend-then-hibernate.target" ];
+      targets = [
+        "hibernate.target"
+        "hybrid-sleep.target"
+        "suspend.target"
+        "sleep.target"
+        "suspend-then-hibernate.target"
+      ];
       serviceConfig = {
         Type = "oneshot";
         User = "florian";
         Group = "users";
       };
-      environment = {
-        DISPLAY = ":0";
-      };
+      environment = { DISPLAY = ":0"; };
     in {
       "my-post-resume" = {
         description = "Post-Resume Actions";
         after = targets;
         wantedBy = targets;
-        script =
-          ''
-            ${pkgs.monitor-changer}/bin/monitor-changer
-            if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
-              echo "Enabeling wifi"
-              ${pkgs.networkmanager}/bin/nmcli radio wifi on
-            fi
-          '';
+        script = ''
+          ${pkgs.monitor-changer}/bin/monitor-changer
+          if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
+            echo "Enabeling wifi"
+            ${pkgs.networkmanager}/bin/nmcli radio wifi on
+          fi
+        '';
         inherit serviceConfig environment;
         enable = true;
       };
     };
   };
   nix = {
-    buildMachines = [ {
+    buildMachines = [{
       hostName = "192.168.178.24";
       system = "x86_64-linux";
       sshUser = "root";
@@ -457,7 +479,7 @@
       speedFactor = 2;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
       mandatoryFeatures = [ ];
-    }] ;
+    }];
     distributedBuilds = false;
   };
 }

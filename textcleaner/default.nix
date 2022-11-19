@@ -3,7 +3,8 @@
 stdenvNoCC.mkDerivation rec {
   name = "textcleaner";
   src = fetchurl {
-    url = "http://www.fmwconcepts.com/imagemagick/downloadcounter.php?scriptname=${name}&dirname=${name}";
+    url =
+      "http://www.fmwconcepts.com/imagemagick/downloadcounter.php?scriptname=${name}&dirname=${name}";
     sha256 = "sha256-f5W7FRf3ZGo9qjPi17AVwKDYhDUU/viEWspDT97UaQ8=";
   };
   patches = [ ./textcleaner.patch ];
