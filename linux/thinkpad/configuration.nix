@@ -29,6 +29,7 @@
       }
       {
         pkgs = with pkgs; [
+          airshipper
           libreoffice
           textcleaner
           file
