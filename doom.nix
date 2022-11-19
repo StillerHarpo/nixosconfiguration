@@ -1,7 +1,7 @@
 { config, lib, pkgs, inputs, ... }:
 
 with lib; let
-  myemacs = with pkgs; (emacsPackagesFor emacsPgtkNativeComp).emacsWithPackages (
+  myemacs = with pkgs; (emacsPackagesFor emacsNativeComp).emacsWithPackages (
     epkgs: [ epkgs.vterm ]
   );
   # Taken from https://github.com/Mic92/dotfiles/blob/3e85e2b8a25f5dc16bb1b47e53566a4e8330974b/nixpkgs-config/modules/emacs/default.nix#L26

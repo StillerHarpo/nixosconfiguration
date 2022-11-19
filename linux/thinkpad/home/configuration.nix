@@ -152,7 +152,6 @@ in {
 #    };
   };
   services = {
-    emacs.enable = true;
     gpg-agent = {
       enable = true;
       defaultCacheTtl = 1800;
