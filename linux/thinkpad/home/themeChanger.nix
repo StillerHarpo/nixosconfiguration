@@ -36,9 +36,11 @@ let
   alacrittyConf =
     colors: pkgs.writeTextFile {
       name = "alacritty.yml";
-      text = toAlacrittyJSON ({inherit colors;} // alacrittyCommon);
+      text =
+        toAlacrittyJSON (lib.attrsets.recursiveUpdate colors alacrittyCommon);
     };
   alacrittyDark = alacrittyConf {
+    env.BAT_THEME = "gruvbox-dark";
     # Default colors
     primary = {
       # hard contrast: background = "#f9f5d7";
@@ -98,6 +100,7 @@ let
       magenta = "#8f3f71";
       cyan = "#427b58";
       white = "#3c3836";
+    env.BAT_THEME = "gruvbox-light";
     };
   };
   alacrittyConfLoc = "~/.config/alacritty";
@@ -201,4 +204,6 @@ in {
             ${runXsettings}
         '')
   ];
+        echo BAT_THEME=gruvbox-dark > ~/.env
+        echo BAT_THEME=gruvbox-light > ~/.env
 }
