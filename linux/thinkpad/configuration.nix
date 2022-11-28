@@ -140,7 +140,15 @@
           '';
         }
         {
-          pkgs = with pkgs; [ agenix.defaultPackage.x86_64-linux deploy-rs ];
+          pkgs = [ agenix.defaultPackage.x86_64-linux ];
+          profile = ''
+            mount,
+            capability,
+            ${generateFileRules [ "ssh" ]}
+          '';
+        }
+        {
+          pkgs = [ pkgs.deploy-rs ];
           profile = ''
             ${generateFileRules [ "ssh" ]}
           '';
