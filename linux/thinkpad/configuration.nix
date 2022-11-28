@@ -26,6 +26,7 @@
         }
         {
           pkgs = with pkgs; [
+            ical2orgpy
             nixfmt
             airshipper
             libreoffice

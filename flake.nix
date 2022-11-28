@@ -75,7 +75,7 @@
         })
         myShellOverlay
         emacs-overlay.overlay
-        (self: super: {
+        (self: super: rec {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {
             my-common = super.haskell.lib.overrideCabal
               (hSuper.callCabal2nix "my-common" ./haskell/my-common { }) (_: {
@@ -87,6 +87,43 @@
             libraries = [ self.haskellPackages.my-common ];
           } ./haskell/monitor-changer/MonitorChanger.hs;
           textcleaner = self.callPackage ./textcleaner { };
+          x_wr_timezone = with self.python3Packages;
+            buildPythonPackage rec {
+              pname = "x_wr_timezone";
+              version = "0.0.5";
+              src = fetchPypi {
+                inherit pname version;
+                sha256 = "sha256-wFyzS5tYpGB6eI2whtyuV2ZyjkuU4GcocNxVk6bhP+Y=";
+              };
+              propagatedBuildInputs = [ icalendar pytz ];
+              doCheck = false;
+            };
+          recurring_ical_events = with self.python3Packages;
+            buildPythonPackage rec {
+              pname = "recurring_ical_events";
+              version = "1.1.0b0";
+              src = fetchPypi {
+                inherit pname version;
+                sha256 = "sha256-kJFnFFSp32I1bJ0OnvZjZeJVxswEBE9mXQg90IpsXIg=";
+              };
+              propagatedBuildInputs =
+                [ python-dateutil icalendar pytz x_wr_timezone ];
+              doCheck = false;
+            };
+          ical2orgpy = with self.python3Packages;
+            buildPythonPackage rec {
+              pname = "ical2orgpy";
+              version = "0.4.0";
+              src = fetchPypi {
+                inherit pname version;
+                sha256 = "sha256-7/kWW1oTSJXPJtN02uIDrFdNJ9ExKRUa3tUNA0oJSoc=";
+              };
+              propagatedBuildInputs =
+                [ click future icalendar pytz tzlocal recurring_ical_events ];
+              doCheck = false;
+
+              nativeBuildInputs = [ pbr ];
+            };
         })
         steamOverlay
         nur.overlay
