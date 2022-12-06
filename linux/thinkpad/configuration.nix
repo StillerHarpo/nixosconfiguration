@@ -36,7 +36,6 @@
             scrot
             nix-index
             languagetool
-            ical2org
             xclip
             (kodi.withPackages (kodiPkgs:
               with kodiPkgs; [

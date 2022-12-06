@@ -11,6 +11,7 @@
       [
         afew # needed for notmuch update in emacs
       ];
+    stateVersion = "22.11";
   };
 
   programs = {

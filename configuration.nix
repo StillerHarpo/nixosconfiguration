@@ -19,7 +19,7 @@
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
-    maxJobs = lib.mkDefault 8;
+    settings.max-jobs = lib.mkDefault 8;
   };
 
 }

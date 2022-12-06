@@ -1,7 +1,7 @@
 {
   inputs = {
-    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.05";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -25,7 +25,7 @@
     };
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
     home-manager-flake = {
-      url = "github:nix-community/home-manager/release-22.05";
+      url = "github:nix-community/home-manager/release-22.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nur = {

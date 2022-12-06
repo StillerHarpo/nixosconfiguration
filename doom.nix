@@ -3,8 +3,7 @@
 with lib;
 let
   myemacs = with pkgs;
-    (emacsPackagesFor emacsNativeComp).emacsWithPackages
-    (epkgs: [ epkgs.vterm ]);
+    (emacsPackagesFor emacsUnstable).emacsWithPackages (epkgs: [ epkgs.vterm ]);
   # Taken from https://github.com/Mic92/dotfiles/blob/3e85e2b8a25f5dc16bb1b47e53566a4e8330974b/nixpkgs-config/modules/emacs/default.nix#L26
   daemonScript = pkgs.writeScript "emacs-daemon" ''
     #!${pkgs.zsh}/bin/zsh -l
