@@ -255,3 +255,9 @@ If I let Windows handle DPI everything looks blurry."
            langtool-java-bin jdk
            langtool-language-tool-jar (concat languagetool "/share/languagetool-commandline.jar")
            langtool-language-tool-server-jar (concat languagetool "/share/languagetool-server.jar"))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Fix format all not using direnv environmet
+(after! format-all (advice-add 'format-all-buffer :around #'envrc-propagate-environment))
+(advice-add 'save-buffer :around #'envrc-propagate-environment)
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
