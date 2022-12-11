@@ -178,7 +178,7 @@
             common-pc-ssd
             common-cpu-amd
             common-gpu-amd-southern-islands
-            home-manager.nixosModules.home-manager
+            home-manager-flake.nixosModules.home-manager
             ./linux/desktop/configuration.nix
             agenix.nixosModules.age
           ];

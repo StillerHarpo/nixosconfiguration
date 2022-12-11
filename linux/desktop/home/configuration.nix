@@ -5,4 +5,6 @@
 
   xsession.windowManager.xmonad.config =
     ../../../haskell/xmonad-desktop/xmonad.hs;
+
+  home.stateVersion = "22.11";
 }
