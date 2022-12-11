@@ -64,7 +64,7 @@ getPdfAndTxt :: MyShell (Text, Text)
 getPdfAndTxt = lift getTifs >>= runTesseract
 
 fileNumMatch :: Pattern Text -> Pattern Int
-fileNumMatch = ("./out" *> decimal <*)
+fileNumMatch = (many dot *> "out" *> decimal <*)
 
 tifNumMatch :: Pattern Int
 tifNumMatch = fileNumMatch ".tif"
@@ -84,6 +84,7 @@ runTesseract inputFile =
       Env {..} <- ask
       printf ("running tesseract on " % fp % "to generate pdf \n") inputFile
       procs "tesseract" [inputFileT, outputBaseT, "-l", "deu", tesseractConf] mempty
+      procs "tesseract" [inputFileT, outputBaseT, "-l", "deu"] mempty
       liftIO $
         whenM
           (not <$> doesFileExist (T.unpack $ outputBaseT <> ".pdf"))
@@ -105,7 +106,7 @@ liftFunReader :: Monad m => (m a -> m b) -> ReaderT s m a -> ReaderT s m b
 liftFunReader fun r = ask >>= lift . fun . runReaderT r
 
 getPdfsAndTxtsSorted :: MyShell [(Text, Text)]
-getPdfsAndTxtsSorted = liftFunReader (sortOn (match pdfNumMatch . fst)) getPdfAndTxt
+getPdfsAndTxtsSorted = liftFunReader (sortOn (maximum . match pdfNumMatch . fst)) getPdfAndTxt
 
 fileExistsError :: FilePath -> MyShell ()
 fileExistsError file = do
@@ -130,11 +131,7 @@ getFileNameTxt = do
   pure $ format ("input_" % d % "_" % s % ".txt") curCount cur
 
 checkFile :: FilePath -> MyShell ()
-checkFile file = do
-  exists <- testfile file
-  if exists
-    then fileExistsError file
-    else pure ()
+checkFile file = whenM (testfile file) (fileExistsError file)
 
 convert :: [(Text, Text)] -> MyShell ()
 convert pdfsAndTxts = do
@@ -153,6 +150,7 @@ convertPdfs inputs = do
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   procs "pdfunite" (inputs <> [fnT]) mempty
+  checkFile (_PDFS_DIR <> fn)
   mv fn (_PDFS_DIR <> fn)
 
 convertTxts :: [Text] -> MyShell ()
@@ -162,6 +160,7 @@ convertTxts inputs = do
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   liftIO $ traverse (readFile . T.unpack) inputs >>= writeFile (T.unpack fnT) . mconcat
+  checkFile (_PDFS_DIR <> fn)
   mv fn (_PDFS_DIR <> fn)
 
 convertPictures :: MyShell ()
@@ -284,7 +283,7 @@ mainMenu = do
 getMaxFile :: MonadIO m => FilePath -> Pattern Int -> m Int
 getMaxFile filePath fileParser =
   fold
-    ( (match fileParser <$>)
+    ( (match (many dot *> fileParser) <$>)
         . toText
         <$> ls filePath
     )
@@ -307,7 +306,8 @@ main = do
   hSetBuffering stdin NoBuffering
   unlessM (testdir _PDFS_DIR) (throwM $ DirNotExistsError _PDFS_DIR)
   t <- today
-  initialCounter <- getMaxPdfFile ("./input_" *> decimal <* text ("_" <> t <> ".pdf"))
+  initialCounter <- getMaxPdfFile ("input_" *> decimal <* text ("_" <> t <> ".pdf"))
+  putStrLn $ "start count from: " <> show initialCounter
   counter <- liftIO $ newIORef initialCounter
   mayScanner <-
     fold
