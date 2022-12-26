@@ -30,6 +30,7 @@
             nixfmt
             airshipper
             libreoffice
+            prismlauncher
             textcleaner
             file
             element-desktop
