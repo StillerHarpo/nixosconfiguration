@@ -26,6 +26,7 @@
         }
         {
           pkgs = with pkgs; [
+            nixpkgs-review
             ical2orgpy
             nixfmt
             airshipper
