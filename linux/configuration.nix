@@ -54,7 +54,10 @@
     };
   };
 
-  programs = { steam.enable = true; };
+  programs = {
+    steam.enable = true;
+    gamemode.enable = true;
+  };
 
   users = {
     mutableUsers = false;
