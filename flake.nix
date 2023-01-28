@@ -3,6 +3,13 @@
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nix-alien = {
+      url = "github:thiagokokada/nix-alien";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-utils.follows = "flake-utils";
+      };
+    };
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
@@ -49,7 +56,7 @@
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay, doom-emacs, nixpkgs-newest, nixpkgs-borgbackup, nur
-    , nixos-hardware, deploy-rs, envfs, ... }:
+    , nixos-hardware, deploy-rs, envfs, nix-alien, ... }:
 
     let
       system = "x86_64-linux";
@@ -76,6 +83,7 @@
             };
         })
         myShellOverlay
+        nix-alien.overlay
         emacs-overlay.overlay
         (self: super: rec {
           haskellPackages = super.haskellPackages.extend (_: hSuper: {

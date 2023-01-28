@@ -37,7 +37,7 @@
             file
             element-desktop
             scrot
-            nix-index
+            nix-alien
             languagetool
             xclip
             (kodi.withPackages (kodiPkgs:
@@ -447,6 +447,7 @@
     adb.enable = true;
     fuse.userAllowOther = true;
     gnupg.dirmngr.enable = true;
+    nix-ld.enable = true;
   };
 
   systemd = {

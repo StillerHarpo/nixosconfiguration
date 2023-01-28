@@ -201,6 +201,29 @@
         "type": "github"
       }
     },
+    "nix-alien": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1673796649,
+        "narHash": "sha256-pxltEWBYl0LrowAn+66vbqJe59EPJ+fmLKMVZ66EIZI=",
+        "owner": "thiagokokada",
+        "repo": "nix-alien",
+        "rev": "998aa8523cde352da0529fcc495cd5709a1eeb98",
+        "type": "github"
+      },
+      "original": {
+        "owner": "thiagokokada",
+        "repo": "nix-alien",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1672566874,
@@ -291,6 +314,7 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "home-manager-flake": "home-manager-flake",
+        "nix-alien": "nix-alien",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "nixpkgs-borgbackup": "nixpkgs-borgbackup",
