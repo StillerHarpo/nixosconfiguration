@@ -88,6 +88,9 @@ then
 elif echo "${1}" | grep -q -e www.reddit
 then
     tuir -l "${1}"
+elif echo "${1}" | grep -q -e medilyse
+then
+    firefox -P work --new-window "${1}"
 else
     firefox --new-window "${1}"
 fi || firefox --new-window "${1}"
