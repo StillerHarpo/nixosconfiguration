@@ -28,10 +28,7 @@
       url = "github:nix-community/home-manager/release-22.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nur = {
-      url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nur.url = "github:nix-community/NUR";
     deploy-rs = {
       url = "github:serokell/deploy-rs";
       inputs = {
@@ -40,6 +37,11 @@
         utils.follows = "flake-utils";
       };
     };
+    envfs = {
+      url = "github:Mic92/envfs";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     darwin = {
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,7 +49,7 @@
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay, doom-emacs, nixpkgs-newest, nixpkgs-borgbackup, nur
-    , nixos-hardware, deploy-rs, ... }:
+    , nixos-hardware, deploy-rs, envfs, ... }:
 
     let
       system = "x86_64-linux";
@@ -165,6 +167,7 @@
             }
             ./linux/thinkpad/configuration.nix
             agenix.nixosModules.age
+            envfs.nixosModules.envfs
           ];
         };
 
