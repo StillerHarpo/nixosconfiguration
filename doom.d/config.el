@@ -93,7 +93,8 @@
 
 (map! :leader :desc "eshell" :n "o s" #'eshell
               :desc "woman" :n "o w" #'woman
-              :desc "elfeed" :n "o e" #'elfeed)
+              :desc "elfeed" :n "o e" #'elfeed
+              :desc "peerube" :n "o p" #'peertube)
 
 (map! :mode 'elfeed-search-mode :n "b" #'elfeed-search-browse-url)
 
@@ -271,7 +272,7 @@ If I let Windows handle DPI everything looks blurry."
   (let ((url (peertube-video-url (peertube--get-current-video))))
     (browse-url-mpv url)))
 
-(general-evil-define-key '(normal visual) 'peertube-mode
+(general-evil-define-key '(normal visual) 'peertube-mode-map
           "enter" 'peertube-mpv-open-video
           "o" 'peertube-mpv-open-video
           "c" 'peertube-goto-channel
