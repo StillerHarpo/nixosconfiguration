@@ -484,7 +484,7 @@
       hostName = "192.168.178.24";
       system = "x86_64-linux";
       sshUser = "root";
-      maxJobs = 1;
+      maxJobs = 8;
       speedFactor = 2;
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
       mandatoryFeatures = [ ];
