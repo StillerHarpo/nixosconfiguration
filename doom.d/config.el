@@ -264,3 +264,21 @@ If I let Windows handle DPI everything looks blurry."
 (after! format-all (advice-add 'format-all-buffer :around #'envrc-propagate-environment))
 (advice-add 'save-buffer :around #'envrc-propagate-environment)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun peertube-mpv-open-video ()
+  "Open the video under the cursor using `browse-url'."
+  (interactive)
+  (let ((url (peertube-video-url (peertube--get-current-video))))
+    (browse-url-mpv url)))
+
+(general-evil-define-key '(normal visual) 'peertube-mode
+          "enter" 'peertube-mpv-open-video
+          "o" 'peertube-mpv-open-video
+          "c" 'peertube-goto-channel
+          "i" 'peertube-show-video-info
+          "d" 'peertube-download-video
+          "q" 'peertube-quit
+          "s" 'peertube-search
+          "m" 'peertube-change-sort-method
+          "t" 'peertube-preview-thumbnail)
+(setq ytel-invidious-api-url "https://yewtu.be")
