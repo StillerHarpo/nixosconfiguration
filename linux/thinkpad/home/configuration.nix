@@ -16,6 +16,10 @@ in {
   ];
 
   programs = {
+    gh = {
+      enable = true;
+      settings = { git_protocol = "ssh"; };
+    };
     zoxide = {
       enable = true;
       enableZshIntegration = true;
