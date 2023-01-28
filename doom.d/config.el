@@ -163,6 +163,7 @@
 
 ;; automatic saves of org buffers
 (advice-add 'org-refile :after 'org-save-all-org-buffers)
+(advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
 (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
 
 (setq org-read-date-force-compatible-dates nil)
