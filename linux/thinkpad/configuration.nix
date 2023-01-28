@@ -30,6 +30,7 @@
             ical2orgpy
             nixfmt
             airshipper
+            superTuxKart
             libreoffice
             prismlauncher
             textcleaner
