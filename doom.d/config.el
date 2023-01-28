@@ -239,6 +239,7 @@ If I let Windows handle DPI everything looks blurry."
 
 (after! org-roam (my/org-roam-refresh-agenda-list))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'org-mode-hook #'auto-revert-mode)
 
 (defun with-nix-pathes (nix-path-alist)
     "config that need nix-paths is called with this functions"
