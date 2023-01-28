@@ -21,6 +21,7 @@
             (writers.writeHaskellBin "scan" {
               libraries = with haskellPackages; [ turtle extra ];
             } ../../haskell/scans/Scan.hs)
+            csvkit
           ];
           profile = generateFileRules [ "docs" ];
         }
