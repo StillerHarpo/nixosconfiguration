@@ -161,7 +161,7 @@
             bat
             exa
             fd
-            tesseract4
+            tesseract5
             zathura
             feh
           ];
