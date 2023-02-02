@@ -39,6 +39,9 @@ in {
           (with-nix-pathes '((nix-zsh-path . "${pkgs.myshell}")
             (nix-latexmk-path . "${pkgs.mytexlive}/bin/latexmk")
             (nix-mpv-path . "${pkgs.mpv}/bin/mpv")
+            (nix-linkopenwithx-path . "${
+              (import linux/thinkpad/scripts pkgs).linkopenwithx
+            }/bin/linkopenwithx")
             (nix-jdk-path . "${pkgs.jdk}/bin/java")
             (nix-languagetool-path . "${pkgs.languagetool}")))
         '';

@@ -35,6 +35,9 @@ let
     "fbv"
     "w3m"
   ]);
+  linkopenwithoutx =
+    makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
+in rec {
   linkopenwithx = makeScript "linkopenwithx" (with substitutes; [
     mpv
     curl
@@ -46,9 +49,6 @@ let
     tuir
     firefox
   ]);
-  linkopenwithoutx =
-    makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
-in {
   linkopen = makeScript "linkopen" [
     {
       pattern = "./linkopenwithx.sh";

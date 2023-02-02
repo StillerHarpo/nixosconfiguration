@@ -59,15 +59,10 @@
       (insert (shell-command-to-string (concat "~/scripts/youtubeFeed " link)))))
 
 ;; Browser function
-(setq mediareg (rx (or "youtube."
-                       "youtu.be"
-                       (and ".mp3" eol)
-                       (and ".mp4" eol)
-                       (and ".m4v$" eol)
-                       "v.redd.it")))
+(setq ewwreg (rx (or "wikipedia")))
 
-(setq browse-url-handlers `((,mediareg . browse-url-mpv)
-                            ("." . eww-browse-url)))
+(setq browse-url-handlers `((,ewwreg . eww-browse-url)
+                            ("." . browse-url-linkopenwithx)))
 
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
@@ -247,10 +242,11 @@ If I let Windows handle DPI everything looks blurry."
     "config that need nix-paths is called with this functions"
   (let ((shell (cdr (assoc 'nix-zsh-path nix-path-alist)))
          (latexmk (cdr (assoc 'nix-latexmk-path nix-path-alist)))
-         (mpv (cdr (assoc 'nix-mpv-path nix-path-alist)))
+         (linkopenwithx (cdr (assoc 'nix-linkopenwithx-path nix-path-alist)))
          (jdk (cdr (assoc 'nix-jdk-path nix-path-alist)))
          (languagetool (cdr (assoc 'nix-languagetool-path nix-path-alist))))
      (defun browse-url-mpv (url &rest args) (browse `(,mpv "--save-position-on-quit") url))
+     (defun browse-url-linkopenwithx (url &rest args) (browse `(,linkopenwithx) url))
      (setq vterm-shell shell)
      (setq org-latex-pdf-process (list (concat latexmk " -shell-escape -bibtex -f -pdfxe %f")))
      (setq langtool-java-classpath (concat languagetool "/share/")
