@@ -130,7 +130,9 @@
           '';
         }
         {
-          pkgs = [ pkgs.pass ];
+          # FIXME only allow usage of program. Not access.
+          pkgs = with pkgs; [ go-jira pass ];
+
           profile = ''
             ${generateFileRules [ "pass" "gnupg" ]}
           '';
