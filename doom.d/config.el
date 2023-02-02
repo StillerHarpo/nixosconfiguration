@@ -55,8 +55,8 @@
 
 (defun youtube-feed ()
   (interactive)
-    (let ((link (read-string "Link: ")))
-      (insert (shell-command-to-string (concat "~/scripts/youtubeFeed " link)))))
+  (let ((link (read-string "Link: ")))
+    (insert (shell-command-to-string (concat "~/scripts/youtubeFeed " link)))))
 
 ;; Browser function
 (setq ewwreg (rx (or "wikipedia")))
@@ -87,9 +87,9 @@
 (setq mml-secure-openpgp-sign-with-sender t)
 
 (map! :leader :desc "eshell" :n "o s" #'eshell
-              :desc "woman" :n "o w" #'woman
-              :desc "elfeed" :n "o e" #'elfeed
-              :desc "peerube" :n "o p" #'peertube)
+      :desc "woman" :n "o w" #'woman
+      :desc "elfeed" :n "o e" #'elfeed
+      :desc "peerube" :n "o p" #'peertube)
 
 (map! :mode 'elfeed-search-mode :n "b" #'elfeed-search-browse-url)
 
@@ -134,7 +134,7 @@
 ;; org config
 (setq org-src-window-setup 'current-window)
 (setq org-refile-targets '((nil :maxlevel . 9)
-                             (org-agenda-files :maxlevel . 9)))
+                           (org-agenda-files :maxlevel . 9)))
 ;; NO spell check for embedded snippets
 (defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
   (let* ((rlt ad-return-value)
@@ -177,11 +177,11 @@
          "* [ ] %?\n%A\n" :prepend t)))
 (setq org-roam-capture-templates
       '(("d" "default" plain "%?" :target
-        (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
-        :unnarrowed t)
+         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
+         :unnarrowed t)
         ("l" "location" plain "* %A %?" :target
-        (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
-        :unnarrowed t)))
+         (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
+         :unnarrowed t)))
 (setq org-roam-dailies-capture-templates
       '(("d" "default" entry
          "* %U %?"
@@ -189,7 +189,7 @@
                             "#+title: ~ %<%Y-%m-%d>\n"))
         ("t" "traueme" plain "#+zeit: %^{von}-%^{bis}\n* Traum 1\n%?" :target
          (file+head "%<%Y-%m-%d>-Traueme.org" "#+title: ~ Träume vom %<%d.%m.%Y>\n")
-        :unnarrowed t)))
+         :unnarrowed t)))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Font size adjustment
@@ -212,10 +212,10 @@ If I let Windows handle DPI everything looks blurry."
 (setq langtool-mother-tongue "de-DE")
 
 (general-evil-define-key '(normal visual) 'vterm-mode-map
-          "p" 'vterm-yank
-          :prefix ","
-          "e" 'vterm-send-next-key
-          "c" 'vterm-clear)
+  "p" 'vterm-yank
+  :prefix ","
+  "e" 'vterm-send-next-key
+  "c" 'vterm-clear)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Only consider files with active date for agenda
@@ -269,13 +269,13 @@ If I let Windows handle DPI everything looks blurry."
     (browse-url-mpv url)))
 
 (general-evil-define-key '(normal visual) 'peertube-mode-map
-          "enter" 'peertube-mpv-open-video
-          "o" 'peertube-mpv-open-video
-          "c" 'peertube-goto-channel
-          "i" 'peertube-show-video-info
-          "d" 'peertube-download-video
-          "q" 'peertube-quit
-          "s" 'peertube-search
-          "m" 'peertube-change-sort-method
-          "t" 'peertube-preview-thumbnail)
+  "enter" 'peertube-mpv-open-video
+  "o" 'peertube-mpv-open-video
+  "c" 'peertube-goto-channel
+  "i" 'peertube-show-video-info
+  "d" 'peertube-download-video
+  "q" 'peertube-quit
+  "s" 'peertube-search
+  "m" 'peertube-change-sort-method
+  "t" 'peertube-preview-thumbnail)
 (setq ytel-invidious-api-url "https://yewtu.be")
