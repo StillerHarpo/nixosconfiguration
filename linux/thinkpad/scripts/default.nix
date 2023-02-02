@@ -12,8 +12,8 @@ let
         substitutions;
     });
   mkSubstitute = pkgName: {
-    pattern = "$pkgName";
-    replacement = "${pkgs."${pkgName}"}}/bin/${pkgName}";
+    pattern = "${pkgName}";
+    replacement = "${pkgs."${pkgName}"}/bin/${pkgName}";
   };
   substitutes = {
     display = {
