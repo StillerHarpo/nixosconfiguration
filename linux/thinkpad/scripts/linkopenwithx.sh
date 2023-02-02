@@ -3,25 +3,29 @@
 printf %s "${1}" | xsel -b
 color=$(cat ~/scripts/var/bgcolor)
 checkYoutubeStartpoint() {
+   maxRes=$(xrandr -q | grep "\*\+" | cut -d'x' -f2 | cut -d' ' -f1 | sort -n | tail -n1)
+   MPV() {
+      mpv --really-quiet --no-osc --ytdl-format="best[height<=${maxRes}]" "$@"
+   }
    if echo "${link}" | grep -q -e '[?#&]t=[0-9]\+s\?$'
    then
        second=$(echo "${link}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)s\?$/\1/')
        link=$(echo "${link}" | sed 's/[?#&]t\\\?=[0-9]\+s\?$//')
-       mpv --really-quiet --no-osc "${link}" --start=+"${second}" ||\
+       MPV "${link}" --start=+"${second}" ||\
            link=$(echo "${link}" | sed 's/pak/tube/')&&\
-           mpv --really-quiet --no-osc "${link}" --start=+"${second}"
+           MPV "${link}" --start=+"${second}"
    elif echo "${link}" | grep -q -e '[?#&]t\\\?=[0-9]\+m[0-9]\+s\?$'
    then
        second=$(echo "${link}" | sed 's/.*[?#&]t\\\?=[0-9]\+m\([0-9]\+\)s\?$/\1/')
        minute=$(echo "${link}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)m[0-9]\+s\?$/\1/')
        link=$(echo "${link}" | sed 's/[?#&]t=[0-9]\+m[0-9]\+s\?$//')
-       mpv --really-quiet --no-osc "${link}" --start=+"${minute}":"${second}" ||\
+       MPV "${link}" --start=+"${minute}":"${second}" ||\
            link=$(echo "${link}" | sed 's/pak/tube/') &&\
-           mpv --really-quiet --no-osc "${link}" --start=+"${minute}":"${second}"
+           MPV --really-quiet --no-osc "${link}" --start=+"${minute}":"${second}"
    else
-       mpv --really-quiet --no-osc "${link}" || (
+       MPV "${link}" || (
          link=$(echo "${link}" | sed 's/pak/tube/')
-         mpv --really-quiet --no-osc "${link}"
+         MPV "${link}"
        )
    fi
 }
