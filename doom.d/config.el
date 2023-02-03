@@ -239,22 +239,22 @@ If I let Windows handle DPI everything looks blurry."
 (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
 
 (defun with-nix-pathes (nix-path-alist)
-    "config that need nix-paths is called with this functions"
+  "config that need nix-paths is called with this functions"
   (let ((shell (cdr (assoc 'nix-zsh-path nix-path-alist)))
-         (latexmk (cdr (assoc 'nix-latexmk-path nix-path-alist)))
-         (linkopenwithx (cdr (assoc 'nix-linkopenwithx-path nix-path-alist)))
-         (jdk (cdr (assoc 'nix-jdk-path nix-path-alist)))
-         (languagetool (cdr (assoc 'nix-languagetool-path nix-path-alist))))
-     (defun browse-url-mpv (url &rest args) (browse `(,mpv "--save-position-on-quit") url))
-     (defun browse-url-linkopenwithx (url &rest args) (browse `(,linkopenwithx) url))
-     (setq vterm-shell shell)
-     (setq org-latex-pdf-process (list (concat latexmk " -shell-escape -bibtex -f -pdfxe %f")))
-     (setq langtool-java-classpath (concat languagetool "/share/")
-           langtool-java-user-arguments `("-Dfile.encoding=UTF-8"
-                                          "-cp" ,(concat languagetool "/share/"))
-           langtool-java-bin jdk
-           langtool-language-tool-jar (concat languagetool "/share/languagetool-commandline.jar")
-           langtool-language-tool-server-jar (concat languagetool "/share/languagetool-server.jar"))))
+        (latexmk (cdr (assoc 'nix-latexmk-path nix-path-alist)))
+        (linkopenwithx (cdr (assoc 'nix-linkopenwithx-path nix-path-alist)))
+        (jdk (cdr (assoc 'nix-jdk-path nix-path-alist)))
+        (languagetool (cdr (assoc 'nix-languagetool-path nix-path-alist))))
+    (defun browse-url-mpv (url &rest args) (browse `(,mpv "--save-position-on-quit") url))
+    (defun browse-url-linkopenwithx (url &rest args) (browse `(,linkopenwithx) url))
+    (setq vterm-shell shell)
+    (setq org-latex-pdf-process (list (concat latexmk " -shell-escape -bibtex -f -pdfxe %f")))
+    (setq langtool-java-classpath (concat languagetool "/share/")
+          langtool-java-user-arguments `("-Dfile.encoding=UTF-8"
+                                         "-cp" ,(concat languagetool "/share/"))
+          langtool-java-bin jdk
+          langtool-language-tool-jar (concat languagetool "/share/languagetool-commandline.jar")
+          langtool-language-tool-server-jar (concat languagetool "/share/languagetool-server.jar"))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Fix format all not using direnv environmet
