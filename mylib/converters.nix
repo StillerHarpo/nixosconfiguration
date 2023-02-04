@@ -1,6 +1,5 @@
 # contains some functions from https://github.com/nix-community/home-manager
-{ config, lib, pkgs, ... }:
-
+{ lib }:
 with lib;
 
 let

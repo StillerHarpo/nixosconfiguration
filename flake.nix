@@ -138,6 +138,7 @@
         steamOverlay
         nur.overlay
       ];
+      lib = nixpkgs.lib.extend (import ./mylib);
 
     in {
 
@@ -145,7 +146,7 @@
 
       nixosConfigurations = {
         nixos-thinkpad = nixpkgs.lib.nixosSystem {
-          inherit system;
+          inherit system lib;
           specialArgs = {
             inherit pkgs agenix inputs;
             home-manager-flake = home-manager-flake.nixosModule;
@@ -166,6 +167,9 @@
                   home.sessionVariables.NIX_PATH =
                     "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs\${NIX_PATH:+:$NIX_PATH}";
                   nix.registry.nixpkgs.flake = self;
+                };
+                extraSpecialArgs = {
+                  lib = lib.extend (_: _: home-manager-flake.lib);
                 };
               };
               nix = {

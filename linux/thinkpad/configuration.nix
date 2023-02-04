@@ -13,7 +13,7 @@
     ../../doom.nix
     ../configuration.nix
     borgbackup-local
-    (with (import ./apparmor.nix);
+    (with lib.apparmor;
       generate [
         {
           pkgs = with pkgs; [
@@ -199,7 +199,7 @@
   security = {
     apparmor = {
       enable = true;
-      policies = with import ./apparmor.nix; {
+      policies = with lib.apparmor; {
         steam.profile = getProfiles [ pkgs.steam ] defaultProfile;
         paperless.profile = getProfiles [ pkgs.paperless-ng ] ''
           network,

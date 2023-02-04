@@ -1,7 +1,7 @@
 # FIXME Use right font for mac
 { config, lib, pkgs, ... }:
 
-with import ../../../converters.nix { inherit config lib pkgs; };
+with lib.converters;
 
 let
   alacrittyCommon = {
