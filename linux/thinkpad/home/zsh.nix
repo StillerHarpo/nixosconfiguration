@@ -1,7 +1,14 @@
-{ pkgs, ... }: {
+{ config, pkgs, lib, ... }: {
   imports = [ ../../../zsh.nix ];
   programs.zsh = {
-    shellAliases.ls = "ls -lh --color=auto";
+    shellAliases = let
+      firejailWithBlacklist = "firejail "
+        + (lib.concatMapStrings (x: " --blacklist=" + x))
+        (lib.protectFiles [ ]);
+    in {
+      ls = "ls -lh --color=auto";
+      firejail-nix = "firejail --private=~/.private-home nix";
+    };
     oh-my-zsh.theme = "agnoster";
     initExtra = ''
       export BROWSER='${(import ../scripts pkgs).linkopen}/bin/linkopen'
@@ -20,5 +27,10 @@
       then
       fi
     '';
+  };
+  home.file = {
+    ".private-home/.zshrc".source = config.home.file.".zshrc".source;
+    ".private-home/.zshenv".source = config.home.file.".zshenv".source;
+    ".private/oh-my-zsh/.keep".text = "";
   };
 }

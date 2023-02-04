@@ -485,6 +485,8 @@
       };
     };
   };
+
+  programs.firejail.enable = true;
   nix = {
     buildMachines = [{
       hostName = "192.168.178.24";
