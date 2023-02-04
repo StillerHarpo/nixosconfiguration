@@ -27,7 +27,8 @@
       };
     };
     doom-emacs = {
-      url = "github:doomemacs/doomemacs";
+      url =
+        "github:doomemacs/doomemacs?rev=d5ccac5d71c819035fa251f01d023b3f94b4fba4";
       flake = false;
     };
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
