@@ -29,6 +29,7 @@ in {
       userName = realName;
       userEmail = mailAddress;
       delta.enable = true;
+      attributes = [ "github.user=StillerHarpo" "gitlab.user=StillerHarpo" ];
     };
     gpg = {
       enable = true;
@@ -226,4 +227,5 @@ in {
   home.file.".kodi/userdata/addon_data/skin.estuary/settings.xml".source =
     ./kodi/estuary.xml;
   home.file.".kodi/userdata/sources.xml".source = ./kodi/sources.xml;
+  home.file.".authinfo.gpg".source = ./authinfo.gpg;
 }
