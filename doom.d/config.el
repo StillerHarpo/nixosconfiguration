@@ -124,6 +124,16 @@
 ;; change the directory to store the sent mail
 (setq message-directory "~/Maildir/")
 (setq +notmuch-home-function (lambda () (notmuch-search "tag:inbox and date:3M..today")))
+
+(add-to-list
+ 'display-buffer-alist
+ '("*not-much-draft-id*" (display-buffer-same-window)))
+
+(defun notmuch-edit-draft ()
+  "Resume editing draft"
+  (interactive)
+  (notmuch-draft-resume (notmuch-show-get-message-id)))
+(map! :leader :mode 'notmuch-show-mode :localleader :desc "Resume editing draft" "e" #'notmuch-edit-draft)
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq lsp-enable-file-watchers t
