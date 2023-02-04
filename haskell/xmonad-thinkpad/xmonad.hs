@@ -283,11 +283,16 @@ programms =
     ++ map (second (browserWithProfile "work")) workBookmarks
   where
     startTerm s =
-      termCommand <> " -t \"" <> s <> "\" -e \""
+      termCommand
+        <> " -t \""
+        <> s
+        <> "\" -e \""
         <> s
         <> "\""
     emacs s =
-      "emacsclient -c -e \"(" <> s <> ")\""
+      "emacsclient -c -e \"("
+        <> s
+        <> ")\""
         <> maximizeEmacs
     maximizeEmacs = " -e \"(spacemacs/toggle-maximize-buffer)\""
 
@@ -434,7 +439,9 @@ decorateName ws w = do
   name <- resClass <$> withDisplay (\d -> io $ getClassHint d w)
   displayName <- show <$> getName w
   return $
-    T.pack name <> " - " <> displayName
+    T.pack name
+      <> " - "
+      <> displayName
       <> " ["
       <> T.pack (W.tag ws)
       <> "]"
@@ -497,5 +504,5 @@ greedyFocusWindow :: (Eq s, Eq a, Eq i) => a -> W.StackSet i l a s sd -> W.Stack
 greedyFocusWindow w s
   | Just w == W.peek s = s
   | otherwise = fromMaybe s $ do
-    n <- W.findTag w s
-    return $ until ((Just w ==) . W.peek) W.focusUp (W.greedyView n s)
+      n <- W.findTag w s
+      return $ until ((Just w ==) . W.peek) W.focusUp (W.greedyView n s)
