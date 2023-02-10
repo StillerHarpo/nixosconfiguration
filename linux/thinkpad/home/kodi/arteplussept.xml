@@ -1,0 +1,5 @@
+<settings version="2">
+    <setting id="lang">1</setting>
+    <setting id="quality" default="true">0</setting>
+    <setting id="show_video_streams" default="true">false</setting>
+</settings>

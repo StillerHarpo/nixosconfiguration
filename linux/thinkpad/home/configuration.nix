@@ -223,6 +223,8 @@ in {
     };
   home.file.".kodi/userdata/addon_data/plugin.video.invidious/settings.xml".source =
     ./kodi/invidious.xml;
+  home.file.".kodi/userdata/addon_data/plugin.video.arteplussept/settings.xml".source =
+    ./kodi/arteplussept.xml;
   # home.file.".kodi/userdata/keymaps/vim.xml".source = ./kodi/vim.xml;
   home.file.".kodi/userdata/addon_data/skin.estuary/settings.xml".source =
     ./kodi/estuary.xml;

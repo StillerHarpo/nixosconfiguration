@@ -46,6 +46,7 @@
                 netflix
                 steam-controller
                 kodiPkgs.invidious
+                arteplussept
               ]))
             remmina
             mullvad-vpn
