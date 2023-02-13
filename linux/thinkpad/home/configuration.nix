@@ -175,6 +175,7 @@ in {
         my-common
         MissingH
         protolude
+        pretty-simple
       ];
   };
 

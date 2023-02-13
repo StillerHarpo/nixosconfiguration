@@ -30,6 +30,7 @@ executable xmonad-thinkpad
                     containers,
                     data-default,
                     text,
+                    pretty-simple,
                     haskell
   default-language: Haskell2010
 

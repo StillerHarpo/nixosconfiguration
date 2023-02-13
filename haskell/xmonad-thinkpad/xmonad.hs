@@ -10,9 +10,11 @@
 import Bookmarks (bookmarks, workBookmarks)
 import Data.List (last)
 import qualified Data.Map as M
-import qualified Data.Text as T
+import qualified Data.Text as T 
+import qualified Data.Text.Lazy as T (toStrict)
 import Data.Word (Word32)
 import Protolude
+import Text.Pretty.Simple
 import Utils
 import XMonad hiding (ifM)
 import XMonad.Actions.CycleWS (nextScreen, swapNextScreen)
@@ -33,6 +35,7 @@ import qualified XMonad.Layout.Groups as G
 import qualified XMonad.Layout.Groups.Helpers as GH
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import qualified XMonad.StackSet as W
+import XMonad.Util.DebugWindow (debugWindow)
 import XMonad.Util.Dmenu (menuArgs)
 import XMonad.Util.Dzen
   ( addArgs,
@@ -84,6 +87,7 @@ main =
                              ((mod4Mask, xK_Return), spawn termCommand),
                              ((mod4Mask .|. shiftMask, xK_Return), spawnOnEmpty termCommand),
                              ((mod4Mask, xK_v), spawn emacs),
+                             ((mod4Mask, xK_b), printDebug),
                              ((mod4Mask .|. shiftMask, xK_v), spawnOnEmpty emacs),
                              ( (mod4Mask, xK_n),
                                runProcess "networkmanager_dmenu" . ("-font" :) . (: []) =<< getFontFromScreenWidth
@@ -104,6 +108,7 @@ main =
                              ),
                              ((mod4Mask, xK_g), goToNotify),
                              ((mod4Mask, xK_j), GH.focusUp),
+                             -- TODO Debug why this sometimes don't work
                              ((mod4Mask, xK_k), GH.focusDown),
                              ((mod4Mask, xK_h), shrinkMasterGroups),
                              ((mod4Mask, xK_l), expandMasterGroups),
@@ -490,6 +495,11 @@ alt2 :: G.GroupsMessage -> X () -> X ()
 alt2 m x = do
   b <- sendMessageB m
   unless b x
+
+printDebug :: X ()
+printDebug = do
+  x <- get
+  liftIO $ writeFile "/home/florian/debugXmonad.hs" (T.toStrict $ pShow (windowset x))
 
 replaceSpaces :: Text -> Text
 replaceSpaces =
