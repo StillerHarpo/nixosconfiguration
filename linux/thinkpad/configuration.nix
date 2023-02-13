@@ -146,7 +146,7 @@
           '';
         }
         {
-          pkgs = [ agenix.defaultPackage.x86_64-linux ];
+          pkgs = [ agenix.packages.x86_64-linux.agenix ];
           profile = ''
             mount,
             capability,
@@ -380,10 +380,7 @@
   # Bluetooth sound
   systemd.user.services.telephony_client.enable = false;
   hardware = {
-    bluetooth = {
-      enable = true;
-      hsphfpd.enable = true;
-    };
+    bluetooth.enable = true;
     sane = {
       enable = true;
       extraBackends = with pkgs; [
