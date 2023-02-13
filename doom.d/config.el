@@ -59,10 +59,14 @@
     (insert (shell-command-to-string (concat "~/scripts/youtubeFeed " link)))))
 
 ;; Browser function
-(setq ewwreg (rx (or "wikipedia")))
+(setq no-eww-reg (rx (or "youtube." "youtu.be" "v.reddit.it" "dailymotion."
+                         "github.com" "streamable.com"  "liveleak.com"
+                         "vimeo.com" "gfycat.com"
+                         (and (or ".mp3" ".mp4" ".m4v" ".svg" ".gif" ".gifv")
+                              line-end))))
 
-(setq browse-url-handlers `((,ewwreg . eww-browse-url)
-                            ("." . browse-url-linkopenwithx)))
+(setq browse-url-handlers `((,no-eww-reg . browse-url-linkopenwithx)
+                            ("." . eww-browse-url)))
 
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
