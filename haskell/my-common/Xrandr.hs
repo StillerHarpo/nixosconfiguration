@@ -28,7 +28,7 @@ updateMonitor = do
   toDisable <-
     filterM
       (fmap (not . isConnected) <$> monitorStatus)
-      ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2"]
+      ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2", "DP-2-1", "DP-2-2", "DP-2-3"]
   let disableOptions =
         concatMap (\x -> ["--output", sysToRandr x, "--off"]) toDisable
   toEnable <-
