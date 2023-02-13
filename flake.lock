@@ -21,6 +21,18 @@
         "type": "github"
       }
     },
+    "blocklist": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-eRmWJNVyt74OLLXhVKP3Vg6UKdNifIw7D/1Nwx1s4ZI=",
+        "type": "file",
+        "url": "https://download.dnscrypt.info/blocklists/domains/mybase.txt"
+      },
+      "original": {
+        "type": "file",
+        "url": "https://download.dnscrypt.info/blocklists/domains/mybase.txt"
+      }
+    },
     "darwin": {
       "inputs": {
         "nixpkgs": [
@@ -369,6 +381,7 @@
     "root": {
       "inputs": {
         "agenix": "agenix",
+        "blocklist": "blocklist",
         "darwin": "darwin_2",
         "deploy-rs": "deploy-rs",
         "doom-emacs": "doom-emacs",

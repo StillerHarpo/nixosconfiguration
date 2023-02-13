@@ -528,6 +528,10 @@
     fuse.userAllowOther = true;
     gnupg.dirmngr.enable = true;
     nix-ld.enable = true;
+    captive-browser = {
+      enable = true;
+      interface = "wlp61s0";
+    };
   };
 
   systemd = {

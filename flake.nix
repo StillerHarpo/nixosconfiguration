@@ -3,6 +3,10 @@
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    blocklist = {
+      url = "https://download.dnscrypt.info/blocklists/domains/mybase.txt";
+      flake = false;
+    };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs = {
@@ -57,7 +61,7 @@
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay, doom-emacs, nixpkgs-newest, nixpkgs-borgbackup, nur
-    , nixos-hardware, deploy-rs, envfs, nix-alien, ... }:
+    , nixos-hardware, deploy-rs, envfs, nix-alien, blocklist, ... }:
 
     let
       system = "x86_64-linux";
@@ -149,7 +153,7 @@
         nixos-thinkpad = nixpkgs.lib.nixosSystem {
           inherit system lib;
           specialArgs = {
-            inherit pkgs agenix inputs;
+            inherit pkgs agenix inputs blocklist;
             home-manager-flake = home-manager-flake.nixosModule;
             borgbackup-local =
               "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
@@ -185,7 +189,7 @@
         };
 
         desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit pkgs agenix; };
+          specialArgs = { inherit pkgs agenix blocklist; };
           inherit system;
           modules = with nixos-hardware.nixosModules; [
             nixpkgs.nixosModules.notDetected
