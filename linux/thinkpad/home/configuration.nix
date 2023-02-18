@@ -11,7 +11,6 @@ in {
     ./zsh.nix
     ./defaultApplications.nix
     ../../home/configuration.nix
-    ./themeChanger.nix
     ./firefox.nix
   ];
 

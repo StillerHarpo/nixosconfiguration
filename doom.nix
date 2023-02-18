@@ -2,8 +2,6 @@
 
 with lib;
 let
-  myemacs = with pkgs;
-    (emacsPackagesFor emacsUnstable).emacsWithPackages (epkgs: [ epkgs.vterm ]);
   # Taken from https://github.com/Mic92/dotfiles/blob/3e85e2b8a25f5dc16bb1b47e53566a4e8330974b/nixpkgs-config/modules/emacs/default.nix#L26
   daemonScript = pkgs.writeScript "emacs-daemon" ''
     #!${pkgs.zsh}/bin/zsh -l
@@ -23,14 +21,14 @@ let
     else
       nice -n19 $HOME/.emacs.d/bin/doom sync || true
     fi
-    exec ${myemacs}/bin/emacs --daemon
+    exec ${pkgs.myemacs}/bin/emacs --daemon
   '';
 
 in {
 
   home-manager.users.florian = {
     home = {
-      packages = [ myemacs ];
+      packages = [ pkgs.myemacs ];
       file = {
         ".doom.d/init.el".source = ./doom.d/init.el;
         ".doom.d/packages.el".source = ./doom.d/packages.el;

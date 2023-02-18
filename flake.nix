@@ -91,6 +91,9 @@
         nix-alien.overlay
         emacs-overlay.overlay
         (self: super: rec {
+          myemacs =
+            (super.emacsPackagesFor super.emacsUnstable).emacsWithPackages
+            (epkgs: [ epkgs.vterm ]);
           haskellPackages = super.haskellPackages.extend (_: hSuper: {
             my-common = super.haskell.lib.overrideCabal
               (hSuper.callCabal2nix "my-common" ./haskell/my-common { }) (_: {

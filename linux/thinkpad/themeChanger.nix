@@ -173,7 +173,7 @@ let
     touch ${xsettingsdPath}
   '';
   runXsettings = ''
-    if [ $(pgrep xsettingsd) ]
+    if [ $(${pkgs.procps}/bin/pgrep xsettingsd) ]
     then
        killall -HUP xsettingsd
     else
@@ -181,34 +181,47 @@ let
     fi
   '';
 in {
-  home.packages = with pkgs;
-    with writers; [
-      gnome3.adwaita-icon-theme
-      (writeBashBin "darkTheme" ''
-        ${feh}/bin/feh --bg-scale ~/scripts/var/black.png
-        ${prepareFiles}
-        cp ${alacrittyDark} ${alacrittyConfPath}
-        cp ${rofiDark} ${rofiConfPath}
-        cp ${gtk2ConfDark} ${gtk2ConfPath}
-        cp ${gtk3ConfDark} ${gtk3ConfPath}
-        ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
-        emacsclient -e "(load-theme 'doom-gruvbox t)"
-        cp ${xsettingsdDark} ${xsettingsdPath}
-        ${runXsettings}
-        echo BAT_THEME=gruvbox-dark > ~/.env
-      '')
-      (writeBashBin "lightTheme" ''
-        ${feh}/bin/feh --bg-scale ~/scripts/var/white.png
-        ${prepareFiles}
-        cp ${alacrittyLight} ${alacrittyConfPath}
-        cp ${rofiLight} ${rofiConfPath}
-        cp ${gtk2ConfLight} ${gtk2ConfPath}
-        cp ${gtk3ConfLight} ${gtk3ConfPath}
-        ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
-        emacsclient -e "(load-theme 'doom-gruvbox-light t)"
-        cp ${xsettingsdLight} ${xsettingsdPath}
-        ${runXsettings}
-        echo BAT_THEME=gruvbox-light > ~/.env
-      '')
-    ];
+  systemd.user = {
+    timers.themeChange = {
+      description = "Automatically change the theme";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        Unit = "themeChange.service";
+        OnCalendar = [ "*-*-* 20:00:00" "*-*-* 07:00:00" ];
+        Persistent = true;
+      };
+    };
+    services.themeChange = {
+      description = "Automatically change the theme";
+      script = ''
+        TIME=$(date +%H%M)
+        if [[ $TIME < 0700 || $TIME > 2000 ]]
+        then
+          ${pkgs.feh}/bin/feh --bg-scale ~/scripts/var/black.png
+          ${prepareFiles}
+          cp ${alacrittyDark} ${alacrittyConfPath}
+          cp ${rofiDark} ${rofiConfPath}
+          cp ${gtk2ConfDark} ${gtk2ConfPath}
+          cp ${gtk3ConfDark} ${gtk3ConfPath}
+          ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
+          ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox t)"
+          cp ${xsettingsdDark} ${xsettingsdPath}
+          ${runXsettings}
+          echo BAT_THEME=gruvbox-dark > ~/.env
+        else
+          ${pkgs.feh}/bin/feh --bg-scale ~/scripts/var/white.png
+          ${prepareFiles}
+          cp ${alacrittyLight} ${alacrittyConfPath}
+          cp ${rofiLight} ${rofiConfPath}
+          cp ${gtk2ConfLight} ${gtk2ConfPath}
+          cp ${gtk3ConfLight} ${gtk3ConfPath}
+          ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
+          ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox-light t)"
+          cp ${xsettingsdLight} ${xsettingsdPath}
+          ${runXsettings}
+          echo BAT_THEME=gruvbox-light > ~/.env
+        fi
+      '';
+    };
+  };
 }

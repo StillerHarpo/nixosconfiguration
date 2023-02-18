@@ -12,6 +12,7 @@
     ./hibernate.nix
     ../../doom.nix
     ../configuration.nix
+    ./themeChanger.nix
     borgbackup-local
     (with lib.apparmor;
       generate [
@@ -28,6 +29,7 @@
         {
           pkgs = with pkgs; [
             nixpkgs-review
+            gnome3.adwaita-icon-theme
             ical2orgpy
             nixfmt
             airshipper
