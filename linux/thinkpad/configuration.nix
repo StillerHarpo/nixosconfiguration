@@ -47,7 +47,16 @@
               with kodiPkgs; [
                 netflix
                 steam-controller
-                kodiPkgs.invidious
+                # FIXME Remove this when https://github.com/NixOS/nixpkgs/pull/215792 is in stable
+                (kodiPkgs.invidious.overrideAttrs (_: {
+                  src = fetchFromGitHub {
+                    owner = "TheAssassin";
+                    repo = "kodi-invidious-plugin";
+                    rev = "85b66525632d94630c9301d9c490fc002a335d77";
+                    hash =
+                      "sha256-DpsAQUOUYCs3rpWwsk82+00KME4J+Iocu/v781dyyws=";
+                  };
+                }))
                 arteplussept
               ]))
             remmina
