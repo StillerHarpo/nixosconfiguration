@@ -146,7 +146,8 @@
         steamOverlay
         nur.overlay
       ];
-      lib = nixpkgs.lib.extend (import ./mylib);
+      lib = (nixpkgs.lib.extend (_: _: home-manager-flake.lib)).extend
+        (import ./mylib);
 
     in {
 
