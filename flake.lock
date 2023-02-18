@@ -24,7 +24,7 @@
     "blocklist": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-eRmWJNVyt74OLLXhVKP3Vg6UKdNifIw7D/1Nwx1s4ZI=",
+        "narHash": "sha256-+U/AGZelvzLRgASeYfB0uQg8U6moJoC2dgIr/42N/C4=",
         "type": "file",
         "url": "https://download.dnscrypt.info/blocklists/domains/mybase.txt"
       },
