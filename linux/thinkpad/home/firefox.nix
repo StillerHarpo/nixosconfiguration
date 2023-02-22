@@ -7,11 +7,11 @@
       let
         ffreszoom = buildFirefoxXpiAddon rec {
           pname = "ffreszoom";
-          version = "0.3.1";
+          version = "0.4";
           addonId = "{b2e3360c-a72c-4ba4-813c-603a1fa34356}";
           url =
             "https://addons.mozilla.org/firefox/downloads/file/1712974/ffreszoom-${version}-fx.xpi";
-          sha256 = "078h0x6xikg7dlzji32vfcchynmay56wixkhvw1b5rpyq2z8y3cn";
+          sha256 = "sha256-lg2PvsD+5rIC33D2yE3xqloPGXNbjCg/befN2E0HEB0=";
 
           meta = with lib; {
             homepage = "https://github.com/notartom/ffreszoom";
