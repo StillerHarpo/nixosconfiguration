@@ -192,6 +192,17 @@
           ];
         };
 
+        thinkpad-vm = self.nixosConfigurations.nixos-thinkpad.extendModules {
+          modules = [
+            ({ pkgs, lib, ... }: {
+              # mkpasswd password
+              users.users.florian.passwordFile = lib.mkForce
+                "${pkgs.writeText "password"
+                "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+            })
+          ];
+        };
+
         desktop = nixpkgs.lib.nixosSystem {
           specialArgs = { inherit pkgs agenix blocklist; };
           inherit system;
