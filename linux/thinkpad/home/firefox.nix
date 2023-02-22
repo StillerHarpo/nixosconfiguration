@@ -20,12 +20,28 @@
             platforms = platforms.all;
           };
         };
+        german-dictonary = buildFirefoxXpiAddon rec {
+          pname = "german_dictonary";
+          version = "2.1";
+          addonId = "de-DE@dictionaries.addons.mozilla.org";
+          url =
+            "https://addons.mozilla.org/firefox/downloads/file/4034565/dictionary_german-${version}.xpi";
+          sha256 = "sha256-AO9us8EBcah/siq25RaEZni3PFaugozBnRHjLkO4RXo=";
+          meta = with lib; {
+            homepage =
+              "https://addons.mozilla.org/en-US/firefox/addon/dictionary-german/";
+            description = "German Dictionary";
+            license = licenses.gpl2;
+            platforms = platforms.all;
+          };
+        };
       in [
         user-agent-string-switcher
         tridactyl
         noscript
         ublock-origin
         ffreszoom
+        german-dictonary
       ];
     profiles.default.settings = {
       # colors
