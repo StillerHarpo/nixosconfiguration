@@ -128,15 +128,10 @@
           profile = defaultProfile;
         }
         {
-          pkgs = with pkgs; [ bandwhich bottom ];
+          pkgs = with pkgs; [ psmisc bandwhich bottom ];
           profile = ''
             ptrace,
-            ${defaultProfile}
-          '';
-        }
-        {
-          pkgs = [ pkgs.psmisc ];
-          profile = ''
+            unix (getattr),
             signal,
             ${defaultProfile}
           '';
