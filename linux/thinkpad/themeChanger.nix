@@ -172,14 +172,10 @@ let
     touch ${gtk2ConfPath}
     touch ${xsettingsdPath}
   '';
-  runXsettings = ''
-    if [ $(${pkgs.procps}/bin/pgrep xsettingsd) ]
-    then
-       killall -HUP xsettingsd
-    else
-       ${pkgs.xsettingsd}/bin/xsettingsd &
-    fi
-  '';
+  blackWallpaper = pkgs.runCommand "dark.png" { }
+    "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${darkBackground} $out";
+  whiteWallpaper = pkgs.runCommand "white.png" { }
+    "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${lightBackground} $out";
 in {
   systemd.user = {
     timers.themeChange = {
@@ -193,6 +189,8 @@ in {
     };
     services.themeChange = {
       description = "Automatically change the theme";
+      partOf = [ "xsettingsd.service" ];
+      before = [ "xsettingsd.service" ];
       script = ''
         TIME=$(date +%H%M)
         if [[ $TIME < 0630 || $TIME > 1930 ]]
@@ -206,7 +204,6 @@ in {
           ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
           ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox t)"
           cp ${xsettingsdDark} ${xsettingsdPath}
-          ${runXsettings}
           echo BAT_THEME=gruvbox-dark > ~/.env
         else
           ${pkgs.feh}/bin/feh --bg-scale ~/scripts/var/white.png
@@ -218,10 +215,11 @@ in {
           ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
           ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox-light t)"
           cp ${xsettingsdLight} ${xsettingsdPath}
-          ${runXsettings}
           echo BAT_THEME=gruvbox-light > ~/.env
         fi
       '';
     };
   };
+
+  home-manager.users.florian.services.xsettingsd.enable = true;
 }
