@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # a script to handle different links, when open from terminal with X
 printf %s "${1}" | xsel -b
-color=$(cat ~/scripts/var/bgcolor)
+color=$(cat ~/.var/bgcolor)
 checkYoutubeStartpoint() {
    maxRes=$(xrandr -q | grep "\*\+" | cut -d'x' -f2 | cut -d' ' -f1 | sort -n | tail -n1)
    MPV() {

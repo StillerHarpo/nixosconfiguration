@@ -39,13 +39,14 @@ let
       text =
         toAlacrittyJSON (lib.attrsets.recursiveUpdate colors alacrittyCommon);
     };
+  darkBackground = "#282828";
   alacrittyDark = alacrittyConf {
     env.BAT_THEME = "gruvbox-dark";
     # Default colors
     colors = {
       primary = {
         # hard contrast: background = "#f9f5d7";
-        background = "#282828";
+        background = darkBackground;
         # soft contrast: background = "#f2e5bc";
         foreground = "#ebdbb2";
       };
@@ -73,13 +74,14 @@ let
       };
     };
   };
+  lightBackground = "#fbf1c7";
   alacrittyLight = alacrittyConf {
     env.BAT_THEME = "gruvbox-light";
     colors = {
       # Default colors
       primary = {
         # hard contrast: background = "#f9f5d7";
-        background = "#fbf1c7";
+        background = lightBackground;
         # soft contrast: background = "#f2e5bc";
         foreground = "#3c3836";
       };
@@ -195,7 +197,7 @@ in {
         TIME=$(date +%H%M)
         if [[ $TIME < 0630 || $TIME > 1930 ]]
         then
-          ${pkgs.feh}/bin/feh --bg-scale ~/scripts/var/black.png
+          ${pkgs.feh}/bin/feh --bg-scale ${blackWallpaper}
           ${prepareFiles}
           cp ${alacrittyDark} ${alacrittyConfPath}
           cp ${rofiDark} ${rofiConfPath}
@@ -204,9 +206,10 @@ in {
           ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
           ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox t)"
           cp ${xsettingsdDark} ${xsettingsdPath}
+          echo ${darkBackground}> ~/.var/bgcolor
           echo BAT_THEME=gruvbox-dark > ~/.env
         else
-          ${pkgs.feh}/bin/feh --bg-scale ~/scripts/var/white.png
+          ${pkgs.feh}/bin/feh --bg-scale ${whiteWallpaper}
           ${prepareFiles}
           cp ${alacrittyLight} ${alacrittyConfPath}
           cp ${rofiLight} ${rofiConfPath}
@@ -215,6 +218,7 @@ in {
           ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
           ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox-light t)"
           cp ${xsettingsdLight} ${xsettingsdPath}
+          echo ${lightBackground} > ~/.var/bgcolor
           echo BAT_THEME=gruvbox-light > ~/.env
         fi
       '';
