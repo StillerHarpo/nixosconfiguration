@@ -34,6 +34,7 @@
             nixfmt
             airshipper
             superTuxKart
+            openarena
             libreoffice
             prismlauncher
             textcleaner
