@@ -195,7 +195,7 @@ in {
       description = "Automatically change the theme";
       script = ''
         TIME=$(date +%H%M)
-        if [[ $TIME < 0700 || $TIME > 2000 ]]
+        if [[ $TIME < 0630 || $TIME > 1930 ]]
         then
           ${pkgs.feh}/bin/feh --bg-scale ~/scripts/var/black.png
           ${prepareFiles}
