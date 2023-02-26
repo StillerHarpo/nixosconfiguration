@@ -92,8 +92,8 @@ main =
                              ( (mod4Mask, xK_n),
                                runProcess "networkmanager_dmenu" . ("-font" :) . (: []) =<< getFontFromScreenWidth
                              ),
-                             ((mod4Mask, xK_m), spawn "systemctl suspend -i && xtrlock-pam -b none"),
-                             ((mod4Mask, xK_u), spawn "sleep 2 && xtrlock-pam -b none"),
+                             ((mod4Mask, xK_m), spawn "systemctl suspend -i && XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock"),
+                             ((mod4Mask, xK_u), spawn "sleep 2 && XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock"),
                              ( (mod4Mask, xK_f),
                                composeAll
                                  [ runOrShift,

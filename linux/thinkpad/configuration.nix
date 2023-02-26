@@ -118,7 +118,7 @@
             tigervnc
             signal-desktop
             teamspeak_client
-            xtrlock-pam
+            xsecurelock
             fzf
             ## better rust tools
             procs
@@ -278,10 +278,9 @@
         ];
       xautolock = {
         enable = true;
-        locker = "${pkgs.xtrlock-pam}/bin/xtrlock-pam -b none";
+        locker = "${pkgs.xsecurelock}/bin/xsecurelock";
         killtime = 200;
         killer = "/run/current-system/systemd/bin/systemctl hibernate";
-        extraOptions = [ "-detectsleep" ];
       };
     };
 
