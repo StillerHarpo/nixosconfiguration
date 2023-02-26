@@ -149,12 +149,41 @@
       lib = (nixpkgs.lib.extend (_: _: home-manager-flake.lib)).extend
         (import ./mylib);
 
+      thinkpad-modules = [
+        nixpkgs.nixosModules.notDetected
+        nixos-hardware.nixosModules.lenovo-thinkpad-t480s
+        home-manager-flake.nixosModules.home-manager
+        {
+          home-manager = {
+            users.florian = { pkgs, config, ... }: {
+              xdg = {
+                enable = true;
+                configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
+              };
+              home.sessionVariables.NIX_PATH =
+                "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs\${NIX_PATH:+:$NIX_PATH}";
+              nix.registry.nixpkgs.flake = self;
+            };
+            extraSpecialArgs = {
+              lib = lib.extend (_: _: home-manager-flake.lib);
+            };
+          };
+          nix = {
+            registry.nixpkgs.flake = self;
+            nixPath = [ "nixpkgs=${nixpkgs.outPath}" ];
+          };
+        }
+        ./linux/thinkpad/configuration.nix
+        agenix.nixosModules.age
+        envfs.nixosModules.envfs
+      ];
+
     in {
 
       legacyPackages.x86_64-linux = pkgs;
 
       nixosConfigurations = {
-        nixos-thinkpad = nixpkgs.lib.nixosSystem {
+        nixosThinkpad = nixpkgs.lib.nixosSystem {
           inherit system lib;
           specialArgs = {
             inherit pkgs agenix inputs blocklist;
@@ -162,37 +191,10 @@
             borgbackup-local =
               "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
           };
-          modules = [
-            nixpkgs.nixosModules.notDetected
-            nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-            home-manager-flake.nixosModules.home-manager
-            {
-              home-manager = {
-                users.florian = { pkgs, config, ... }: {
-                  xdg = {
-                    enable = true;
-                    configFile."nix/inputs/nixpkgs".source = nixpkgs.outPath;
-                  };
-                  home.sessionVariables.NIX_PATH =
-                    "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs\${NIX_PATH:+:$NIX_PATH}";
-                  nix.registry.nixpkgs.flake = self;
-                };
-                extraSpecialArgs = {
-                  lib = lib.extend (_: _: home-manager-flake.lib);
-                };
-              };
-              nix = {
-                registry.nixpkgs.flake = self;
-                nixPath = [ "nixpkgs=${nixpkgs.outPath}" ];
-              };
-            }
-            ./linux/thinkpad/configuration.nix
-            agenix.nixosModules.age
-            envfs.nixosModules.envfs
-          ];
+          modules = thinkpad-modules;
         };
 
-        thinkpad-vm = self.nixosConfigurations.nixos-thinkpad.extendModules {
+        thinkpadVM = self.nixosConfigurations.nixosThinkpad.extendModules {
           modules = [
             ({ pkgs, lib, ... }: {
               # mkpasswd password
@@ -274,9 +276,27 @@
       };
 
       # This is highly advised, and will prevent many possible mistakes
-      checks = builtins.mapAttrs
-        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
-
+      checks = lib.recursiveUpdate (builtins.mapAttrs
+        (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib) {
+          x86_64-linux.screenlocker =
+            (import "${inputs.nixpkgs}/nixos/lib" { }).runTest {
+              name = "screenlocker";
+              nodes.machine = { pkgs, lib, ... }: {
+                imports = thinkpad-modules;
+                users.users.florian.passwordFile = lib.mkForce
+                  "${pkgs.writeText "password"
+                  "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+              };
+              node.specialArgs = {
+                inherit pkgs agenix inputs blocklist lib;
+                home-manager-flake = home-manager-flake.nixosModule;
+                borgbackup-local =
+                  "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
+              };
+              testScript = import ./checks.nix;
+              hostPkgs = mkPkgsLinux (import nixpkgs) [ ];
+            };
+        };
       devShells.x86_64-linux.default = pkgs.haskellPackages.developPackage {
         returnShellEnv = true;
         root = ./haskell;

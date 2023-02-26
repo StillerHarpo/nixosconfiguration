@@ -221,7 +221,7 @@
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
   networking = {
-    hostName = "nixos-thinkpad";
+    hostName = "nixosThinkpad";
     firewall.allowedTCPPorts = [ 24800 ];
   };
 
