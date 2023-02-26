@@ -257,7 +257,8 @@
       lidSwitch = "hibernate";
       extraConfig = ''
         HandlePowerKey=hibernate
-                              RuntimeDirectorySize=30%'';
+        RuntimeDirectorySize=30%
+      '';
     };
     # mouse pad
     xserver = {
