@@ -35,6 +35,7 @@
             airshipper
             superTuxKart
             openarena
+            xonotic
             libreoffice
             prismlauncher
             textcleaner
