@@ -178,6 +178,12 @@
         envfs.nixosModules.envfs
       ];
 
+      thinkpad-specialArgs = {
+        inherit pkgs agenix inputs blocklist;
+        home-manager-flake = home-manager-flake.nixosModule;
+        borgbackup-local =
+          "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
+      };
     in {
 
       legacyPackages.x86_64-linux = pkgs;
@@ -185,12 +191,7 @@
       nixosConfigurations = {
         nixosThinkpad = nixpkgs.lib.nixosSystem {
           inherit system lib;
-          specialArgs = {
-            inherit pkgs agenix inputs blocklist;
-            home-manager-flake = home-manager-flake.nixosModule;
-            borgbackup-local =
-              "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
-          };
+          specialArgs = thinkpad-specialArgs;
           modules = thinkpad-modules;
         };
 
@@ -283,16 +284,19 @@
               name = "screenlocker";
               nodes.machine = { pkgs, lib, ... }: {
                 imports = thinkpad-modules;
-                users.users.florian.passwordFile = lib.mkForce
-                  "${pkgs.writeText "password"
-                  "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+                age = {
+                  identityPaths =
+                    lib.mkForce [ "${./linux/thinkpad/test-secrets/id_rsa}" ];
+                  secrets = lib.mkForce {
+                    florian.file =
+                      ./linux/thinkpad/test-secrets/passwordHash.age;
+                    paperless.file = ./linux/thinkpad/test-secrets/password.age;
+                    birthdate.file =
+                      ./linux/thinkpad/test-secrets/birthdate.age;
+                  };
+                };
               };
-              node.specialArgs = {
-                inherit pkgs agenix inputs blocklist lib;
-                home-manager-flake = home-manager-flake.nixosModule;
-                borgbackup-local =
-                  "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
-              };
+              node.specialArgs = thinkpad-specialArgs // { inherit lib; };
               testScript = import ./checks.nix;
               hostPkgs = mkPkgsLinux (import nixpkgs) [ ];
             };
