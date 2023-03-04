@@ -1,7 +1,7 @@
-{ config, home-manager, pkgs, agenix, blocklist, ... }:
+{ config, lib, home-manager, pkgs, agenix, ... }:
 
 {
-  imports = [ ../configuration.nix ];
+  imports = [ ../configuration.nix ./dnscrypt.nix ];
 
   # Select internationalisation properties.
   console.keyMap = "us";
@@ -100,26 +100,9 @@
     useUserPackages = true;
   };
 
-  services.dnscrypt-proxy2 = {
-    enable = true;
-    settings = {
-      ipv6_servers = true;
-      require_dnssec = true;
+  dnscrypt.enable = true;
+  specialisation.noDnsCrypt.configuration.dnscrypt.enable = lib.mkForce false;
 
-      sources.public-resolvers = {
-        urls = [
-          "https://raw.githubusercontent.com/DNSCrypt/dnscrypt-resolvers/master/v3/public-resolvers.md"
-          "https://download.dnscrypt.info/resolvers-list/v3/public-resolvers.md"
-        ];
-        # can't use default because it is in nix store. Should be fixed upstream
-        cache_file = "/var/lib/dnscrypt-proxy2/public-resolvers.md";
-        minisign_key =
-          "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
-      };
-
-      blocked_names.blocked_names_file = blocklist;
-    };
-  };
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "21.05";
 }
