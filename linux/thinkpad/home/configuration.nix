@@ -1,8 +1,8 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, private, ... }:
 
 let
   realName = "Florian Engel";
-  mailAddress = "florianengel@librem.one";
+  mailAddress = "engelflorian@posteo.de";
   key = "4E2D9B26940E0DABF376B7AF76762421D45837DE";
 
 in {
@@ -29,6 +29,18 @@ in {
       userEmail = mailAddress;
       delta.enable = true;
       attributes = [ "github.user=StillerHarpo" "gitlab.user=StillerHarpo" ];
+      signing = {
+        inherit key;
+        signByDefault = true;
+      };
+      includes = [{
+        contents.user = {
+          email = private.workMail;
+          signingKey = "66ADDC714AD52330F69371F2BEC83EA3C41DBF14";
+        };
+        condition =
+          "hasconfig:remote.*.url:https://github.com/factisresearch/**";
+      }];
     };
     gpg = {
       enable = true;

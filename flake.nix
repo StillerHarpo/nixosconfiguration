@@ -166,6 +166,7 @@
             };
             extraSpecialArgs = {
               lib = lib.extend (_: _: home-manager-flake.lib);
+              private = import ./private.nix;
             };
           };
           nix = {
