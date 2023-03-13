@@ -38,8 +38,7 @@ in {
           email = private.workMail;
           signingKey = "66ADDC714AD52330F69371F2BEC83EA3C41DBF14";
         };
-        condition =
-          "hasconfig:remote.*.url:https://github.com/factisresearch/**";
+        condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
       }];
     };
     gpg = {
