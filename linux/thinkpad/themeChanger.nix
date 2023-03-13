@@ -195,10 +195,10 @@ in {
       before = [ "xsettingsd.service" ];
       script = ''
         TIME=$(date +%H%M)
+        ${prepareFiles}
         if [[ $TIME < 0630 || $TIME > 1930 ]]
         then
           ${pkgs.feh}/bin/feh --bg-scale ${blackWallpaper}
-          ${prepareFiles}
           cp ${alacrittyDark} ${alacrittyConfPath}
           cp ${rofiDark} ${rofiConfPath}
           cp ${gtk2ConfDark} ${gtk2ConfPath}
@@ -210,7 +210,6 @@ in {
           echo BAT_THEME=gruvbox-dark > ~/.env
         else
           ${pkgs.feh}/bin/feh --bg-scale ${whiteWallpaper}
-          ${prepareFiles}
           cp ${alacrittyLight} ${alacrittyConfPath}
           cp ${rofiLight} ${rofiConfPath}
           cp ${gtk2ConfLight} ${gtk2ConfPath}
@@ -221,6 +220,7 @@ in {
           echo ${lightBackground} > ~/.var/bgcolor
           echo BAT_THEME=gruvbox-light > ~/.env
         fi
+        systemctl --user restart xsettingsd
       '';
     };
   };
