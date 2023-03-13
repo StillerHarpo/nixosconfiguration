@@ -178,6 +178,8 @@
             tesseract5
             zathura
             feh
+            litecli
+            csvs-to-sqlite
           ];
           profile = ''
             ${generateFileRules [ "docs" ]}
