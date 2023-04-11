@@ -609,4 +609,7 @@
     }];
     distributedBuilds = false;
   };
+
+  virtualisation.docker.enable = true;
+
 }
