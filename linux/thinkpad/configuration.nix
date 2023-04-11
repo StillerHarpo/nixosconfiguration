@@ -28,20 +28,27 @@
         }
         {
           pkgs = with pkgs; [
+            tmux
+            tmux-xpanes
+            #### Java ####
+            maven
+            eclipses.eclipse-java
+            jetbrains.idea-ultimate
+            openjdk
+            ##############
             nixpkgs-review
             gnome3.adwaita-icon-theme
             ical2orgpy
             nixfmt
-            airshipper
-            superTuxKart
-            openarena
-            xonotic
             libreoffice
             prismlauncher
             textcleaner
             file
             element-desktop
+            ### screenshots ###
             scrot
+            pinta
+            ### screenshots ###
             nix-alien
             languagetool
             xclip
@@ -75,9 +82,12 @@
             cachix
             vim
             shellcheck
-            #############
             ######## Games ###############
-            openjdk # java
+            airshipper
+            superTuxKart
+            openarena
+            xonotic
+            #############
             sshfs
             dzen2
             chromium
@@ -115,10 +125,13 @@
             networkmanager-openvpn
             networkmanager_dmenu
             git-crypt
-            slack
             tigervnc
+            ### chat ###
+            slack
             signal-desktop
+            mumble
             teamspeak_client
+            ### chat ###
             xsecurelock
             fzf
             ## better rust tools
@@ -126,6 +139,8 @@
             delta
             du-dust
             grex
+            kubectl
+            k9s
           ];
           profile = defaultProfile;
         }
@@ -177,6 +192,7 @@
             fd
             tesseract5
             zathura
+            xournal
             feh
             litecli
             csvs-to-sqlite
