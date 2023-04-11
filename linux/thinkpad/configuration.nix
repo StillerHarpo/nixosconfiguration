@@ -6,6 +6,8 @@
 
   disabledModules = [ "services/backup/borgbackup.nix" ];
 
+  zramSwap.enable = true;
+
   imports = [
     ./work-container.nix
     ./hardware.nix
