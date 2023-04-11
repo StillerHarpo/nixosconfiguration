@@ -28,7 +28,6 @@ in {
       userName = realName;
       userEmail = mailAddress;
       delta.enable = true;
-      attributes = [ "github.user=StillerHarpo" "gitlab.user=StillerHarpo" ];
       signing = {
         inherit key;
         signByDefault = true;
@@ -40,6 +39,11 @@ in {
         };
         condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
       }];
+      extraConfig = {
+        merge.conflictStyle = "zdiff3";
+        github.user = "StillerHarpo";
+        gitlab.user = "StillerHarpo";
+      };
     };
     gpg = {
       enable = true;
