@@ -460,6 +460,12 @@
     mullvad-vpn.enable = true;
     batteryNotifier.enable = true;
     printing.enable = true;
+    avahi = {
+      enable = true;
+      nssmdns = true;
+      # for a WiFi printer
+      openFirewall = true;
+    };
     udev.packages = [ pkgs.utsushi ];
     autorandr = {
       enable = true;
