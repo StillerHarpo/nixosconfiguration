@@ -1,4 +1,4 @@
-{ config, lib, pkgs, blocklist, ... }:
+{ config, lib, pkgs, ... }:
 with lib;
 let cfg = config.dnscrypt;
 in {
@@ -21,7 +21,6 @@ in {
             "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
         };
 
-        blocked_names.blocked_names_file = blocklist;
       };
     };
 

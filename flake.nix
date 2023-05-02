@@ -3,10 +3,6 @@
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    blocklist = {
-      url = "https://download.dnscrypt.info/blocklists/domains/mybase.txt";
-      flake = false;
-    };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs = {
@@ -24,7 +20,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = {
-      url = "github:nix-community/emacs-overlay?rev=6d54cfde44494da2396678d82bb61eeb0a3fa392";
+      url =
+        "github:nix-community/emacs-overlay?rev=6d54cfde44494da2396678d82bb61eeb0a3fa392";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -61,7 +58,7 @@
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay, doom-emacs, nixpkgs-newest, nixpkgs-borgbackup, nur
-    , nixos-hardware, deploy-rs, envfs, nix-alien, blocklist, ... }:
+    , nixos-hardware, deploy-rs, envfs, nix-alien, ... }:
 
     let
       system = "x86_64-linux";
@@ -166,7 +163,6 @@
             };
             extraSpecialArgs = {
               lib = lib.extend (_: _: home-manager-flake.lib);
-              private = import ./private.nix;
             };
           };
           nix = {
@@ -180,7 +176,7 @@
       ];
 
       thinkpad-specialArgs = {
-        inherit pkgs agenix inputs blocklist;
+        inherit pkgs agenix inputs;
         home-manager-flake = home-manager-flake.nixosModule;
         borgbackup-local =
           "${nixpkgs-borgbackup}/nixos/modules/services/backup/borgbackup.nix";
@@ -208,7 +204,7 @@
         };
 
         desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit pkgs agenix blocklist; };
+          specialArgs = { inherit pkgs agenix; };
           inherit system;
           modules = with nixos-hardware.nixosModules; [
             nixpkgs.nixosModules.notDetected

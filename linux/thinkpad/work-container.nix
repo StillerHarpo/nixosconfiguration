@@ -111,13 +111,6 @@ in {
 
         environment.systemPackages = with pkgs; [ git firefox remmina ];
 
-        environment.etc."office.ovpn".source = ./office.ovpn;
-
-        services.openvpn.servers.officeVPN = {
-          config = "config /etc/office.ovpn ";
-          autoStart = true;
-        };
-
         #      networking.defaultGateway.address = "192.168.10.1";
         networking.nameservers = [ "8.8.8.8" ];
 

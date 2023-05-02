@@ -1,4 +1,4 @@
-{ config, lib, home-manager, pkgs, agenix, private, ... }:
+{ config, lib, home-manager, pkgs, agenix, ... }:
 
 {
   imports = [ ../configuration.nix ./dnscrypt.nix ];
@@ -75,14 +75,10 @@
 
   nix = {
     settings = {
-      substituters = [
-        "https://cache.nixos.org/"
-        "https://nix-community.cachix.org"
-        "ssh://nix-ssh@${private.serverIP}?ssh-key=/etc/ssh/id_rsa.pub"
-      ];
+      substituters =
+        [ "https://cache.nixos.org/" "https://nix-community.cachix.org" ];
       trusted-public-keys = [
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "${private.serverIP}:GlSZMfUPHG/R3qSDpEaY6cO5CGLunhtOCimhmYJvhCo="
       ];
       trusted-users = [ "root" "florian" ];
       auto-optimise-store = true;

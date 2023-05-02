@@ -217,8 +217,6 @@
 
   fonts.fonts = with pkgs; [ terminus_font nerdfonts ];
 
-  location = import ./cords.nix;
-
   systemd.packages = [ pkgs.dconf ];
 
   home-manager.users.florian = import ./home/configuration.nix;
@@ -309,14 +307,6 @@
     blueman.enable = true;
 
     hoogle.enable = true;
-    redshift = {
-      enable = true;
-      brightness = {
-        day = "0.8";
-        night = "0.7";
-      };
-      temperature.night = 1501;
-    };
     picom = {
       enable = true;
       inactiveOpacity = 0.8;
@@ -395,14 +385,6 @@
       };
 
     };
-  };
-
-  # openvnp
-  environment.etc."office.ovpn".source = ./office.ovpn;
-
-  services.openvpn.servers.officeVPN = {
-    config = "config /etc/office.ovpn ";
-    autoStart = false;
   };
 
   # Bluetooth sound

@@ -33,9 +33,14 @@ in {
         signByDefault = true;
       };
       includes = [{
-        contents.user = {
-          email = private.workMail;
-          signingKey = "66ADDC714AD52330F69371F2BEC83EA3C41DBF14";
+        contents = {
+          user = {
+            email = "mail";
+            signingKey = "66ADDC714AD52330F69371F2BEC83EA3C41DBF14";
+          };
+
+          # TODO Fix endless loop
+          hooks.pre-commit = "test";
         };
         condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
       }];
@@ -50,15 +55,6 @@ in {
       settings.keyserver = "hkps://keys.openpgp.org";
     };
 
-    notmuch = let
-      notmuchTags = with builtins;
-        toFile "notmuchTags" (readFile ./notmuchTags);
-    in {
-      enable = true;
-      hooks.postNew = ''
-        notmuch tag --input=${notmuchTags}
-      '';
-    };
   };
 
   accounts.email = {
