@@ -31,7 +31,6 @@
         {
           pkgs = with pkgs; [
             tmux
-            tmux-xpanes
             #### Java ####
             maven
             eclipses.eclipse-java
@@ -179,7 +178,7 @@
           '';
         }
         {
-          pkgs = [ pkgs.deploy-rs ];
+          pkgs = [ pkgs.deploy-rs pkgs.tmux-xpanes ];
           profile = ''
             ${generateFileRules [ "ssh" ]}
           '';
