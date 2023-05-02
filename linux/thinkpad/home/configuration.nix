@@ -40,7 +40,7 @@ in {
           };
 
           # TODO Fix endless loop
-          hooks.pre-commit = "test";
+          hooks.pre-commit = pkgs.writeShellScript "test" "test";
         };
         condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
       }];
