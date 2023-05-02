@@ -191,8 +191,9 @@ in {
     };
     services.themeChange = {
       description = "Automatically change the theme";
-      partOf = [ "xsettingsd.service" ];
-      before = [ "xsettingsd.service" ];
+      wants = [ "multi-user.target" "emacs-daemon.service" ];
+      after = [ "multi-user.target" "emacs-daemon.service" ];
+
       script = ''
         TIME=$(date +%H%M)
         ${prepareFiles}
