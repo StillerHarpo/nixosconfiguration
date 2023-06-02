@@ -72,7 +72,6 @@
             remmina
             mullvad-vpn
             sqlite
-            gimp
             pamixer
             aria
             pavucontrol
@@ -108,7 +107,7 @@
             xosd
             pandoc
             mytexlive
-            python37Packages.pygments
+            python3Packages.pygments
             bc
             anki
             nix-prefetch-git
@@ -265,8 +264,6 @@
 
   # powerManagement.enable = false;
   services = {
-    pipewire.media-session.config.bluez-monitor.properties.bluez5.msbc-support =
-      true;
 
     unclutter-xfixes.enable = true;
 
@@ -410,12 +407,7 @@
     bluetooth.enable = true;
     sane = {
       enable = true;
-      extraBackends = with pkgs; [
-        epkowa
-        sane-airscan
-        hplipWithPlugin
-        utsushi
-      ];
+      extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin ];
       drivers.scanSnap = { enable = true; };
     };
   };
@@ -465,7 +457,6 @@
       # for a WiFi printer
       openFirewall = true;
     };
-    udev.packages = [ pkgs.utsushi ];
     autorandr = {
       enable = true;
       profiles = {

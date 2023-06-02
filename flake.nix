@@ -1,7 +1,7 @@
 {
   inputs = {
-    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-22.11";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+    nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     blocklist = {
       url = "https://download.dnscrypt.info/blocklists/domains/mybase.txt";
@@ -37,7 +37,7 @@
     };
     nixpkgs-borgbackup.url = "github:StillerHarpo/nixpkgs/borgbackup-restart";
     home-manager-flake = {
-      url = "github:nix-community/home-manager/release-22.11";
+      url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nur.url = "github:nix-community/NUR";
@@ -142,6 +142,17 @@
 
               nativeBuildInputs = [ pbr ];
             };
+          # https://github.com/DanBloomberg/leptonica/issues/659
+          leptonica = super.leptonica.overrideAttrs (oldAttrs: {
+            patches = (if oldAttrs ? patches then oldAttrs.patches else [ ])
+              ++ [
+                (super.fetchpatch {
+                  url =
+                    "https://github.com/DanBloomberg/leptonica/commit/544561af6944425a284a6bc387d64662501c560e.patch";
+                  hash = "sha256-rgpXAylSvCJYt4fbUELomfJz3OytsMdeJhcr7neP4yY=";
+                })
+              ];
+          });
         })
         steamOverlay
         nur.overlay
@@ -310,13 +321,8 @@
           with haskellPackages;
           drv:
           haskell.lib.overrideCabal drv (attrs: {
-            buildTools = (attrs.buildTools or [ ]) ++ [
-              cabal-install
-              haskell-language-server
-              brittany
-              hlint
-              xlibsWrapper
-            ];
+            buildTools = (attrs.buildTools or [ ])
+              ++ [ cabal-install haskell-language-server hlint xlibsWrapper ];
           });
       };
 
