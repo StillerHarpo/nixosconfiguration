@@ -105,7 +105,10 @@
   };
 
   dnscrypt.enable = true;
-  specialisation.noDnsCrypt.configuration.dnscrypt.enable = lib.mkForce false;
+  specialisation.normalInternet.configuration = {
+    dnscrypt.enable = lib.mkForce false;
+    services.mullvad-vpn.enable = lib.mkForce false;
+  };
 
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "21.05";
