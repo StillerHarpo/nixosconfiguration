@@ -119,9 +119,6 @@
             unclutter-xfixes
             cabal2nix
             niv
-            #(haskellPackages.ghcWithPackages (self : with self;
-            #  [ hlint hindent QuickCheck parsec megaparsec optparse-applicative
-            #    adjunctions Agda ]))
             networkmanager-openvpn
             networkmanager_dmenu
             git-crypt

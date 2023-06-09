@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 
 {
+  # FIXME doesn't work if firefox is closed (directly executing $BROWSER works)
+  # Properly the environment variables are different. (the execution in strace is the same)
   xdg = {
     mimeApps = {
       enable = true;
