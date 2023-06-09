@@ -64,9 +64,14 @@
     users = {
       florian = {
         isNormalUser = true;
-        extraGroups = [ "audio" "video" ];
+        extraGroups = [ "audio" "video" "wireshark" ];
       };
     };
+  };
+
+  programs.wireshark = {
+    enable = true;
+    package = pkgs.wireshark;
   };
 
   services.snowflake-proxy.enable = true;
