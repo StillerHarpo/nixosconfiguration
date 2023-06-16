@@ -41,6 +41,7 @@
             nixfmt
             libreoffice
             prismlauncher
+            minetest
             textcleaner
             file
             element-desktop
