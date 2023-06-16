@@ -319,7 +319,7 @@
           drv:
           haskell.lib.overrideCabal drv (attrs: {
             buildTools = (attrs.buildTools or [ ])
-              ++ [ cabal-install haskell-language-server hlint xlibsWrapper ];
+              ++ [ cabal-install haskell-language-server hlint ];
           });
       };
 
