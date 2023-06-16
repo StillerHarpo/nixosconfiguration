@@ -267,9 +267,7 @@ programms =
     ("kodi", "kodi"),
     ("signal", "signal-desktop"),
     ("element", "element-desktop"),
-    ("spotify", "spotify"),
     ("steam", "steam"),
-    ("youtube", startTerm "youtube-viewer"),
     ("mu4e", emacs "mu4e"),
     ("elfeed", emacs "elfeed"),
     ("tor", "tor-browser"),
@@ -280,7 +278,6 @@ programms =
     ("mullvad-gui", "mullvad-gui"),
     ("windows-vnc", "vncviewer 192.168.178.24:5900"),
     ("linux-vnc", "vncviewer localhost:9900"),
-    ("netflix", "chromium --new-window \"https://netflix.com\"/"),
     ("remmina", "remmina"),
     ("slack", "slack")
   ]

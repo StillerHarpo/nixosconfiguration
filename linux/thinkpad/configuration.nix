@@ -98,7 +98,6 @@
             tuir
             xsel
             silver-searcher
-            spotify
             mpv
             rlwrap
             you-get
