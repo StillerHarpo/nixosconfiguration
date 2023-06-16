@@ -44,6 +44,15 @@ in {
         github.user = "StillerHarpo";
         gitlab.user = "StillerHarpo";
       };
+      # TODO move this into includes. Debug endless loop
+      hooks.pre-commit = pkgs.writeShellScript "pre-commit-hook" ''
+        branch="$(git rev-parse --abbrev-ref HEAD)"
+
+        if pwd | grep checkpad && [ "$branch" = "develop" ] || [ "$branch" = "prod" ]; then
+          echo "You can't commit directly to " $branch " branch"
+          exit 1
+        fi
+      '';
     };
     gpg = {
       enable = true;
