@@ -344,22 +344,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-borgbackup": {
-      "locked": {
-        "lastModified": 1685733748,
-        "narHash": "sha256-1zaaQcyvRkfd4dAlBxcbFTnL0i6TN7b7CDFuQoWfoPM=",
-        "owner": "StillerHarpo",
-        "repo": "nixpkgs",
-        "rev": "dd753faaa15b8463d307a7e320c974370fc5e556",
-        "type": "github"
-      },
-      "original": {
-        "owner": "StillerHarpo",
-        "ref": "borgbackup-restart",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-newest": {
       "locked": {
         "lastModified": 1685620773,
@@ -372,6 +356,22 @@
       "original": {
         "owner": "NixOS",
         "ref": "nixos-23.05",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs2211": {
+      "locked": {
+        "lastModified": 1686392259,
+        "narHash": "sha256-hqSS9hKhWldIZr1bBp9xKhIznnGPICGKzuehd2LH0UA=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ef24b2fa0c5f290a35064b847bc211f25cb85c88",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-22.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -405,8 +405,8 @@
         "nix-alien": "nix-alien",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-borgbackup": "nixpkgs-borgbackup",
         "nixpkgs-newest": "nixpkgs-newest",
+        "nixpkgs2211": "nixpkgs2211",
         "nur": "nur"
       }
     },

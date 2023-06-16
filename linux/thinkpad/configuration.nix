@@ -1,10 +1,8 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager, borgbackup-local, agenix, lib, ... }:
+{ config, pkgs, home-manager, agenix, lib, ... }:
 
 {
-
-  disabledModules = [ "services/backup/borgbackup.nix" ];
 
   zramSwap.enable = true;
 
@@ -15,7 +13,7 @@
     ../../doom.nix
     ../configuration.nix
     ./themeChanger.nix
-    borgbackup-local
+    ./backup.nix
     (with lib.apparmor;
       generate [
         {
@@ -330,25 +328,6 @@
         PAPERLESS_IGNORE_DATES = config.age.secrets.birthdate.path;
       };
       consumptionDirIsPublic = true;
-    };
-
-    borgbackup.jobs."florian" = {
-      paths = [
-        "/var/lib/paperless/media/documents/archive"
-        "/home/florian/Dokumente"
-        "/home/florian/.password-store"
-        "/home/florian/Maildir"
-        "/home/florian/android"
-      ];
-      repo = "borg@45.157.177.92:.";
-      encryption = {
-        mode = "repokey-blake2";
-        passCommand = "cat /root/borgbackup/passphrase";
-      };
-      environment.BORG_RSH = "ssh -i /root/.ssh/id_rsa";
-      compression = "auto,lzma";
-      startAt = "weekly";
-      restartOnFail.enable = true;
     };
 
     syncthing = {
