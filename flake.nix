@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs2211.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nix-alien = {
@@ -56,7 +57,7 @@
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay, doom-emacs, nixpkgs-newest, nur, nixos-hardware, deploy-rs
-    , envfs, nix-alien, ... }:
+    , envfs, nix-alien, nixpkgs2211, ... }:
 
     let
       system = "x86_64-linux";
@@ -67,9 +68,10 @@
         };
       mkPkgsLinux = pkgs: overlays: mkPkgs system pkgs overlays;
       pkgs-newest = mkPkgsLinux (import nixpkgs-newest) [ ];
+      pkgs2211 = mkPkgsLinux (import nixpkgs2211) [ ];
       steamOverlay = _: super: {
         steam = pkgs-newest.steam.override {
-          extraPkgs = pkgs: [ pkgs.libpng pkgs.icu ];
+          extraPkgs = pkgs: [ pkgs2211.openssl pkgs.libpng pkgs.icu ];
         };
       };
       myShellOverlay = _: super: { myshell = "${super.zsh}/bin/zsh"; };
