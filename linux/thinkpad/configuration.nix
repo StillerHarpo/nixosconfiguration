@@ -10,7 +10,6 @@
     ./work-container.nix
     ./hardware.nix
     ./hibernate.nix
-    ../../doom.nix
     ../configuration.nix
     ./themeChanger.nix
     ./backup.nix

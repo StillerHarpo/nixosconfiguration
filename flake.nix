@@ -27,11 +27,6 @@
         flake-utils.follows = "flake-utils";
       };
     };
-    doom-emacs = {
-      url =
-        "github:doomemacs/doomemacs?rev=d5ccac5d71c819035fa251f01d023b3f94b4fba4";
-      flake = false;
-    };
     home-manager-flake = {
       url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -56,8 +51,8 @@
     };
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
-    , emacs-overlay, doom-emacs, nixpkgs-newest, nur, nixos-hardware, deploy-rs
-    , envfs, nix-alien, nixpkgs2211, ... }:
+    , emacs-overlay, nixpkgs-newest, nur, nixos-hardware, deploy-rs, envfs
+    , nix-alien, nixpkgs2211, ... }:
 
     let
       system = "x86_64-linux";
@@ -88,6 +83,12 @@
         nix-alien.overlay
         emacs-overlay.overlay
         (self: super: rec {
+          native-emacs = super.emacsWithPackagesFromUsePackage {
+            config = ./config.el;
+            defaultInitFile = true;
+            alwaysEnsure = true;
+            package = super.emacsUnstable;
+          };
           myemacs =
             (super.emacsPackagesFor super.emacsUnstable).emacsWithPackages
             (epkgs: [ epkgs.vterm ]);
