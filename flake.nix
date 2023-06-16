@@ -3,10 +3,6 @@
     nixpkgs-newest.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    blocklist = {
-      url = "https://download.dnscrypt.info/blocklists/domains/mybase.txt";
-      flake = false;
-    };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs = {
@@ -60,7 +56,7 @@
   };
   outputs = inputs@{ self, nixpkgs, home-manager-flake, agenix, darwin
     , emacs-overlay, doom-emacs, nixpkgs-newest, nur, nixos-hardware, deploy-rs
-    , envfs, nix-alien, blocklist, ... }:
+    , envfs, nix-alien, ... }:
 
     let
       system = "x86_64-linux";
@@ -190,8 +186,9 @@
       ];
 
       thinkpad-specialArgs = {
-        inherit pkgs agenix inputs blocklist;
+        inherit pkgs agenix inputs;
         home-manager-flake = home-manager-flake.nixosModule;
+        private = import ./private.nix;
       };
     in {
 
@@ -216,7 +213,7 @@
         };
 
         desktop = nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit pkgs agenix blocklist; };
+          specialArgs = { inherit pkgs agenix; };
           inherit system;
           modules = with nixos-hardware.nixosModules; [
             nixpkgs.nixosModules.notDetected
