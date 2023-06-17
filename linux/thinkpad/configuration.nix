@@ -40,6 +40,7 @@
             nixfmt
             libreoffice
             prismlauncher
+            minetest
             textcleaner
             file
             element-desktop
@@ -97,7 +98,7 @@
             tuir
             xsel
             silver-searcher
-            mpv
+            (mpv.override { scripts = [ mpvScripts.mpris ]; })
             rlwrap
             you-get
             xosd

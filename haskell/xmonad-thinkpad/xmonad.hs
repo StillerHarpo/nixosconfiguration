@@ -151,7 +151,7 @@ main =
     saveView i = composeAll [windows . W.greedyView $ show i, saveFocus]
     emacs = "emacsclient -c ~/Dokumente/init.org"
     dbus = "dbus-send --print-reply "
-    dest = "--dest=org.mpris.MediaPlayer2.spotify "
+    dest = "--dest=org.mpris.MediaPlayer2.mpv "
     org = "/org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player."
     playPause = spawn $ dbus ++ dest ++ org ++ "PlayPause"
     playNext = spawn $ dbus ++ dest ++ org ++ "Next"
