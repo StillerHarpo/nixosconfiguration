@@ -6,16 +6,23 @@
 (require 'use-package)
 
 (use-package evil
+ :ensure
+ :config
+ (evil-mode t))
+
+(use-package 'evil-collection
   :ensure
-  :config
-  (evil-mode t))
+  :init
+  (evil-collection-init))
+
+(use-package helpful)
 
 (use-package which-key
   :ensure
   :config
   (which-key-mode)
-  )
 
+  )
 (use-package magit :ensure)
 (use-package org :ensure)
 (use-package haskell-mode :ensure)
@@ -23,9 +30,9 @@
 
 (use-package vertico
   :init
-  (vertico-mode)
-;; Optionally use the `orderless' completion style.
+  (vertico-mode))
 
+;; Optionally use the `orderless' completion style.
 (use-package orderless
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
@@ -50,4 +57,19 @@
  "h f" 'helpful-callable
  "h v" 'helpful-variable
  "h k" 'helpful-key
+ "f f" 'find-file
+ "b b" 'ido-switch-buffer
+ "w m m" 'maximize-window
+ "w j" 'evil-window-down
+ "w k" 'evil-window-up
+ "w h" 'evil-window-left
+ "w l" 'evil-window-right
+ "w v" 'evil-window-vsplit
+ "w s" 'evil-window-split
+ "w u" 'winner-undo
+ "g g" 'magit-status
+ "SPC" 'projectile-find-file
+ "p" '(:ignore t :which-key "project")
+ "p p" 'projectile-switch-project
+ "." '(:which-key "Find file" find-file)
  )
