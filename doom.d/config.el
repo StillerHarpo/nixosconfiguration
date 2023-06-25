@@ -242,10 +242,9 @@ If I let Windows handle DPI everything looks blurry."
   (seq-filter
    (my/org-roam-filter-by-regex regex)
    (mapcar #'org-roam-node-file (org-roam-node-list))))
-
 (defun my/org-roam-refresh-agenda-list ()
   (interactive)
-  (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}"))))
+  (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float"))))
 
 (after! org-roam (my/org-roam-refresh-agenda-list))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
