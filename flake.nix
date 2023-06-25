@@ -303,6 +303,7 @@
                       ./linux/thinkpad/test-secrets/birthdate.age;
                   };
                 };
+                systemd.services.backblaze = lib.mkForce { };
               };
               node.specialArgs = thinkpad-specialArgs // { inherit lib; };
               testScript = import ./checks.nix;
