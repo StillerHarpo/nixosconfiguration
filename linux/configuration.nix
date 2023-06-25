@@ -111,7 +111,7 @@
   dnscrypt.enable = true;
   specialisation.normalInternet.configuration = {
     dnscrypt.enable = lib.mkForce false;
-    services.mullvad-vpn.enable = lib.mkForce false;
+    networking.wg-quick.interfaces.vpn.autostart = false;
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.

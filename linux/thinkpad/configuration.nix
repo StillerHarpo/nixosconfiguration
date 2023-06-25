@@ -243,6 +243,7 @@
     florian.file = ./secrets/florian.age;
     paperless.file = ./secrets/paperless.age;
     birthdate.file = ./secrets/birthdate.age;
+    vpn.file = ./secrets/vpn.age;
   };
 
   users = {
@@ -424,7 +425,6 @@
   console.font = "sun12x22";
 
   services = {
-    mullvad-vpn.enable = true;
     batteryNotifier.enable = true;
     printing.enable = true;
     avahi = {
@@ -597,6 +597,7 @@
     };
   };
 
+  networking.wg-quick.interfaces.vpn.configFile = config.age.secrets.vpn.path;
   programs.firejail.enable = true;
   nix = {
     buildMachines = [{
