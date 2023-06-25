@@ -150,7 +150,7 @@
         }
         {
           # FIXME only allow usage of program. Not access.
-          pkgs = with pkgs; [ go-jira pass ];
+          pkgs = with pkgs; [ go-jira pass rofi-pass ];
 
           profile = ''
             ${generateFileRules [ "pass" "gnupg" ]}

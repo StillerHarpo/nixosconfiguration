@@ -10,7 +10,7 @@
 import Bookmarks (bookmarks, workBookmarks)
 import Data.List (last)
 import qualified Data.Map as M
-import qualified Data.Text as T 
+import qualified Data.Text as T
 import qualified Data.Text.Lazy as T (toStrict)
 import Data.Word (Word32)
 import Protolude
@@ -279,7 +279,8 @@ programms =
     ("windows-vnc", "vncviewer 192.168.178.24:5900"),
     ("linux-vnc", "vncviewer localhost:9900"),
     ("remmina", "remmina"),
-    ("slack", "slack")
+    ("slack", "slack"),
+    ("pass", "rofi-pass")
   ]
     ++ map (second browser) bookmarks
     ++ map (second (browserWithProfile "work")) workBookmarks

@@ -1,3 +1,4 @@
+# TODO wirte rules which get used if it is environment.systemPackages or in home.packages
 { lib }:
 with lib; rec {
   getProfiles = pkgs: rule:
