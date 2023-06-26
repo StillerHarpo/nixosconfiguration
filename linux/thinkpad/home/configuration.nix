@@ -15,10 +15,6 @@ in {
   ];
 
   programs = {
-    rofi.pass = {
-      enable = true;
-      extraConfig = ''help_color="#FF0000"'';
-    };
     nix-index.enable = true;
     gh = {
       enable = true;

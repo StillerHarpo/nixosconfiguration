@@ -150,7 +150,12 @@
         }
         {
           # FIXME only allow usage of program. Not access.
-          pkgs = with pkgs; [ go-jira pass rofi-pass ];
+          pkgs = with pkgs; [
+            go-jira
+            (pass.override {
+              dmenu = writeScriptBin "dmenu" ''${rofi}/bin/rofi -dmenu "$@"'';
+            })
+          ];
 
           profile = ''
             ${generateFileRules [ "pass" "gnupg" ]}

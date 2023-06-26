@@ -279,8 +279,7 @@ programms =
     ("windows-vnc", "vncviewer 192.168.178.24:5900"),
     ("linux-vnc", "vncviewer localhost:9900"),
     ("remmina", "remmina"),
-    ("slack", "slack"),
-    ("pass", "rofi-pass")
+    ("slack", "slack")
   ]
     ++ map (second browser) bookmarks
     ++ map (second (browserWithProfile "work")) workBookmarks
@@ -298,6 +297,9 @@ programms =
         <> ")\""
         <> maximizeEmacs
     maximizeEmacs = " -e \"(spacemacs/toggle-maximize-buffer)\""
+
+commands :: [(Text, X ())]
+commands = [("passmenu", passMenu)]
 
 -- | save the current window, so you can later come back with goToNotify
 saveFocus :: X ()
@@ -418,6 +420,12 @@ actionMenu action viewEmpty = do
                 )
             )
             programms
+            <> commands
+
+passMenu :: X ()
+passMenu = do
+  font <- T.unpack <$> getFontFromScreenWidth
+  safeSpawn "passmenu" ["-font", font, "-i", "-p", "pass"]
 
 runOrRaise :: X ()
 runOrRaise = actionMenu (windows . greedyFocusWindow) True
