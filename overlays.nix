@@ -77,6 +77,12 @@
 
         nativeBuildInputs = [ pbr ];
       };
+    native-emacs = prev.emacsWithPackagesFromUsePackage {
+      config = ./config.el;
+      defaultInitFile = true;
+      alwaysEnsure = true;
+      package = prev.emacsUnstable;
+    };
   };
   emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;
