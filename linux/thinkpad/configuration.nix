@@ -36,6 +36,7 @@
             openjdk
             ##############
             nixpkgs-review
+            nixpkgs-hammering
             gnome3.adwaita-icon-theme
             ical2orgpy
             nixfmt
