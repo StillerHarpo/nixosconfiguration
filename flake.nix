@@ -210,8 +210,12 @@
                   };
                 };
                 systemd.services.backblaze = lib.mkForce { };
+                networking.wg-quick.interfaces = lib.mkForce { };
               };
-              node.specialArgs = thinkpad-specialArgs // { inherit lib; };
+              node.specialArgs = thinkpad-specialArgs // {
+                inherit lib;
+                pkgs = outputs.packages."x86_64-linux";
+              };
               testScript = import ./checks.nix;
               hostPkgs = outputs.packages."x86_64-linux";
             };
@@ -225,6 +229,7 @@
     } // inputs.flake-utils.lib.eachDefaultSystem (system: {
       packages = import inputs.nixpkgs {
         inherit system;
+        config.allowUnfree = true;
         overlays = [ (_: _: { inherit system; }) ]
           ++ (builtins.attrValues outputs.overlays);
       };
