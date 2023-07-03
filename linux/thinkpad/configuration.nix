@@ -1,6 +1,6 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, home-manager, agenix, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
 
@@ -36,6 +36,7 @@
             openjdk
             ##############
             nixpkgs-review
+            nixpkgs-hammering
             gnome3.adwaita-icon-theme
             ical2orgpy
             nixfmt
@@ -169,7 +170,7 @@
           '';
         }
         {
-          pkgs = [ agenix.packages.x86_64-linux.agenix ];
+          pkgs = [ inputs.agenix.packages.x86_64-linux.agenix ];
           profile = ''
             mount,
             capability,
@@ -618,5 +619,11 @@
   };
 
   virtualisation.docker.enable = true;
+
+  nixpkgs = let system = "x86_64-linux";
+  in {
+    hostPlatform = { inherit system; };
+    overlays = [ (_: _: { inherit system; }) ];
+  };
 
 }

@@ -1,4 +1,4 @@
-{ config, home-manager, pkgs, agenix, ... }:
+{ config, home-manager, pkgs, ... }:
 
 {
 
@@ -103,4 +103,10 @@
   ];
 
   hardware.enableRedistributableFirmware = true;
+
+  nixpkgs = let system = "x86_64-linux";
+  in {
+    hostPlatform = { inherit system; };
+    overlays = [ (_: _: { inherit system; }) ];
+  };
 }

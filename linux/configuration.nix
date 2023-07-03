@@ -1,4 +1,4 @@
-{ config, lib, home-manager, pkgs, agenix, private, ... }:
+{ config, lib, home-manager, pkgs, private, ... }:
 
 {
   imports = [ ../configuration.nix ./dnscrypt.nix ];

@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, outputs, inputs, ... }:
 
 {
   environment.systemPackages = with pkgs; ([
@@ -20,6 +20,13 @@
       experimental-features = nix-command flakes
     '';
     settings.max-jobs = lib.mkDefault 8;
+    registry.nixpkgs.flake = inputs.nixpkgs;
+    nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
+  };
+
+  nixpkgs = {
+    overlays = builtins.attrValues outputs.overlays;
+    config.allowUnfree = true;
   };
 
 }
