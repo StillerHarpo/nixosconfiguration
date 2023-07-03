@@ -86,7 +86,7 @@
       ];
       trusted-public-keys = [
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "${private.serverIP}:GlSZMfUPHG/R3qSDpEaY6cO5CGLunhtOCimhmYJvhCo="
+        "ssh-serve:WltAxNNiDoufj5yg7k9tJHKoN7D5PgIZUyqDOMBOaGM="
       ];
       trusted-users = [ "root" "florian" ];
       auto-optimise-store = true;
