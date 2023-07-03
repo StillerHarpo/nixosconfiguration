@@ -137,6 +137,7 @@
             grex
             kubectl
             k9s
+            native-emacs
           ];
           profile = defaultProfile;
         }
