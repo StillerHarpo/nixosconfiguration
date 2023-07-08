@@ -96,9 +96,17 @@
   (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
   :general
   (:states '(normal visual)
-	   :prefix "SPC"
-	   "n a" 'org-agenda)
+   :prefix "SPC"
+   "n a" 'org-agenda)
   )
+
+(use-package evil-org
+  :ensure t
+  :after org
+  :hook (org-mode . (lambda () evil-org-mode))
+  :config
+  (require 'evil-org-agenda)
+  (evil-org-agenda-set-keys))
 
 (use-package org-roam
   :ensure
