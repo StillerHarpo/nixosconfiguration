@@ -77,13 +77,18 @@
 
         nativeBuildInputs = [ pbr ];
       };
-    native-emacs = final.writeScriptBin "native-emacs" ''
+    native-emacs = let
+      emacsPgks = import inputs.nixpkgs {
+        overlays = [ inputs.emacs-overlay-unpinned.overlay ];
+        system = final.system;
+      };
+    in emacsPgks.writeScriptBin "native-emacs" ''
       ${
-        final.emacsWithPackagesFromUsePackage {
+        emacsPgks.emacsWithPackagesFromUsePackage {
           config = ./config.el;
           defaultInitFile = true;
           alwaysEnsure = true;
-          package = final.emacsUnstable;
+          package = emacsPgks.emacsUnstable;
         }
       }/bin/emacs -q --eval '(load-file "~/nixosconfiguration/config.el")'
     '';
