@@ -21,6 +21,24 @@
   :init
   (evil-collection-init))
 
+(use-package evil-embrace
+  :ensure
+  :config
+  (evil-embrace-enable-evil-surround-integration))
+
+(use-package evil-surround
+  :ensure
+  :config
+  (global-evil-surround-mode 1))
+
+(use-package evil-lion
+  :ensure t
+  :config
+  (evil-lion-mode))
+
+(use-package evil-nerd-commenter
+  :ensure)
+
 (use-package helpful)
 
 (use-package which-key
