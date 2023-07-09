@@ -88,7 +88,8 @@
           config = ./config.el;
           defaultInitFile = true;
           alwaysEnsure = true;
-          package = emacsPgks.emacsUnstable;
+          package = emacsPgks.emacs-unstable;
+          extraEmacsPackages = (epkgs: [(epkgs.treesit-grammars.with-all-grammars )]);
         }
       }/bin/emacs -q --eval '(load-file "~/nixosconfiguration/config.el")'
     '';
