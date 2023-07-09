@@ -131,6 +131,7 @@
   :general
   (:states '(normal visual)
 	   :prefix "SPC"
+           "n" '(:ignore t :which-key "org")
 	   "n f" 'org-roam-node-find
 	   "n i" 'org-roam-node-insert))
 
@@ -149,11 +150,27 @@
   (:states '(normal visual)
    :keymaps 'magit-status-mode-map
    "S-SPC" 'magit-diff-show-or-scroll-up)
+  :general
+  (:states '(normal visual)
+  :prefix "SPC"
+   "g" '(:ignore t :which-key "magit")
+   "g g" 'magit-status
+   "g c" 'magit-clone)
+  :config
+  (with-eval-after-load 'magit-log
+    (define-key magit-log-mode-map (kbd "SPC") nil))
+  (with-eval-after-load 'magit-status
+    (define-key magit-status-mode-map (kbd "SPC") nil))
+  (with-eval-after-load 'magit-revision
+    (define-key magit-revision-mode-map (kbd "SPC") nil))
   )
 
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
+
+(use-package nix-mode
+  :mode "\\.nix\\'")
 
 (use-package haskell-mode :ensure)
 
@@ -168,6 +185,8 @@
          (before-save . tide-format-before-save)))
 
 (winner-mode 1)
+
+(add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
 
 ;; don't override spc. It should always be the leader key
 (general-unbind
@@ -188,13 +207,14 @@
  "h k" 'helpful-key
  "h m" 'descripe-mode
  "h p" 'describe-package
- "h" '(:ignore t :which-key "File")
+ "h i" 'info
+ "f" '(:ignore t :which-key "File")
  "f f" 'find-file
  "f s" 'save-buffer
  "b" '(:ignore t :which-key "Buffer")
  "b b" 'consult-buffer
  "b r" 'revert-buffer
- "b" '(:ignore t :which-key "Window")
+ "w" '(:ignore t :which-key "Window")
  "w m m" 'maximize-window
  "w j" 'evil-window-down
  "w k" 'evil-window-up
@@ -235,13 +255,14 @@
  "w w" 'evil-window-next
  "w x" 'evil-window-exchange
  "w |" 'evil-window-set-width
+ "s" '(:ignore t :which-key "search")
  "s s" 'consult-line
- "g g" 'magit-status
  "SPC" 'project-find-file
  "p" '(:ignore t :which-key "project")
  "p p" 'project-switch-project
  "p s" 'consult-ripgrep
  "." '(:which-key "Find file" 'find-file)
+ "q" '(:ignore t :which-key "quit")
  "q q" 'save-buffers-kill-terminal
 )
 
