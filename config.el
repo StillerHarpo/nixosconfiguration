@@ -89,6 +89,7 @@
   (org-read-date-force-compatible-dates nil)
   (org-modules '(ol-bibtex org-habit))
   :config
+  (unbind-key "SPC" org-agenda-mode-map)
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
@@ -167,6 +168,12 @@
          (before-save . tide-format-before-save)))
 
 (winner-mode 1)
+
+;; don't override spc. It should always be the leader key
+(general-unbind
+  :states '(normal visual)
+  :keymaps '(dired-mode-map Info-mode-map view-mode-map)
+  "SPC")
 
 (general-define-key :states '(normal visual)
   "g s" 'evil-avy-goto-char)
