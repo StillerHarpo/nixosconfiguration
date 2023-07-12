@@ -301,7 +301,7 @@
  "h f" 'helpful-callable
  "h v" 'helpful-variable
  "h k" 'helpful-key
- "h m" 'descripe-mode
+ "h m" 'describe-mode
  "h p" 'describe-package
  "h i" 'info
  "f" '(:ignore t :which-key "File")
