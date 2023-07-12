@@ -167,6 +167,13 @@
   :prefix "SPC"
   "o t" 'vterm))
 
+(use-package link-hint
+  :ensure
+  :general
+  (:states '(normal visual)
+  :prefix "SPC"
+  "s l" 'link-hint-open-link))
+
 (use-package magit
   :ensure
   :general
