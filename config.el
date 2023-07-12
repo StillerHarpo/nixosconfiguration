@@ -357,10 +357,10 @@
  "p" '(:ignore t :which-key "project")
  "p p" 'project-switch-project
  "p s" 'consult-ripgrep
- "." '(:which-key "Find file" 'find-file)
+ "s p" 'consult-ripgrep
+ "." '(find-file :which-key "Find file" )
  "q" '(:ignore t :which-key "quit")
- "q q" 'save-buffers-kill-terminal
-)
+ "q q" 'save-buffers-kill-terminal)
 
 (general-define-key
  :states '(normal visual)
