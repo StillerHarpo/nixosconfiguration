@@ -161,8 +161,12 @@
   "p" 'vterm-yank
   :prefix ","
   "e" 'vterm-send-next-key
-  "c" 'vterm-clear))
-  
+  "c" 'vterm-clear)
+  :general
+  (:states '(normal visual)
+  :prefix "SPC"
+  "o t" 'vterm))
+
 (use-package magit
   :ensure
   :general
