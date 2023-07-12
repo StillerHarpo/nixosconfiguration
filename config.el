@@ -13,6 +13,7 @@
  :ensure
  :init
  (setq evil-want-keybinding nil)
+ (setq evil-undo-system 'undo-redo)
  :config
  (evil-mode t))
 
