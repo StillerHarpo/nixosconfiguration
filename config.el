@@ -214,6 +214,72 @@
          (typescript-ts-mode . tide-hl-identifier-mode)
          (before-save . tide-format-before-save)))
 
+(use-package notmuch
+  :ensure t
+  :init
+  (setq notmuch-search-oldest-first 'f)
+  (setq message-default-mail-headers "Cc: \nBcc: \n")
+  ;; postponed message is put in the following draft directory
+  (setq message-auto-save-directory "~/Maildir/draft")
+  ;; change the directory to store the sent mail
+  (setq message-directory "~/Maildir/")
+  (setq notmuch-saved-searches
+        '((:name "inbox" :query "tag:inbox and not tag:trash and date:3M..today" :key "i")
+          (:name "unread" :query "tag:unread" :key "u")
+          (:name "flagged" :query "tag:flagged" :key "f")
+          (:name "must read" :query "not tag:rechnung and not tag:agb and not tag:anmeldung and not tag:trash and date:3M..today" :key "r")
+          (:name "sent" :query "tag:sent" :key "s")
+          (:name "drafts" :query "tag:draft" :key "d")
+          (:name "all mail" :query "date:3M..today" :key "a")))
+  (defun my/notmuch-update ()
+    "Update mails and notmuch buffer"
+    (interactive)
+    (with-current-buffer (compile "mbsync -a && notmuch new")
+    (add-hook
+     'compilation-finish-functions
+     (lambda (buf status)
+       (if (equal status "finished\n")
+           (progn
+             (delete-windows-on buf)
+             (bury-buffer buf)
+             (notmuch-refresh-all-buffers)
+             (message "Notmuch sync successful"))
+         (user-error "Failed to sync notmuch data")))
+     nil
+     'local)))
+  (defun my/notmuch-edit-draft ()
+    "Resume editing draft"
+    (interactive)
+    (notmuch-draft-resume (notmuch-show-get-message-id)))
+  (defun my/notmuch-search ()
+    "Open notmuch in serach mode"
+    (interactive)
+     (notmuch-search "tag:inbox and date:3M..today"))
+  :general
+  (:states '(normal visual)
+   :prefix "SPC"
+   "o m" '(my/notmuch-search :which-key "notmuch"))
+  (:states '(normal visual)
+   :prefix "SPC"
+   :keymaps '(notmuch-search-mode-map)
+   "m u" '(my/notmuch-update :which-key "update mails"))
+  (:states '(normal visual)
+   :prefix "SPC"
+   :keymaps '(notmuch-message-mode-map)
+   "m c" '(notmuch-mua-send-and-exit :which-key "send mail" )
+   "m a" '(mml-attach-file :which-key "attach file")
+   "m d" '(notmuch-draft-save :which-key "save as draft"))
+  (:states '(normal visual)
+   :keymaps '(notmuch-message-mode-map)
+   "d" '(notmuch-search-add-tag "+trash")
+   "t" 'notmuch-search-add-tag)
+  :config
+  (setq notmuch-fcc-dirs "Sent -unread +sent")
+  (general-define-key
+   :states '(normal visual)
+   :prefix "SPC"
+   ))
+
 (winner-mode 1)
 
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
