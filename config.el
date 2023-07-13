@@ -131,6 +131,7 @@
 (use-package org-roam
   :ensure
   :custom
+  (org-roam-file-exclude-regexp '("data/" ".stversions/"))
   (org-roam-directory (file-truename "~/Dokumente/org-roam"))
   :config
   (org-roam-db-autosync-mode)
