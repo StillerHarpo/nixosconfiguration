@@ -107,8 +107,8 @@
   (org-ref-pdf-directory "~/Dokumente/bibliography/bibtex-pdfs/")
   (org-read-date-force-compatible-dates nil)
   (org-modules '(ol-bibtex org-habit))
+  (org-log-into-drawer "LOGBOOK")
   :config
-  (unbind-key "SPC" org-agenda-mode-map)
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
