@@ -427,6 +427,8 @@
    :prefix "SPC"
    ))
 
+
+(recentf-mode 1)
 (winner-mode 1)
 
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
