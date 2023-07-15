@@ -198,13 +198,13 @@
    "m d t" 'org-time-stamp
    "m d i" 'org-time-stamp-inactive
    "m g" '(:ignore t :which-key "goto")
-   "m g" 'org-goto
-   "m h" 'consult-org-heading
-   "m a" 'consult-org-agenda
-   "m c" 'org-clock-goto
-   "m i" 'org-id-goto
-   "m r" 'org-refile-goto-last-stored
-   "m x" 'org-capture-goto-last-stored
+   "m g g" 'org-goto
+   "m g h" 'consult-org-heading
+   "m g a" 'consult-org-agenda
+   "m g c" 'org-clock-goto
+   "m g i" 'org-id-goto
+   "m g r" 'org-refile-goto-last-stored
+   "m g x" 'org-capture-goto-last-stored
    "m l" '(:ignore t :which-key "links")
    "m l c" 'org-cliplink
    "m l i" 'org-id-store-link
