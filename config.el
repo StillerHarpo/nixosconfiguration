@@ -448,7 +448,7 @@
     (kill-current-buffer))
 
 ;; mostly copied from doom emacs
-(defun doom/copy-this-file (new-path &optional force-p)
+(defun my/copy-this-file (new-path &optional force-p)
   "Copy current buffer's file to NEW-PATH.
 
 If FORCE-P, overwrite the destination file if it exists, without confirmation."
@@ -462,6 +462,22 @@ If FORCE-P, overwrite the destination file if it exists, without confirmation."
     (make-directory (file-name-directory new-path) 't)
     (copy-file old-path new-path (or force-p 1))
     (message "File copied to %S" (abbreviate-file-name new-path))))
+
+;; mostly copied from doom emacs
+(defun my/move-this-file (new-path &optional force-p)
+  "Copy current buffer's file to NEW-PATH.
+
+If FORCE-P, overwrite the destination file if it exists, without confirmation."
+  (interactive
+   (list (read-file-name "Move file to: ")
+         current-prefix-arg))
+  (unless (and buffer-file-name (file-exists-p buffer-file-name))
+    (user-error "Buffer is not visiting any file"))
+  (let ((old-path (buffer-file-name (buffer-base-buffer)))
+        (new-path (expand-file-name new-path)))
+    (make-directory (file-name-directory new-path) 't)
+    (move-file old-path new-path (or force-p 1))
+    (message "File moved to %S" (abbreviate-file-name new-path))))
 
 ;; mostly copied from doom emacs
 (defun my/yank-buffer-path (&optional root)
@@ -539,7 +555,7 @@ if one already exists."
  "f d" '(my/delete-this-file :which-key "Delete this file")
  "f f" '(find-file :which-key "Find file")
  "f l" '(locate :which-key "Locate file")
- "f r" '(recentf-open-files :which-key "Recent files")
+ "f r" '(consult-recent-file :which-key "Recent files")
  "f R" '(my/move-this-file :which-key "Rename/move file")
  "f s" '(save-buffer :which-key "Save file")
  "f S" '(write-file :which-key "Save file as...")
