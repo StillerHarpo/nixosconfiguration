@@ -110,6 +110,7 @@
   (org-read-date-force-compatible-dates nil)
   (org-modules '(ol-bibtex org-habit))
   (org-log-into-drawer "LOGBOOK")
+  (org-agenda-window-setup 'current-window)
   :config
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
@@ -332,6 +333,8 @@
 
 (use-package magit
   :ensure
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   :general
   (:states '(normal visual)
    :keymaps 'magit-status-mode-map
@@ -435,7 +438,6 @@
    :states '(normal visual)
    :prefix "SPC"
    ))
-
 
 (recentf-mode 1)
 (winner-mode 1)
@@ -671,3 +673,7 @@ If I let Windows handle DPI everything looks blurry."
     (set-frame-font (format "monospace %s" size))
     ))
 (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
+
+(add-to-list 'display-buffer-alist
+             '("*Help*" display-buffer-same-window))
+
