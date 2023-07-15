@@ -118,7 +118,134 @@
   (:states '(normal visual)
    :prefix "SPC"
    "n a" 'org-agenda)
-  )
+  :general
+  (:states '(normal visual)
+   :keymaps '(org-mode-map)
+   :prefix "SPC"
+   "m #" 'org-update-statistics-cookies
+   "m '" 'org-edit-special
+   "m *" 'org-ctrl-c-star
+   "m +" 'org-ctrl-c-minus
+   "m ," 'org-switchb
+   "m ." 'org-goto
+   "m @" 'org-cite-insert
+   "m ." 'consult-org-heading
+   "m /" 'consult-org-agenda
+   "m A" 'org-archive-subtree
+   "m e" 'org-export-dispatch
+   "m f" 'org-footnote-action
+   "m h" 'org-toggle-heading
+   "m i" 'org-toggle-item
+   "m i" 'org-id-get-create
+   "m k" 'org-babel-remove-result
+   "m n" 'org-store-link
+   "m o" 'org-set-property
+   "m q" 'org-set-tags-command
+   "m t" 'org-todo
+   "m t" 'org-todo-list
+   "m x" 'org-toggle-checkbox
+   "m a" '(:ignore t :which-key "attachments")
+   "m a a" 'org-attach
+   "m a d" 'org-attach-delete-one
+   "m a d" 'org-attach-delete-all
+   "m a n" 'org-attach-new
+   "m a o" 'org-attach-open
+   "m a o" 'org-attach-open-in-emacs
+   "m a r" 'org-attach-reveal
+   "m a r" 'org-attach-reveal-in-emacs
+   "m a u" 'org-attach-url
+   "m a s" 'org-attach-set-directory
+   "m a s" 'org-attach-sync
+   "m b" '(:ignore t :which-key "tables")
+   "m b -" 'org-table-insert-hline
+   "m b a" 'org-table-align
+   "m b b" 'org-table-blank-field
+   "m b c" 'org-table-create-or-convert-from-region
+   "m b e" 'org-table-edit-field
+   "m b f" 'org-table-edit-formulas
+   "m b h" 'org-table-field-info
+   "m b s" 'org-table-sort-lines
+   "m b r" 'org-table-recalculate
+   "m b R" 'org-table-recalculate-buffer-tables
+   "m b d" '(:ignore t :which-key "delete")
+   "m b d c" 'org-table-delete-column
+   "m b d r" 'org-table-kill-row
+   "m b i" '(:ignore t :which-key "insert")
+   "m b i c" 'org-table-insert-column
+   "m b i h" 'org-table-insert-hline
+   "m b i r" 'org-table-insert-row
+   "m b i H" 'org-table-hline-and-move
+   "m b t" '(:ignore t :which-key "toggle")
+   "m b t f" 'org-table-toggle-formula-debugger
+   "m b t o" 'org-table-toggle-coordinate-overlays
+   "m c" '(:ignore t :which-key "clock")
+   "m c c" 'org-clock-cancel
+   "m c d" 'org-clock-mark-default-task
+   "m c e" 'org-clock-modify-effort-estimate
+   "m c E" 'org-set-effort
+   "m c g" 'org-clock-goto
+   "m c i" 'org-clock-in
+   "m c I" 'org-clock-in-last
+   "m c o" 'org-clock-out
+   "m c r" 'org-resolve-clocks
+   "m c R" 'org-clock-report
+   "m c t" 'org-evaluate-time-range
+   "m c =" 'org-clock-timestamps-up
+   "m c -" 'org-clock-timestamps-down
+   "m d" '(:ignore t :which-key "date/dateline")
+   "m d d" 'org-deadline
+   "m d s" 'org-schedule
+   "m d t" 'org-time-stamp
+   "m d i" 'org-time-stamp-inactive
+   "m g" '(:ignore t :which-key "goto")
+   "m g" 'org-goto
+   "m h" 'consult-org-heading
+   "m a" 'consult-org-agenda
+   "m c" 'org-clock-goto
+   "m i" 'org-id-goto
+   "m r" 'org-refile-goto-last-stored
+   "m x" 'org-capture-goto-last-stored
+   "m l" '(:ignore t :which-key "links")
+   "m l c" 'org-cliplink
+   "m l i" 'org-id-store-link
+   "m l l" 'org-insert-link
+   "m l a" 'org-insert-all-links
+   "m l s" 'org-store-link
+   "m l x" 'org-insert-last-stored-link
+   "m l t" 'org-toggle-link-display
+   "m P" '(:ignore t :which-key "puplish")
+   "m P a" 'org-publish-all
+   "m P f" 'org-publish-current-file
+   "m P p" 'org-publish
+   "m P P" 'org-publish-current-project
+   "m P s" 'org-publish-sitemap
+   "m r" '(:ignore t :which-key "refile")
+   "m r r" 'org-refile
+   "m r R" 'org-refile-reverse
+   "m s" '(:ignore t :which-key "tree/subtree")
+   "m s a" 'org-toggle-archive-tag
+   "m s b" 'org-tree-to-indirect-buffer
+   "m s c" 'org-clone-subtree-with-time-shift
+   "m s d" 'org-cut-subtree
+   "m s h" 'org-promote-subtree
+   "m s j" 'org-move-subtree-down
+   "m s k" 'org-move-subtree-up
+   "m s l" 'org-demote-subtree
+   "m s n" 'org-narrow-to-subtree
+   "m s r" 'org-refile
+   "m s s" 'org-sparse-tree
+   "m s A" 'org-archive-subtree
+   "m s N" 'widen
+   "m s S" 'org-sort
+   "m p" '(:ignore t :which-key "priority")
+   "m p d" 'org-priority-down
+   "m p p" 'org-priority
+   "m p u" 'org-priority-up)
+  :general
+  (:states '(normal visual)
+   :keymaps '(org-agenda-mode-map)
+   :prefix "SPC"
+   ))
 
 (use-package evil-org
   :ensure t
