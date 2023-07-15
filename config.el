@@ -450,7 +450,6 @@
   :keymaps '(dired-mode-map Info-mode-map view-mode-map debugger-mode-map help-mode-map org-agenda-mode-map org-agenda-keymap)
   "SPC")
 
-
 (general-define-key :states '(normal visual motion)
   "g s" 'evil-avy-goto-char)
 
@@ -555,6 +554,21 @@ if one already exists."
    (project-eshell "Eshell")
    (project-vterm "terminal" "t")))
 
+
+(defun my/consult-ripgrep ()
+  (interactive)
+  (if evil-visual-region-expanded
+    (consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
+    (consult-ripgrep)))
+
+(defun my/consult-line ()
+  (interactive)
+  (if evil-visual-region-expanded
+    (let ((region (buffer-substring-no-properties (mark) (point))))
+      (evil-force-normal-state)
+      (consult-line (replace-regexp-in-string " " "\\\\s-" (regexp-quote region))))
+    (consult-line)))
+
 (general-define-key :states '(normal visual motion)
  :prefix "SPC"
  ":" 'execute-extended-command
@@ -623,12 +637,12 @@ if one already exists."
  "w x" 'evil-window-exchange
  "w |" 'evil-window-set-width
  "s" '(:ignore t :which-key "search")
- "s s" 'consult-line
+ "s s" 'my/consult-line
  "SPC" 'project-find-file
  "p" '(:ignore t :which-key "project")
  "p p" 'project-switch-project
- "p s" 'consult-ripgrep
- "s p" 'consult-ripgrep
+ "p s" 'my/consult-ripgrep
+ "s p" 'my/consult-ripgrep
  "." '(find-file :which-key "Find file" )
  "q" '(:ignore t :which-key "quit")
  "q q" 'save-buffers-kill-terminal)
