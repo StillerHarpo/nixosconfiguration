@@ -442,6 +442,10 @@
 (general-define-key :states '(normal visual)
   "g s" 'evil-avy-goto-char)
 
+(general-define-key :states '(normal visual)
+  :keymaps '(Info-mode-map)
+  "s" 'consult-info)
+
 (defun my/delete-this-file ()
     (interactive)
     (delete-file (buffer-file-name))
