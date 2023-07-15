@@ -15,7 +15,9 @@
  (setq evil-want-keybinding nil)
  (setq evil-undo-system 'undo-redo)
  :config
- (evil-mode t))
+ (evil-mode t)
+ (define-key evil-motion-state-map " " nil)
+ )
 
 (use-package evil-collection
   :ensure
@@ -115,11 +117,11 @@
   (add-hook 'org-mode-hook #'auto-revert-mode)
   (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
    :prefix "SPC"
    "n a" 'org-agenda)
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
    :keymaps '(org-mode-map)
    :prefix "SPC"
    "m #" 'org-update-statistics-cookies
@@ -253,7 +255,14 @@
   :hook (org-mode . (lambda () evil-org-mode))
   :config
   (require 'evil-org-agenda)
-  (evil-org-agenda-set-keys))
+  (evil-org-agenda-set-keys)
+  (general-unbind
+    :states '(normal visual motion)
+    :keymaps '(org-agenda-mode-map org-agenda-keymap)
+    "SPC")
+  (with-eval-after-load 'org-agenda
+    (define-key org-agenda-mode-map (kbd "SPC") nil))
+  )
 
 (use-package org-roam
   :ensure
@@ -295,7 +304,7 @@
   (org-roam-db-autosync-mode)
   (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
 	   :prefix "SPC"
            "n" '(:ignore t :which-key "org")
 	   "n f" 'org-roam-node-find
@@ -310,14 +319,14 @@
   "e" 'vterm-send-next-key
   "c" 'vterm-clear)
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
   :prefix "SPC"
   "o t" 'vterm))
 
 (use-package link-hint
   :ensure
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
   :prefix "SPC"
   "s l" 'link-hint-open-link))
 
@@ -328,7 +337,7 @@
    :keymaps 'magit-status-mode-map
    "S-SPC" 'magit-diff-show-or-scroll-up)
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
   :prefix "SPC"
    "g" '(:ignore t :which-key "magit")
    "g g" 'magit-status
@@ -403,7 +412,7 @@
     (interactive)
      (notmuch-search "tag:inbox and date:3M..today"))
   :general
-  (:states '(normal visual)
+  (:states '(normal visual motion)
    :prefix "SPC"
    "o m" '(my/notmuch-search :which-key "notmuch"))
   (:states '(normal visual)
@@ -435,11 +444,12 @@
 
 ;; don't override spc. It should always be the leader key
 (general-unbind
-  :states '(normal visual)
-  :keymaps '(dired-mode-map Info-mode-map view-mode-map)
+  :states '(normal visual motion)
+  :keymaps '(dired-mode-map Info-mode-map view-mode-map debugger-mode-map help-mode-map org-agenda-mode-map org-agenda-keymap)
   "SPC")
 
-(general-define-key :states '(normal visual)
+
+(general-define-key :states '(normal visual motion)
   "g s" 'evil-avy-goto-char)
 
 (general-define-key :states '(normal visual)
@@ -543,7 +553,7 @@ if one already exists."
    (project-eshell "Eshell")
    (project-vterm "terminal" "t")))
 
-(general-define-key :states '(normal visual)
+(general-define-key :states '(normal visual motion)
  :prefix "SPC"
  ":" 'execute-extended-command
  "h" '(:ignore t :which-key "Help")
