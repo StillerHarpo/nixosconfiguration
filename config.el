@@ -260,6 +260,22 @@
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
   (org-roam-directory (file-truename "~/Dokumente/org-roam"))
+  (org-roam-completion-everywhere t)
+  (org-roam-capture-templates
+    '(("d" "default" plain "%?" :target
+        (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
+        :unnarrowed t)
+      ("l" "location" plain "* %A %?" :target
+        (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}")
+        :unnarrowed t)))
+  (org-roam-dailies-capture-templates
+      '(("d" "default" entry
+         "* %U %?"
+         :target (file+head "%<%Y-%m-%d>.org"
+                            "#+title: ~ %<%Y-%m-%d>\n"))
+        ("t" "traueme" plain "#+zeit: %^{von}-%^{bis}\n* Traum 1\n%?" :target
+         (file+head "%<%Y-%m-%d>-Traueme.org" "#+title: ~ Träume vom %<%d.%m.%Y>\n")
+         :unnarrowed t)))
   :config
   (org-roam-db-autosync-mode)
   (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
