@@ -257,6 +257,21 @@
 
 (use-package org-roam
   :ensure
+  :commands
+  (org-roam-node-list org-roam-node-file org-roam-filter-by-regex)
+  :init
+  (defun my/org-roam-filter-by-regex (regex)
+    (lambda (file)
+      (string-match regex (org-file-contents file))))
+
+  (defun my/org-roam-list-notes-by-regex (regex)
+    (seq-filter
+     (my/org-roam-filter-by-regex regex)
+     (mapcar #'org-roam-node-file (org-roam-node-list))))
+  (defun my/org-roam-refresh-agenda-list ()
+    (interactive)
+    (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float"))))
+  (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
   (org-roam-directory (file-truename "~/Dokumente/org-roam"))
@@ -279,18 +294,6 @@
   :config
   (org-roam-db-autosync-mode)
   (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
-  (defun my/org-roam-filter-by-regex (regex)
-    (lambda (file)
-      (string-match regex (org-file-contents file))))
-  
-  (defun my/org-roam-list-notes-by-regex (regex)
-    (seq-filter
-     (my/org-roam-filter-by-regex regex)
-     (mapcar #'org-roam-node-file (org-roam-node-list))))
-  (defun my/org-roam-refresh-agenda-list ()
-    (interactive)
-    (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float"))))
-  (my/org-roam-refresh-agenda-list)
   :general
   (:states '(normal visual)
 	   :prefix "SPC"
