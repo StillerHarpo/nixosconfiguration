@@ -437,6 +437,87 @@
 (general-define-key :states '(normal visual)
   "g s" 'evil-avy-goto-char)
 
+(defun my/delete-this-file ()
+    (interactive)
+    (delete-file (buffer-file-name))
+    (kill-current-buffer))
+
+;; mostly copied from doom emacs
+(defun doom/copy-this-file (new-path &optional force-p)
+  "Copy current buffer's file to NEW-PATH.
+
+If FORCE-P, overwrite the destination file if it exists, without confirmation."
+  (interactive
+   (list (read-file-name "Copy file to: ")
+         current-prefix-arg))
+  (unless (and buffer-file-name (file-exists-p buffer-file-name))
+    (user-error "Buffer is not visiting any file"))
+  (let ((old-path (buffer-file-name (buffer-base-buffer)))
+        (new-path (expand-file-name new-path)))
+    (make-directory (file-name-directory new-path) 't)
+    (copy-file old-path new-path (or force-p 1))
+    (message "File copied to %S" (abbreviate-file-name new-path))))
+
+;; mostly copied from doom emacs
+(defun my/yank-buffer-path (&optional root)
+  "Copy the current buffer's path to the kill ring."
+  (interactive)
+  (if-let (filename (or (buffer-file-name (buffer-base-buffer))
+                        (bound-and-true-p list-buffers-directory)))
+      (let ((path (abbreviate-file-name
+                   (if root
+                       (file-relative-name filename root)
+                     filename))))
+        (kill-new path)
+        (if (string= path (car kill-ring))
+            (message "Copied path: %s" path)
+          (user-error "Couldn't copy filename in current buffer")))
+    (error "Couldn't find filename in current buffer")))
+
+;; mostly copied from doom emacs
+(defun my/yank-buffer-path-relative-to-project (&optional include-root)
+  "Copy the current buffer's path to the kill ring.
+With non-nil prefix INCLUDE-ROOT, also include the project's root."
+  (interactive "P")
+  (+default/yank-buffer-path
+   (if include-root
+       (file-name-directory (directory-file-name (doom-project-root)))
+     (project-root (project-current)))))
+
+;;;###autoload
+(defun project-vterm ()
+  "Start vterm in the current project's root directory.
+If a buffer already exists for running vterm in the project's root,
+switch to it.  Otherwise, create a new vterm buffer.
+With \\[universal-argument] prefix arg, create a new vterm buffer even
+if one already exists."
+  (interactive)
+  (defvar vterm-buffer-name)
+  (let* ((default-directory (project-root (project-current t)))
+         (vterm-buffer-name (project-prefixed-buffer-name "vterm"))
+         (vterm-buffer (get-buffer vterm-buffer-name)))
+    (if (and vterm-buffer (not current-prefix-arg))
+        (pop-to-buffer vterm-buffer (bound-and-true-p display-comint-buffer-action))
+      (vterm t))))
+
+;;;###autoload
+(defun project-magit ()
+  "Start Eshell in the current project's root directory.
+If a buffer already exists for running Eshell in the project's root,
+switch to it.  Otherwise, create a new Eshell buffer.
+With \\[universal-argument] prefix arg, create a new Eshell buffer even
+if one already exists."
+  (interactive)
+  (let ((default-directory (project-root (project-current t)))
+    (magit-status))))
+
+(setq project-switch-commands 
+  '((project-find-file "Find file")
+   (consult-ripgrep "Find regexp" "r")
+   (project-magit "git" "g")
+   (project-eshell "Eshell")
+   (project-vterm "terminal" "t")))
+
 (general-define-key :states '(normal visual)
  :prefix "SPC"
  ":" 'execute-extended-command
@@ -448,12 +529,21 @@
  "h m" 'describe-mode
  "h p" 'describe-package
  "h i" 'info
- "f" '(:ignore t :which-key "File")
- "f f" 'find-file
- "f s" 'save-buffer
+ "f" '(:ignore t :which-key "file")
+ "f c" '(my/copy-this-file :which-key "Copy this file")
+ "f d" '(my/delete-this-file :which-key "Delete this file")
+ "f f" '(find-file :which-key "Find file")
+ "f l" '(locate :which-key "Locate file")
+ "f r" '(recentf-open-files :which-key "Recent files")
+ "f R" '(my/move-this-file :which-key "Rename/move file")
+ "f s" '(save-buffer :which-key "Save file")
+ "f S" '(write-file :which-key "Save file as...")
+ "f y" '(my/yank-buffer-path :which-key "Yank file path")
+ "f Y" '(my/yank-buffer-path-relative-to-project :which-key "Yank file path from project")
  "b" '(:ignore t :which-key "Buffer")
  "b b" 'consult-buffer
  "b r" 'revert-buffer
+ "b d" 'kill-current-buffer
  "w" '(:ignore t :which-key "Window")
  "w m m" 'maximize-window
  "w j" 'evil-window-down
