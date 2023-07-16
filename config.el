@@ -557,14 +557,10 @@ if one already exists."
 
 ;;;###autoload
 (defun project-magit ()
-  "Start Eshell in the current project's root directory.
-If a buffer already exists for running Eshell in the project's root,
-switch to it.  Otherwise, create a new Eshell buffer.
-With \\[universal-argument] prefix arg, create a new Eshell buffer even
-if one already exists."
+  "Start magit in the current project's root directory."
   (interactive)
-  (let ((default-directory (project-root (project-current t)))
-    (magit-status))))
+  (let ((default-directory (expand-file-name (project-root (project-current t)))))
+    (magit-status)))
 
 (setq project-switch-commands 
   '((project-find-file "Find file")
