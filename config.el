@@ -354,6 +354,13 @@
     (define-key magit-revision-mode-map (kbd "SPC") nil))
   )
 
+(use-package git-timemachine
+  :ensure t
+  :general
+  (:states '(normal visual motion)
+  :prefix "SPC"
+   "g t" 'git-timemachine))
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode))
