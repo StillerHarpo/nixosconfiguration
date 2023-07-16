@@ -433,11 +433,23 @@
    "d" '(notmuch-search-add-tag "+trash")
    "t" 'notmuch-search-add-tag)
   :config
-  (setq notmuch-fcc-dirs "Sent -unread +sent")
-  (general-define-key
-   :states '(normal visual)
+  (setq notmuch-fcc-dirs "Sent -unread +sent"))
+
+(use-package elfeed
+  :custom
+  (rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
+  (elfeed-search-filter "@6-days-ago +unread +favorite")
+  :ensure
+  :general
+  (:states '(normal visual)
    :prefix "SPC"
-   ))
+   "o e" 'elfeed))
+
+(use-package elfeed-org
+  :custom
+  (rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
+  :config
+  (elfeed-org))
 
 (recentf-mode 1)
 (winner-mode 1)
