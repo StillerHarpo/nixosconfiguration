@@ -395,14 +395,20 @@
 
 (use-package notmuch
   :ensure t
-  :init
-  (setq notmuch-search-oldest-first 'f)
-  (setq message-default-mail-headers "Cc: \nBcc: \n")
+  :custom
+  (mml-secure-openpgp-sign-with-sender t)
+  (notmuch-search-oldest-first 'f)
+  (message-default-mail-headers "Cc: \nBcc: \n")
   ;; postponed message is put in the following draft directory
-  (setq message-auto-save-directory "~/Maildir/draft")
+  (message-auto-save-directory "~/Maildir/draft")
   ;; change the directory to store the sent mail
-  (setq message-directory "~/Maildir/")
-  (setq notmuch-saved-searches
+  (message-directory "~/Maildir/")
+  (send-mail-function 'sendmail-send-it)
+  (sendmail-program "msmtp")
+  (mail-specify-envelope-from t)
+  (mail-envelope-from 'header)
+  (message-sendmail-envelope-from 'header)
+  (notmuch-saved-searches
         '((:name "inbox" :query "tag:inbox and not tag:trash and date:3M..today" :key "i")
           (:name "unread" :query "tag:unread" :key "u")
           (:name "flagged" :query "tag:flagged" :key "f")
@@ -410,6 +416,8 @@
           (:name "sent" :query "tag:sent" :key "s")
           (:name "drafts" :query "tag:draft" :key "d")
           (:name "all mail" :query "date:3M..today" :key "a")))
+  :init
+  (add-hook 'message-setup-hook 'mml-secure-sign-pgpmime)
   (defun my/notmuch-update ()
     "Update mails and notmuch buffer"
     (interactive)
@@ -434,6 +442,15 @@
     "Open notmuch in serach mode"
     (interactive)
      (notmuch-search "tag:inbox and date:3M..today"))
+   ;;;###autoload
+   (defun +notmuch/compose ()
+     "Compose new mail"
+     (interactive)
+     (notmuch-mua-mail
+      nil
+      nil
+      (list (cons 'From  (completing-read "From: " (notmuch-user-emails))))))
+
   :general
   (:states '(normal visual motion)
    :prefix "SPC"
@@ -441,7 +458,8 @@
   (:states '(normal visual)
    :prefix "SPC"
    :keymaps '(notmuch-search-mode-map)
-   "m u" '(my/notmuch-update :which-key "update mails"))
+   "m u" '(my/notmuch-update :which-key "update mails")
+   "m c" '(+notmuch/compose :which-key "compose mail"))
   (:states '(normal visual)
    :prefix "SPC"
    :keymaps '(notmuch-message-mode-map)
@@ -449,7 +467,7 @@
    "m a" '(mml-attach-file :which-key "attach file")
    "m d" '(notmuch-draft-save :which-key "save as draft"))
   (:states '(normal visual)
-   :keymaps '(notmuch-message-mode-map)
+   :keymaps '(notmuch-search-mode-map)
    "d" '(notmuch-search-add-tag "+trash")
    "t" 'notmuch-search-add-tag)
   :config

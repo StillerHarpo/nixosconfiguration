@@ -8,7 +8,10 @@ else
   "${userName}@${host}"), primary ? false }: {
     inherit address realName primary userName;
     imap.host = imapHost;
-    smtp.host = smtpHost;
+    smtp = {
+      host = smtpHost;
+      port = 465;
+    };
     passwordCommand = "pass show ${passName}";
     gpg = {
       inherit key;
