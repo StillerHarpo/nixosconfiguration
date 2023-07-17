@@ -382,7 +382,16 @@
   :hook ((typescript-ts-mode . tide-setup)
          (tsx-ts-mode . tide-setup)
          (typescript-ts-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save)))
+         (before-save . tide-format-before-save))
+  :config
+  (evil-add-command-properties #'tide-goto-line-reference :jump t)
+  (evil-add-command-properties #'tide-jump-to-definition :jump t)
+  :general
+  (:states '(normal visual motion)
+  :prefix "SPC"
+  "c d" 'tide-jump-to-definition
+  "c r" 'tide-goto-line-reference))
+
 
 (use-package notmuch
   :ensure t
