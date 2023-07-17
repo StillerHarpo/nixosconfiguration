@@ -363,7 +363,11 @@
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :init (global-flycheck-mode)
+  :general
+  (:states '(normal visual motion)
+  :prefix "SPC"
+   "c x" 'flycheck-list-errors))
 
 (use-package nix-mode
   :mode "\\.nix\\'")
