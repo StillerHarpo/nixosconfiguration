@@ -378,11 +378,17 @@
 
 (use-package tide
   :ensure t
-  :after (company flycheck)
+  :after (company flycheck envrc)
+  :init
+  (defun eslint-format ()
+    "runs eslint on the current file, falls back on tide-format"
+    (unless
+	(= (call-process "npx" nil nil nil "eslint" "--quiet" "--fix" (buffer-file-name (current-buffer))) 0)
+      (tide-format-before-save)))
   :hook ((typescript-ts-mode . tide-setup)
          (tsx-ts-mode . tide-setup)
          (typescript-ts-mode . tide-hl-identifier-mode)
-         (before-save . tide-format-before-save))
+         (before-save . eslint-format))
   :config
   (evil-add-command-properties #'tide-goto-line-reference :jump t)
   (evil-add-command-properties #'tide-jump-to-definition :jump t)
