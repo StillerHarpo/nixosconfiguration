@@ -361,6 +361,14 @@
   :prefix "SPC"
    "g t" 'git-timemachine))
 
+(use-package forge
+  :after magit
+  :ensure t)
+
+(use-package code-review
+  :after magit
+  :ensure t)
+
 (use-package flycheck
   :ensure t
   :init (global-flycheck-mode)

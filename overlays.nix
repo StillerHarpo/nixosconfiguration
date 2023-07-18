@@ -90,6 +90,16 @@
           alwaysEnsure = true;
           package = emacsPgks.emacs-unstable;
           extraEmacsPackages = (epkgs: [(epkgs.treesit-grammars.with-all-grammars )]);
+          override = _: eprev: {
+            code-review = eprev.melpaPackages.code-review.overrideAttrs(old: {
+              src = final.fetchFromGitHub {
+                owner = "phelrine";
+                repo = "code-review";
+                rev = "97dae6fca12d49833dcbe865460021151520c10b";
+                hash = "sha256-V6ipfIlCHxWWxC1ECZIRpRIC5vrrI+jCFczMWRMQwos=";
+              };
+            });
+          };
         }
       }/bin/emacs -q --eval '(load-file "~/nixosconfiguration/config.el")'
     '';
