@@ -388,9 +388,12 @@
   (evil-add-command-properties #'tide-jump-to-definition :jump t)
   :general
   (:states '(normal visual motion)
+  "g r" 'tide-references)
+  :general
+  (:states '(normal visual motion)
   :prefix "SPC"
   "c d" 'tide-jump-to-definition
-  "c r" 'tide-goto-line-reference))
+  "c r" 'tide-references))
 
 
 (use-package notmuch
