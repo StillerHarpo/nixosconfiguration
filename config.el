@@ -498,16 +498,22 @@
   (setq notmuch-fcc-dirs "Sent -unread +sent"))
 
 (use-package elfeed
+  :ensure t
   :custom
   (rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
   (elfeed-search-filter "@6-days-ago +unread +favorite")
-  :ensure
+  :config
+  (general-unbind
+    :states '(normal visual motion)
+    :keymaps '(elfeed-search-mode-map elfeed-show-mode-map)
+    "SPC")
   :general
   (:states '(normal visual)
    :prefix "SPC"
    "o e" 'elfeed))
 
 (use-package elfeed-org
+  :ensure t
   :custom
   (rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
   :config
