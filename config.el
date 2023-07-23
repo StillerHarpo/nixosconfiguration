@@ -767,3 +767,5 @@ If I let Windows handle DPI everything looks blurry."
 (add-to-list 'display-buffer-alist
              '("*Help*" display-buffer-same-window))
 
+
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
