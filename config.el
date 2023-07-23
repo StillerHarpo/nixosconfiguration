@@ -111,6 +111,13 @@
   (org-modules '(ol-bibtex org-habit))
   (org-log-into-drawer "LOGBOOK")
   (org-agenda-window-setup 'current-window)
+  (org-agenda-todo-ignore-scheduled 'future)
+  (org-todo-keywords
+        '((sequence
+           "TODO(t)"  ; A task that needs doing & is ready to do
+           "|"
+           "DONE(d)"  ; Task successfully completed
+           "KILL(k)"))) ; Task was cancelled, aborted or is no longer applicable
   :config
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
@@ -145,7 +152,7 @@
    "m o" 'org-set-property
    "m q" 'org-set-tags-command
    "m t" 'org-todo
-   "m t" 'org-todo-list
+   "m T" 'org-todo-list
    "m x" 'org-toggle-checkbox
    "m a" '(:ignore t :which-key "attachments")
    "m a a" 'org-attach
