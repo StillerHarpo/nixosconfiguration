@@ -395,6 +395,8 @@
 (use-package tide
   :ensure t
   :after (company flycheck envrc)
+  :custom
+  (tide-server-max-response-length 204800)
   :init
   (defun eslint-format ()
     "runs eslint on the current file, falls back on tide-format"
