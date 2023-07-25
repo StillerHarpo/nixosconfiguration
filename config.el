@@ -522,6 +522,13 @@
   :config
   (elfeed-org))
 
+(use-package ement
+  :ensure t
+  :general
+  (:states '(normal visual)
+   :prefix "SPC"
+   "o c" 'ement-connect))
+
 (recentf-mode 1)
 (winner-mode 1)
 
