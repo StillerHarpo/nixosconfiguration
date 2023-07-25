@@ -342,6 +342,7 @@
   :ensure
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
+  (magit-diff-refine-hunk 't)
   :general
   (:states '(normal visual)
    :keymaps 'magit-status-mode-map
