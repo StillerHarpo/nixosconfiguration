@@ -5,7 +5,7 @@
 else if host == "" then
   "${userName}"
 else
-  "${userName}@${host}"), primary ? false }: {
+  "${userName}@${host}"), primary ? false, patterns ? [ "*" ] }: {
     inherit address realName primary userName;
     imap.host = imapHost;
     smtp = {
@@ -20,6 +20,7 @@ else
     mbsync = {
       enable = true;
       create = "maildir";
+      inherit patterns;
     };
     msmtp.enable = true;
     notmuch.enable = true;

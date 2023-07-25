@@ -90,13 +90,13 @@ in {
       passName = "gmailMu4e";
       host = "gmail.com";
     };
-    #    accounts.cpMed = import ./mail.nix {
-    #      inherit realName key;
-    #      address = "engel@cp-med.com";
-    #      addressPrefix = "florian.engel";
-    #      passName = "arbeitNotmuch";
-    #      host = "gmail.com";
-    #    };
+    accounts.cpMed = import ./mail.nix {
+        inherit realName key;
+         address = "engel@medilyse.org";
+         passName = "mbsync/engel@medilyse.org";
+         host = "gmail.com";
+         patterns = [ "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" ];
+     };
   };
   services = {
     gpg-agent = {
