@@ -167,8 +167,15 @@
    "m e" 'org-export-dispatch
    "m f" 'org-footnote-action
    "m h" 'org-toggle-heading
-   "m i" 'org-toggle-item
-   "m i" 'org-id-get-create
+   "m i" '(:ignore t :which-key "insert")
+   "m i t" 'org-insert-structure-template
+   "m i d" 'org-insert-drawer
+   "m i c" 'org-insert-comment
+   "m i h" 'org-insert-heading
+   "m i i" 'org-insert-item
+   "m i l" 'org-insert-link
+   "m i p" 'org-insert-property-drawer
+   "m i s" 'org-insert-subheading
    "m k" 'org-babel-remove-result
    "m n" 'org-store-link
    "m o" 'org-set-property
