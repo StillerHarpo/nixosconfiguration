@@ -446,9 +446,11 @@
   (evil-add-command-properties #'tide-jump-to-definition :jump t)
   :general
   (:states '(normal visual motion)
+   :keymaps '(tsx-ts-mode typescript-ts-mode)
   "g r" 'tide-references)
   :general
   (:states '(normal visual motion)
+   :keymaps '(tsx-ts-mode typescript-ts-mode)
   :prefix "SPC"
   "c d" 'tide-jump-to-definition
   "c r" 'tide-references))
