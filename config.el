@@ -125,6 +125,7 @@
   (org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org")
   (org-ref-default-bibliography reftex-default-bibliography)
   (org-ref-pdf-directory "~/Dokumente/bibliography/bibtex-pdfs/")
+  (org-default-notes-file "~/Dokumente/notes.org")
   (org-read-date-force-compatible-dates nil)
   (org-modules '(ol-bibtex org-habit))
   (org-log-into-drawer "LOGBOOK")
@@ -145,7 +146,9 @@
   :general
   (:states '(normal visual motion)
    :prefix "SPC"
-   "n a" 'org-agenda)
+   "n a" 'org-agenda
+   "n c" 'org-capture
+   "n l" 'org-store-link)
   :general
   (:states '(normal visual motion)
    :keymaps '(org-mode-map)
@@ -275,6 +278,9 @@
    :prefix "SPC"
    ))
 
+(use-package ol-notmuch
+  :ensure t)
+
 (use-package evil-org
   :ensure t
   :after org
@@ -305,7 +311,7 @@
      (mapcar #'org-roam-node-file (org-roam-node-list))))
   (defun my/org-roam-refresh-agenda-list ()
     (interactive)
-    (setq org-agenda-files (delete-dups (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float"))))
+    (setq org-agenda-files (delete-dups (cons "~/Dokumente/notes.org" (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float")))))
   (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
