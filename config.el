@@ -419,7 +419,23 @@
 (use-package nix-mode
   :mode "\\.nix\\'")
 
-(use-package haskell-mode :ensure)
+(use-package haskell-mode
+  :ensure t
+  :init
+  (defun my/init-haskell ()
+    "init haskell-mode with etags or eglot depending on the project"
+    (interactive)
+    (if (and (project-current) (string-match (rx (and "/checkpad/server/" line-end)) (project-root (project-current))))
+	(progn
+	  (custom-set-variables '(haskell-tags-on-save t))
+          (set (make-local-variable 'company-backends)
+               (append '(company-etags) company-backends))
+          (general-define-key
+	     :keymaps 'local
+	     :states '(normal visual motion)
+             "g d" 'haskell-mode-tag-find))
+      (eglot-ensure)))
+  :hook (haskell-mode . my/init-haskell))
 
 (use-package nix-mode :ensure)
 
