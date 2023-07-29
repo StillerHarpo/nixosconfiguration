@@ -78,6 +78,16 @@
   :config
   (global-company-mode))
 
+(use-package tempel
+  :general
+  (:states '(normal visual motion)
+   :prefix "SPC"
+   "c i" 'tempel-insert))
+
+(use-package tempel-collection
+  :ensure t
+  :after tempel)
+
 (use-package consult :ensure)
 
 (use-package avy :ensure)
