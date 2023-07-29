@@ -636,15 +636,11 @@ If FORCE-P, overwrite the destination file if it exists, without confirmation."
           (user-error "Couldn't copy filename in current buffer")))
     (error "Couldn't find filename in current buffer")))
 
-;; mostly copied from doom emacs
-(defun my/yank-buffer-path-relative-to-project (&optional include-root)
-  "Copy the current buffer's path to the kill ring.
-With non-nil prefix INCLUDE-ROOT, also include the project's root."
+(defun my/yank-buffer-path-relative-to-project ()
+  "Copy the current buffer's path to the kill ring."
   (interactive "P")
-  (+default/yank-buffer-path
-   (if include-root
-       (file-name-directory (directory-file-name (doom-project-root)))
-     (project-root (project-current)))))
+  (my/yank-buffer-path
+     (project-root (project-current))))
 
 ;;;###autoload
 (defun project-vterm ()
