@@ -10,31 +10,22 @@
 (use-package general :ensure)
 
 (use-package hydra
-  :ensure t
-  :config
-  (defhydra hydra-zoom (evil-normal-state-map "SPC z")
-    "zoom"
-    ("j" text-scale-increase "in")
-    ("k" text-scale-decrease "out")
-    ("f" text-scale-mode "no scale"))
-  (defhydra hydra-git-timemachine (git-timemachine-mode-map "SPC m t")
-    "timemachine transient state"
-    ("n" git-timemachine-show-next-revision "next revision")
-    ("p" git-timemachine-show-previous-revision "previous revision")
-    ("j" evil-scroll-down "scroll down")
-    ("k" evil-scroll-up "scroll up")
-    ("s" consult-line "search")
-    ("b" magit-blame-addition "blame")
-    ))
+  :ensure t)
 
 (use-package evil
- :ensure
+ :ensure t
+ :after hydra
  :init
  (setq evil-want-keybinding nil)
  (setq evil-undo-system 'undo-redo)
  :config
  (evil-mode t)
  (define-key evil-motion-state-map " " nil)
+ (defhydra hydra-zoom (evil-normal-state-map "SPC z")
+   "zoom"
+    ("j" text-scale-increase "in")
+    ("k" text-scale-decrease "out")
+    ("f" text-scale-mode "no scale"))
  )
 
 (use-package evil-collection
@@ -388,10 +379,21 @@
 
 (use-package git-timemachine
   :ensure t
+  :after hydra
   :general
   (:states '(normal visual motion)
   :prefix "SPC"
-   "g t" 'git-timemachine))
+  "g t" 'git-timemachine)
+  :config
+  (defhydra hydra-git-timemachine (git-timemachine-mode-map "SPC m t")
+    "timemachine transient state"
+    ("n" git-timemachine-show-next-revision "next revision")
+    ("p" git-timemachine-show-previous-revision "previous revision")
+    ("j" evil-scroll-down "scroll down")
+    ("k" evil-scroll-up "scroll up")
+    ("s" consult-line "search")
+    ("b" magit-blame-addition "blame")
+    ))
 
 (use-package forge
   :after magit
