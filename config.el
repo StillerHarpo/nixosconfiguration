@@ -409,6 +409,11 @@
   :prefix "SPC"
    "c x" 'flycheck-list-errors))
 
+(use-package flycheck-eglot
+  :ensure t
+  :config
+  (global-flycheck-eglot-mode 1))
+
 (use-package nix-mode
   :mode "\\.nix\\'")
 
