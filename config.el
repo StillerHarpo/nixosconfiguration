@@ -416,7 +416,7 @@
   :after magit
   :ensure t)
 
-(use-package code-review
+(use-package pr-review 
   :after magit
   :ensure t)
 
