@@ -560,7 +560,10 @@
       nil
       nil
       (list (cons 'From  (completing-read "From: " (notmuch-user-emails))))))
-
+   (defun my/notmuch-trash ()
+     "Add trash label to mail"
+     (interactive)
+     (notmuch-search-add-tag '("+trash")))
   :general
   (:states '(normal visual motion)
    :prefix "SPC"
@@ -573,12 +576,12 @@
   (:states '(normal visual)
    :prefix "SPC"
    :keymaps '(notmuch-message-mode-map)
-   "m c" '(notmuch-mua-send-and-exit :which-key "send mail" )
+   "m c" '(notmuch-mua-send-and-exit :which-key "send mail")
    "m a" '(mml-attach-file :which-key "attach file")
    "m d" '(notmuch-draft-save :which-key "save as draft"))
   (:states '(normal visual)
    :keymaps '(notmuch-search-mode-map)
-   "d" '(notmuch-search-add-tag "+trash")
+   "d" 'my/notmuch-trash
    "t" 'notmuch-search-add-tag)
   :config
   (setq notmuch-fcc-dirs "Sent -unread +sent"))
