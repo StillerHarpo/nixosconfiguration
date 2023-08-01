@@ -470,6 +470,7 @@
   :after (company flycheck envrc)
   :custom
   (tide-server-max-response-length 204800)
+  (typescript-ts-mode-indent-offset 4)
   :init
   (defun my/eslint-format ()
     "runs eslint on the current file, falls back on tide-format"
