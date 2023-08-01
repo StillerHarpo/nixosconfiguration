@@ -418,7 +418,16 @@
 
 (use-package pr-review 
   :after magit
-  :ensure t)
+  :ensure t
+  :config
+  (defun my/pr-review-at-point ()
+    "opens the pull request at point in pr-review"
+    (interactive)
+    (if-let ((url (forge-get-url (or (forge-post-at-point)
+                                   (forge-current-topic)))))
+        (pr-review url)
+      (user-error "Nothing at point with a URL")))
+  )
 
 (use-package flycheck
   :ensure t
