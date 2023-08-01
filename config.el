@@ -488,6 +488,9 @@
   "c d" 'tide-jump-to-definition
   "c r" 'tide-references))
 
+(use-package csv-mode
+  :ensure t
+  :hook (csv-mode . csv-guess-set-separator))
 
 (use-package notmuch
   :ensure t
