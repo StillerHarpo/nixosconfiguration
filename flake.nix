@@ -21,24 +21,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     emacs-overlay = {
-      url =
-        "github:nix-community/emacs-overlay?rev=6d54cfde44494da2396678d82bb61eeb0a3fa392";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-utils.follows = "flake-utils";
-      };
-    };
-    emacs-overlay-unpinned = {
       url = "github:nix-community/emacs-overlay";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
       };
-    };
-    doom-emacs = {
-      url =
-        "github:doomemacs/doomemacs?rev=d5ccac5d71c819035fa251f01d023b3f94b4fba4";
-      flake = false;
     };
     home-manager-flake = {
       url = "github:nix-community/home-manager/release-23.05";

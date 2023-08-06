@@ -10,7 +10,6 @@
     ./work-container.nix
     ./hardware.nix
     ./hibernate.nix
-    ../../doom.nix
     ../configuration.nix
     ./themeChanger.nix
     ./backup.nix
@@ -137,7 +136,6 @@
             grex
             kubectl
             k9s
-            native-emacs
           ];
           profile = defaultProfile;
         }

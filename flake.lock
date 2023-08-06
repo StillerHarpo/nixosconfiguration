@@ -91,48 +91,7 @@
         "type": "github"
       }
     },
-    "doom-emacs": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1669937766,
-        "narHash": "sha256-7AzL08qo5WLeJo10lnF2b7g6FdWnExVYS8yipNyAMMM=",
-        "owner": "doomemacs",
-        "repo": "doomemacs",
-        "rev": "d5ccac5d71c819035fa251f01d023b3f94b4fba4",
-        "type": "github"
-      },
-      "original": {
-        "owner": "doomemacs",
-        "repo": "doomemacs",
-        "rev": "d5ccac5d71c819035fa251f01d023b3f94b4fba4",
-        "type": "github"
-      }
-    },
     "emacs-overlay": {
-      "inputs": {
-        "flake-utils": [
-          "flake-utils"
-        ],
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1677925058,
-        "narHash": "sha256-8Sd92ktTfxV7+3XJ2AVILU7dltWxu4jkh1EaWQsuC1k=",
-        "owner": "nix-community",
-        "repo": "emacs-overlay",
-        "rev": "6d54cfde44494da2396678d82bb61eeb0a3fa392",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-community",
-        "repo": "emacs-overlay",
-        "rev": "6d54cfde44494da2396678d82bb61eeb0a3fa392",
-        "type": "github"
-      }
-    },
-    "emacs-overlay-unpinned": {
       "inputs": {
         "flake-utils": [
           "flake-utils"
@@ -143,11 +102,11 @@
         "nixpkgs-stable": "nixpkgs-stable"
       },
       "locked": {
-        "lastModified": 1690195528,
-        "narHash": "sha256-ZwJTXjvG9ssUypJfI/FZ3TWIbCksPJNfiqISm19Ro58=",
+        "lastModified": 1691292411,
+        "narHash": "sha256-m/R+5HbCt2m9DUWtH/CwrOwEj64QjmJ5A4Wj76rhw5M=",
         "owner": "nix-community",
         "repo": "emacs-overlay",
-        "rev": "9855d7f268dffa9643f9bc3eaabb7957f4a3c476",
+        "rev": "5385985f2a2bed8c06a0ee5292db6452ff03a6ad",
         "type": "github"
       },
       "original": {
@@ -386,11 +345,11 @@
     },
     "nixpkgs-stable": {
       "locked": {
-        "lastModified": 1689956312,
-        "narHash": "sha256-NV9yamMhE5jgz+ZSM2IgXeYqOvmGIbIIJ+AFIhfD7Ek=",
+        "lastModified": 1691252436,
+        "narHash": "sha256-SKKPKYOnFcwqECehxoFBMLv29CZXC5qCDuETSuXd82g=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6da4bc6cb07cba1b8e53d139cbf1d2fb8061d967",
+        "rev": "9607b9149c9d81fdf3dc4f3bcc278da146ffbd77",
         "type": "github"
       },
       "original": {
@@ -436,9 +395,7 @@
         "agenix": "agenix",
         "darwin": "darwin_2",
         "deploy-rs": "deploy-rs",
-        "doom-emacs": "doom-emacs",
         "emacs-overlay": "emacs-overlay",
-        "emacs-overlay-unpinned": "emacs-overlay-unpinned",
         "envfs": "envfs",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",

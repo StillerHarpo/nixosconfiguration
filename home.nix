@@ -3,10 +3,7 @@
 {
 
   home = {
-    sessionVariables = {
-      SHELL = pkgs.myshell;
-      EDITOR = "vim";
-    };
+    sessionVariables.SHELL = pkgs.myshell;
     packages = with pkgs;
       [
         afew # needed for notmuch update in emacs

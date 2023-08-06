@@ -17,7 +17,6 @@
     };
     initExtra = ''
       precmd() { . ~/.env }
-      export VISUAL='vim'
       export PATH=~/checkpad/checkpad-ssh:$PATH
       vterm_printf(){
           if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then

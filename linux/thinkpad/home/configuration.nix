@@ -105,7 +105,19 @@ in {
       enableSshSupport = true;
       # pinentryFlavor = "qt";
     };
+    emacs = {
+      enable = true;
+      package = pkgs.myemacs;
+      defaultEditor = true;
+      client.enable = true;
+    };
   };
+
+  programs.emacs = {
+      enable = true;
+      package = pkgs.myemacs;
+  };
+
 
   xsession.windowManager.xmonad = {
     config = ../../../haskell/xmonad-thinkpad/xmonad.hs;

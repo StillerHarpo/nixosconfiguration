@@ -14,8 +14,6 @@
       texlive.combine {
         inherit (texlive) scheme-full pygmentex pgf collection-basic;
       };
-    myemacs = (prev.emacsPackagesFor prev.emacsUnstable).emacsWithPackages
-      (epkgs: [ epkgs.vterm ]);
     # https://github.com/DanBloomberg/leptonica/issues/659
     leptonica = prev.leptonica.overrideAttrs (oldAttrs: {
       patches = (if oldAttrs ? patches then oldAttrs.patches else [ ]) ++ [
@@ -78,18 +76,11 @@
 
         nativeBuildInputs = [ pbr ];
       };
-    native-emacs = let
-      emacsPgks = import inputs.nixpkgs {
-        overlays = [ inputs.emacs-overlay-unpinned.overlay ];
-        system = final.system;
-      };
-    in emacsPgks.writeScriptBin "native-emacs" ''
-      ${
-        emacsPgks.emacsWithPackagesFromUsePackage {
+    myemacs = prev.emacsWithPackagesFromUsePackage {
           config = ./config.el;
           defaultInitFile = true;
           alwaysEnsure = true;
-          package = emacsPgks.emacs-unstable;
+          package = prev.emacs-unstable;
           extraEmacsPackages = epkgs:
             [epkgs.treesit-grammars.with-all-grammars];
           override = _: eprev: rec {
@@ -101,11 +92,9 @@
               inherit (eprev) trivialBuild;
             };
           };
-        }
-      }/bin/emacs -q --eval '(load-file "~/nixosconfiguration/config.el")'
-    '';
+        };
   };
-  emacs = inputs.emacs-overlay.overlay;
+  a-emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;
   nix-alien = inputs.nix-alien.overlay;
 }
