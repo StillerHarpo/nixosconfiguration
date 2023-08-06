@@ -381,11 +381,7 @@
   "p" 'vterm-yank
   :prefix ","
   "e" 'vterm-send-next-key
-  "c" 'vterm-clear)
-  :general
-  (:states '(normal visual motion)
-  :prefix "SPC"
-  "o t" 'vterm))
+  "c" 'vterm-clear))
 
 (use-package link-hint
   :ensure
@@ -589,9 +585,6 @@
      (interactive)
      (notmuch-search-add-tag '("+trash")))
   :general
-  (:states '(normal visual motion)
-   :prefix "SPC"
-   "o m" '(my/notmuch-search :which-key "notmuch"))
   (:states '(normal visual)
    :prefix "SPC"
    :keymaps '(notmuch-search-mode-map)
@@ -619,11 +612,7 @@
   (general-unbind
     :states '(normal visual motion)
     :keymaps '(elfeed-search-mode-map elfeed-show-mode-map)
-    "SPC")
-  :general
-  (:states '(normal visual)
-   :prefix "SPC"
-   "o e" 'elfeed))
+    "SPC"))
 
 (use-package elfeed-org
   :ensure t
@@ -634,15 +623,49 @@
 
 (use-package ement
   :ensure t
+(use-package peertube
+  :ensure t
+  :init
+  (defun peertube-mpv-open-video ()
+    "Open the video under the cursor using `browse-url'."
+    (interactive)
+    (let ((url (peertube-video-url (peertube--get-current-video))))
+      (browse-url-mpv url)))
   :general
   (:states '(normal visual)
-   :prefix "SPC"
-   "o c" 'ement-connect))
+  :keymaps 'peertube-mode-map
+  "enter" 'peertube-mpv-open-video
+  "o" 'peertube-mpv-open-video
+  "c" 'peertube-goto-channel
+  "i" 'peertube-show-video-info
+  "d" 'peertube-download-video
+  "q" 'peertube-quit
+  "s" 'peertube-search
+  "m" 'peertube-change-sort-method
+  "t" 'peertube-preview-thumbnail))
 
 (recentf-mode 1)
 (winner-mode 1)
 
 (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode))
+
+;; Browser function
+(setq no-eww-reg (rx (or "youtube." "youtu.be" "v.reddit.it" "dailymotion."
+                         "github.com" "streamable.com"  "liveleak.com"
+                         "vimeo.com" "gfycat.com"
+                         (and (or ".mp3" ".mp4" ".m4v" ".svg" ".gif" ".gifv")
+                              line-end))))
+
+(setq browse-url-handlers `((,no-eww-reg . browse-url-linkopenwithx)
+                            ("." . eww-browse-url)))
+
+(defun browse (prog url)
+  (setq url (browse-url-encode-url url))
+  (apply #'start-process (append `(,(concat (car prog) " " url) nil) prog `(,url))))
+(defun browse-url-firefox-new-window (url &rest agrs)
+  (browse-url-firefox url t))
+
+(setq browse-url-secondary-browser-function 'browse-url-firefox-new-window)
 
 ;; don't override spc. It should always be the leader key
 (general-unbind
@@ -837,33 +860,20 @@ if one already exists."
  "s p" 'my/consult-ripgrep
  "." '(find-file :which-key "Find file" )
  "q" '(:ignore t :which-key "quit")
- "q q" 'save-buffers-kill-terminal)
+ "q q" 'save-buffers-kill-terminal
+ "o" '(:ignore t :which-key "open")
+ "o e" 'elfeed
+ "o c" 'ement-connect
+ "o t" 'vterm
+ "o y" 'ytel
+ "o p" 'peertube
+ "o m" '(my/notmuch-search :which-key "notmuch"))
 
 (general-define-key
  :states '(normal visual)
  :prefix "SPC"
  :keymaps 'emacs-lisp-mode-map
   "m e e" 'eval-last-sexp)
-
-(setq ytel-invidious-api-url "https://yewtu.be")
-
-(defun peertube-mpv-open-video ()
-  "Open the video under the cursor using `browse-url'."
-  (interactive)
-  (let ((url (peertube-video-url (peertube--get-current-video))))
-    (browse-url-mpv url)))
-
-(general-evil-define-key '(normal visual) 'peertube-mode-map
-  "enter" 'peertube-mpv-open-video
-  "o" 'peertube-mpv-open-video
-  "c" 'peertube-goto-channel
-  "i" 'peertube-show-video-info
-  "d" 'peertube-download-video
-  "q" 'peertube-quit
-  "s" 'peertube-search
-  "m" 'peertube-change-sort-method
-  "t" 'peertube-preview-thumbnail)
-(setq ytel-invidious-api-url "https://yewtu.be")
 
 ;; Font size adjustment
 (defun hoagie-adjust-font-size (frame)
