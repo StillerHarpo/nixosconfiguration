@@ -395,6 +395,7 @@
   :custom
   (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1)
   (magit-diff-refine-hunk 't)
+  :hook (magit-status-mode-hook . so-long-minor-mode)
   :general
   (:states '(normal visual)
    :keymaps 'magit-status-mode-map
