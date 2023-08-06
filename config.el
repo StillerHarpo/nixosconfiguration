@@ -41,6 +41,15 @@
     ("f" text-scale-mode "no scale"))
  )
 
+(use-package vimish-fold
+  :ensure
+  :after evil)
+
+(use-package evil-vimish-fold
+  :ensure
+  :after vimish-fold
+  :hook ((prog-mode conf-mode text-mode) . evil-vimish-fold-mode))
+
 (use-package evil-collection
   :ensure
   :init
