@@ -437,7 +437,7 @@
   :after magit
   :ensure t)
 
-(use-package pr-review 
+(use-package pr-review
   :after magit
   :ensure t
   :config
@@ -570,7 +570,7 @@
     (interactive)
     (notmuch-draft-resume (notmuch-show-get-message-id)))
   (defun my/notmuch-search ()
-    "Open notmuch in serach mode"
+    "Open notmuch in search mode"
     (interactive)
      (notmuch-search "tag:inbox and date:3M..today"))
    ;;;###autoload
@@ -778,7 +778,7 @@ If FORCE-P, overwrite the destination file if it exists, without confirmation."
   (let ((old-path (buffer-file-name (buffer-base-buffer)))
         (new-path (expand-file-name new-path)))
     (make-directory (file-name-directory new-path) 't)
-    (move-file old-path new-path (or force-p 1))
+    (rename-file old-path new-path (or force-p 1))
     (message "File moved to %S" (abbreviate-file-name new-path))))
 
 ;; mostly copied from doom emacs
@@ -826,7 +826,7 @@ if one already exists."
   (let ((default-directory (expand-file-name (project-root (project-current t)))))
     (magit-status)))
 
-(setq project-switch-commands 
+(setq project-switch-commands
   '((project-find-file "Find file")
    (consult-ripgrep "Find regexp" "r")
    (project-magit "git" "g")
@@ -956,6 +956,5 @@ If I let Windows handle DPI everything looks blurry."
 
 (add-to-list 'display-buffer-alist
              '("*Help*" display-buffer-same-window))
-
 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
