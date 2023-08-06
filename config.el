@@ -486,6 +486,12 @@
 
 (use-package nix-mode :ensure)
 
+(defun my/checkpad-format ()
+  (interactive)
+  (save-buffer)
+  (shell-command (string-join `(,(project-root (project-current)) "scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
+  (revert-buffer :NOCONFIRM t))
+
 (use-package tide
   :ensure t
   :after (company flycheck envrc)
