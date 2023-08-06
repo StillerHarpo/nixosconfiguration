@@ -7,6 +7,19 @@
 
 (require 'use-package)
 
+(use-package my-nix-paths
+  :config
+  (defun browse-url-mpv (url &rest args) (browse `(,nix-mpv-path "--save-position-on-quit") url))
+  (defun browse-url-linkopenwithx (url &rest args) (browse `(,nix-linkopenwithx-path) url))
+  (setq vterm-shell nix-zsh-path)
+  (setq org-latex-pdf-process (list (concat nix-latexmk-path " -shell-escape -bibtex -f -pdfxe %f")))
+  (setq langtool-java-classpath (concat nix-languagetool-path "/share/")
+        langtool-java-user-arguments `("-Dfile.encoding=UTF-8"
+                                       "-cp" ,(concat nix-languagetool-path "/share/"))
+        langtool-java-bin nix-jdk-path
+        langtool-language-tool-jar (concat nix-languagetool-path "/share/languagetool-commandline.jar")
+        langtool-language-tool-server-jar (concat nix-languagetool-path "/share/languagetool-server.jar")))
+
 (use-package general :ensure)
 
 (use-package hydra

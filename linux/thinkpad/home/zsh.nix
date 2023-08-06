@@ -11,7 +11,7 @@
     };
     oh-my-zsh.theme = "agnoster";
     initExtra = ''
-      export BROWSER='${(import ../scripts pkgs).linkopen}/bin/linkopen'
+      export BROWSER='${pkgs.my-linkopen}/bin/linkopen'
       eval "$(direnv hook zsh)"
       precmd_in_nix_shell() {
         if echo "$PATH" | grep -qc '/nix/store'; then

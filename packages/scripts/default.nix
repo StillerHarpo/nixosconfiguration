@@ -35,10 +35,10 @@ let
     "fbv"
     "w3m"
   ]);
-  linkopenwithoutx =
+  my-linkopenwithoutx =
     makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
 in rec {
-  linkopenwithx = makeScript "linkopenwithx" (with substitutes; [
+  my-linkopenwithx = makeScript "linkopenwithx" (with substitutes; [
     mpv
     curl
     feh
@@ -49,14 +49,14 @@ in rec {
     tuir
     firefox
   ]);
-  linkopen = makeScript "linkopen" [
+  my-linkopen = makeScript "linkopen" [
     {
       pattern = "./linkopenwithx.sh";
-      replacement = "${linkopenwithx}/bin/linkopenwithx";
+      replacement = "${my-linkopenwithx}/bin/linkopenwithx";
     }
     {
       pattern = "./linkopenwithoutx.sh";
-      replacement = "${linkopenwithoutx}/bin/linkopenwithoutx";
+      replacement = "${my-linkopenwithoutx}/bin/linkopenwithoutx";
     }
   ];
 }
