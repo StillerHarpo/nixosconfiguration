@@ -966,3 +966,4 @@ If I let Windows handle DPI everything looks blurry."
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'text-mode-hook 'flyspell-mode)
+(setq indent-tabs-mode nil)
