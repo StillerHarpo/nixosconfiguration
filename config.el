@@ -110,7 +110,9 @@
   :ensure t
   :after tempel)
 
-(use-package consult :ensure)
+(use-package consult
+  :ensure t
+  :custom (xref-show-xrefs-function consult-xref))
 
 (use-package avy :ensure)
 
