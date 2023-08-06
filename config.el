@@ -125,7 +125,6 @@
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
-
 (use-package
   envrc
   :ensure
@@ -964,6 +963,14 @@ If I let Windows handle DPI everything looks blurry."
              '("*Help*" display-buffer-same-window))
 
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+(dolist (mapping '((python-mode . python-ts-mode)
+                   (css-mode . css-ts-mode)
+                   (typescript-mode . tsx-ts-mode)
+                   (js-mode . js-ts-mode)
+                   (css-mode . css-ts-mode)
+                   (yaml-mode . yaml-ts-mode)))
+  (add-to-list 'major-mode-remap-alist mapping))
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'text-mode-hook 'flyspell-mode)
 (setq indent-tabs-mode nil)

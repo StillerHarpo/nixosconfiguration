@@ -87,10 +87,6 @@
             my-nix-paths = prev.callPackage ./packages/emacs/my-nix-paths.nix {
               inherit (eprev) trivialBuild;
             };
-            combobulate = prev.callPackage ./packages/emacs/combobulate.nix {
-              inherit (prev) fetchFromGitHub;
-              inherit (eprev) trivialBuild;
-            };
           };
         };
   };
