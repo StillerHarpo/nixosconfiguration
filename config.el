@@ -485,12 +485,6 @@
 
 (use-package nix-mode :ensure)
 
-(defun my/checkpad-format ()
-  (interactive)
-  (save-buffer)
-  (shell-command (string-join `(,(project-root (project-current)) "scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
-  (revert-buffer :NOCONFIRM t))
-
 (use-package tide
   :ensure t
   :after (company flycheck envrc)
@@ -498,18 +492,9 @@
   (tide-server-max-response-length 204800)
   (typescript-ts-mode-indent-offset 4)
   :init
-  (defun my/eslint-format ()
-    "runs eslint on the current file, falls back on tide-format"
-    (interactive)
-    (envrc-propagate-environment (lambda ()
-      (when
-      	(= (call-process "npx" nil nil nil "eslint" "--quiet" "--fix" (buffer-file-name (current-buffer))) 127)
-        (message "command npx not found")
-        (tide-format-before-save)))))
   :hook ((typescript-ts-mode . tide-setup)
          (tsx-ts-mode . tide-setup)
-         (typescript-ts-mode . tide-hl-identifier-mode)
-         (before-save . my/eslint-format))
+         (typescript-ts-mode . tide-hl-identifier-mode))
   :config
   (evil-add-command-properties #'tide-goto-line-reference :jump t)
   (evil-add-command-properties #'tide-jump-to-definition :jump t)
@@ -973,4 +958,19 @@ If I let Windows handle DPI everything looks blurry."
   (add-to-list 'major-mode-remap-alist mapping))
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'text-mode-hook 'flyspell-mode)
+
 (setq indent-tabs-mode nil)
+
+(defun my/checkpad-format ()
+  "formats the current buffer with the checkpad script"
+  (interactive)
+  (let ((default-directory (project-root (project-current))))
+     (shell-command (string-join `("scripts/format_one.sh" " " ,(buffer-file-name (current-buffer))))))
+  (revert-buffer :NOCONFIRM t))
+
+(defun my/checkpad-format-on-save ()
+  "formats the current buffer with the checkpad script if the project is checkpad"
+  (when (string-match "/checkpad/server/" (project-root (project-current)))
+    (my/checkpad-format)))
+
+(add-hook 'before-save-hook 'my/checkpad-format-on-save)
