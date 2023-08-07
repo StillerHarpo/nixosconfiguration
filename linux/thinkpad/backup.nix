@@ -43,5 +43,6 @@
     };
     compression = "auto,lzma";
     startAt = "weekly";
+    persistentTimer = true;
   };
 }
