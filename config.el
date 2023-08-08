@@ -574,7 +574,7 @@
    (defun my/notmuch-trash ()
      "Add trash label to mail"
      (interactive)
-     (notmuch-search-add-tag '("+trash")))
+     (notmuch-search-add-tag '("+trash" "-inbox" "-flagged" "-unread")))
   :general
   (:states '(normal visual)
    :prefix "SPC"
