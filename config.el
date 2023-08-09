@@ -371,7 +371,10 @@
 	   :prefix "SPC"
            "n" '(:ignore t :which-key "org")
 	   "n f" 'org-roam-node-find
-	   "n i" 'org-roam-node-insert))
+	   "n i" 'org-roam-node-insert
+           "n r" '(:ignore t :which-key "org-roam")
+           "n r d" '(:ignore t :which-key "dailies")
+	   "n r d n" 'org-roam-dailies-capture-today))
 
 (use-package vterm
   :ensure
