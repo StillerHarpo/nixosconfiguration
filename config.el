@@ -971,14 +971,18 @@ If I let Windows handle DPI everything looks blurry."
   "formats the current buffer with the checkpad script"
   (interactive)
   (let ((default-directory (project-root (project-current))))
-     (shell-command (string-join `("scripts/format_one.sh" " " ,(buffer-file-name (current-buffer))))))
-  (revert-buffer :NOCONFIRM t))
+    (envrc-propagate-environment
+     'shell-command
+     (string-join
+      `("scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
+    (revert-buffer :NOCONFIRM t)))
 
 (defun my/checkpad-format-on-save ()
   "formats the current buffer with the checkpad script if the project is checkpad"
-  (when (and (string-match "/checkpad/server/" (project-root (project-current)))
+  (when (and (project-current)
+	     (string-match "/checkpad/server/" (project-root (project-current)))
 	     (string-match (rx (or (seq ".ts" eol) (seq ".hs" eol)))
 			   (buffer-file-name (current-buffer))))
     (my/checkpad-format)))
 
-(add-hook 'before-save-hook 'my/checkpad-format-on-save)
+(add-hook 'after-save-hook 'my/checkpad-format-on-save)
