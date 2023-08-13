@@ -415,6 +415,10 @@
     (define-key magit-status-mode-map (kbd "SPC") nil))
   (with-eval-after-load 'magit-revision
     (define-key magit-revision-mode-map (kbd "SPC") nil))
+  (with-eval-after-load 'magit-revision
+    (define-key magit-stash-mode-map (kbd "SPC") nil))
+  (with-eval-after-load 'magit-diff
+    (define-key magit-diff-mode-map (kbd "SPC") nil))
   )
 
 (use-package git-timemachine
