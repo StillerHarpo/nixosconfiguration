@@ -623,7 +623,6 @@
 
 (use-package ytel
   :ensure t
-  :custom
   :config
   (setq invidious-instances-url "https://api.invidious.io/instances.json?pretty=1&sort_by=health")
   (defun ytel-instances-fetch-json ()
