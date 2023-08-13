@@ -112,7 +112,6 @@
   specialisation.normalInternet.configuration = {
     dnscrypt.enable = lib.mkForce false;
     virtualisation.docker.enable = lib.mkForce false;
-    networking.wg-quick.interfaces.vpn.autostart = false;
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.

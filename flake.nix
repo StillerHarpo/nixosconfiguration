@@ -125,17 +125,20 @@
         };
 
         desktop = inputs.nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
+          specialArgs = {
+            inherit inputs outputs;
+            private = import ./private.nix;
+          };
           modules = with inputs.nixos-hardware.nixosModules; [
-            nixpkgs.nixosModules.notDetected
+            inputs.nixpkgs.nixosModules.notDetected
             common-pc
             common-pc-hdd
             common-pc-ssd
             common-cpu-amd
             common-gpu-amd-southern-islands
-            home-manager-flake.nixosModules.home-manager
+            inputs.home-manager-flake.nixosModules.home-manager
             ./linux/desktop/configuration.nix
-            agenix.nixosModules.age
+            inputs.agenix.nixosModules.age
           ];
         };
 
@@ -164,7 +167,7 @@
               };
               system.stateVersion = "22.11";
               boot.supportedFilesystems =
-                inputs.nixpkgs.legacyPacakges."x86_64-linux".lib.mkForce [
+                inputs.nixpkgs.legacyPackages."x86_64-linux".lib.mkForce [
                   "btrfs"
                   "reiserfs"
                   "vfat"
@@ -175,7 +178,7 @@
                 ];
               nixpkgs = {
                 pkgs =
-                  inputs.nixpkgs.legacyPacakges."x86_64-linux".pkgsCross.armv7l-hf-multiplatform;
+                  inputs.nixpkgs.legacyPackages."x86_64-linux".pkgsCross.armv7l-hf-multiplatform;
                 overlays = [
                   (prev: final: {
                     libxcrypt = final.libxcrypt.overrideAttrs (oldAttrs: {

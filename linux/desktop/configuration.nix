@@ -14,7 +14,6 @@
       device = "nodev";
       enable = true;
       efiSupport = true;
-      version = 2;
       useOSProber = true;
     };
   };
@@ -59,8 +58,10 @@
   services = {
     openssh = {
       enable = true;
-      permitRootLogin = "yes";
-      passwordAuthentication = false;
+      settings = {
+        PermitRootLogin = "yes";
+        PasswordAuthentication = false;
+      };
     };
   };
 

@@ -631,4 +631,8 @@
     overlays = [ (_: _: { inherit system; }) ];
   };
 
+
+  specialisation.normalInternet.configuration = {
+    networking.wg-quick.interfaces.vpn.autostart = false;
+  };
 }
