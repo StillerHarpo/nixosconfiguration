@@ -1,0 +1,3 @@
+{ fetchzip }
+stdenv.mkDerivation (finalAttrs: {
+  pname

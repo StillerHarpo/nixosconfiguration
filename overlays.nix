@@ -26,7 +26,7 @@
     });
   };
   additions = final: prev: {
-    inherit (import ./packages/scripts prev) my-linkopen my-linkopenwithx;
+    inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install;
     deploy-rs = inputs.deploy-rs.defaultPackage."${final.system}";
     haskellPackages = prev.haskellPackages.extend (_: hPrev: {
       my-common = prev.haskell.lib.overrideCabal
@@ -76,6 +76,7 @@
 
         nativeBuildInputs = [ pbr ];
       };
+    rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
     myemacs = prev.emacsWithPackagesFromUsePackage {
           config = ./config.el;
           defaultInitFile = true;

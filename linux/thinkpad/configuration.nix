@@ -162,6 +162,12 @@
           '';
         }
         {
+          pkgs = [ pkgs.rpi4-install ];
+          profile = ''
+            ${generateFileRules [ "pass" "gnupg" "ssh" ]}
+          '';
+        }
+        {
           pkgs = [ pkgs.firefox ];
           profile = ''
             network,

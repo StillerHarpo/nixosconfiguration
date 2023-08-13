@@ -91,6 +91,26 @@
         "type": "github"
       }
     },
+    "disko": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1691743546,
+        "narHash": "sha256-nS2uWOeEmMgUBEMDCvwLlXBBCLkW7agDcMtOXuf9PDc=",
+        "owner": "nix-community",
+        "repo": "disko",
+        "rev": "241c878d4b542fea7c61ed4421e9224af054ff56",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "disko",
+        "type": "github"
+      }
+    },
     "emacs-overlay": {
       "inputs": {
         "flake-utils": [
@@ -181,6 +201,27 @@
         "owner": "hercules-ci",
         "repo": "flake-parts",
         "rev": "82c16f1682cf50c01cb0280b38a1eed202b3fe9f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "type": "github"
+      }
+    },
+    "flake-parts_2": {
+      "inputs": {
+        "nixpkgs-lib": [
+          "nixos-anywhere",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1687762428,
+        "narHash": "sha256-DIf7mi45PKo+s8dOYF+UlXHzE0Wl/+k3tXUyAoAnoGE=",
+        "owner": "hercules-ci",
+        "repo": "flake-parts",
+        "rev": "37dd7bb15791c86d55c5121740a1887ab55ee836",
         "type": "github"
       },
       "original": {
@@ -295,6 +336,35 @@
         "type": "github"
       }
     },
+    "nixos-anywhere": {
+      "inputs": {
+        "disko": [
+          "disko"
+        ],
+        "flake-parts": "flake-parts_2",
+        "nixos-2305": [
+          "nixpkgs"
+        ],
+        "nixos-images": "nixos-images",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1691733701,
+        "narHash": "sha256-tg78zpjAzg7BanCvGhQ74vubZ3Qv5cEHxPB0ig/XRdQ=",
+        "owner": "numtide",
+        "repo": "nixos-anywhere",
+        "rev": "f1a76e0ee92952e6aa0a9383ad565d133040a9eb",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "nixos-anywhere",
+        "type": "github"
+      }
+    },
     "nixos-hardware": {
       "locked": {
         "lastModified": 1691305349,
@@ -308,6 +378,31 @@
         "owner": "NixOS",
         "ref": "master",
         "repo": "nixos-hardware",
+        "type": "github"
+      }
+    },
+    "nixos-images": {
+      "inputs": {
+        "nixos-2305": [
+          "nixos-anywhere",
+          "nixos-2305"
+        ],
+        "nixos-unstable": [
+          "nixos-anywhere",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1686819168,
+        "narHash": "sha256-IbRVStbKoMC2fUX6TxNO82KgpVfI8LL4Cq0bTgdYhnY=",
+        "owner": "nix-community",
+        "repo": "nixos-images",
+        "rev": "ccc1a2c08ce2fc38bcece85d2a6e7bf17bac9e37",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "nixos-images",
         "type": "github"
       }
     },
@@ -395,12 +490,14 @@
         "agenix": "agenix",
         "darwin": "darwin_2",
         "deploy-rs": "deploy-rs",
+        "disko": "disko",
         "emacs-overlay": "emacs-overlay",
         "envfs": "envfs",
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "home-manager-flake": "home-manager-flake",
         "nix-alien": "nix-alien",
+        "nixos-anywhere": "nixos-anywhere",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
         "nixpkgs-newest": "nixpkgs-newest",
@@ -420,6 +517,27 @@
       "original": {
         "owner": "nix-systems",
         "repo": "default",
+        "type": "github"
+      }
+    },
+    "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixos-anywhere",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1687940979,
+        "narHash": "sha256-D4ZFkgIG2s9Fyi78T3fVG9mqMD+/UnFDB62jS4gjZKY=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "0a4f06c27610a99080b69433873885df82003aae",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
         "type": "github"
       }
     }

@@ -40,6 +40,18 @@
         utils.follows = "flake-utils";
       };
     };
+    disko = {
+      url = github:nix-community/disko;
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixos-anywhere = {
+      url = github:numtide/nixos-anywhere;
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        disko.follows = "disko";
+        nixos-2305.follows = "nixpkgs";
+      };
+    };
     envfs = {
       url = "github:Mic92/envfs";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -127,6 +139,16 @@
           ];
         };
 
+        nixosRpi4 =  inputs.nixpkgs.lib.nixosSystem {
+          specialArgs = { inherit inputs outputs; };
+          system = "aarch64-linux";
+          modules = [
+            inputs.agenix.nixosModules.age
+            inputs.disko.nixosModules.disko
+            ./linux/rpi4/configuration.nix
+          ];
+        };
+        
         rpi2 = inputs.nixpkgs.lib.nixosSystem {
           system = "armv7l-linux";
 
@@ -173,13 +195,25 @@
 
       images.rpi2 = self.nixosConfigurations.rpi2.config.system.build.sdImage;
 
-      deploy.nodes.desktop = {
-        hostname = "192.168.178.24";
-        profiles.system = {
-          user = "root";
-          sshUser = "root";
-          path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos
-            self.nixosConfigurations.desktop;
+      deploy.nodes = {
+        desktop = {
+          hostname = "192.168.178.24";
+          profiles.system = {
+            user = "root";
+            sshUser = "root";
+            path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos
+              self.nixosConfigurations.desktop;
+          };
+        };
+        rpi4 = {
+          hostname = (import ./variables.nix).nixosRpi4IP;
+          profiles.system = {
+            user = "root";
+            sshUser = "root";
+            remoteBuild = true;
+            path = inputs.deploy-rs.lib.aarch64-linux.activate.nixos
+              self.nixosConfigurations.nixosRpi4;
+          };
         };
       };
 
