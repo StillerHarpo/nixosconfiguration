@@ -221,7 +221,7 @@
 
   fonts.fonts = with pkgs; [ terminus_font nerdfonts ];
 
-  location = import ./cords.nix;
+  location = import ../cords.nix;
 
   systemd.packages = [ pkgs.dconf ];
 

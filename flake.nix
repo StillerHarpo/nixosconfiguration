@@ -143,7 +143,10 @@
         };
 
         nixosRpi4 =  inputs.nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs outputs; };
+          specialArgs = {
+            inherit inputs outputs;
+            private = import ./private.nix;
+          };
           system = "aarch64-linux";
           modules = [
             inputs.agenix.nixosModules.age

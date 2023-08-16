@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, private, ... }:
 
 let sshKeys = 
       [
@@ -51,13 +51,14 @@ let sshKeys =
     package = pkgs.nixUnstable;
     extraOptions = ''
       experimental-features = nix-command flakes
+      keep-outputs = true
+      keep-derivations = true
     '';
     registry.nixpkgs.flake = inputs.nixpkgs;
     nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
     settings = {
       substituters = lib.mkAfter [
         "https://nix-community.cachix.org?priority=50"
-        "ssh://nix-ssh@${private.serverIP}?ssh-key=/etc/ssh/id_rsa.pub&priority=60"
       ];
       trusted-public-keys = [
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
@@ -66,10 +67,6 @@ let sshKeys =
       trusted-users = [ "root" "florian" ];
       auto-optimise-store = true;
     };
-    extraOptions = ''
-      keep-outputs = true
-      keep-derivations = true
-    '';
     gc = {
       persistent = true;
       automatic = true;
@@ -96,19 +93,18 @@ let sshKeys =
     home-assistant = {
       enable = true;
       extraComponents = [
+        "default_config"
         "esphome"
         "met"
         "radio_browser"
         "zha"
-        "hass_frontend"
       ];
       openFirewall = true;
       config = let
-        kitchen1 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_d1e068fe_level_light_color_on_off";
-        kitchen2 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_412c6afe_level_light_color_on_off";
-        kitchen3 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_51786bfe_level_light_color_on_off";
+        kitchen1 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light";
+        kitchen2 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light_2";
+        kitchen3 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light_3";
       in {
-
         default_config = {};
         group.Kitchen.entities = [
           "light.Kitchen_Lights"
@@ -138,11 +134,15 @@ let sshKeys =
           alias = "kitchen light toggle";
         };
 
-        homeassistant.customize.light = {
-          "${kitchen1}" = "kitchen1";
-          "${kitchen2}" = "kitchen2";
-          "${kitchen3}" = "kitchen3";
-        };
+        homeassistant = {
+          name = "Home";
+          unit_system = "metric";
+          customize = {
+            "${kitchen1}".friendly_name = "kitchen1";
+            "${kitchen2}".friendly_name = "kitchen2";
+            "${kitchen3}".friendly_name = "kitchen3";
+          };
+        } // import ../cords.nix;
 
         light = [
           { platform = "group";
@@ -159,7 +159,7 @@ let sshKeys =
               kitchen1
               kitchen2
               kitchen3
-              "light.signify_netherlands_b_v_lta009_level_light_color_on_off"
+              "light.signify_netherlands_b_v_lta009_light"
             ];
           }];
 
