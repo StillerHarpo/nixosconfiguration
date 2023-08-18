@@ -6,22 +6,22 @@ author:             Florian Engel
 maintainer:         engelflorian@posteo.de
 
 executable monitor-changer
-  main-is:          monitor-changer/MonitorChanger.hs
+  main-is:          haskell/monitor-changer/MonitorChanger.hs
   build-depends:    base, haskell,
   default-language: Haskell2010
 
 executable scans
-  main-is:          scans/Scan.hs
+  main-is:          haskell/scans/Scan.hs
   build-depends:    base, turtle, transformers, foldl, text, time, exceptions, extra
   default-language: Haskell2010
 
 executable xmonad-desktop
-  main-is:          xmonad-desktop/xmonad.hs
+  main-is:          haskell/xmonad-desktop/xmonad.hs
   build-depends:    base, xmonad, xmonad-contrib
   default-language: Haskell2010
 
 executable xmonad-thinkpad
-  main-is:          xmonad-thinkpad/xmonad.hs
+  main-is:          haskell/xmonad-thinkpad/xmonad.hs
   build-depends:    base,
                     xmonad,
                     xmonad-contrib,
@@ -35,6 +35,6 @@ executable xmonad-thinkpad
   default-language: Haskell2010
 
 library
-  hs-source-dirs:   my-common
+  hs-source-dirs:   haskell/my-common
   build-depends:    base, protolude, text, xmonad-contrib
   exposed-modules:  Bookmarks, Xrandr, Utils
