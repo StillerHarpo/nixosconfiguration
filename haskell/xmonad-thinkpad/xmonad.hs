@@ -21,7 +21,7 @@ import XMonad.Actions.CycleWS (nextScreen, swapNextScreen)
 import XMonad.Actions.FindEmptyWorkspace (viewEmptyWorkspace)
 import XMonad.Actions.MessageFeedback (sendMessageB)
 import qualified XMonad.Actions.Search as T
-import XMonad.Actions.SpawnOn (manageSpawn)
+import XMonad.Actions.SpawnOn (manageSpawn, spawnOn)
 import XMonad.Actions.UpdatePointer (updatePointer)
 import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen, fullscreenEventHook)
 import XMonad.Hooks.SetWMName (setWMName)
@@ -77,6 +77,10 @@ main =
             startupHook = do
               setWMName "LG3D"
               spawn "feh --bg-scale ~/black.png"
+              spawn "systemctl --user start themeChange"
+              spawn "autorandr --cycle"
+              spawnOn "1" "signal-desktop"
+              spawnOn "2" "firefox -new-window https://web.whatsapp.com"
           }
         `additionalKeys` ( [ ((0, 0x1008ff13), volume Plus),
                              ((0, 0x1008ff11), volume Minus),
