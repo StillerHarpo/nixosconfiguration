@@ -106,33 +106,6 @@ let sshKeys =
         kitchen3 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light_3";
       in {
         default_config = {};
-        group.Kitchen.entities = [
-          "light.Kitchen_Lights"
-          kitchen1
-          kitchen2
-          kitchen3
-        ];
-        script."'1633813394508'" = {
-          sequence = [
-            { type = "toggle";
-              device_id = "83fdcb46128aa492811c9f20ae9e61d6";
-              entity_id = kitchen1;
-              domain = "light";
-            }
-            { type = "toggle";
-              device_id = "70c862bc02e6a0bf238c77eac05777b6";
-              entity_id = kitchen2;
-              domain = "light";
-            }
-            { type = "toggle";
-              device_id = "0da9bbd3750d5330ba82115549a889a0";
-              entity_id = kitchen3;
-              domain = "light";
-            }
-          ];
-          mode = "single";
-          alias = "kitchen light toggle";
-        };
 
         homeassistant = {
           name = "Home";
