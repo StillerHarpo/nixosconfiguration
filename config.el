@@ -112,7 +112,7 @@
 
 (use-package consult
   :ensure t
-  :custom (xref-show-xrefs-function consult-xref))
+  :custom (xref-show-xrefs-function 'consult-xref))
 
 (use-package avy :ensure)
 
