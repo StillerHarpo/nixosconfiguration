@@ -607,6 +607,9 @@
   :custom
   (rmh-elfeed-org-files (list "~/Dokumente/elfeed.org"))
   (elfeed-search-filter "@6-days-ago +unread +favorite")
+  :general
+  (:states '(normal visual motion)
+   "b" 'elfeed-search-browse-url)
   :config
   (general-unbind
     :states '(normal visual motion)
