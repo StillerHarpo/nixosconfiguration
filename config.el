@@ -716,7 +716,7 @@
 ;; Browser function
 (setq no-eww-reg (rx (or "youtube." "youtu.be" "v.reddit.it" "dailymotion."
                          "github.com" "streamable.com"  "liveleak.com"
-                         "vimeo.com" "gfycat.com"
+                         "vimeo.com" "gfycat.com" "atlassian.com" "atlassian.net"
                          (and (or ".mp3" ".mp4" ".m4v" ".svg" ".gif" ".gifv")
                               line-end))))
 
