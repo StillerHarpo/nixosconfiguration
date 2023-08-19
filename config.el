@@ -407,7 +407,8 @@
   :prefix "SPC"
    "g" '(:ignore t :which-key "magit")
    "g g" 'magit-status
-   "g c" 'magit-clone)
+   "g c" 'magit-clone
+   "g b" 'magit-blame-addition)
   :config
   (with-eval-after-load 'magit-log
     (define-key magit-log-mode-map (kbd "SPC") nil))
