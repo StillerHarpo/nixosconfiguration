@@ -89,7 +89,52 @@ let sshKeys =
       # no clue why this is failing
       # openFirewall = true;
     };
-    # TODO replace with mosquitto for better scripting
+    mosquitto = {
+      enable = true;
+      listeners = [
+        {
+          acl = [ "pattern readwrite #" ];
+          omitPasswordAuth = true;
+          settings.allow_anonymous = true;
+        }
+  ];
+    };
+    zigbee2mqtt = {
+      enable = true;
+      settings =
+        let
+          devices = {
+            kitchen_one = "0x680ae2fffe68e0d1";
+            kitchen_two = "0x680ae2fffe6a2c41";
+            kitchen_three = "0x680ae2fffe6b7851";
+            livingRoom = "0x001788010b236902";
+            switch = "0x0017880109abe4d3";
+          };
+        in { 
+          permit_join = true;
+          homeassistant = config.services.home-assistant.enable;
+          serial = {
+            port = "/dev/serial/by-id/usb-Silicon_Labs_slae.sh_cc2652rb_stick_-_slaesh_s_iot_stuff_00_12_4B_00_23_93_30_07-if00-port0";
+            disable_led = true;
+          };
+
+          passlist = lib.attrValues devices; 
+          devices =
+            lib.concatMapAttrs
+              (name: device: { ${device}.friendly_name = builtins.replaceStrings ["_"] ["/"] name; })
+              devices;
+          groups = {
+            "1" = {
+              friendly_name = "kitchen/all";
+              devices = with devices; [ kitchen_one kitchen_two kitchen_three];
+            };
+            "2" = {
+              friendly_name = "lights/all";
+              devices = with devices; [ kitchen_one kitchen_two kitchen_three livingRoom];
+            };
+          };
+        };
+    };
     home-assistant = {
       enable = true;
       extraComponents = [
@@ -97,45 +142,16 @@ let sshKeys =
         "esphome"
         "met"
         "radio_browser"
-        "zha"
+        "mqtt"
       ];
       openFirewall = true;
-      config = let
-        kitchen1 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light";
-        kitchen2 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light_2";
-        kitchen3 = "light.ikea_of_sweden_tradfri_bulb_gu10_cws_345lm_light_3";
-      in {
+      config = {
         default_config = {};
 
         homeassistant = {
           name = "Home";
           unit_system = "metric";
-          customize = {
-            "${kitchen1}".friendly_name = "kitchen1";
-            "${kitchen2}".friendly_name = "kitchen2";
-            "${kitchen3}".friendly_name = "kitchen3";
-          };
         } // import ../cords.nix;
-
-        light = [
-          { platform = "group";
-            name = "Kitchen Lights";
-            entities = [
-              kitchen1
-              kitchen2
-              kitchen3
-            ];
-          }
-          { platform = "group";
-            name = "All Lights";
-            entities = [
-              kitchen1
-              kitchen2
-              kitchen3
-              "light.signify_netherlands_b_v_lta009_light"
-            ];
-          }];
-
       };
     };
   };
