@@ -44,7 +44,11 @@ let sshKeys =
     };
   };
 
-  environment.systemPackages = with pkgs; [ vim pciutils lshw ripgrep bat fd bottom ];
+  environment.systemPackages = with pkgs; [
+    vim pciutils lshw ripgrep bat fd bottom busybox
+    (haskellPackages.ghcWithPackages (hpkgs: [ hpkgs.net-mqtt ]))
+    (python3.withPackages (py: [ py.zigpy-znp ]))
+  ];
 
 
   nix = {
