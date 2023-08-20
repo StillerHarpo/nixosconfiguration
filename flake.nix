@@ -271,7 +271,7 @@
       devShells.default =
         outputs.packages."${system}".haskellPackages.developPackage {
           returnShellEnv = true;
-          root = ./haskell;
+          root = ./.;
           withHoogle = false;
           modifier = with outputs.packages."${system}";
             with haskellPackages;
