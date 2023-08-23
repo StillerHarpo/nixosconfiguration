@@ -10,6 +10,7 @@
 (use-package my-nix-paths
   :config
   (defun browse-url-mpv (url &rest args) (browse `(,nix-mpv-path "--save-position-on-quit") url))
+  (defun browse-url-mpv-audio (url &rest args) (browse `(,nix-mpv-path "--no-video --save-position-on-quit") url))
   (defun browse-url-linkopenwithx (url &rest args) (browse `(,nix-linkopenwithx-path) url))
   (setq vterm-shell nix-zsh-path)
   (setq org-latex-pdf-process (list (concat nix-latexmk-path " -shell-escape -bibtex -f -pdfxe %f")))
@@ -701,11 +702,17 @@
     (interactive)
     (let ((url (peertube-video-url (peertube--get-current-video))))
       (browse-url-mpv url)))
+  (defun peertube-mpv-open-audio ()
+    "Open the video under the cursor using `browse-url'."
+    (interactive)
+    (let ((url (peertube-video-url (peertube--get-current-video))))
+      (browse-url-mpv-audio url)))
   :general
   (:states '(normal visual)
   :keymaps 'peertube-mode-map
   "enter" 'peertube-mpv-open-video
   "o" 'peertube-mpv-open-video
+  "a" 'peertube-mpv-open-audio
   "c" 'peertube-goto-channel
   "i" 'peertube-show-video-info
   "d" 'peertube-download-video
