@@ -747,7 +747,7 @@
 ;; don't override spc. It should always be the leader key
 (general-unbind
   :states '(normal visual motion)
-  :keymaps '(dired-mode-map Info-mode-map view-mode-map debugger-mode-map help-mode-map org-agenda-mode-map org-agenda-keymap)
+  :keymaps '(dired-mode-map Info-mode-map view-mode-map debugger-mode-map help-mode-map org-agenda-mode-map org-agenda-keymap process-menu-mode-map)
   "SPC")
 
 (general-define-key :states '(normal visual motion)
