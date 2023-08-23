@@ -628,7 +628,7 @@
 (use-package ytel
   :ensure t
   :config
-  (setq invidious-instances-url "https://api.invidious.io/instances.json?pretty=1&sort_by=health")
+  (setq invidious-instances-url "https://api.onion.tube/instances.json?pretty=1&sort_by=health")
   (defun ytel-instances-fetch-json ()
     "Fetch list of invidious instances as json, sorted by health."
     (let
