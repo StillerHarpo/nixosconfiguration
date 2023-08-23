@@ -609,6 +609,7 @@
   (elfeed-search-filter "@6-days-ago +unread +favorite")
   :general
   (:states '(normal visual motion)
+   :keymaps '(elfeed-search-mode-map)
    "b" 'elfeed-search-browse-url)
   :config
   (general-unbind
