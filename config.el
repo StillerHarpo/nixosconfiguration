@@ -143,6 +143,7 @@
 (use-package org
   :ensure
   :custom
+  (org-agenda-start-on-weekday nil)
   (org-src-window-setup 'current-window)
   (org-refile-targets '((nil :maxlevel . 9)
                         (org-agenda-files :maxlevel . 9)))
