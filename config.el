@@ -666,17 +666,21 @@
                 (error nil))
               "https://invidious.tube"))) ; fallback
 
-  (defun ytel-watch ()
+  (defun ytel-watch (&rest no-video)
     "Stream video at point in mpv."
     (interactive)
     (let* ((video (ytel-get-current-video))
 	   (id (ytel-video-id video)))
-      (start-process "ytel mpv" nil
+      (start-process (concat "ytel mpv" (if no-video " no-video" ""))
 		     "mpv"
-		     (concat "https://www.youtube.com/watch?v=" id))
-      "--ytdl-format=bestvideo[height<=?720]+bestaudio/best")
+                     (if no-video "--no-video" "")
+		     (concat  "https://www.youtube.com/watch?v=" id)
+      "--ytdl-format=bestvideo[height<=?720]+bestaudio/best"))
     (message "Starting streaming..."))
 
+  (defun ytel-watch-no-video ()
+    (interactive)
+    (ytel-watch t))
 
   (setq evil-motion-state-modes (append '(ytel-mode) evil-motion-state-modes))
   (general-unbind
@@ -686,7 +690,8 @@
   :general
     (:states '(normal visual motion)
      :keymaps 'ytel-mode-map
-      "o" 'ytel-watch))
+     "o" 'ytel-watch
+     "a" 'ytel-watch-no-video))
 
 (use-package peertube
   :ensure t
