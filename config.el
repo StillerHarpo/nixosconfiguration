@@ -982,10 +982,13 @@ If I let Windows handle DPI everything looks blurry."
                    (css-mode . css-ts-mode)
                    (yaml-mode . yaml-ts-mode)))
   (add-to-list 'major-mode-remap-alist mapping))
+;;spelling
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'text-mode-hook 'flyspell-mode)
 
+;; tabs
 (setq indent-tabs-mode nil)
+(add-hook 'nxml-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
 (defun my/checkpad-format ()
   "formats the current buffer with the checkpad script"
