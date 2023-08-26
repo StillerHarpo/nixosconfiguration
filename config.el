@@ -631,7 +631,8 @@
 (use-package ytel
   :ensure t
   :config
-  (setq invidious-instances-url "https://api.onion.tube/instances.json?pretty=1&sort_by=health")
+  (setq invidious-instances-url "https://api.invidious.io/instances.json?pretty=1&sort_by=health")
+  (setq ytel-invidious-api-url "https://onion.tube")
   (defun ytel-instances-fetch-json ()
     "Fetch list of invidious instances as json, sorted by health."
     (let
@@ -666,7 +667,7 @@
                                     (ytel-instances-alist-from-json)
                                    nil "confirm" "https://")
                 (error nil))
-              "https://invidious.tube"))) ; fallback
+              "https://onion.tube"))) ; fallback
 
   (defun ytel-watch (&rest no-video)
     "Stream video at point in mpv."
@@ -674,6 +675,7 @@
     (let* ((video (ytel-get-current-video))
 	   (id (ytel-video-id video)))
       (start-process (concat "ytel mpv" (if no-video " no-video" ""))
+		     nil
 		     "mpv"
                      (if no-video "--no-video" "")
 		     (concat  "https://www.youtube.com/watch?v=" id)
