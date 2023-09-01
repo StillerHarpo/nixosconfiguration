@@ -108,10 +108,10 @@ let sshKeys =
       settings =
         let
           devices = {
-            kitchen_one = "0x680ae2fffe68e0d1";
-            kitchen_two = "0x680ae2fffe6a2c41";
-            kitchen_three = "0x680ae2fffe6b7851";
-            livingRoom = "0x001788010b236902";
+            lights_kitchen_one = "0x680ae2fffe68e0d1";
+            lights_kitchen_two = "0x680ae2fffe6a2c41";
+            lights_kitchen_three = "0x680ae2fffe6b7851";
+            lights_livingRoom = "0x001788010b236902";
             switch = "0x0017880109abe4d3";
           };
         in { 
@@ -129,12 +129,12 @@ let sshKeys =
               devices;
           groups = {
             "1" = {
-              friendly_name = "kitchen/all";
-              devices = with devices; [ kitchen_one kitchen_two kitchen_three];
+              friendly_name = "lights/kitchen/all";
+              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three];
             };
             "2" = {
               friendly_name = "lights/all";
-              devices = with devices; [ kitchen_one kitchen_two kitchen_three livingRoom];
+              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_livingRoom];
             };
           };
         };
