@@ -629,74 +629,18 @@
 
 (use-package ement :ensure t)
 
-(use-package ytel
-  :ensure t
-  :config
-  (setq invidious-instances-url "https://api.invidious.io/instances.json?pretty=1&sort_by=health")
-  (setq ytel-invidious-api-url "https://onion.tube")
-  (defun ytel-instances-fetch-json ()
-    "Fetch list of invidious instances as json, sorted by health."
-    (let
-        ((url-request-method "GET")
-         (url-request-extra-headers '(("Accept" . "application/json"))))
-      (with-current-buffer
-          (url-retrieve-synchronously invidious-instances-url)
-        (goto-char (point-min))
-        (re-search-forward "^$")
-        (let*
-            ((json-object-type 'alist)
-             (json-array-type 'list)
-             (json-key-type 'string))
-          (json-read)))))
-
-  (defun ytel-instances-alist-from-json ()
-    "Make the json of invidious instances into an alist."
-    (let
-        ((jsonlist (ytel-instances-fetch-json))
-         (inst ()))
-      (while jsonlist
-        (push (concat "https://" (caar jsonlist)) inst)
-        (setq jsonlist (cdr jsonlist)))
-      (nreverse inst)))
-
-  (defun ytel-choose-instance ()
-    "Prompt user to choose an invidious instance to use."
-    (interactive)
-    (setq ytel-invidious-api-url
-          (or (condition-case nil
-                  (completing-read "Using instance: "
-                                    (ytel-instances-alist-from-json)
-                                   nil "confirm" "https://")
-                (error nil))
-              "https://onion.tube"))) ; fallback
-
-  (defun ytel-watch (&rest no-video)
-    "Stream video at point in mpv."
-    (interactive)
-    (let* ((video (ytel-get-current-video))
-	   (id (ytel-video-id video)))
-      (start-process (concat "ytel mpv" (if no-video " no-video" ""))
-		     nil
-		     "mpv"
-                     (if no-video "--no-video" "")
-		     (concat  "https://www.youtube.com/watch?v=" id)
-      "--ytdl-format=bestvideo[height<=?720]+bestaudio/best"))
-    (message "Starting streaming..."))
-
-  (defun ytel-watch-no-video ()
-    (interactive)
-    (ytel-watch t))
-
-  (setq evil-motion-state-modes (append '(ytel-mode) evil-motion-state-modes))
-  (general-unbind
-    :states '(normal visual motion)
-    :keymaps 'ytel-mode-map
-    "s" "<" ">" "q")
-  :general
-    (:states '(normal visual motion)
-     :keymaps 'ytel-mode-map
-     "o" 'ytel-watch
-     "a" 'ytel-watch-no-video))
+(use-package empv
+ :custom (empv-invidious-instance "https://onion.tube/api/v1")
+ :config
+ ; TODO find better bindings
+ (defhydra hydra-empv (evil-normal-state-map "SPC o i")
+   "music"
+    ("j" empv-playlist-next "next")
+    ("k" empv-playlist-prev "prev")
+    ("p" empv-toggle "play/pause")
+    ("g" empv-volume-up "volume up")
+    ("h" empv-volume-down "volume down")
+    ("s" empv-playlist-select "select")))
 
 (use-package peertube
   :ensure t
