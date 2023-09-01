@@ -4,6 +4,7 @@
 (tooltip-mode -1)           ; Disable tooltips
 (menu-bar-mode -1)           ; Disable menubar
 (setq ring-bell-function 'ignore)
+(setq create-lockfiles nil)
 
 (require 'use-package)
 
