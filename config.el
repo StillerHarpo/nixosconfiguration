@@ -43,15 +43,6 @@
     ("f" text-scale-mode "no scale"))
  )
 
-(use-package vimish-fold
-  :ensure
-  :after evil)
-
-(use-package evil-vimish-fold
-  :ensure
-  :after vimish-fold
-  :hook ((prog-mode conf-mode text-mode) . evil-vimish-fold-mode))
-
 (use-package evil-collection
   :ensure
   :init
@@ -82,7 +73,6 @@
   :config
   (which-key-mode)
   )
-
 
 (use-package vertico
   :init
@@ -944,6 +934,19 @@ If I let Windows handle DPI everything looks blurry."
                    (css-mode . css-ts-mode)
                    (yaml-mode . yaml-ts-mode)))
   (add-to-list 'major-mode-remap-alist mapping))
+
+(setq evil-fold-list
+  '(((hs-minor-mode)
+     :open-all   hs-show-all
+     :close-all  hs-hide-all
+     :toggle     hs-toggle-hiding
+     :open       hs-show-block
+     :open-rec   nil
+     :close      hs-hide-block
+   )))
+
+(add-hook 'prog-mode-hook 'hs-minor-mode)
+
 ;;spelling
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 (add-hook 'text-mode-hook 'flyspell-mode)
