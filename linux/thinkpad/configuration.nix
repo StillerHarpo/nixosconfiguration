@@ -191,11 +191,8 @@
         {
           pkgs = with pkgs; [
             imagemagick
-            ripgrep
             poppler_utils
-            bat
             exa
-            fd
             tesseract5
             zathura
             xournal
@@ -205,6 +202,16 @@
           ];
           profile = ''
             ${generateFileRules [ "docs" ]}
+          '';
+        }
+        {
+          pkgs = with pkgs; [
+            ripgrep
+            bat
+            fd
+          ];
+          profile = ''
+            ${generateFileRules [ "docs" "notmuch" ]}
           '';
         }
       ])
