@@ -14,16 +14,6 @@
       texlive.combine {
         inherit (texlive) scheme-full pygmentex pgf collection-basic;
       };
-    # https://github.com/DanBloomberg/leptonica/issues/659
-    leptonica = prev.leptonica.overrideAttrs (oldAttrs: {
-      patches = (if oldAttrs ? patches then oldAttrs.patches else [ ]) ++ [
-        (prev.fetchpatch {
-          url =
-            "https://github.com/DanBloomberg/leptonica/commit/544561af6944425a284a6bc387d64662501c560e.patch";
-          hash = "sha256-rgpXAylSvCJYt4fbUELomfJz3OytsMdeJhcr7neP4yY=";
-        })
-      ];
-    });
   };
   additions = final: prev: {
     inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install;
