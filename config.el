@@ -86,7 +86,15 @@
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+        completion-category-overrides '((file (styles partial-completion))))
+  :config
+  (defun my-org-sparse-tree ()
+    "Create an org sparse tree showing only point"
+    (interactive)
+    (org-overview)      ;; Hide everything
+    (org-show-context)) ;; Show context around point
+  )
+
 
 (use-package company
   :config
