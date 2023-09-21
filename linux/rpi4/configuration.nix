@@ -90,8 +90,8 @@ let sshKeys =
     };
     adguardhome = {
       enable = true;
-      # no clue why this is failing
-      # openFirewall = true;
+      openFirewall = true;
+      settings = {};
     };
     mosquitto = {
       enable = true;
