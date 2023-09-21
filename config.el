@@ -890,6 +890,8 @@ if one already exists."
  "." '(find-file :which-key "Find file" )
  "q" '(:ignore t :which-key "quit")
  "q q" 'save-buffers-kill-terminal
+ "c" '(:ignore t :which-key "code")
+ "c c" 'compile
  "o" '(:ignore t :which-key "open")
  "o e" 'elfeed
  "o c" 'ement-connect
