@@ -343,7 +343,7 @@
      (mapcar #'org-roam-node-file (org-roam-node-list))))
   (defun my/org-roam-refresh-agenda-list ()
     (interactive)
-    (setq org-agenda-files (delete-dups (cons "~/Dokumente/notes.org" (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float")))))
+    (setq org-agenda-files (delete-dups (cons "~/Dokumente/notes.org" (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO")))))
   (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
