@@ -113,7 +113,10 @@
 
 (use-package consult
   :ensure t
-  :custom (xref-show-xrefs-function 'consult-xref))
+  :custom
+  (xref-show-xrefs-function 'consult-xref)
+  (xref-show-definitions-function 'consult-xref)
+  (completion-in-region-function 'consult-completion-in-region))
 
 (use-package avy :ensure)
 
