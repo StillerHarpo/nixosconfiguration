@@ -696,8 +696,10 @@
 
 (setq browse-url-secondary-browser-function 'browse-url-firefox-new-window)
 
-(general-define-key :states '(normal visual motion)
-  "g s" 'evil-avy-goto-char)
+(general-define-key
+ :states '(normal visual motion)
+ "g s" 'evil-avy-goto-char
+ "g r" 'xref-find-references)
 
 (general-define-key :states '(normal visual)
   :keymaps '(Info-mode-map)
