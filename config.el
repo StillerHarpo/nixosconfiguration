@@ -699,6 +699,10 @@
   :keymaps '(Info-mode-map)
   "s" 'consult-info)
 
+(general-define-key
+ :states '(insert)
+ "<tab>" 'completion-at-point)
+
 (defun my/delete-this-file ()
     (interactive)
     (delete-file (buffer-file-name))
