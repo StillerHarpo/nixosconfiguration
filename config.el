@@ -494,6 +494,10 @@
   :config
   (evil-add-command-properties #'haskell-mode-tag-find :jump t))
 
+(use-package rustic :ensure
+  :init
+  (setq rustic-lsp-client 'eglot))
+
 (use-package nix-mode :ensure)
 
 (use-package tide
