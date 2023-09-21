@@ -102,7 +102,8 @@
 
 (use-package tempel
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+   :keymaps '(my-keys-minor-mode-map)
    :prefix "SPC"
    "c i" 'tempel-insert))
 
@@ -169,7 +170,8 @@
   (add-hook 'org-mode-hook #'auto-revert-mode)
   (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+   :keymaps '(my-keys-minor-mode-map)
    :prefix "SPC"
    "n a" 'org-agenda
    "n c" 'org-capture
@@ -320,10 +322,6 @@
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys)
-  (general-unbind
-    :states '(normal visual motion)
-    :keymaps '(org-agenda-mode-map org-agenda-keymap)
-    "SPC")
   (with-eval-after-load 'org-agenda
     (define-key org-agenda-mode-map (kbd "SPC") nil))
   )
@@ -368,7 +366,8 @@
   (org-roam-db-autosync-mode)
   (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+   :keymaps '(my-keys-minor-mode-map)
 	   :prefix "SPC"
            "n" '(:ignore t :which-key "org")
 	   "n f" 'org-roam-node-find
@@ -389,7 +388,8 @@
 (use-package link-hint
   :ensure
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+   :keymaps '(my-keys-minor-mode-map)
   :prefix "SPC"
   "s l" 'link-hint-open-link))
 
@@ -404,7 +404,8 @@
    :keymaps 'magit-status-mode-map
    "S-SPC" 'magit-diff-show-or-scroll-up)
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+   :keymaps '(my-keys-minor-mode-map)
   :prefix "SPC"
    "g" '(:ignore t :which-key "magit")
    "g g" 'magit-status
@@ -427,7 +428,8 @@
   :ensure t
   :after hydra
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+ :keymaps '(my-keys-minor-mode-map)
   :prefix "SPC"
   "g t" 'git-timemachine)
   :config
@@ -462,7 +464,8 @@
   :ensure t
   :init (global-flycheck-mode)
   :general
-  (:states '(normal visual motion)
+  (:states '(normal visual motion emacs)
+ :keymaps '(my-keys-minor-mode-map)
   :prefix "SPC"
    "c x" 'flycheck-list-errors))
 
@@ -617,12 +620,7 @@
   :general
   (:states '(normal visual motion)
    :keymaps '(elfeed-search-mode-map)
-   "b" 'elfeed-search-browse-url)
-  :config
-  (general-unbind
-    :states '(normal visual motion)
-    :keymaps '(elfeed-search-mode-map elfeed-show-mode-map)
-    "SPC"))
+   "b" 'elfeed-search-browse-url))
 
 (use-package elfeed-org
   :ensure t
