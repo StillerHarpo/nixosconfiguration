@@ -490,7 +490,9 @@
 	     :states '(normal visual motion)
              "g d" 'haskell-mode-tag-find))
       (eglot-ensure)))
-  :hook (haskell-mode . my/init-haskell))
+  :hook (haskell-mode . my/init-haskell)
+  :config
+  (evil-add-command-properties #'haskell-mode-tag-find :jump t))
 
 (use-package nix-mode :ensure)
 
