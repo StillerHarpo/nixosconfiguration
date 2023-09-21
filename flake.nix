@@ -95,6 +95,7 @@
         ./linux/thinkpad/configuration.nix
         inputs.agenix.nixosModules.age
         inputs.envfs.nixosModules.envfs
+        ./modules
       ];
 
       thinkpad-specialArgs = {

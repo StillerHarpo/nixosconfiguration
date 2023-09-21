@@ -10,39 +10,11 @@
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
+  xserver.enable = true;
+  wayland.enable = true;
 
   services = {
     dbus.packages = [ pkgs.dconf ];
-    # Enable the X11 windowing system.
-    xserver = {
-      enable = true;
-      layout = "us";
-      xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
-      xkbVariant = "altgr-intl";
-      monitorSection = ''Option "DPMS" "false"'';
-      serverLayoutSection = ''
-        Option          "BlankTime"     "0"
-        Option          "StandbyTime"   "0"
-        Option          "SuspendTime"   "0"
-        Option          "OffTime"       "0"
-      '';
-      # Enable XMonad
-      windowManager = {
-        xmonad = {
-          enable = true;
-          enableContribAndExtras = true;
-        };
-      };
-      displayManager = {
-        defaultSession = "none+xmonad";
-        autoLogin = {
-          enable = true;
-          user = "florian";
-        };
-      };
-    };
 
     pipewire = {
       enable = true;
