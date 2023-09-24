@@ -172,6 +172,24 @@
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
   (add-hook 'org-mode-hook #'auto-revert-mode)
   (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
+
+  (defun my/org-insert-auto-schedule (heading)
+    "Schedules an heading to the current date. Inserts the heading if doesn't exist"
+    (with-current-buffer (find-file-noselect "~/Dokumente/auto.org")
+      (let ((heading-name heading))
+        (if-let (pos (org-find-exact-headline-in-buffer heading-name nil t))
+            (goto-char pos)
+          (progn (org-insert-heading) (insert heading-name)))
+        (org-todo "TODO")
+        (org-schedule 1 (calendar-date-string (calendar-current-date)))
+        (save-buffer))))
+
+  (unless (process-lines "journalctl" "-u" "borgbackup-job-florian.service" "EXIT_STATUS=0" "--since=-7d" "--output=cat")
+    (my/org-insert-auto-schedule "borgbackup fixen"))
+
+  (unless (directory-empty-p "~/Dokumente/org-roam/journals")
+    (my/org-insert-auto-schedule "journals aufräumen"))
+
   :general
   (:states '(normal visual motion emacs)
    :keymaps '(my-keys-minor-mode-map)
@@ -344,7 +362,12 @@
      (mapcar #'org-roam-node-file (org-roam-node-list))))
   (defun my/org-roam-refresh-agenda-list ()
     (interactive)
-    (setq org-agenda-files (delete-dups (cons "~/Dokumente/notes.org" (my/org-roam-list-notes-by-regex "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO")))))
+    (setq org-agenda-files
+	  (delete-dups
+	   (cons "~/Dokumente/auto.org"
+		 (cons "~/Dokumente/notes.org"
+		       (my/org-roam-list-notes-by-regex
+			"<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO"))))))
   (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
