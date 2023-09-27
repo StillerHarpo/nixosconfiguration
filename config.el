@@ -1020,3 +1020,13 @@ If I let Windows handle DPI everything looks blurry."
     (my/checkpad-format)))
 
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
+
+(defun my/org-roam-commit-on-save ()
+  "Auto commits in org-roam"
+  (when (and (project-current)
+	     (string-match "/org-roam/" (project-root (project-current))))
+    (let ((name "org-roam-auto-commit"))
+      (call-process "git" nil nil nil "add" ".")
+      (call-process "git" nil nil nil "commit" (format "--message=%s" name)))))
+
+(add-hook 'after-save-hook 'my/org-roam-commit-on-save)
