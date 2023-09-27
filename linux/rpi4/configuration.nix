@@ -10,6 +10,10 @@ let sshKeys =
 {
 
   imports = [ ./disko.nix ];
+  age = {
+    identityPaths = [ "/root/.ssh/rpi4" ];
+    secrets.rpi4WireguardPrivate.file = ./secrets/rpi4WireguardPrivate.age;
+  };
 
   # Select internationalisation properties.
   console.keyMap = "us";
@@ -161,6 +165,44 @@ let sshKeys =
   };
   
   users.users.root.openssh.authorizedKeys.keys = sshKeys;
-  # TODO https://nixos.wiki/wiki/WireGuard
+
+  networking = {
+    nat = {
+      enable = true;
+      externalInterface = "enabcm6e4ei0";
+      internalInterfaces = [ "wgHome" ];
+    };
+    firewall.allowedUDPPorts = [ 51820 ];
+
+    wireguard.interfaces = {
+      wgHome = {
+        ips = [ "10.100.0.1/24" ];
+
+        listenPort = 51820;
+
+        privateKeyFile = config.age.secrets.rpi4WireguardPrivate.path;
+
+       postSetup = ''
+         ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
+       '';
+
+       postShutdown = ''
+         ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
+       '';
+
+        peers = [
+          { name = "thinkpad";
+            publicKey = "INT+PWI0jyeirbU5CP0ELwJTeYptqGel8gEd+bI1BFQ=";
+            allowedIPs = [ "10.100.0.2/32" ];
+          }
+          {
+            name = "fairphone";
+            publicKey = "wANts2w3caH/+zjsoNbMRz1SCGDd5IyFObLXXvCaMDE=";
+            allowedIPs = [ "10.100.0.3/32" ];
+          }
+        ];
+      };
+    };
+  };
   system.stateVersion = "23.11";
 }
