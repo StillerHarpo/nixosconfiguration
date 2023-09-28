@@ -367,7 +367,8 @@
 	   (cons "~/Dokumente/auto.org"
 		 (cons "~/Dokumente/notes.org"
 		       (my/org-roam-list-notes-by-regex
-			"<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO"))))))
+			"<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO"))))
+	  org-caldav-files org-agenda-files))
   (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
@@ -695,6 +696,19 @@
   "s" 'peertube-search
   "m" 'peertube-change-sort-method
   "t" 'peertube-preview-thumbnail))
+
+(use-package org-caldav
+  :init
+  (defun org-caldav-timestamp-has-time-p (timestamp)
+  "Checks whether a timestamp has a time.
+Returns nil if not and (sec min hour) if it has."
+  (let ((ti (org-parse-time-string timestamp)))
+    (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
+  :custom
+  (org-export-with-broken-links t)
+  (org-caldav-url "http://192.168.178.53:5232")
+  (org-caldav-inbox "~/Dokumente/notes.org")
+  (org-caldav-calendar-id "any/35d8b866-3086-4e91-9165-b1eb08950ec8"))
 
 (recentf-mode 1)
 (winner-mode 1)
