@@ -84,6 +84,10 @@ let sshKeys =
   };
 
   services = {
+    radicale = {
+      enable = true;
+      settings.server.hosts = [ "0.0.0.0:5232" ];
+    };
     snowflake-proxy.enable = true;
     openssh = {
       enable = true;
@@ -173,6 +177,7 @@ let sshKeys =
       internalInterfaces = [ "wgHome" ];
     };
     firewall.allowedUDPPorts = [ 51820 ];
+    firewall.allowedTCPPorts = [ 5232 ];
 
     wireguard.interfaces = {
       wgHome = {
