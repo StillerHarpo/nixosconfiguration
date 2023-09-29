@@ -7,6 +7,7 @@
   zramSwap.enable = true;
 
   imports = [
+    ./wireguard.nix
     ./work-container.nix
     ./hardware.nix
     ./hibernate.nix
@@ -262,6 +263,7 @@
     paperless.file = ./secrets/paperless.age;
     birthdate.file = ./secrets/birthdate.age;
     vpn.file = ./secrets/vpn.age;
+    thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
   };
 
   users = {

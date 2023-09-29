@@ -197,7 +197,7 @@ let sshKeys =
 
         peers = [
           { name = "thinkpad";
-            publicKey = "INT+PWI0jyeirbU5CP0ELwJTeYptqGel8gEd+bI1BFQ=";
+            publicKey = "2uKX2MDYjMUHghbb+csZJ5MZwqRnIQCVSBt6hYJzNRQ=";
             allowedIPs = [ "10.100.0.2/32" ];
           }
           {
