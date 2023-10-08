@@ -3,6 +3,54 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
+    rclone =
+      let
+        enableCmount = true;
+      in
+        with final; buildGoModule
+          rec {
+            pname = "rclone";
+            version = "1.65.0";
+            src = fetchFromGitHub {
+              owner = pname;
+              repo = pname;
+              rev = "a752563842b3a603c7d73b00e71c6ff1fd120382";
+              hash = "sha256-yds9yWjmfRcStFJQb1MGlXjQxnApFtnkRxb4ZVC7UEI=";
+            };
+            proxyVendor = true;
+            #deleteVendor = true;
+            vendorHash = "sha256-BUSI07Ziu2Llu9z1CpREKohqQfGFLgTGWhQ+OA0dABk=";
+            subPackages = [ "." ];
+            outputs = [ "out" "man" ];
+            buildInputs = lib.optional enableCmount (if stdenv.isDarwin then macfuse-stubs else fuse);
+            nativeBuildInputs = [ installShellFiles makeWrapper ];
+            tags = lib.optionals enableCmount [ "cmount" ];
+            ldflags = [ "-s" "-w" "-X github.com/rclone/rclone/fs.Version=${version}" ];
+            postInstall =
+              let
+                rcloneBin =
+                  if stdenv.buildPlatform.canExecute stdenv.hostPlatform
+                  then "$out"
+                  else lib.getBin buildPackages.rclone;
+              in
+                ''
+                  installManPage rclone.1
+                  for shell in bash zsh fish; do
+                    ${rcloneBin}/bin/rclone genautocomplete $shell rclone.$shell
+                    installShellCompletion rclone.$shell
+                  done
+                '' + lib.optionalString (enableCmount && !stdenv.isDarwin)
+                # use --suffix here to ensure we don't shadow /run/wrappers/bin/fusermount,
+                # as the setuid wrapper is required as non-root on NixOS.
+                ''
+                  wrapProgram $out/bin/rclone \
+                    --suffix PATH : "${lib.makeBinPath [ fuse ] }" \
+                    --prefix LD_LIBRARY_PATH : "${fuse}/lib"
+                '';
+            passthru.tests = {
+              inherit librclone;
+            };
+          };
     steam = prev.steam.override {
       extraPkgs = pkgs: [
         inputs.nixpkgs2211.legacyPackages.${final.system}.openssl
