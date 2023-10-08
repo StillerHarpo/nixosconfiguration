@@ -194,8 +194,8 @@
         (org-schedule 1 (calendar-date-string (calendar-current-date)))
         (save-buffer))))
 
-  (unless (process-lines "journalctl" "-u" "borgbackup-job-florian.service" "EXIT_STATUS=0" "--since=-7d" "--output=cat")
-    (my/org-insert-auto-schedule "borgbackup fixen"))
+  (unless (process-lines "journalctl" "-u" "restic-backups-florian.service" "JOB_RESULT=done" "--since=-7d" "--output=cat")
+    (my/org-insert-auto-schedule "restic fixen"))
 
   (unless (directory-empty-p "~/Dokumente/org-roam/journals")
     (my/org-insert-auto-schedule "journals aufräumen"))
