@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  age.secrets.backblaze.file = ./secrets/backblaze.age;
   age.secrets.backblaze-restic.file = ./secrets/backblaze-restic.age;
   age.secrets.restic-password.file = ./secrets/restic-password.age;
   services.restic.backups.florian = {
