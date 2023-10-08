@@ -146,6 +146,8 @@
 (use-package org
   :ensure
   :custom
+  ;; https://github.com/doomemacs/doomemacs/issues/2672
+  (org-agenda-inhibit-startup t)
   (org-agenda-start-on-weekday nil)
   (org-src-window-setup 'current-window)
   (org-refile-targets '((nil :maxlevel . 9)
@@ -167,11 +169,19 @@
            "DONE(d)"  ; Task successfully completed
            "KILL(k)"))) ; Task was cancelled, aborted or is no longer applicable
   :config
+  ;; https://github.com/doomemacs/doomemacs/issues/2672
+  ;; Prevent temporarily opened agenda buffers from polluting recentf.
+  (advice-add #'org-get-agenda-file-buffer :around (lambda (orig-fn file)
+      (let ((recentf-exclude (list (lambda (_file) t)))
+            find-file-hook
+            org-mode-hook)
+        (funcall orig-fn file))))
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
   (add-hook 'org-mode-hook #'auto-revert-mode)
   (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
+  (advice-add #'org-agenda-switch-to :after #'(lambda () (ispell-change-dictionary "de_DE")))
 
   (defun my/org-insert-auto-schedule (heading)
     "Schedules an heading to the current date. Inserts the heading if doesn't exist"
@@ -328,9 +338,9 @@
    "m p p" 'org-priority
    "m p u" 'org-priority-up)
   :general
-  (:states '(normal visual)
+  (:states '(normal visual emacs motion)
    :keymaps '(org-agenda-mode-map)
-   :prefix "SPC"
+   "q" 'org-agenda-exit
    ))
 
 (use-package ol-notmuch
