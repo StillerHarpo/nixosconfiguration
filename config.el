@@ -399,6 +399,8 @@
         ("t" "traueme" plain "#+zeit: %^{von}-%^{bis}\n* Traum 1\n%?" :target
          (file+head "%<%Y-%m-%d>-Traueme.org" "#+title: ~ Träume vom %<%d.%m.%Y>\n")
          :unnarrowed t)))
+  (org-roam-db-node-include-function
+    (lambda () (not (org-get-heading))))
   :config
   (org-roam-db-autosync-mode)
   (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
