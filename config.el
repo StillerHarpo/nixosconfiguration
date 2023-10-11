@@ -199,6 +199,8 @@
 
   (unless (directory-empty-p "~/Dokumente/org-roam/journals")
     (my/org-insert-auto-schedule "journals aufräumen"))
+  (when (directory-files "~/Dokumente/org-roam/" nil (rx ".sync-conflict-"))
+    (my/org-insert-auto-schedule "sync conflict files entfernen"))
 
   :general
   (:states '(normal visual motion emacs)
