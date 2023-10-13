@@ -12,6 +12,11 @@
   (make-directory emacsAutoSaveDir))
 (setq auto-save-file-name-transforms
   `((".*" ,emacsAutoSaveDir t)))
+(defun my/diff-with-autosave-file ()
+  "Diff file with its auto-save"
+  (interactive)
+  (ediff (bookmark-buffer-file-name) (make-auto-save-file-name)))
+
 (require 'use-package)
 
 (use-package my-nix-paths
