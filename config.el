@@ -7,6 +7,11 @@
 (setq create-lockfiles nil)
 (setq make-backup-files nil)
 
+(setq emacsAutoSaveDir "~/.emacs-saves/")
+(unless (file-directory-p emacsAutoSaveDir)
+  (make-directory emacsAutoSaveDir))
+(setq auto-save-file-name-transforms
+  `((".*" ,emacsAutoSaveDir t)))
 (require 'use-package)
 
 (use-package my-nix-paths
