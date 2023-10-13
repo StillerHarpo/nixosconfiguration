@@ -5,6 +5,7 @@
 (menu-bar-mode -1)           ; Disable menubar
 (setq ring-bell-function 'ignore)
 (setq create-lockfiles nil)
+(setq make-backup-files nil)
 
 (require 'use-package)
 
