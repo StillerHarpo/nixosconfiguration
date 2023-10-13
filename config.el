@@ -210,6 +210,9 @@
 
   (unless (directory-empty-p "~/Dokumente/org-roam/journals")
     (my/org-insert-auto-schedule "journals aufräumen"))
+  (unless (directory-empty-p emacsAutoSaveDir)
+    (my/org-insert-auto-schedule "auto saves aufräumen"))
+
   (when (directory-files "~/Dokumente/org-roam/" nil (rx ".sync-conflict-"))
     (my/org-insert-auto-schedule "sync conflict files entfernen"))
 
