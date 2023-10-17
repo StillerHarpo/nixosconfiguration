@@ -26,10 +26,12 @@
       vfs-cache-max-size = "20G";
       vfs-read-chunk-size = "32M";
       vfs-read-chunk-size-limit = "256M";
+      retries-sleep = "1";
     };
     timerConfig = {
       OnCalendar = "weekly";
       Persistent = true;
+      RandomizedDelaySec = "3h";
     };
   };
 }
