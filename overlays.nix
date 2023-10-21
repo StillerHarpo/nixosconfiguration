@@ -141,5 +141,4 @@
   };
   a-emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;
-  nix-alien = inputs.nix-alien.overlay;
 }

@@ -50,7 +50,7 @@
             scrot
             pinta
             ### screenshots ###
-            nix-alien
+            inputs.nix-alien.packages."x86_64-linux".nix-alien
             languagetool
             xclip
             (kodi.withPackages (kodiPkgs:
