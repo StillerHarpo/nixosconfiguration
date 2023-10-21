@@ -238,9 +238,6 @@
                   secrets = lib.mkForce {
                     florian.file =
                       ./linux/thinkpad/test-secrets/passwordHash.age;
-                    paperless.file = ./linux/thinkpad/test-secrets/password.age;
-                    birthdate.file =
-                      ./linux/thinkpad/test-secrets/birthdate.age;
                   };
                 };
                 systemd.services.backblaze = lib.mkForce { };

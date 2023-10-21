@@ -242,10 +242,6 @@
       enable = true;
       policies = with lib.apparmor; {
         steam.profile = getProfiles [ pkgs.steam ] defaultProfile;
-        paperless.profile = getProfiles [ pkgs.paperless-ng ] ''
-          network,
-          ${generateFileRules [ "paperless" ]}
-        '';
       };
     };
     rtkit.enable = true;
@@ -260,8 +256,6 @@
 
   age.secrets = {
     florian.file = ./secrets/florian.age;
-    paperless.file = ./secrets/paperless.age;
-    birthdate.file = ./secrets/birthdate.age;
     vpn.file = ./secrets/vpn.age;
     thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
   };
@@ -338,17 +332,6 @@
         "100:class_g ?= 'Rofi'"
         "100:name = 'Notification'"
       ];
-    };
-
-    paperless = {
-      enable = true;
-      passwordFile = config.age.secrets.paperless.path;
-      consumptionDir = "/home/florian/paperlessInput";
-      extraConfig = {
-        PAPERLESS_OCR_LANGUAGE = "deu+eng";
-        PAPERLESS_IGNORE_DATES = config.age.secrets.birthdate.path;
-      };
-      consumptionDirIsPublic = true;
     };
 
     syncthing = {

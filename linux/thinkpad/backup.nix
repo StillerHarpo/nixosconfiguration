@@ -5,7 +5,6 @@
   age.secrets.restic-password.file = ./secrets/restic-password.age;
   services.restic.backups.florian = {
     paths = [
-      "/var/lib/paperless/media/documents/archive"
       "/home/florian/Dokumente"
       "/home/florian/.password-store"
       "/home/florian/Maildir"
