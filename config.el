@@ -395,6 +395,7 @@
 		       (my/org-roam-list-notes-by-regex
 			"<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO"))))
 	  org-caldav-files org-agenda-files))
+  (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
   (org-roam-directory (file-truename "~/Dokumente/org-roam"))
@@ -418,7 +419,6 @@
     (lambda () (not (org-get-heading))))
   :config
   (org-roam-db-autosync-mode)
-  (my/org-roam-refresh-agenda-list)
   (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
   :general
   (:states '(normal visual motion emacs)
