@@ -138,6 +138,13 @@
             };
           };
         };
+    my-install-iso = inputs.nixos-generators.nixosGenerate {
+        system = final.system;
+        modules = [{
+           users.users.root.openssh.authorizedKeys.keys = import linux/thinkpad/sshKeys.nix;
+        }];
+        format = "install-iso";
+      };
   };
   a-emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;
