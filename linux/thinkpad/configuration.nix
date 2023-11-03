@@ -363,6 +363,10 @@
             params.keep = "5";
           };
         };
+        "music" = {
+          path = "/home/florian/Music";
+          devices = [ "android" ];
+        };
         "macos" = {
           path = "/home/florian/syncthing-macos";
           devices = [ "macos" ];
