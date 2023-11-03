@@ -73,5 +73,15 @@ in rec {
       replacement = pkgs.rpi4-uefi-firmware;
     }
   ]);
+  deck-install = makeScript "deck-install" ([substitutes.pass] ++ [
+    {
+      pattern = "nixos-anywhere";
+      replacement = "${inputs.nixos-anywhere.packages.x86_64-linux.nixos-anywhere}/bin/nixos-anywhere";
+    }
+    {
+      pattern = "nixosDeckIP";
+      replacement = (import ../../variables.nix).nixosDeckIP;
+    }
+  ]);
 
 }

@@ -2,7 +2,12 @@
   inputs = {
     nixpkgs2211.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgsUnstable.url = "github:NixOS/nixpkgs?rev=7c9cc5a6e5d38010801741ac830a3f8fd667a7a0";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS?rev=2965d86926177af95af615a09138e0aaaaec56fa";
+      inputs.nixpkgs.follows = "nixpkgsUnstable";
+    };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
       inputs = {
@@ -160,6 +165,19 @@
           ];
         };
         
+        flosDeck =  inputs.nixpkgsUnstable.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs outputs;
+            private = import ./private.nix;
+          };
+          modules = [
+            inputs.jovian.nixosModules.jovian
+            inputs.agenix.nixosModules.age
+            inputs.disko.nixosModules.disko
+            ./linux/deck/configuration.nix
+          ];
+        };
+
         rpi2 = inputs.nixpkgs.lib.nixosSystem {
           system = "armv7l-linux";
 
@@ -224,6 +242,18 @@
             remoteBuild = true;
             path = inputs.deploy-rs.lib.aarch64-linux.activate.nixos
               self.nixosConfigurations.nixosRpi4;
+          };
+        };
+        flosDeck = {
+          hostname = (import ./variables.nix).nixosDeckIP;
+          profiles.system = {
+            user = "root";
+            sshUser = "root";
+            remoteBuild = true;
+            autoRollback = false;
+            magicRollback = false;
+            path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos
+              self.nixosConfigurations.flosDeck;
           };
         };
       };

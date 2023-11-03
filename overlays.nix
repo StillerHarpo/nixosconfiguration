@@ -74,7 +74,7 @@
       };
   };
   additions = final: prev: {
-    inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install;
+    inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install;
     deploy-rs = inputs.deploy-rs.defaultPackage."${final.system}";
     haskellPackages = prev.haskellPackages.extend (_: hPrev: {
       my-common = prev.haskell.lib.overrideCabal
