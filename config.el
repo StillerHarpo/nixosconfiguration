@@ -736,35 +736,7 @@ Returns nil if not and (sec min hour) if it has."
   (org-caldav-inbox "~/Dokumente/notes.org")
   (org-caldav-calendar-id "any/35d8b866-3086-4e91-9165-b1eb08950ec8")
   (org-caldav-resume-aborted 'never)
-  :config
-  ;; synchronize every 2 hour in the background. Show results if something failed
-  (run-at-time
-   "5 minutes"
-   (* 2 60 60)
-   #'async-start
-   `(lambda ()
-     ,(async-inject-variables (rx "load-path"))
-     (require 'org-caldav)
-     (defun org-caldav-timestamp-has-time-p (timestamp)
-       "Checks whether a timestamp has a time.
-        Returns nil if not and (sec min hour) if it has."
-       (let ((ti (org-parse-time-string timestamp)))
-	 (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
-     ,(async-inject-variables
-       (rx
-	(or
-	 "org-export-with-broken-links"
-	 "org-caldav-url"
-	 "org-caldav-inbox"
-	 "org-caldav-calendar-id"
-	 "org-caldav-resume-aborted"
-	 "org-caldav-files")))
-     (org-caldav-sync)
-     (org-caldav-sync-result-filter-errors))
-   '(lambda (errors)
-     (if errors
-	 (message (format "Syncing calendar failed: %s" errors))
-       (message "calendar synced")))))
+  )
 
 (recentf-mode 1)
 (winner-mode 1)
@@ -1099,3 +1071,32 @@ If I let Windows handle DPI everything looks blurry."
       (call-process "git" nil nil nil "commit" (format "--message=%s" name)))))
 
 (add-hook 'after-save-hook 'my/org-roam-commit-on-save)
+
+;; synchronize every 2 hour in the background. Show results if something failed
+(run-at-time
+   "5 minutes"
+   (* 2 60 60)
+   #'async-start
+   `(lambda ()
+     ,(async-inject-variables (rx "load-path"))
+     (require 'org-caldav)
+     (defun org-caldav-timestamp-has-time-p (timestamp)
+       "Checks whether a timestamp has a time.
+        Returns nil if not and (sec min hour) if it has."
+       (let ((ti (org-parse-time-string timestamp)))
+	 (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
+     ,(async-inject-variables
+       (rx
+	(or
+	 "org-export-with-broken-links"
+	 "org-caldav-url"
+	 "org-caldav-inbox"
+	 "org-caldav-calendar-id"
+	 "org-caldav-resume-aborted"
+	 "org-caldav-files")))
+     (org-caldav-sync)
+     (org-caldav-sync-result-filter-errors))
+   '(lambda (errors)
+     (if errors
+	 (message (format "Syncing calendar failed: %s" errors))
+       (message "calendar synced"))))
