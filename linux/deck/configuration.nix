@@ -74,6 +74,12 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       plasma-browser-integration
     ];
     systemPackages = with pkgs; [
+      xonotic
+      openarena
+      airshipper
+      superTuxKart
+      prismlauncher
+      minetest
       firefox
       vim
       git-crypt
