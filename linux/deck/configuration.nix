@@ -105,7 +105,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     interfaces.wlo1.useDHCP = true;
   };
 
-  nixpkgs.hostPlatform.system = "x86_64-linux";
 
   nix = {
     extraOptions = ''
@@ -153,9 +152,25 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     root.openssh.authorizedKeys.keys = sshKeys;
   };
 
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.florian = {
+      imports = [  outputs.homeModules ];
+      firefox.enable = true;
+      home.stateVersion = "23.05";
+    };
+  };
+
   networking.networkmanager.enable = true;
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = let system = "x86_64-linux"; in {
+    hostPlatform.system = system;
+    overlays = [ (_: _: { inherit system; }) ]
+               ++ (builtins.attrValues outputs.overlays);
+    config.allowUnfree = true;
+  };
 
   system.stateVersion = "23.05";
 

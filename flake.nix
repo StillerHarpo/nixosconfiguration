@@ -35,6 +35,10 @@
       url = "github:nix-community/home-manager/release-23.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager-flake-unstable = {
+      url = "github:nix-community/home-manager/master";
+      inputs.nixpkgs.follows = "nixpkgsUnstable";
+    };
     nur.url = "github:nix-community/NUR";
     deploy-rs = {
       url = "github:serokell/deploy-rs";
@@ -86,7 +90,7 @@
         {
           home-manager = {
             users.florian = { pkgs, config, ... }: {
-              imports = [ ./homeModules ];
+              imports = [ outputs.homeModules ];
               xdg = {
                 enable = true;
                 configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
@@ -119,6 +123,8 @@
       overlays = import ./overlays.nix { inherit inputs outputs; };
 
       nixosModules = ./modules;
+
+      homeModules = ./homeModules;
 
       nixosConfigurations = {
         nixosThinkpad = inputs.nixpkgs.lib.nixosSystem {
@@ -178,6 +184,7 @@
             inputs.jovian.nixosModules.jovian
             inputs.agenix.nixosModules.age
             inputs.disko.nixosModules.disko
+            inputs.home-manager-flake-unstable.nixosModules.home-manager
             ./linux/deck/configuration.nix
           ];
         };
