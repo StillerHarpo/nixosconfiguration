@@ -106,7 +106,7 @@
         ./linux/thinkpad/configuration.nix
         inputs.agenix.nixosModules.age
         inputs.envfs.nixosModules.envfs
-        ./modules
+        outputs.nixosModules
       ];
 
       thinkpad-specialArgs = {
@@ -117,6 +117,9 @@
     in {
 
       overlays = import ./overlays.nix { inherit inputs outputs; };
+
+      nixosModules = ./modules;
+
       nixosConfigurations = {
         nixosThinkpad = inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
