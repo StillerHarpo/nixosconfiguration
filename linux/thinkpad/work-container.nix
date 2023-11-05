@@ -123,7 +123,8 @@ in {
 
         home-manager = {
           users."${cfg.userName}" = {
-            imports = [ ../../zsh.nix home/firefox.nix ];
+            firefox.enable = true;
+            imports = [ ../../zsh.nix ];
             programs.zsh = {
               enable = true;
               oh-my-zsh.theme = "agnoster";

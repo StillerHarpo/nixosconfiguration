@@ -11,8 +11,12 @@ in {
     ./zsh.nix
     ./defaultApplications.nix
     ../../home/configuration.nix
-    ./firefox.nix
   ];
+
+  firefox = {
+    enable = true;
+    workProfile = true;
+  };
 
   programs = {
     nix-index.enable = true;

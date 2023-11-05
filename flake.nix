@@ -86,6 +86,7 @@
         {
           home-manager = {
             users.florian = { pkgs, config, ... }: {
+              imports = [ ./homeModules ];
               xdg = {
                 enable = true;
                 configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
