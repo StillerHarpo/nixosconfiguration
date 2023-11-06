@@ -15,6 +15,11 @@ executable scans
   build-depends:    base, turtle, transformers, foldl, text, time, exceptions, extra
   default-language: Haskell2010
 
+executable home-automation
+  main-is:          haskell/home-automation/automation.hs
+  build-depends:    base, aeson, net-mqtt, network-uri, time, bytestring, text
+  default-language: Haskell2010
+
 executable xmonad-desktop
   main-is:          haskell/xmonad-desktop/xmonad.hs
   build-depends:    base, xmonad, xmonad-contrib

@@ -204,5 +204,53 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       };
     };
   };
+
+  systemd.services.lightAutomation = {
+      enable = true;
+      description = "Automatically change color";
+      wants = [ "zigbee2mqtt.service" "mosquitto.service" ];
+      after = [ "zigbee2mqtt.service" "mosquitto.service" ];
+      serviceConfig = {
+        ExecStart = pkgs.writers.writeHaskell
+          "light-automation"
+          {
+            libraries = with pkgs.haskellPackages; [ aeson net-mqtt network-uri ];
+          }
+          ../../haskell/home-automation/automation.hs;
+        CapabilityBoundingSet = "";
+        LockPersonality = true;
+        MemoryDenyWriteExecute = false;
+        NoNewPrivileges = true;
+        PrivateDevices = false;
+        PrivateUsers = true;
+        PrivateTmp = true;
+        ProtectClock = true;
+        ProtectControlGroups = true;
+        ProtectHome = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectProc = "invisible";
+        ProcSubset = "pid";
+        ProtectSystem = "strict";
+        RemoveIPC = true;
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+        ];
+        RestrictNamespaces = true;
+        RestrictRealtime = true;
+        RestrictSUIDSGID = true;
+        SystemCallArchitectures = "native";
+        SystemCallFilter = [
+          "@system-service @pkey"
+          "~@privileged @resources"
+        ];
+        UMask = "0077";
+      };
+  };
+
   system.stateVersion = "23.11";
+
 }
