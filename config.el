@@ -206,6 +206,8 @@
 
   (unless (directory-empty-p "~/Dokumente/org-roam/journals")
     (my/org-insert-auto-schedule "journals aufräumen"))
+  (unless (string-equal (org-file-contents "~/Dokumente/calendar.org") "")
+    (my/org-insert-auto-schedule "calendar aufräumen"))
   (unless (directory-empty-p emacsAutoSaveDir)
     (my/org-insert-auto-schedule "auto saves aufräumen"))
 
@@ -733,7 +735,7 @@ Returns nil if not and (sec min hour) if it has."
   :custom
   (org-export-with-broken-links t)
   (org-caldav-url "http://192.168.178.53:5232")
-  (org-caldav-inbox "~/Dokumente/notes.org")
+  (org-caldav-inbox "~/Dokumente/calendar.org")
   (org-caldav-calendar-id "any/35d8b866-3086-4e91-9165-b1eb08950ec8")
   (org-caldav-resume-aborted 'never)
   )
