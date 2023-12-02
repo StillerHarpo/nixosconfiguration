@@ -84,7 +84,6 @@
 
       thinkpad-modules = [
         inputs.nixpkgs.nixosModules.notDetected
-        inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
         inputs.home-manager-flake.nixosModules.home-manager
         {
           home-manager = {

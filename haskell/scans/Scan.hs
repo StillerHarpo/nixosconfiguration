@@ -151,8 +151,8 @@ convertPdfs inputs = do
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   procs "pdfunite" (inputs <> [fnT]) mempty
-  checkFile (_PDFS_DIR <> fn)
-  mv fn (_PDFS_DIR <> fn)
+  checkFile (_PDFS_DIR </> fn)
+  mv fn (_PDFS_DIR </> fn)
 
 convertTxts :: [Text] -> MyShell ()
 convertTxts inputs = do
@@ -161,8 +161,8 @@ convertTxts inputs = do
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   liftIO $ traverse (readFile . T.unpack) inputs >>= writeFile (T.unpack fnT) . mconcat
-  checkFile (_PDFS_DIR <> fn)
-  mv fn (_PDFS_DIR <> fn)
+  checkFile (_PDFS_DIR </> fn)
+  mv fn (_PDFS_DIR </> fn)
 
 convertPictures :: MyShell ()
 convertPictures = do
