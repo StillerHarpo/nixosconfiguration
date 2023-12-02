@@ -251,7 +251,10 @@
 
   networking = {
     hostName = "nixosThinkpad";
-    firewall.allowedTCPPorts = [ 24800 ];
+    firewall.allowedTCPPorts = [
+      24800
+      8100 # checkpad sync server
+    ];
   };
 
   age.secrets = {
