@@ -129,16 +129,17 @@
         nixosThinkpad = inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
           specialArgs = thinkpad-specialArgs;
-          modules = thinkpad-modules;
+          modules = thinkpad-modules ++ [
+            inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
+          ];
         };
 
-        thinkpadVM = self.nixosConfigurations.nixosThinkpad.extendModules {
-          modules = [
+        thinkpadVM = inputs.nixpkgs.lib.nixosSystem {
+          inherit lib;
+          specialArgs = thinkpad-specialArgs;
+          modules = thinkpad-modules ++ [
             ({ pkgs, lib, ... }: {
-              # mkpasswd password
-              users.users.florian.hashedPasswordFile = lib.mkForce
-                "${pkgs.writeText "password"
-                "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+              isRealSystem = false;
             })
           ];
         };
@@ -311,16 +312,7 @@
               name = "screenlocker";
               nodes.machine = { pkgs, lib, ... }: {
                 imports = thinkpad-modules;
-                age = {
-                  identityPaths =
-                    lib.mkForce [ "${./linux/thinkpad/test-secrets/id_rsa}" ];
-                  secrets = lib.mkForce {
-                    florian.file =
-                      ./linux/thinkpad/test-secrets/passwordHash.age;
-                  };
-                };
-                systemd.services.backblaze = lib.mkForce { };
-                networking.wg-quick.interfaces = lib.mkForce { };
+                isRealSystem = false;
               };
               node.specialArgs = thinkpad-specialArgs // {
                 inherit lib;

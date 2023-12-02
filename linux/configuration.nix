@@ -10,9 +10,6 @@
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
-  xserver.enable = true;
-  wayland.enable = true;
-
   services = {
     dbus.packages = [ pkgs.dconf ];
 
@@ -47,8 +44,6 @@
   };
 
   services.snowflake-proxy.enable = true;
-
-  age.identityPaths = [ "/root/.ssh/id_rsa" ];
 
   nix = {
     settings = {
