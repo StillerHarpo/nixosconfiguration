@@ -683,7 +683,8 @@
         distributedBuilds = false;
       };
 
-      virtualisation.docker.enable = true;
+      # Disable docker. Somehow leads to xserver failure
+      # virtualisation.docker.enable = true;
 
       nixpkgs = let system = "x86_64-linux";
                 in {
