@@ -13,7 +13,6 @@ in
   config = mkIf cfg.enable {
     services.xserver = {
       enable = true;
-      layout = "us";
       xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
       xkbVariant = "altgr-intl";
       monitorSection = ''Option "DPMS" "false"'';

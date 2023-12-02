@@ -1,11 +1,7 @@
 # here are every configs that are used on my laptop but not on my workstation
 
 { config, pkgs, lib, inputs, ... }:
-
 {
-
-  zramSwap.enable = true;
-
   imports = [
     ./wireguard.nix
     ./work-container.nix
@@ -218,198 +214,236 @@
       ])
   ];
 
-  boot = {
-    # Use the systemd-boot EFI boot loader.
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
-    kernel.sysctl."kernel.yama.ptrace_scope" = 1;
+  options.isRealSystem = lib.mkOption {
+    type = lib.types.bool;
+    default = true;
   };
 
-  fonts.packages = with pkgs; [ terminus_font nerdfonts ];
-
-  location = import ../cords.nix;
-
-  systemd.packages = [ pkgs.dconf ];
-
-  home-manager.users.florian = import ./home/configuration.nix;
-
-  environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
-
-  security = {
-    apparmor = {
-      enable = true;
-      policies = with lib.apparmor; {
-        steam.profile = getProfiles [ pkgs.steam ] defaultProfile;
+  config = lib.mkMerge [
+    (lib.mkIf config.isRealSystem {
+      boot = {
+        # Use the systemd-boot EFI boot loader.
+        loader = {
+          systemd-boot.enable = true;
+          efi.canTouchEfiVariables = true;
+        };
+        kernel.sysctl."kernel.yama.ptrace_scope" = 1;
       };
-    };
-    rtkit.enable = true;
-  };
-
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-
-  networking = {
-    hostName = "nixosThinkpad";
-    firewall.allowedTCPPorts = [
-      24800
-      8100 # checkpad sync server
-    ];
-  };
-
-  age.secrets = {
-    florian.file = ./secrets/florian.age;
-    vpn.file = ./secrets/vpn.age;
-    thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
-  };
-
-  users = {
-    users = {
-      florian = {
-        hashedPasswordFile = config.age.secrets.florian.path;
-        description = "Florian Engel";
-        extraGroups =
-          [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
+      age = {
+        identityPaths = [ "/root/.ssh/id_rsa" ];
+        secrets = {
+          florian.file = ./secrets/florian.age;
+          vpn.file = ./secrets/vpn.age;
+          thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
+        };
       };
-      playground = { isNormalUser = true; };
-    };
-  };
+      myHardware.enable = true;
+      backup.enable = true;
+      wireguard.enable = true;
+      networking.wg-quick.interfaces.vpn.configFile = config.age.secrets.vpn.path;
+      specialisation.normalInternet.configuration = {
+        networking.wg-quick.interfaces.vpn.autostart = false;
+      };
+    })
+    (lib.mkIf (!config.isRealSystem) {
+      age = {
+        identityPaths =
+          [ "${./test-secrets/id_rsa}" ];
 
-  # powerManagement.enable = false;
-  services = {
+        secrets = {
+          florian.file =
+            ./test-secrets/passwordHash.age;
+        };
+      };
+    })
+    {
 
-    unclutter-xfixes.enable = true;
+      zramSwap.enable = true;
 
-    tlp.enable = true;
 
-    # Go in hibernate at lid
-    logind = {
-      lidSwitch = "hibernate";
-      extraConfig = ''
+      fonts.packages = with pkgs; [ terminus_font nerdfonts ];
+
+      location = import ../cords.nix;
+
+      systemd.packages = [ pkgs.dconf ];
+
+      home-manager.users.florian = import ./home/configuration.nix;
+
+      environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
+
+      security = {
+        apparmor = {
+          enable = true;
+          policies = with lib.apparmor; {
+            steam.profile = getProfiles [ pkgs.steam ] defaultProfile;
+          };
+        };
+        rtkit.enable = true;
+      };
+
+      powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
+      networking = {
+        hostName = "nixosThinkpad";
+        firewall.allowedTCPPorts = [
+          24800
+          8100 # checkpad sync server
+        ];
+      };
+
+      users = {
+        users = {
+          florian = {
+            hashedPasswordFile = config.age.secrets.florian.path;
+            description = "Florian Engel";
+            extraGroups =
+              [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
+          };
+          playground = { isNormalUser = true; };
+        };
+      };
+
+
+      xserver = {
+        enable = true;
+        autoLogin = true;
+      };
+
+      # powerManagement.enable = false;
+      services = {
+
+        unclutter-xfixes.enable = true;
+
+        tlp.enable = true;
+
+        # Go in hibernate at lid
+        logind = {
+          lidSwitch = "hibernate";
+          extraConfig = ''
         HandlePowerKey=hibernate
         RuntimeDirectorySize=30%
       '';
-    };
-    # mouse pad
-    xserver = {
-      resolutions = [
-        {
-          x = 2560;
-          y = 1440;
-        }
-        {
-          x = 1920;
-          y = 1080;
-        }
-      ];
-      windowManager.xmonad.extraPackages = haskellPackages:
-        with haskellPackages; [
-          MissingH
-          protolude
-        ];
-      xautolock = {
-        enable = true;
-        locker = "${pkgs.xsecurelock}/bin/xsecurelock";
-        killtime = 200;
-        killer = "/run/current-system/systemd/bin/systemctl hibernate";
-      };
-    };
-
-    blueman.enable = true;
-
-    hoogle.enable = true;
-    redshift = {
-      enable = true;
-      brightness = {
-        day = "0.8";
-        night = "0.7";
-      };
-      temperature.night = 1501;
-    };
-    picom = {
-      enable = true;
-      inactiveOpacity = 0.8;
-      opacityRules = [
-        "100:name = 'Dmenu'"
-        "100:name = 'Rofi'"
-        "100:class_g ?= 'Rofi'"
-        "100:name = 'Notification'"
-      ];
-    };
-
-    syncthing = {
-      enable = true;
-      user = "florian";
-      dataDir = "/home/florian/.syncthing";
-      settings = {
-        devices = {
-          "android".id =
-            "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
-          "macos".id =
-            "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
         };
-        folders = {
-          "android-photos" = {
-            path = "/home/florian/android/photos";
-            devices = [ "android" ];
+        # mouse pad
+        xserver = {
+          resolutions = [
+            {
+              x = 2560;
+              y = 1440;
+            }
+            {
+              x = 1920;
+              y = 1080;
+            }
+          ];
+          windowManager.xmonad.extraPackages = haskellPackages:
+            with haskellPackages; [
+              MissingH
+              protolude
+            ];
+          xautolock = {
+            enable = true;
+            locker = "${pkgs.xsecurelock}/bin/xsecurelock";
+            killtime = 200;
+            killer = "/run/current-system/systemd/bin/systemctl hibernate";
           };
-          "android-org" = {
-            path = "/home/florian/android/org";
-            devices = [ "android" ];
+        };
+
+        blueman.enable = true;
+
+        hoogle.enable = true;
+        redshift = {
+          enable = true;
+          brightness = {
+            day = "0.8";
+            night = "0.7";
           };
-          "android-backups" = {
-            path = "/home/florian/android/backups";
-            devices = [ "android" ];
-          };
-          "org-roam" = {
-            path = "/home/florian/Dokumente/org-roam";
-            devices = [ "android" ];
-            versioning = {
-              type = "simple";
-              params.keep = "5";
+          temperature.night = 1501;
+        };
+        picom = {
+          enable = true;
+          inactiveOpacity = 0.8;
+          opacityRules = [
+            "100:name = 'Dmenu'"
+            "100:name = 'Rofi'"
+            "100:class_g ?= 'Rofi'"
+            "100:name = 'Notification'"
+          ];
+        };
+
+        syncthing = {
+          enable = true;
+          user = "florian";
+          dataDir = "/home/florian/.syncthing";
+          settings = {
+            devices = {
+              "android".id =
+                "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+              "macos".id =
+                "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
+            };
+            folders = {
+              "android-photos" = {
+                path = "/home/florian/android/photos";
+                devices = [ "android" ];
+              };
+              "android-org" = {
+                path = "/home/florian/android/org";
+                devices = [ "android" ];
+              };
+              "android-backups" = {
+                path = "/home/florian/android/backups";
+                devices = [ "android" ];
+              };
+              "org-roam" = {
+                path = "/home/florian/Dokumente/org-roam";
+                devices = [ "android" ];
+                versioning = {
+                  type = "simple";
+                  params.keep = "5";
+                };
+              };
+              "music" = {
+                path = "/home/florian/Music";
+                devices = [ "android" ];
+              };
+              "macos" = {
+                path = "/home/florian/syncthing-macos";
+                devices = [ "macos" ];
+              };
             };
           };
-          "music" = {
-            path = "/home/florian/Music";
-            devices = [ "android" ];
-          };
-          "macos" = {
-            path = "/home/florian/syncthing-macos";
-            devices = [ "macos" ];
-          };
+
         };
       };
 
-    };
-  };
+      # openvnp
+      environment.etc."office.ovpn".source = ./office.ovpn;
 
-  # openvnp
-  environment.etc."office.ovpn".source = ./office.ovpn;
+      services.openvpn.servers.officeVPN = {
+        config = "config /etc/office.ovpn ";
+        autoStart = false;
+      };
 
-  services.openvpn.servers.officeVPN = {
-    config = "config /etc/office.ovpn ";
-    autoStart = false;
-  };
+      # Bluetooth sound
+      systemd.user.services.telephony_client.enable = false;
+      hardware = {
+        bluetooth.enable = true;
+        sane = {
+          enable = true;
+          extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin ];
+          drivers.scanSnap = { enable = true; };
+        };
+      };
 
-  # Bluetooth sound
-  systemd.user.services.telephony_client.enable = false;
-  hardware = {
-    bluetooth.enable = true;
-    sane = {
-      enable = true;
-      extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin ];
-      drivers.scanSnap = { enable = true; };
-    };
-  };
-
-  # wifi
-  networking.networkmanager = {
-    enable = true;
-    dispatcherScripts = [{
-      source = let
-        nmcli = "${pkgs.networkmanager}/bin/nmcli";
-        lanInterface = "enp0s31f6";
-      in pkgs.writeText "wlan_auto_toggle" ''
+      # wifi
+      networking.networkmanager = {
+        enable = true;
+        dispatcherScripts = [{
+          source = let
+            nmcli = "${pkgs.networkmanager}/bin/nmcli";
+            lanInterface = "enp0s31f6";
+          in pkgs.writeText "wlan_auto_toggle" ''
         if [ "$1" = "${lanInterface}" ]; then
             case "$2" in
                 up)
@@ -430,236 +464,233 @@
             ${nmcli} radio wifi on
         fi
       '';
-      type = "basic";
-    }];
-  };
+          type = "basic";
+        }];
+      };
 
-  # big font for high resolution
-  console.font = "sun12x22";
+      # big font for high resolution
+      console.font = "sun12x22";
 
-  services = {
-    batteryNotifier.enable = true;
-    printing.enable = true;
-    avahi = {
-      enable = true;
-      nssmdns = true;
-      # for a WiFi printer
-      openFirewall = true;
-    };
-    autorandr = {
-      enable = true;
-      profiles = {
-        default = {
-          fingerprint.eDP-1 =
-            "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
-          config = {
-            eDP-1 = {
-              crtc = 0;
-              mode = "2560x1440";
-              position = "0x0";
-              rate = "60.01";
-            };
-            DP-1.enable = false;
-            HDMI-1.enable = false;
-            DP-2.enable = false;
-            HDMI-2.enable = false;
-            DP-2-1.enable = false;
-            DP-2-2.enable = false;
-            DP-2-3.enable = false;
-          };
+      services = {
+        batteryNotifier.enable = true;
+        printing.enable = true;
+        avahi = {
+          enable = true;
+          nssmdns = true;
+          # for a WiFi printer
+          openFirewall = true;
         };
-        home = {
-          fingerprint = {
-            eDP-1 =
-              "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
-            HDMI-2 =
-              "00ffffffffffff0009d1a77845540000181a010380351e782eba45a159559d280d5054a56b80810081c08180a9c0b300d1c001010101023a801871382d40582c4500132a2100001e000000ff0047364730353537363031390a20000000fd00324c1e5311000a202020202020000000fc0042656e5120474c32343530480a0146020322f14f90050403020111121314060715161f2309070765030c00100083010000023a801871382d40582c4500132a2100001f011d8018711c1620582c2500132a2100009f011d007251d01e206e285500132a2100001e8c0ad08a20e02d10103e9600132a21000018000000000000000000000000000000000000000000eb";
-          };
-          config = {
-            eDP-1 = {
-              crtc = 1;
-              mode = "2560x1440";
-              position = "0x1080";
-              rate = "60.01";
+        autorandr = {
+          enable = true;
+          profiles = {
+            default = {
+              fingerprint.eDP-1 =
+                "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
+              config = {
+                eDP-1 = {
+                  crtc = 0;
+                  mode = "2560x1440";
+                  position = "0x0";
+                  rate = "60.01";
+                };
+                DP-1.enable = false;
+                HDMI-1.enable = false;
+                DP-2.enable = false;
+                HDMI-2.enable = false;
+                DP-2-1.enable = false;
+                DP-2-2.enable = false;
+                DP-2-3.enable = false;
+              };
             };
-            HDMI-1.enable = false;
-            HDMI-2 = {
-              primary = true;
-              crtc = 0;
-              mode = "1920x1080";
-              position = "0x0";
-              rate = "60.00";
+            home = {
+              fingerprint = {
+                eDP-1 =
+                  "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
+                HDMI-2 =
+                  "00ffffffffffff0009d1a77845540000181a010380351e782eba45a159559d280d5054a56b80810081c08180a9c0b300d1c001010101023a801871382d40582c4500132a2100001e000000ff0047364730353537363031390a20000000fd00324c1e5311000a202020202020000000fc0042656e5120474c32343530480a0146020322f14f90050403020111121314060715161f2309070765030c00100083010000023a801871382d40582c4500132a2100001f011d8018711c1620582c2500132a2100009f011d007251d01e206e285500132a2100001e8c0ad08a20e02d10103e9600132a21000018000000000000000000000000000000000000000000eb";
+              };
+              config = {
+                eDP-1 = {
+                  crtc = 1;
+                  mode = "2560x1440";
+                  position = "0x1080";
+                  rate = "60.01";
+                };
+                HDMI-1.enable = false;
+                HDMI-2 = {
+                  primary = true;
+                  crtc = 0;
+                  mode = "1920x1080";
+                  position = "0x0";
+                  rate = "60.00";
+                };
+                DP-2.enable = false;
+                DP-2-1.enable = false;
+                DP-2-2.enable = false;
+                DP-2-3.enable = false;
+              };
             };
-            DP-2.enable = false;
-            DP-2-1.enable = false;
-            DP-2-2.enable = false;
-            DP-2-3.enable = false;
-          };
-        };
-        home2 = {
-          fingerprint.DP-2 = "00ffffffffffff0009d1a77845540000181a010380351e782eba45a159559d280d5054a56b80810081c08180a9c0b300d1c001010101023a801871382d40582c4500132a2100001e000000ff0047364730353537363031390a20000000fd00324c1e5311000a202020202020000000fc0042656e5120474c32343530480a0146020322f14f90050403020111121314060715161f2309070765030c00100083010000023a801871382d40582c4500132a2100001f011d8018711c1620582c2500132a2100009f011d007251d01e206e285500132a2100001e8c0ad08a20e02d10103e9600132a21000018000000000000000000000000000000000000000000eb";
-          fingerprint.eDP-1 = "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
-          config = {
-            eDP-1 = {
-              crtc = 0;
-              mode = "2560x1440";
-              position = "0x1440";
-              rate = "60.01";
+            home2 = {
+              fingerprint.DP-2 = "00ffffffffffff0009d1a77845540000181a010380351e782eba45a159559d280d5054a56b80810081c08180a9c0b300d1c001010101023a801871382d40582c4500132a2100001e000000ff0047364730353537363031390a20000000fd00324c1e5311000a202020202020000000fc0042656e5120474c32343530480a0146020322f14f90050403020111121314060715161f2309070765030c00100083010000023a801871382d40582c4500132a2100001f011d8018711c1620582c2500132a2100009f011d007251d01e206e285500132a2100001e8c0ad08a20e02d10103e9600132a21000018000000000000000000000000000000000000000000eb";
+              fingerprint.eDP-1 = "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
+              config = {
+                eDP-1 = {
+                  crtc = 0;
+                  mode = "2560x1440";
+                  position = "0x1440";
+                  rate = "60.01";
+                };
+                HDMI-1.enable = false;
+                HDMI-2.enable = false;
+                DP-1.enable = false;
+                DP-2 = {
+                  primary = true;
+                  crtc = 0;
+                  mode = "1920x1080";
+                  position = "0x0";
+                  rate = "60.00";
+                };
+                DP-2-1.enable = false;
+                DP-2-2.enable = false;
+                DP-2-3.enable = false;
+              };
             };
-            HDMI-1.enable = false;
-            HDMI-2.enable = false;
-            DP-1.enable = false;
-            DP-2 = {
-              primary = true;
-              crtc = 0;
-              mode = "1920x1080";
-              position = "0x0";
-              rate = "60.00";
+            "work" = {
+              fingerprint = {
+                eDP1 =
+                  "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
+                DP-2-1 =
+                  "00ffffffffffff0010ac80405333323732170104a53c22783a4bb5a7564ba3250a5054a54b008100b300d100714fa940818001010101565e00a0a0a029503020350055502100001a000000ff00374a4e5935334342373233530a000000fc0044454c4c205532373133484d0a000000fd0031561d711e010a20202020202001be02031df15090050403020716010611121513141f2023097f0783010000023a801871382d40582c250055502100001e011d8018711c1620582c250055502100009e011d007251d01e206e28550055502100001e8c0ad08a20e02d10103e960055502100001800000000000000000000000000000000000000000000000000005d";
+              };
+              config = {
+                eDP-1 = {
+                  crtc = 0;
+                  mode = "2560x1440";
+                  position = "0x1440";
+                  rate = "60.01";
+                };
+                HDMI-1.enable = false;
+                HDMI-2.enable = false;
+                DP-1.enable = false;
+                DP-2.enable = false;
+                DP-2-1 = {
+                  primary = true;
+                  crtc = 1;
+                  mode = "2560x1440";
+                  position = "0x0";
+                  rate = "59.9";
+                };
+                DP-2-2.enable = false;
+                DP-2-3.enable = false;
+              };
+
             };
-            DP-2-1.enable = false;
-            DP-2-2.enable = false;
-            DP-2-3.enable = false;
-          };
-        };
-        "work" = {
-          fingerprint = {
-            eDP1 =
-              "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
-            DP-2-1 =
-              "00ffffffffffff0010ac80405333323732170104a53c22783a4bb5a7564ba3250a5054a54b008100b300d100714fa940818001010101565e00a0a0a029503020350055502100001a000000ff00374a4e5935334342373233530a000000fc0044454c4c205532373133484d0a000000fd0031561d711e010a20202020202001be02031df15090050403020716010611121513141f2023097f0783010000023a801871382d40582c250055502100001e011d8018711c1620582c250055502100009e011d007251d01e206e28550055502100001e8c0ad08a20e02d10103e960055502100001800000000000000000000000000000000000000000000000000005d";
-          };
-          config = {
-            eDP-1 = {
-              crtc = 0;
-              mode = "2560x1440";
-              position = "0x1440";
-              rate = "60.01";
+            "work2" = {
+              fingerprint = {
+                eDP1 =
+                  "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
+                DP-1-1 =
+                  "00ffffffffffff0010ac80405333323732170104a53c22783a4bb5a7564ba3250a5054a54b008100b300d100714fa940818001010101565e00a0a0a029503020350055502100001a000000ff00374a4e5935334342373233530a000000fc0044454c4c205532373133484d0a000000fd0031561d711e010a20202020202001be02031df15090050403020716010611121513141f2023097f0783010000023a801871382d40582c250055502100001e011d8018711c1620582c250055502100009e011d007251d01e206e28550055502100001e8c0ad08a20e02d10103e960055502100001800000000000000000000000000000000000000000000000000005d";
+              };
+              config = {
+                eDP-1 = {
+                  crtc = 0;
+                  mode = "2560x1440";
+                  position = "0x1440";
+                  rate = "60.01";
+                };
+                HDMI-1.enable = false;
+                HDMI-2.enable = false;
+                DP-1.enable = false;
+                DP-2.enable = false;
+                DP-1-1 = {
+                  primary = true;
+                  crtc = 1;
+                  mode = "2560x1440";
+                  position = "0x0";
+                  rate = "59.9";
+                };
+                DP-2-2.enable = false;
+                DP-2-3.enable = false;
+              };
             };
-            HDMI-1.enable = false;
-            HDMI-2.enable = false;
-            DP-1.enable = false;
-            DP-2.enable = false;
-            DP-2-1 = {
-              primary = true;
-              crtc = 1;
-              mode = "2560x1440";
-              position = "0x0";
-              rate = "59.9";
-            };
-            DP-2-2.enable = false;
-            DP-2-3.enable = false;
           };
 
-        };
-        "work2" = {
-          fingerprint = {
-            eDP1 =
-              "00ffffffffffff0006af362300000000001b0104a51f117802f4f5a4544d9c270f505400000001010101010101010101010101010101e65f00a0a0a040503020350035ae100000180000000f0000000000000000000000000020000000fe0041554f0a202020202020202020000000fe004231343051414e30322e33200a00b2";
-            DP-1-1 =
-              "00ffffffffffff0010ac80405333323732170104a53c22783a4bb5a7564ba3250a5054a54b008100b300d100714fa940818001010101565e00a0a0a029503020350055502100001a000000ff00374a4e5935334342373233530a000000fc0044454c4c205532373133484d0a000000fd0031561d711e010a20202020202001be02031df15090050403020716010611121513141f2023097f0783010000023a801871382d40582c250055502100001e011d8018711c1620582c250055502100009e011d007251d01e206e28550055502100001e8c0ad08a20e02d10103e960055502100001800000000000000000000000000000000000000000000000000005d";
-          };
-          config = {
-            eDP-1 = {
-              crtc = 0;
-              mode = "2560x1440";
-              position = "0x1440";
-              rate = "60.01";
-            };
-            HDMI-1.enable = false;
-            HDMI-2.enable = false;
-            DP-1.enable = false;
-            DP-2.enable = false;
-            DP-1-1 = {
-              primary = true;
-              crtc = 1;
-              mode = "2560x1440";
-              position = "0x0";
-              rate = "59.9";
-            };
-            DP-2-2.enable = false;
-            DP-2-3.enable = false;
-          };
         };
       };
 
-    };
-  };
-
-  programs = {
-    light.enable = true;
-    ssh.knownHosts.tim = {
-      hostNames = [ "45.157.177.92" ];
-      publicKeyFile = ./backup.pub;
-    };
-    adb.enable = true;
-    fuse.userAllowOther = true;
-    gnupg.dirmngr.enable = true;
-    nix-ld.enable = true;
-    captive-browser = {
-      enable = true;
-      interface = "wlp61s0";
-    };
-  };
-
-  nix.envVars.SSH_AUTH_SOCK = "/run/user/1000/gnupg/S.gpg-agent.ssh";
-
-  systemd = {
-    services = let
-      targets = [
-        "hibernate.target"
-        "hybrid-sleep.target"
-        "suspend.target"
-        "sleep.target"
-        "suspend-then-hibernate.target"
-      ];
-      serviceConfig = {
-        Type = "oneshot";
-        User = "florian";
-        Group = "users";
+      programs = {
+        light.enable = true;
+        ssh.knownHosts.tim = {
+          hostNames = [ "45.157.177.92" ];
+          publicKeyFile = ./backup.pub;
+        };
+        adb.enable = true;
+        fuse.userAllowOther = true;
+        gnupg.dirmngr.enable = true;
+        nix-ld.enable = true;
+        captive-browser = {
+          enable = true;
+          interface = "wlp61s0";
+        };
       };
-      environment = { DISPLAY = ":0"; };
-    in {
-      "my-post-resume" = {
-        description = "Post-Resume Actions";
-        after = targets;
-        wantedBy = targets;
-        script = ''
+
+      nix.envVars.SSH_AUTH_SOCK = "/run/user/1000/gnupg/S.gpg-agent.ssh";
+
+      systemd = {
+        services = let
+          targets = [
+            "hibernate.target"
+            "hybrid-sleep.target"
+            "suspend.target"
+            "sleep.target"
+            "suspend-then-hibernate.target"
+          ];
+          serviceConfig = {
+            Type = "oneshot";
+            User = "florian";
+            Group = "users";
+          };
+          environment = { DISPLAY = ":0"; };
+        in {
+          "my-post-resume" = {
+            description = "Post-Resume Actions";
+            after = targets;
+            wantedBy = targets;
+            script = ''
           if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
             echo "Enabeling wifi"
             ${pkgs.networkmanager}/bin/nmcli radio wifi on
           fi
         '';
-        inherit serviceConfig environment;
-        enable = true;
+            inherit serviceConfig environment;
+            enable = true;
+          };
+        };
       };
-    };
-  };
 
-  networking.wg-quick.interfaces.vpn.configFile = config.age.secrets.vpn.path;
-  programs.firejail.enable = true;
-  nix = {
-    buildMachines = [{
-      hostName = "192.168.178.24";
-      system = "x86_64-linux";
-      sshUser = "root";
-      maxJobs = 8;
-      speedFactor = 2;
-      supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-      mandatoryFeatures = [ ];
-    }];
-    distributedBuilds = false;
-  };
+      programs.firejail.enable = true;
+      nix = {
+        buildMachines = [{
+          hostName = "192.168.178.24";
+          system = "x86_64-linux";
+          sshUser = "root";
+          maxJobs = 8;
+          speedFactor = 2;
+          supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+          mandatoryFeatures = [ ];
+        }];
+        distributedBuilds = false;
+      };
 
-  virtualisation.docker.enable = true;
+      virtualisation.docker.enable = true;
 
-  nixpkgs = let system = "x86_64-linux";
-  in {
-    hostPlatform = { inherit system; };
-    overlays = [ (_: _: { inherit system; }) ];
-  };
+      nixpkgs = let system = "x86_64-linux";
+                in {
+                  hostPlatform = { inherit system; };
+                  overlays = [ (_: _: { inherit system; }) ];
+                };
 
-
-  specialisation.normalInternet.configuration = {
-    networking.wg-quick.interfaces.vpn.autostart = false;
-  };
+    }
+  ];
 }
