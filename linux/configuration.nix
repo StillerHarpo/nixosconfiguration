@@ -4,7 +4,6 @@
   imports = [ ../configuration.nix ./dnscrypt.nix ];
 
   # Select internationalisation properties.
-  console.keyMap = "us";
   i18n.defaultLocale = "en_US.UTF-8";
 
   # Set your time zone.
