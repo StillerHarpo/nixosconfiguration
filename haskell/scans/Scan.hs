@@ -79,8 +79,10 @@ delFile file = do
 
 runTesseract :: FilePath -> MyShell (Text, Text)
 runTesseract inputFile =
-  case (toText inputFile, toText (basename inputFile)) of
-    (Right inputFileT, Right outputBaseT) -> do
+  let inputFileT = T.pack inputFile
+      outputBaseT = T.pack (basename inputFile)
+   in
+    do
       Env {..} <- ask
       printf ("running tesseract on " % fp % "to generate pdf \n") inputFile
       procs "tesseract" [inputFileT, outputBaseT, "-l", "deu", tesseractConf] mempty
@@ -96,11 +98,10 @@ runTesseract inputFile =
             "textcleaner"
             ["-g", "-e", "normalize", "-f", "30", "-o", "12", "-s", "2", inputFileT, T.pack cleanedPicture]
             mempty
-          printf ("running tesseract on " % fp % "to generate textfile \n") (decodeString cleanedPicture)
+          printf ("running tesseract on " % fp % "to generate textfile \n") cleanedPicture
           procs "tesseract" [T.pack cleanedPicture, outputBaseT, "-l", "deu"] mempty
       delFile inputFile
       pure (outputBaseT <> ".pdf", outputBaseT <> ".txt")
-    _ -> throwM EncodingError
 
 liftFunReader :: Monad m => (m a -> m b) -> ReaderT s m a -> ReaderT s m b
 liftFunReader fun r = ask >>= lift . fun . runReaderT r
@@ -140,13 +141,13 @@ convert pdfsAndTxts = do
   convertPdfs pdfs
   convertTxts txts
   incCounter
-  traverse_ (delFile . fromText) pdfs
-  traverse_ (delFile . fromText) txts
+  traverse_ (delFile . T.unpack) pdfs
+  traverse_ (delFile . T.unpack) txts
 
 convertPdfs :: [Text] -> MyShell ()
 convertPdfs inputs = do
   fnT <- getFileNamePdf
-  let fn = fromText fnT
+  let fn = T.unpack fnT
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   procs "pdfunite" (inputs <> [fnT]) mempty
@@ -156,7 +157,7 @@ convertPdfs inputs = do
 convertTxts :: [Text] -> MyShell ()
 convertTxts inputs = do
   fnT <- getFileNameTxt
-  let fn = fromText fnT
+  let fn = T.unpack fnT
   checkFile fn
   printf ("Writing " % fp % " from files " % s % "\n") fn (T.intercalate ", " inputs)
   liftIO $ traverse (readFile . T.unpack) inputs >>= writeFile (T.unpack fnT) . mconcat
@@ -168,8 +169,8 @@ convertPictures = do
   (pdf, txt) <- getPdfAndTxt
   convertPdfs [pdf]
   convertTxts [txt]
-  delFile (fromText pdf)
-  delFile (fromText txt)
+  delFile (T.unpack pdf)
+  delFile (T.unpack txt)
   incCounter
 
 convertMultiblePictures :: MyShell ()
@@ -283,13 +284,12 @@ mainMenu = do
 getMaxFile :: MonadIO m => FilePath -> Pattern Int -> m Int
 getMaxFile filePath fileParser =
   fold
-    ( (match (many dot *> fileParser) <$>)
-        . toText
+    ( match (many dot *> fileParser) . T.pack
         <$> ls filePath
     )
     ( Fold.foldMap
         ( \case
-            Right [i] -> Max $ i + 1
+            [i] -> Max $ i + 1
             _ -> 0
         )
         getMax
@@ -322,7 +322,7 @@ main = do
         withTempFile $ \tesseractConfStr -> do
           echo "writing tesseract config"
           writeFile tesseractConfStr "tessedit_create_pdf 1"
-          cd $ fromText (T.pack dir)
+          cd dir
           pwd >>= printf ("current directory is now: " % fp % "\n")
           let tesseractConf = T.pack tesseractConfStr
           sh $ runReaderT mainMenu (Env {..})

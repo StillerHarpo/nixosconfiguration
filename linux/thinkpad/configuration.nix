@@ -193,7 +193,7 @@
           pkgs = with pkgs; [
             imagemagick
             poppler_utils
-            exa
+            eza
             tesseract5
             zathura
             xournal
@@ -227,7 +227,7 @@
     kernel.sysctl."kernel.yama.ptrace_scope" = 1;
   };
 
-  fonts.fonts = with pkgs; [ terminus_font nerdfonts ];
+  fonts.packages = with pkgs; [ terminus_font nerdfonts ];
 
   location = import ../cords.nix;
 
@@ -263,7 +263,7 @@
   users = {
     users = {
       florian = {
-        passwordFile = config.age.secrets.florian.path;
+        hashedPasswordFile = config.age.secrets.florian.path;
         description = "Florian Engel";
         extraGroups =
           [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
@@ -338,40 +338,43 @@
       enable = true;
       user = "florian";
       dataDir = "/home/florian/.syncthing";
-      devices."android".id =
-        "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
-      devices."macos".id =
-        "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
-      folders = {
-        "android-photos" = {
-          path = "/home/florian/android/photos";
-          devices = [ "android" ];
+      settings = {
+        devices = {
+          "android".id =
+            "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+          "macos".id =
+            "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
         };
-        "android-org" = {
-          path = "/home/florian/android/org";
-          devices = [ "android" ];
-        };
-        "android-backups" = {
-          path = "/home/florian/android/backups";
-          devices = [ "android" ];
-        };
-        "org-roam" = {
-          path = "/home/florian/Dokumente/org-roam";
-          devices = [ "android" ];
-          versioning = {
-            type = "simple";
-            params.keep = "5";
+        folders = {
+          "android-photos" = {
+            path = "/home/florian/android/photos";
+            devices = [ "android" ];
+          };
+          "android-org" = {
+            path = "/home/florian/android/org";
+            devices = [ "android" ];
+          };
+          "android-backups" = {
+            path = "/home/florian/android/backups";
+            devices = [ "android" ];
+          };
+          "org-roam" = {
+            path = "/home/florian/Dokumente/org-roam";
+            devices = [ "android" ];
+            versioning = {
+              type = "simple";
+              params.keep = "5";
+            };
+          };
+          "music" = {
+            path = "/home/florian/Music";
+            devices = [ "android" ];
+          };
+          "macos" = {
+            path = "/home/florian/syncthing-macos";
+            devices = [ "macos" ];
           };
         };
-        "music" = {
-          path = "/home/florian/Music";
-          devices = [ "android" ];
-        };
-        "macos" = {
-          path = "/home/florian/syncthing-macos";
-          devices = [ "macos" ];
-        };
-
       };
 
     };

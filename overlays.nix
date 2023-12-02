@@ -3,16 +3,6 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
-   # https://github.com/DanBloomberg/leptonica/issues/659
-    leptonica = prev.leptonica.overrideAttrs (oldAttrs: {
-      patches = (if oldAttrs ? patches then oldAttrs.patches else [ ]) ++ [
-        (prev.fetchpatch {
-          url =
-            "https://github.com/DanBloomberg/leptonica/commit/544561af6944425a284a6bc387d64662501c560e.patch";
-          hash = "sha256-rgpXAylSvCJYt4fbUELomfJz3OytsMdeJhcr7neP4yY=";
-        })
-      ];
-    });
     rclone =
       let
         enableCmount = true;
@@ -63,7 +53,6 @@
           };
     steam = prev.steam.override {
       extraPkgs = pkgs: [
-        inputs.nixpkgs2211.legacyPackages.${final.system}.openssl
         pkgs.libpng
         pkgs.icu
       ];

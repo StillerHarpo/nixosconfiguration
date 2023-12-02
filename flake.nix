@@ -1,7 +1,6 @@
 {
   inputs = {
-    nixpkgs2211.url = "github:NixOS/nixpkgs/nixos-22.11";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     nixpkgsUnstable.url = "github:NixOS/nixpkgs?rev=7c9cc5a6e5d38010801741ac830a3f8fd667a7a0";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     jovian = {
@@ -32,7 +31,7 @@
       };
     };
     home-manager-flake = {
-      url = "github:nix-community/home-manager/release-23.05";
+      url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake-unstable = {
@@ -137,12 +136,46 @@
           modules = [
             ({ pkgs, lib, ... }: {
               # mkpasswd password
-              users.users.florian.passwordFile = lib.mkForce
+              users.users.florian.hashedPasswordFile = lib.mkForce
                 "${pkgs.writeText "password"
                 "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
             })
           ];
         };
+
+        minimalVM = inputs.nixpkgs.lib.nixosSystem {
+          modules = [
+            ({ pkgs, lib, ... }: {
+              services.xserver = {
+                enable = true;
+                windowManager.i3.enable = true;
+                displayManager =  {
+                  defaultSession = "none+i3";
+                  autoLogin = {
+                    enable = true;
+                    user = "florian";
+                  };
+                };
+              };
+
+              users = {
+                mutableUsers = false;
+                users = {
+                  florian = {
+                    isNormalUser = true;
+                    extraGroups = [ "wheel" "audio" "video" ];
+                    hashedPasswordFile = 
+                      "${pkgs.writeText "password"
+                        "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+                  };
+                };
+              };
+              nixpkgs.hostPlatform = "x86_64-linux";
+              system.stateVersion = "23.11";
+            })
+          ];
+        };
+          
 
         desktop = inputs.nixpkgs.lib.nixosSystem {
           specialArgs = {
