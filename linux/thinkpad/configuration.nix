@@ -685,7 +685,6 @@
 
       # Disable docker. Somehow leads to xserver failure
       # virtualisation.docker.enable = true;
-      virtualisation.docker.enable = true;
 
       nixpkgs = let system = "x86_64-linux";
                 in {
