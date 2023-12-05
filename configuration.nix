@@ -1,13 +1,14 @@
 { config, lib, pkgs, outputs, inputs, ... }:
 
 {
-  environment.systemPackages = with pkgs; ([
-    aspell
-    aspellDicts.de
-    aspellDicts.en
-    aspellDicts.en-computers
-    aspellDicts.en-science
-  ]);
+  environment.systemPackages = [
+    (pkgs.aspellWithDicts (dicts: [
+      dicts.de
+      dicts.en
+      dicts.en-computers
+      dicts.en-science
+    ]))
+  ];
 
   fonts = {
     fontDir.enable = true;
