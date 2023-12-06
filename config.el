@@ -777,9 +777,10 @@ Returns nil if not and (sec min hour) if it has."
  "<tab>" 'completion-at-point)
 
 (defun my/delete-this-file ()
-    (interactive)
-    (delete-file (buffer-file-name))
-    (kill-current-buffer))
+  (interactive)
+  (if (yes-or-no-p (format "Really delete file: %s " (buffer-file-name)))
+      (progn (delete-file (buffer-file-name))
+	     (kill-current-buffer))))
 
 ;; mostly copied from doom emacs
 (defun my/copy-this-file (new-path &optional force-p)
