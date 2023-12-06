@@ -1,6 +1,6 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, inputs, private, ... }:
 {
   imports = [
     ./wireguard.nix
@@ -217,6 +217,7 @@
   options.isRealSystem = lib.mkOption {
     type = lib.types.bool;
     default = true;
+    description = lib.mdDoc "Should we use encrypted files. Only neccessary on the real system";
   };
 
   config = lib.mkMerge [
@@ -241,6 +242,17 @@
       backup.enable = true;
       wireguard.enable = true;
       networking.wg-quick.interfaces.vpn.configFile = config.age.secrets.vpn.path;
+
+      location = import ../cords.nix;
+
+      # openvnp
+      environment.etc."office.ovpn".source = ./office.ovpn;
+
+      services.openvpn.servers.officeVPN = {
+        config = "config /etc/office.ovpn ";
+        autoStart = false;
+      };
+
       specialisation.normalInternet.configuration = {
         networking.wg-quick.interfaces.vpn.autostart = false;
       };
@@ -255,6 +267,11 @@
             ./test-secrets/passwordHash.age;
         };
       };
+
+      location = {
+        latitude = 20.0;
+        longitude = 20.0;
+      };
     })
     {
 
@@ -263,11 +280,12 @@
 
       fonts.packages = with pkgs; [ terminus_font nerdfonts ];
 
-      location = import ../cords.nix;
-
       systemd.packages = [ pkgs.dconf ];
 
-      home-manager.users.florian = import ./home/configuration.nix;
+      home-manager = {
+        users.florian = import ./home/configuration.nix ;
+        extraSpecialArgs.private = private;
+      };
 
       environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
 
@@ -415,14 +433,6 @@
           };
 
         };
-      };
-
-      # openvnp
-      environment.etc."office.ovpn".source = ./office.ovpn;
-
-      services.openvpn.servers.officeVPN = {
-        config = "config /etc/office.ovpn ";
-        autoStart = false;
       };
 
       # Bluetooth sound
@@ -622,7 +632,7 @@
       programs = {
         light.enable = true;
         ssh.knownHosts.tim = {
-          hostNames = [ "45.157.177.92" ];
+          hostNames = [ private.serverIP ];
           publicKeyFile = ./backup.pub;
         };
         adb.enable = true;

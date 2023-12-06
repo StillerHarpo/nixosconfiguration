@@ -101,7 +101,6 @@
             extraSpecialArgs = {
               inherit inputs outputs;
               lib = lib.extend (_: _: inputs.home-manager-flake.lib);
-              private = import ./private.nix;
             };
           };
         }
@@ -114,8 +113,13 @@
       thinkpad-specialArgs = {
         inherit inputs outputs;
         home-manager-flake = inputs.home-manager-flake.nixosModule;
-        private = import ./private.nix;
       };
+      fakePrivate = {
+        workMail = "mail@mail.org";
+        dyndns = "xxxxxxxxxxx.ddnss.ch";
+        serverIP = "46.158.147.47";
+      };
+
     in {
 
       overlays = import ./overlays.nix { inherit inputs outputs; };
@@ -127,7 +131,9 @@
       nixosConfigurations = {
         nixosThinkpad = inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
-          specialArgs = thinkpad-specialArgs;
+          specialArgs = thinkpad-specialArgs // {
+            private = import ./private.nix;
+          };
           modules = thinkpad-modules ++ [
             inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
           ];
@@ -135,7 +141,9 @@
 
         thinkpadVM = inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
-          specialArgs = thinkpad-specialArgs;
+          specialArgs = thinkpad-specialArgs // {
+            private = fakePrivate;
+          } ;
           modules = thinkpad-modules ++ [
             ({ pkgs, lib, ... }: {
               isRealSystem = false;
@@ -316,6 +324,7 @@
               node.specialArgs = thinkpad-specialArgs // {
                 inherit lib;
                 pkgs = outputs.packages."x86_64-linux";
+                private = fakePrivate;
               };
               testScript = import ./checks.nix;
               hostPkgs = outputs.packages."x86_64-linux";
