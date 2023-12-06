@@ -6,27 +6,25 @@ let cfg = config.services.batteryNotifier;
 in {
   options = {
     services.batteryNotifier = {
-      enable = mkOption {
-        default = false;
-        description = ''
-          Whether to enable battery notifier.
-        '';
-      };
+      enable = mkEnableOption (mdDoc "Whether to enable battery notifier.");
       device = mkOption {
         default = "BAT0";
-        description = ''
+        type = types.str;
+        description = mdDoc ''
           Device to monitor.
         '';
       };
       notifyCapacity = mkOption {
         default = 10;
-        description = ''
+        type = types.int;
+        description = mdDoc ''
           Battery level at which a notification shall be sent.
         '';
       };
       suspendCapacity = mkOption {
         default = 5;
-        description = ''
+        type = types.int;
+        description = mdDoc ''
           Battery level at which a suspend unless connected shall be sent.
         '';
       };
