@@ -588,6 +588,7 @@
   :init
   (setq-default notmuch-search-oldest-first nil)
   :custom
+  (mml-secure-openpgp-sign-with-sender 't)
   (notmuch-search-oldest-first 'f)
   (message-default-mail-headers "Cc: \nBcc: \n")
   ;; postponed message is put in the following draft directory
