@@ -812,6 +812,8 @@ If FORCE-P, overwrite the destination file if it exists, without confirmation."
         (new-path (expand-file-name new-path)))
     (make-directory (file-name-directory new-path) 't)
     (rename-file old-path new-path (or force-p 1))
+    (kill-current-buffer)
+    (find-file new-path)
     (message "File moved to %S" (abbreviate-file-name new-path))))
 
 ;; mostly copied from doom emacs
