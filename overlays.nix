@@ -120,7 +120,7 @@
           alwaysEnsure = true;
           package = prev.emacs-unstable;
           extraEmacsPackages = epkgs:
-            [epkgs.treesit-grammars.with-all-grammars];
+            [epkgs.treesit-grammars.with-all-grammars epkgs.pdf-tools];
           override = _: eprev: rec {
             my-nix-paths = prev.callPackage ./packages/emacs/my-nix-paths.nix {
               inherit (eprev) trivialBuild;

@@ -583,6 +583,11 @@
   :ensure t
   :hook (csv-mode . csv-guess-set-separator))
 
+(use-package pdf-tools
+  :ensure t
+  :config
+  (pdf-tools-install))
+
 (use-package notmuch
   :ensure t
   :init
