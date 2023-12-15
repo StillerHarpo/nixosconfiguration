@@ -10,208 +10,6 @@
     ../configuration.nix
     ./themeChanger.nix
     ./backup.nix
-    (with lib.apparmor;
-      generate [
-        {
-          pkgs = with pkgs; [
-            xsane
-            (writers.writeHaskellBin "scan" {
-              libraries = with haskellPackages; [ turtle extra ];
-            } ../../haskell/scans/Scan.hs)
-            csvkit
-          ];
-          profile = generateFileRules [ "docs" ];
-        }
-        {
-          pkgs = with pkgs; [
-            tmux
-            #### Java ####
-            maven
-            eclipses.eclipse-java
-            jetbrains.idea-ultimate
-            openjdk
-            ##############
-            nixpkgs-review
-            nixpkgs-hammering
-            gnome3.adwaita-icon-theme
-            ical2orgpy
-            nixfmt
-            libreoffice
-            prismlauncher
-            minetest
-            textcleaner
-            file
-            element-desktop
-            ### screenshots ###
-            scrot
-            pinta
-            ### screenshots ###
-            inputs.nix-alien.packages."x86_64-linux".nix-alien
-            languagetool
-            xclip
-            (kodi.withPackages (kodiPkgs:
-              with kodiPkgs; [
-                netflix
-                steam-controller
-                # FIXME Remove this when https://github.com/NixOS/nixpkgs/pull/215792 is in stable
-                (kodiPkgs.invidious.overrideAttrs (_: {
-                  src = fetchFromGitHub {
-                    owner = "TheAssassin";
-                    repo = "kodi-invidious-plugin";
-                    rev = "85b66525632d94630c9301d9c490fc002a335d77";
-                    hash =
-                      "sha256-DpsAQUOUYCs3rpWwsk82+00KME4J+Iocu/v781dyyws=";
-                  };
-                }))
-                arteplussept
-              ]))
-            remmina
-            mullvad-vpn
-            sqlite
-            pamixer
-            aria
-            pavucontrol
-            arandr
-            networkmanagerapplet
-            mtpfs
-            wget
-            cachix
-            vim
-            shellcheck
-            ######## Games ###############
-            airshipper
-            superTuxKart
-            openarena
-            xonotic
-            #############
-            sshfs
-            dzen2
-            chromium
-            w3m
-            passff-host
-            neomutt
-            mu
-            toxic
-            poppler
-            tuir
-            xsel
-            silver-searcher
-            (mpv.override { scripts = [ mpvScripts.mpris ]; })
-            rlwrap
-            you-get
-            xosd
-            pandoc
-            mytexlive
-            python3Packages.pygments
-            bc
-            anki
-            nix-prefetch-git
-            youtube-dl
-            libnotify
-            unzip
-            rofi
-            wmctrl
-            unclutter-xfixes
-            cabal2nix
-            niv
-            networkmanager-openvpn
-            networkmanager_dmenu
-            git-crypt
-            tigervnc
-            ### chat ###
-            slack
-            signal-desktop
-            mumble
-            teamspeak_client
-            ### chat ###
-            xsecurelock
-            fzf
-            ## better rust tools
-            procs
-            delta
-            du-dust
-            grex
-            kubectl
-            k9s
-          ];
-          profile = defaultProfile;
-        }
-        {
-          pkgs = with pkgs; [ psmisc bandwhich bottom ];
-          profile = ''
-            ptrace,
-            unix (getattr),
-            signal,
-            ${defaultProfile}
-          '';
-        }
-        {
-          # FIXME only allow usage of program. Not access.
-          pkgs = with pkgs; [
-            go-jira
-            (pass.override {
-              dmenu = writeScriptBin "dmenu" ''${rofi}/bin/rofi -dmenu "$@"'';
-            })
-          ];
-
-          profile = ''
-            ${generateFileRules [ "pass" "gnupg" ]}
-          '';
-        }
-        {
-          pkgs = [ pkgs.rpi4-install ];
-          profile = ''
-            ${generateFileRules [ "pass" "gnupg" "ssh" ]}
-          '';
-        }
-        {
-          pkgs = [ pkgs.firefox ];
-          profile = ''
-            network,
-            ${generateFileRules [ "firefox" ]}
-          '';
-        }
-        {
-          pkgs = [ inputs.agenix.packages.x86_64-linux.agenix ];
-          profile = ''
-            mount,
-            capability,
-            ${generateFileRules [ "ssh" ]}
-          '';
-        }
-        {
-          pkgs = [ pkgs.deploy-rs pkgs.tmux-xpanes ];
-          profile = ''
-            ${generateFileRules [ "ssh" ]}
-          '';
-        }
-        {
-          pkgs = with pkgs; [
-            imagemagick
-            poppler_utils
-            eza
-            tesseract5
-            zathura
-            xournal
-            feh
-            litecli
-            csvs-to-sqlite
-          ];
-          profile = ''
-            ${generateFileRules [ "docs" ]}
-          '';
-        }
-        {
-          pkgs = with pkgs; [
-            ripgrep
-            bat
-            fd
-          ];
-          profile = ''
-            ${generateFileRules [ "docs" "notmuch" ]}
-          '';
-        }
-      ])
   ];
 
   options.isRealSystem = lib.mkOption {
@@ -289,14 +87,215 @@
 
       environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
 
-      security = {
-        apparmor = {
-          enable = true;
-          policies = with lib.apparmor; {
-            steam.profile = getProfiles [ pkgs.steam ] defaultProfile;
-          };
-        };
-        rtkit.enable = true;
+      security.rtkit.enable = true;
+      apparmor = {
+        enable = true;
+        systemPackages =
+          [
+            {
+              pkgs = with pkgs; [
+                xsane
+                (writers.writeHaskellBin "scan" {
+                  libraries = with haskellPackages; [ turtle extra ];
+                } ../../haskell/scans/Scan.hs)
+                csvkit
+              ];
+              rules = lib.apparmor.generateFileRules [ "docs" ];
+            }
+            {
+              pkgs = with pkgs; [
+                tmux
+                #### Java ####
+                maven
+                eclipses.eclipse-java
+                jetbrains.idea-ultimate
+                openjdk
+                ##############
+                nixpkgs-review
+                nixpkgs-hammering
+                gnome3.adwaita-icon-theme
+                ical2orgpy
+                nixfmt
+                libreoffice
+                prismlauncher
+                minetest
+                textcleaner
+                file
+                element-desktop
+                ### screenshots ###
+                scrot
+                pinta
+                ### screenshots ###
+                inputs.nix-alien.packages."x86_64-linux".nix-alien
+                languagetool
+                xclip
+                (kodi.withPackages (kodiPkgs:
+                  with kodiPkgs; [
+                    netflix
+                    steam-controller
+                    # FIXME Remove this when https://github.com/NixOS/nixpkgs/pull/215792 is in stable
+                    (kodiPkgs.invidious.overrideAttrs (_: {
+                      src = fetchFromGitHub {
+                        owner = "TheAssassin";
+                        repo = "kodi-invidious-plugin";
+                        rev = "85b66525632d94630c9301d9c490fc002a335d77";
+                        hash =
+                          "sha256-DpsAQUOUYCs3rpWwsk82+00KME4J+Iocu/v781dyyws=";
+                      };
+                    }))
+                    arteplussept
+                  ]))
+                remmina
+                mullvad-vpn
+                sqlite
+                pamixer
+                aria
+                pavucontrol
+                arandr
+                networkmanagerapplet
+                mtpfs
+                wget
+                cachix
+                vim
+                shellcheck
+                ######## Games ###############
+                airshipper
+                superTuxKart
+                openarena
+                xonotic
+                #############
+                sshfs
+                dzen2
+                chromium
+                w3m
+                passff-host
+                neomutt
+                mu
+                toxic
+                poppler
+                tuir
+                xsel
+                silver-searcher
+                (mpv.override { scripts = [ mpvScripts.mpris ]; })
+                rlwrap
+                you-get
+                xosd
+                pandoc
+                mytexlive
+                python3Packages.pygments
+                bc
+                anki
+                nix-prefetch-git
+                youtube-dl
+                libnotify
+                unzip
+                rofi
+                wmctrl
+                unclutter-xfixes
+                cabal2nix
+                niv
+                networkmanager-openvpn
+                networkmanager_dmenu
+                git-crypt
+                tigervnc
+                ### chat ###
+                slack
+                signal-desktop
+                mumble
+                teamspeak_client
+                ### chat ###
+                xsecurelock
+                fzf
+                ## better rust tools
+                procs
+                delta
+                du-dust
+                grex
+                kubectl
+                k9s
+              ];
+              rules = lib.apparmor.defaultRules;
+            }
+            {
+              pkgs = with pkgs; [ psmisc bandwhich bottom ];
+              rules = ''
+                ptrace,
+                unix (getattr),
+                signal,
+                ${lib.apparmor.defaultRules}
+              '';
+            }
+            {
+              # FIXME only allow usage of program. Not access.
+              pkgs = with pkgs; [
+                go-jira
+                (pass.override {
+                  dmenu = writeScriptBin "dmenu" ''${rofi}/bin/rofi -dmenu "$@"'';
+                })
+              ];
+
+              rules = ''
+                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ]}
+              '';
+            }
+            {
+              pkgs = [ pkgs.rpi4-install ];
+              rules = ''
+                ${lib.apparmor.generateFileRules [ "pass" "gnupg" "ssh" ]}
+              '';
+            }
+            {
+              pkgs = [ pkgs.firefox ];
+              rules = ''
+                network,
+                ${lib.apparmor.generateFileRules [ "firefox" ]}
+              '';
+            }
+            {
+              pkgs = [ inputs.agenix.packages.x86_64-linux.agenix ];
+              rules = ''
+                mount,
+                capability,
+                ${lib.apparmor.generateFileRules [ "ssh" ]}
+              '';
+            }
+            {
+              pkgs = [ pkgs.deploy-rs pkgs.tmux-xpanes ];
+              rules = ''
+                ${lib.apparmor.generateFileRules [ "ssh" ]}
+              '';
+            }
+            {
+              pkgs = with pkgs; [
+                imagemagick
+                poppler_utils
+                eza
+                tesseract5
+                zathura
+                xournal
+                feh
+                litecli
+                csvs-to-sqlite
+              ];
+              rules = ''
+                ${lib.apparmor.generateFileRules [ "docs" ]}
+              '';
+            }
+            {
+              pkgs = with pkgs; [
+                ripgrep
+                bat
+                fd
+              ];
+              rules = ''
+                ${lib.apparmor.generateFileRules [ "docs" "notmuch" ]}
+              '';
+            }
+            {
+              pkgs = [ pkgs.steam ];
+              rules = lib.apparmor.defaultRules;
+            }
+          ];
       };
 
       powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
