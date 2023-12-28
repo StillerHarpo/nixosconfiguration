@@ -4,83 +4,89 @@
   imports = [ ../configuration.nix ];
 
   # Select internationalisation properties.
-  i18n = {
-    defaultLocale = "en_US.UTF-8";
-    supportedLocales = [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
-  };
+  config = lib.mkMerge [
+    {
+      i18n = {
+        defaultLocale = "en_US.UTF-8";
+        supportedLocales = [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
+      };
 
-  # Set your time zone.
-  time.timeZone = "Europe/Berlin";
+      # Set your time zone.
+      time.timeZone = "Europe/Berlin";
 
-  services = {
-    dbus.packages = [ pkgs.dconf ];
+      services = {
+        dbus.packages = [ pkgs.dconf ];
 
-    pipewire = {
-      enable = true;
-      alsa = {
+        pipewire = {
+          enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
+          pulse.enable = true;
+        };
+      };
+
+      programs = {
+        steam.enable = true;
+        gamemode.enable = true;
+      };
+
+      users = {
+        mutableUsers = false;
+        users = {
+          florian = {
+            isNormalUser = true;
+            extraGroups = [ "audio" "video" "wireshark" ];
+          };
+        };
+      };
+
+      programs.wireshark = {
         enable = true;
-        support32Bit = true;
+        package = pkgs.wireshark;
       };
-      pulse.enable = true;
-    };
-  };
 
-  programs = {
-    steam.enable = true;
-    gamemode.enable = true;
-  };
+      services.snowflake-proxy.enable = true;
 
-  users = {
-    mutableUsers = false;
-    users = {
-      florian = {
-        isNormalUser = true;
-        extraGroups = [ "audio" "video" "wireshark" ];
-      };
-    };
-  };
-
-  programs.wireshark = {
-    enable = true;
-    package = pkgs.wireshark;
-  };
-
-  services.snowflake-proxy.enable = true;
-
-  nix = {
-    settings = {
-      substituters = lib.mkAfter [
-        "https://nix-community.cachix.org?priority=50"
-      ];
-      trusted-public-keys = [
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      ];
-      trusted-users = [ "root" "florian" ];
-      auto-optimise-store = true;
-    };
-    extraOptions = ''
+      nix = {
+        settings = {
+          substituters = lib.mkAfter [
+            "https://nix-community.cachix.org?priority=50"
+          ];
+          trusted-public-keys = [
+            "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+          ];
+          trusted-users = [ "root" "florian" ];
+          auto-optimise-store = true;
+        };
+        extraOptions = ''
       keep-outputs = true
       keep-derivations = true
     '';
-    gc = {
-      persistent = true;
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
-  };
+        gc = {
+          persistent = true;
+          automatic = true;
+          dates = "weekly";
+          options = "--delete-older-than 7d";
+        };
+      };
 
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-  };
+      home-manager = {
+        useGlobalPkgs = true;
+        useUserPackages = true;
+      };
 
-  dnscrypt.enable = true;
-  specialisation.normalInternet.configuration = {
-    dnscrypt.enable = lib.mkForce false;
-    virtualisation.docker.enable = lib.mkForce false;
-  };
+      specialisation.normalInternet.configuration = {
+        dnscrypt.enable = lib.mkForce false;
+        virtualisation.docker.enable = lib.mkForce false;
+      };
 
-  # The NixOS release to be compatible with for stateful data such as databases.
-  system.stateVersion = "21.05";
+      # The NixOS release to be compatible with for stateful data such as databases.
+      system.stateVersion = "21.05";
+    }
+    (lib.mkIf config.isRealSystem {
+      dnscrypt.enable = true;
+    })
+  ];
 }
