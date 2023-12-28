@@ -12,12 +12,6 @@
     ./backup.nix
   ];
 
-  options.isRealSystem = lib.mkOption {
-    type = lib.types.bool;
-    default = true;
-    description = lib.mdDoc "Should we use encrypted files. Only neccessary on the real system";
-  };
-
   config = lib.mkMerge [
     (lib.mkIf config.isRealSystem {
       boot = {

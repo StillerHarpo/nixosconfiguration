@@ -175,6 +175,9 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     config.allowUnfree = true;
   };
 
+
+  dnscrypt.enable = true;
+
   system.stateVersion = "23.05";
 
 }

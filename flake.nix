@@ -227,6 +227,7 @@
             inputs.disko.nixosModules.disko
             inputs.home-manager-flake-unstable.nixosModules.home-manager
             ./linux/deck/configuration.nix
+            outputs.nixosModules
           ];
         };
 

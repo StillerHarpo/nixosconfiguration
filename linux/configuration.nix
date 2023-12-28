@@ -1,7 +1,7 @@
 { config, lib, home-manager, pkgs, private, ... }:
 
 {
-  imports = [ ../configuration.nix ./dnscrypt.nix ];
+  imports = [ ../configuration.nix ];
 
   # Select internationalisation properties.
   i18n = {
