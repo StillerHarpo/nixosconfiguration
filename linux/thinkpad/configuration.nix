@@ -40,9 +40,12 @@
       # openvnp
       environment.etc."office.ovpn".source = ./office.ovpn;
 
-      services.openvpn.servers.officeVPN = {
-        config = "config /etc/office.ovpn ";
-        autoStart = false;
+      services = {
+        openvpn.servers.officeVPN = {
+          config = "config /etc/office.ovpn ";
+          autoStart = false;
+        };
+        batteryNotifier.enable = true;
       };
 
       specialisation.normalInternet.configuration = {
@@ -475,7 +478,6 @@
       console.font = "sun12x22";
 
       services = {
-        batteryNotifier.enable = true;
         printing.enable = true;
         avahi = {
           enable = true;
