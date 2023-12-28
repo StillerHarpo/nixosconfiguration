@@ -1089,28 +1089,34 @@ If I let Windows handle DPI everything looks blurry."
  (* 2 60 60)
  #'async-start
  `(lambda ()
-    ,(async-inject-variables (rx "load-path"))
-    (require 'org-caldav)
-    (defun org-caldav-timestamp-has-time-p (timestamp)
-      "Checks whether a timestamp has a time.
-	Returns nil if not and (sec min hour) if it has."
-      (let ((ti (org-parse-time-string timestamp)))
-	(or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
-    ,(async-inject-variables
-      (rx
-       (or
-	"org-export-with-broken-links"
-	"org-caldav-url"
-	"org-caldav-inbox"
-	"org-caldav-calendar-id"
-	"org-caldav-resume-aborted"
-	"org-caldav-files")))
     (with-timeout ((* 60 30) "timed out")
+      ,(async-inject-variables (rx "load-path"))
+      (require 'org-caldav)
+      (defun org-caldav-timestamp-has-time-p (timestamp)
+	"Checks whether a timestamp has a time.
+	Returns nil if not and (sec min hour) if it has."
+	(let ((ti (org-parse-time-string timestamp)))
+	  (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
+      ,(async-inject-variables
+	(rx
+	 (or
+	  "org-export-with-broken-links"
+	  "org-caldav-url"
+	  "org-caldav-inbox"
+	  "org-caldav-calendar-id"
+	  "org-caldav-resume-aborted"
+	  "org-caldav-files")))
+      ;; Make sure calendar.org does exist
+      (unless (file-exists-p org-caldav-inbox)
+	(make-empty-file org-caldav-inbox))
+      ;; Make sure we don't get stuck in a yes no prompt
+      (org-caldav-delete-org-entries 'always)
+      (org-caldav-delete-calendar-entries 'always)
       (org-caldav-sync)
       (org-caldav-sync-result-filter-errors)))
  '(lambda (errors)
     (if errors
-	(let ((error-msg (format "Syncing calendar failed: %s" errors))) 
+	(let ((error-msg (format "Syncing calendar failed: %s" errors)))
 	  (my/org-insert-auto-schedule error-msg)
 	  (message error-msg))
       (message "calendar synced"))))
