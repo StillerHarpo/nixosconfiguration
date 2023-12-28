@@ -346,18 +346,27 @@
       };
       legacyPackages = outputs.packages."${system}";
       devShells.default =
-        outputs.packages."${system}".haskellPackages.developPackage {
+        let pkgs = outputs.packages."${system}";
+        in (pkgs.haskellPackages.developPackage {
           returnShellEnv = true;
           root = ./.;
           withHoogle = false;
-          modifier = with outputs.packages."${system}";
-            with haskellPackages;
-            drv:
-            haskell.lib.overrideCabal drv (attrs: {
-              buildTools = (attrs.buildTools or [ ])
-                ++ [ cabal-install haskell-language-server hlint ];
+          modifier = drv:
+            pkgs.haskell.lib.overrideCabal drv (attrs: {
+              buildTools =
+                (attrs.buildTools or [ ]) ++
+                (with pkgs; [
+                  cabal-install haskell-language-server hlint
+                ]);
             });
-        };
-
+        }).overrideAttrs (_: previousAttrs: {
+          buildInputs =
+            previousAttrs.buildInputs ++
+            (with pkgs; [
+              cargo rustc rustfmt pre-commit rustPackages.clippy
+              rust-analyzer pkg-config libxkbcommon
+            ]);
+          RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
+        });
     });
 }
