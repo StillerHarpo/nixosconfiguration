@@ -196,7 +196,7 @@
       (let ((heading-name heading))
         (if-let (pos (org-find-exact-headline-in-buffer heading-name nil t))
             (goto-char pos)
-          (progn (org-insert-heading) (insert heading-name)))
+          (progn (goto-char (point-max)) (org-insert-heading) (insert heading-name)))
         (org-todo "TODO")
         (org-schedule 1 (calendar-date-string (calendar-current-date)))
         (save-buffer))))
