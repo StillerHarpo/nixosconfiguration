@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs-lesspipe.url = "github:anund/nixpkgs/fix_less_pipe_dependency";
     nixpkgsUnstable.url = "github:NixOS/nixpkgs?rev=7c9cc5a6e5d38010801741ac830a3f8fd667a7a0";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     jovian = {

@@ -3,6 +3,7 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
+    lesspipe = final.callPackage "${inputs.nixpkgs-lesspipe.outPath}/pkgs/tools/misc/lesspipe" {};
     rclone =
       let
         enableCmount = true;
