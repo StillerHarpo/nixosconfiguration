@@ -21,6 +21,7 @@ in
           configPackages = [ pkgs.xdg-desktop-portal-wlr ];
         };
 
+        programs.sway.enable = true;
         home-manager.users.florian = {
           programs = {
             wofi.enable = true;
@@ -54,18 +55,15 @@ in
             };
         };
         services.xserver = {
-          displayManager = mkMerge [
-            {
-              gdm.enable = true;
-            }
+          enable = true;
+          displayManager = 
             (mkIf cfg.autoLogin {
               defaultSession = "sway";
               autoLogin = {
                 enable = true;
                 user = "florian";
               };
-            })
-          ];
+            });
         };
         security.pam.services.swaylock = {};
       }
