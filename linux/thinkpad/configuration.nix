@@ -8,7 +8,6 @@
     ./hardware.nix
     ./hibernate.nix
     ../configuration.nix
-    ./themeChanger.nix
     ./backup.nix
   ];
 

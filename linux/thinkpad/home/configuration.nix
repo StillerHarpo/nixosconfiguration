@@ -10,6 +10,7 @@ in {
     ../../../home.nix
     ./zsh.nix
     ./defaultApplications.nix
+    ./themeChanger.nix
     ../../home/configuration.nix
   ];
 

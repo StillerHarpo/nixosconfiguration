@@ -156,23 +156,23 @@ let
   prepareFiles = ''
     if [ ! -d ${alacrittyConfLoc} ]
     then
-        mkdir ${alacrittyConfLoc}
+        ${pkgs.coreutils-full}/bin/mkdir ${alacrittyConfLoc}
     fi
     # make it writable
     # (cp from nix store generates non writable file otherwise)
-    touch ${alacrittyConfPath}
+    ${pkgs.coreutils-full}/bin/touch ${alacrittyConfPath}
     if [ ! -d ${rofiConfLoc} ]
     then
-        mkdir ${rofiConfLoc}
+        ${pkgs.coreutils-full}/bin/mkdir ${rofiConfLoc}
     fi
-    touch ${rofiConfPath}
+    ${pkgs.coreutils-full}/bin/touch ${rofiConfPath}
     if [ ! -d ${gtk3ConfLoc} ]
     then
-        mkdir ${gtk3ConfLoc}
+        ${pkgs.coreutils-full}/bin/mkdir ${gtk3ConfLoc}
     fi
-    touch ${gtk3ConfPath}
-    touch ${gtk2ConfPath}
-    touch ${xsettingsdPath}
+    ${pkgs.coreutils-full}/bin/touch ${gtk3ConfPath}
+    ${pkgs.coreutils-full}/bin/touch ${gtk2ConfPath}
+    ${pkgs.coreutils-full}/bin/touch ${xsettingsdPath}
   '';
   blackWallpaper = pkgs.runCommand "dark.png" { }
     "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${darkBackground} $out";
@@ -181,50 +181,51 @@ let
 in {
   systemd.user = {
     timers.themeChange = {
-      description = "Automatically change the theme";
-      wantedBy = [ "timers.target" ];
-      timerConfig = {
+      Unit.Description = "Automatically change the theme";
+      Timer = {
         Unit = "themeChange.service";
         OnCalendar = [ "*-*-* 20:00:00" "*-*-* 07:00:00" ];
         Persistent = true;
       };
     };
     services.themeChange = {
-      description = "Automatically change the theme";
-      wants = [ "multi-user.target" "emacs-daemon.service" ];
-      after = [ "multi-user.target" "emacs-daemon.service" ];
+      Unit = {
+        Description = "Automatically change the theme";
+        Wants = [ "multi-user.target" "emacs-daemon.service" ];
+        After = [ "multi-user.target" "emacs-daemon.service" ];
+      };
 
-      script = ''
-        TIME=$(date +%H%M)
+      Service.ExecStart = pkgs.writeShellScript "themeChange" ''
+        TIME=$(${pkgs.coreutils-full}/bin/date +%H%M)
         ${prepareFiles}
         if [[ $TIME < 0630 || $TIME > 1930 ]]
         then
           ${pkgs.feh}/bin/feh --bg-scale ${blackWallpaper}
-          cp ${alacrittyDark} ${alacrittyConfPath}
-          cp ${rofiDark} ${rofiConfPath}
-          cp ${gtk2ConfDark} ${gtk2ConfPath}
-          cp ${gtk3ConfDark} ${gtk3ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${alacrittyDark} ${alacrittyConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${rofiDark} ${rofiConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk2ConfDark} ${gtk2ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk3ConfDark} ${gtk3ConfPath}
           ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
-          ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox t)"
-          cp ${xsettingsdDark} ${xsettingsdPath}
+          ${config.services.emacs.package}/bin/emacsclient -e "(load-theme 'doom-gruvbox t)"
+          ${pkgs.coreutils-full}/bin/cp ${xsettingsdDark} ${xsettingsdPath}
           echo ${darkBackground}> ~/.var/bgcolor
           echo BAT_THEME=gruvbox-dark > ~/.env
         else
           ${pkgs.feh}/bin/feh --bg-scale ${whiteWallpaper}
-          cp ${alacrittyLight} ${alacrittyConfPath}
-          cp ${rofiLight} ${rofiConfPath}
-          cp ${gtk2ConfLight} ${gtk2ConfPath}
-          cp ${gtk3ConfLight} ${gtk3ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${alacrittyLight} ${alacrittyConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${rofiLight} ${rofiConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk2ConfLight} ${gtk2ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk3ConfLight} ${gtk3ConfPath}
           ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
-          ${pkgs.myemacs}/bin/emacsclient -e "(load-theme 'doom-gruvbox-light t)"
-          cp ${xsettingsdLight} ${xsettingsdPath}
+          ${config.services.emacs.package}/bin/emacsclient -e "(load-theme 'doom-gruvbox-light t)"
+          ${pkgs.coreutils-full}/bin/cp ${xsettingsdLight} ${xsettingsdPath}
           echo ${lightBackground} > ~/.var/bgcolor
           echo BAT_THEME=gruvbox-light > ~/.env
         fi
-        systemctl --user restart xsettingsd
+        ${pkgs.systemd}/bin/systemctl --user restart xsettingsd
       '';
     };
   };
 
-  home-manager.users.florian.services.xsettingsd.enable = true;
+  services.xsettingsd.enable = true;
 }
