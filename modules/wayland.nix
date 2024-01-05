@@ -77,7 +77,6 @@ in
           # "WLR_RENDERER_ALLOW_SOFTWARE" = "1";
           "WLR_RENDERER" = "pixman";
         };
-        virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
       })
     ]);
 }

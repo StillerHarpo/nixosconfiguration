@@ -146,8 +146,13 @@
             private = fakePrivate;
           } ;
           modules = thinkpad-modules ++ [
-            ({ pkgs, lib, ... }: {
-              isRealSystem = false;
+            ({ pkgs, lib, config, ... }: {
+              config = lib.mkMerge [
+                { isRealSystem = false; }
+                (lib.mkIf config.wayland.enable {
+                  virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                })
+              ];
             })
           ];
         };
@@ -319,9 +324,14 @@
           x86_64-linux.screenlocker =
             (import "${inputs.nixpkgs}/nixos/lib" { }).runTest {
               name = "screenlocker";
-              nodes.machine = { pkgs, lib, ... }: {
+              nodes.machine = { pkgs, lib, config, ... }: {
                 imports = thinkpad-modules;
-                isRealSystem = false;
+                config = lib.mkMerge [
+                  { isRealSystem = false; }
+                  (lib.mkIf config.wayland.enable {
+                    virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                  })
+                ];
               };
               node.specialArgs = thinkpad-specialArgs // {
                 inherit lib;
