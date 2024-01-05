@@ -115,19 +115,6 @@
         nativeBuildInputs = [ pbr ];
       };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
-    myemacs = prev.emacsWithPackagesFromUsePackage {
-          config = ./config.el;
-          defaultInitFile = true;
-          alwaysEnsure = true;
-          package = prev.emacs-unstable;
-          extraEmacsPackages = epkgs:
-            [epkgs.treesit-grammars.with-all-grammars epkgs.pdf-tools];
-          override = _: eprev: rec {
-            my-nix-paths = prev.callPackage ./packages/emacs/my-nix-paths.nix {
-              inherit (eprev) trivialBuild;
-            };
-          };
-        };
     my-install-iso = inputs.nixos-generators.nixosGenerate {
         system = final.system;
         modules = [{

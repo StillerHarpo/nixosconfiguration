@@ -166,24 +166,12 @@ in {
           patterns = [ "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" ];
         };
       };
-      services = {
-        gpg-agent = {
-          enable = true;
-          defaultCacheTtl = 1800;
-          enableSshSupport = true;
-        };
-        emacs = {
-          enable = true;
-          package = pkgs.myemacs;
-          defaultEditor = true;
-          client.enable = true;
-        };
-      };
-
-      programs.emacs = {
+      services.gpg-agent = {
         enable = true;
-        package = pkgs.myemacs;
+        defaultCacheTtl = 1800;
+        enableSshSupport = true;
       };
+      emacs.enable = true;
 
       xsession.windowManager.xmonad.config = ../../../haskell/xmonad-thinkpad/xmonad.hs;
 
