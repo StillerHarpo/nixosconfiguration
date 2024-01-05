@@ -1110,8 +1110,8 @@ If I let Windows handle DPI everything looks blurry."
       (unless (file-exists-p org-caldav-inbox)
 	(make-empty-file org-caldav-inbox))
       ;; Make sure we don't get stuck in a yes no prompt
-      (org-caldav-delete-org-entries 'always)
-      (org-caldav-delete-calendar-entries 'always)
+      (setq org-caldav-delete-org-entries 'always
+            org-caldav-delete-calendar-entries 'always)
       (org-caldav-sync)
       (org-caldav-sync-result-filter-errors)))
  '(lambda (errors)
