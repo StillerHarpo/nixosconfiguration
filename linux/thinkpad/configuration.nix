@@ -209,6 +209,7 @@
                 grex
                 kubectl
                 k9s
+                tor-browser-bundle-bin
               ];
               rules = lib.apparmor.defaultRules;
             }
