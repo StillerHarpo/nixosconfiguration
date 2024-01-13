@@ -57,7 +57,6 @@
       inputs = {
         nixpkgs.follows = "nixpkgs";
         disko.follows = "disko";
-        nixos-2305.follows = "nixpkgs";
       };
     };
     nixos-generators = {
