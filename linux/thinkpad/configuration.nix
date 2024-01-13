@@ -257,7 +257,7 @@
               '';
             }
             {
-              pkgs = [ pkgs.deploy-rs pkgs.tmux-xpanes ];
+              pkgs = [ inputs.deploy-rs.defaultPackage."x86_64-linux" pkgs.tmux-xpanes ];
               rules = ''
                 ${lib.apparmor.generateFileRules [ "ssh" ]}
               '';
@@ -508,11 +508,7 @@
       # Disable docker. Somehow leads to xserver failure
       # virtualisation.docker.enable = true;
 
-      nixpkgs = let system = "x86_64-linux";
-                in {
-                  hostPlatform = { inherit system; };
-                  overlays = [ (_: _: { inherit system; }) ];
-                };
+      nixpkgs.hostPlatform = "x86_64-linux";
 
     }
   ];

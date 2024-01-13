@@ -105,9 +105,5 @@
 
   hardware.enableRedistributableFirmware = true;
 
-  nixpkgs = let system = "x86_64-linux";
-  in {
-    hostPlatform = { inherit system; };
-    overlays = [ (_: _: { inherit system; }) ];
-  };
+  nixpkgs.hostPlatform = "x86_64-linux";
 }

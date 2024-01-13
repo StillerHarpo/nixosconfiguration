@@ -352,8 +352,15 @@
       packages = import inputs.nixpkgs {
         inherit system;
         config.allowUnfree = true;
-        overlays = [ (_: _: { inherit system; }) ]
-          ++ (builtins.attrValues outputs.overlays);
+        overlays = builtins.attrValues outputs.overlays;
+      } // {
+        my-install-iso = inputs.nixos-generators.nixosGenerate {
+          system = system;
+          modules = [{
+            users.users.root.openssh.authorizedKeys.keys = import linux/thinkpad/sshKeys.nix;
+          }];
+          format = "install-iso";
+        };
       };
       legacyPackages = outputs.packages."${system}";
       devShells.default =

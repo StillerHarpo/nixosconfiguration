@@ -65,7 +65,6 @@
   };
   additions = final: prev: {
     inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install;
-    deploy-rs = inputs.deploy-rs.defaultPackage."${final.system}";
     haskellPackages = prev.haskellPackages.extend (_: hPrev: {
       my-common = prev.haskell.lib.overrideCabal
         (hPrev.callCabal2nix "my-common" ./haskell/my-common { }) (_: {
@@ -115,14 +114,7 @@
         nativeBuildInputs = [ pbr ];
       };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
-    my-install-iso = inputs.nixos-generators.nixosGenerate {
-        system = final.system;
-        modules = [{
-           users.users.root.openssh.authorizedKeys.keys = import linux/thinkpad/sshKeys.nix;
-        }];
-        format = "install-iso";
-      };
   };
-  a-emacs = inputs.emacs-overlay.overlay;
+  emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;
 }

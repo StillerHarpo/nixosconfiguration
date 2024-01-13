@@ -17,9 +17,5 @@
 
   system.stateVersion = 4;
 
-  nixpkgs = let system = "x86_64-darwin";
-  in {
-    hostPlatform = { inherit system; };
-    overlays = [ (_: _: { inherit system; }) ];
-  };
+  nixpkgs.hostPlatform = "x86_64-darwin";
 }

@@ -168,10 +168,9 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   networking.networkmanager.enable = true;
 
-  nixpkgs = let system = "x86_64-linux"; in {
-    hostPlatform.system = system;
-    overlays = [ (_: _: { inherit system; }) ]
-               ++ (builtins.attrValues outputs.overlays);
+  nixpkgs = {
+    hostPlatform.system = "x86_64-linux";
+    overlays = builtins.attrValues outputs.overlays;
     config.allowUnfree = true;
   };
 
