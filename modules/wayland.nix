@@ -65,6 +65,9 @@ in
                     "${modifier}+o" = "exec '" + dbus + dest + org + "Previous'";
                   })
                 ];
+                input."*" = {
+                  xkb_options = "eurosign:e,caps:escape,grp:alt_shift_toggle";
+                  xkb_variant = "altgr-intl";
                 };
                 terminal = "${pkgs.alacritty}/bin/alacritty";
               };
