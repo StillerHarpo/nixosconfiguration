@@ -70,19 +70,14 @@ in
               };
             };
         };
-        services.xserver = {
-          enable = true;
-          displayManager = 
-            (mkIf cfg.autoLogin {
-              defaultSession = "sway";
-              autoLogin = {
-                enable = true;
-                user = "florian";
-              };
-            });
-        };
         security.pam.services.swaylock = {};
       }
+      (mkIf config.wayland.autoLogin {
+        services.getty.autologinUser = "florian";
+        environment.loginShellInit = ''
+          [[ "$(tty)" == /dev/tty1 ]] && sway
+        '';
+      })
       (mkIf (!config.isRealSystem) {
         environment.variables = {
           # Use a fixed SWAYSOCK path:
