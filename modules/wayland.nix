@@ -17,11 +17,15 @@ in
     mkMerge [
       {
         xdg.portal = {
+          enable = true;
           wlr.enable = true;
           configPackages = [ pkgs.xdg-desktop-portal-wlr ];
+          extraPortals = with pkgs; [
+            xdg-desktop-portal-wlr
+            xdg-desktop-portal-gtk
+          ];
         };
 
-        programs.sway.enable = true;
         home-manager.users.florian = { config, ... }: {
           programs = {
             wofi.enable = true;
@@ -47,6 +51,12 @@ in
                 };
             in {
               enable = true;
+              extraSessionCommands = ''
+                export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+                export XDG_SESSION_TYPE=wayland
+                export NIXOS_OZONE_WL=1
+              '';
+              wrapperFeatures.gtk = true;
               config = {
                 inherit modifier; 
                 keybindings = lib.mkMerge [
