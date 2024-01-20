@@ -28,6 +28,7 @@ fn main() {
     let input: Vec<String> = windows_and_cmds.keys().cloned().collect();
     let mut child = Command::new("wofi")
         .arg("--dmenu")
+        .arg("--insensitive")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
