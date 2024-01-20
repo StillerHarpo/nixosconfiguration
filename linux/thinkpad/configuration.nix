@@ -47,8 +47,15 @@
         batteryNotifier.enable = true;
       };
 
-      specialisation.normalInternet.configuration = {
+      specialisation = {
+        normalInternet.configuration = {
         networking.wg-quick.interfaces.vpn.autostart = false;
+      };
+        wayland.configuration = {
+          wayland.enable = lib.mkForce true;
+          wayland.autoLogin = lib.mkForce true;
+          xserver.enable = lib.mkForce false;
+        };
       };
     })
     (lib.mkIf (!config.isRealSystem) {
