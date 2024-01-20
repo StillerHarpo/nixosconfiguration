@@ -42,7 +42,7 @@ fn main() {
         None => {
             if output_string.len() > 0 {
                 conn.run_command(format!(
-                    "exec firefox -new-window duckduckgo.com\\?q={output_string}"
+                    "exec firefox -new-window 'duckduckgo.com\\?q={output_string}'"
                 ))
                 .unwrap();
             }
