@@ -22,7 +22,7 @@ in
         };
 
         programs.sway.enable = true;
-        home-manager.users.florian = {
+        home-manager.users.florian = { config, ... }: {
           programs = {
             wofi.enable = true;
             swaylock.enable = true;
@@ -30,6 +30,9 @@ in
           services.swayidle.enable = true;
           wayland.windowManager.sway =
             let modifier = "Mod4";
+               dbus = "dbus-send --print-reply ";
+               dest = "--dest=org.mpris.MediaPlayer2.mpv ";
+               org = "/org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
                 openorraise = pkgs.rustPlatform.buildRustPackage {
                   name = "openorraise";
                   src = lib.fileset.toSource {
@@ -46,9 +49,22 @@ in
               enable = true;
               config = {
                 inherit modifier; 
-                keybindings = lib.mkOptionDefault {
-                  "${modifier}+v" = "exec ${pkgs.emacs}/bin/emacsclient";
-                  "${modifier}+d" = "exec ${openorraise}/bin/openorraise";
+                keybindings = lib.mkMerge [
+                  (lib.mkIf config.services.emacs.enable (lib.mkOptionDefault {
+                    "${modifier}+n" = "exec ${config.services.emacs.package}/bin/emacsclient -c";
+                  }))
+                  (lib.mkOptionDefault {
+                    "${modifier}+d" = "exec ${openorraise}/bin/openorraise";
+                    "XF86MonBrightnessDown" = "exec ${getExe pkgs.light} -U 10";
+                    "XF86MonBrightnessUp" = "exec ${getExe pkgs.light} -A 10";
+                    "XF86AudioRaiseVolume" = "exec 'pamixer -i 5'";
+                    "XF86AudioLowerVolume" = "exec 'pamixer -t'";
+                    "XF86AudioMute" = "exec 'pactl set-sink-mute @DEFAULT_SINK@ toggle'";
+                    "${modifier}+p" = "exec '" + dbus + dest + org + "PlayPause'";
+                    "${modifier}+i" = "exec '" + dbus + dest + org + "Next'";
+                    "${modifier}+o" = "exec '" + dbus + dest + org + "Previous'";
+                  })
+                ];
                 };
                 terminal = "${pkgs.alacritty}/bin/alacritty";
               };

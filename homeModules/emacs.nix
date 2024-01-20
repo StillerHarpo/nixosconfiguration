@@ -46,6 +46,7 @@ in {
       inherit package;
       defaultEditor = true;
       client.enable = true;
+      startWithUserSession = "graphical";
     };
     programs.emacs = {
       enable = true;
