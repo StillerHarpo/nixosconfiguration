@@ -31,7 +31,60 @@ in
             wofi.enable = true;
             swaylock.enable = true;
           };
-          services.swayidle.enable = true;
+          services = {
+            swayidle = {
+              enable = true;
+              timeouts = [
+                { timeout = 900; command = "swaylock"; }
+              ];
+              events = [
+                { event = "before-sleep"; command = "swaylock"; }
+                { event = "lock"; command = "swaylock"; }
+              ];
+            };
+            kanshi = {
+              enable = true;
+              profiles = {
+                default = {
+                  outputs = [{
+                    criteria = "AU Optronics 0x2336 Unknown";
+                    position = "0,0";
+                    mode = "2560x1440@60.01";
+                    scale = 1.5;
+                  }];
+                };
+                home = {
+                  outputs = [
+                    {
+                      criteria = "AU Optronics 0x2336 Unknown";
+                      position = "0,1080";
+                      mode = "2560x1440@60.01Hz";
+                      scale = 1.5;
+                    }
+                    {
+                      criteria = "BNQ BenQ GL2450H G6G05576019";
+                      position = "0,0";
+                      mode = "1920x1080@60.01Hz";
+                    }
+                  ];
+                };
+                work = {
+                  outputs = [
+                    {
+                      criteria = "AU Optronics 0x2336 Unknown";
+                      position = "0,1440";
+                      mode = "2560x1440@60.01Hz";
+                    }
+                    {
+                      criteria = "Dell Inc. DELL U2713HM 7JNY53CB723S";
+                      position = "0,0";
+                      mode = "2560x1440@59.951Hz";
+                    }
+                  ];
+                };
+              };
+            };
+          };
           wayland.windowManager.sway =
             let modifier = "Mod4";
                dbus = "dbus-send --print-reply ";
