@@ -87,9 +87,9 @@ in
           };
           wayland.windowManager.sway =
             let modifier = "Mod4";
-               dbus = "dbus-send --print-reply ";
-               dest = "--dest=org.mpris.MediaPlayer2.mpv ";
-               org = "/org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
+                dbus = "dbus-send --print-reply ";
+                dest = "--dest=org.mpris.MediaPlayer2.mpv ";
+                org = "/org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
                 openorraise = pkgs.rustPlatform.buildRustPackage {
                   name = "openorraise";
                   src = lib.fileset.toSource {
