@@ -121,8 +121,8 @@ in
                     "XF86MonBrightnessDown" = "exec ${getExe pkgs.light} -U 10";
                     "XF86MonBrightnessUp" = "exec ${getExe pkgs.light} -A 10";
                     "XF86AudioRaiseVolume" = "exec 'pamixer -i 5'";
-                    "XF86AudioLowerVolume" = "exec 'pamixer -t'";
-                    "XF86AudioMute" = "exec 'pactl set-sink-mute @DEFAULT_SINK@ toggle'";
+                    "XF86AudioLowerVolume" = "exec 'pamixer -d 5'";
+                    "XF86AudioMute" = "exec 'paxmixer -t'";
                     "${modifier}+p" = "exec '" + dbus + dest + org + "PlayPause'";
                     "${modifier}+i" = "exec '" + dbus + dest + org + "Next'";
                     "${modifier}+o" = "exec '" + dbus + dest + org + "Previous'";
