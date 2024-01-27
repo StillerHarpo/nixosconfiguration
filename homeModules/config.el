@@ -549,6 +549,17 @@
   :config
   (evil-add-command-properties #'haskell-mode-tag-find :jump t))
 
+(use-package ghcid
+  :ensure
+  :init
+  (advice-add
+   'ghcid-mode
+   :around
+   (lambda (f &rest args)
+     (if (fboundp 'linium-mode)
+         (apply f args)
+       (cl-letf (((symbol-function 'linum-mode) 'ignore)) (apply f args))))))
+
 (use-package rustic :ensure
   :init
   (setq rustic-lsp-client 'eglot))
@@ -1089,6 +1100,16 @@ If I let Windows handle DPI everything looks blurry."
 	 (shake (format "%sshake" default-directory))
 	 (target (my/checkpad-shake-targets)))
     (envrc-propagate-environment 'compile (format "way=f %s %s" shake target))))
+
+(defun my/checkpad-ghcid ()
+  "Run ghcid script from checkpad"
+  (interactive)
+  (cl-letf ((default-directory (project-root (project-current)))
+	    (target (my/checkpad-shake-targets))
+	    ((symbol-function 'ghcid-command)
+	     (lambda (h)
+	       (format "%sscripts/ghcid %s -- -h %s\n" default-directory target h))))
+    (ghcid)))
 
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
 

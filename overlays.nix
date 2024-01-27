@@ -116,6 +116,7 @@
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
     emacsPackagesFor = emacs: (
       (prev.emacsPackagesFor emacs).overrideScope' (_: eprev: {
+        ghcid = final.callPackage ./packages/emacs/ghcid { inherit (eprev) trivialBuild; };
         my-nix-paths = final.callPackage ./packages/emacs/my-nix-paths { inherit (eprev) trivialBuild; };
       })
     );
