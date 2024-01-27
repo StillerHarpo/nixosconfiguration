@@ -1071,6 +1071,25 @@ If I let Windows handle DPI everything looks blurry."
 			   (buffer-file-name (current-buffer))))
     (my/checkpad-format)))
 
+(defun my/checkpad-shake-targets ()
+  "selects a target from shake"
+  (let* ((default-directory (project-root (project-current)))
+	 (shake (format "%sshake" default-directory))
+	 (programs
+	  (-filter
+	   (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
+	   (envrc-propagate-environment 'process-lines shake "-l")))
+	 (what (completing-read "programm: " programs)))
+    (car (s-split " " what))))
+
+(defun my/checkpad-compile ()
+  "Uses shake in checkpad to compile"
+  (interactive)
+  (let* ((default-directory (project-root (project-current)))
+	 (shake (format "%sshake" default-directory))
+	 (target (my/checkpad-shake-targets)))
+    (envrc-propagate-environment 'compile (format "way=f %s %s" shake target))))
+
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
 
 (defun my/org-roam-commit-on-save ()
