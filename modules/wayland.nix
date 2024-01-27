@@ -19,11 +19,14 @@ in
         xdg.portal = {
           enable = true;
           wlr.enable = true;
-          configPackages = [ pkgs.xdg-desktop-portal-wlr ];
-          extraPortals = with pkgs; [
-            xdg-desktop-portal-wlr
-            xdg-desktop-portal-gtk
-          ];
+          extraPortals = [pkgs.xdg-desktop-portal-gtk];
+          config.common = {
+            # use xdg-desktop-portal-gtk for every portal interface
+            default="gtk";
+            # except for the xdg-desktop-portal-wlr supplied interfaces
+            "org.freedesktop.impl.portal.Screencast"="wlr";
+            "org.freedesktop.impl.portal.Screenshot"="wlr";
+          };
         };
 
         home-manager.users.florian = { config, ... }: {

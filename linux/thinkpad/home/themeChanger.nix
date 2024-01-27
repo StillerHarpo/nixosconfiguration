@@ -147,7 +147,23 @@ let
   rofiConfLoc = "~/.config/rofi";
   rofiConfPath = "${rofiConfLoc}/config.rasi";
   gtk3ConfLoc = "~/.config/gtk-3.0";
+  gtk4ConfLoc = "~/.config/gtk-4.0";
+  gtk4Css = theme:
+    pkgs.writeTextFile
+      { name = "gtk.css";
+        text = ''
+          /**
+           * GTK 4 reads the theme configured by gtk-theme-name, but ignores it.
+           * It does however respect user CSS, so import the theme from here.
+          **/
+          @import url("file://${pkgs.adw-gtk3}/share/themes/${theme}/gtk-4.0/gtk.css");
+   '';
+      };
+  gtk4CssDark = gtk4Css "Adwaita-dark";
+  gtk4CssLight = dconf "Adwaita";
   gtk3ConfPath = "${gtk3ConfLoc}/settings.ini";
+  gtk4ConfPath = "${gtk4ConfLoc}/settings.ini";
+  gtk4CssPath = "${gtk4ConfLoc}/gtk.css";
   xsettingsd = theme:
     builtins.toFile ".xsettingsd" ''Net/ThemeName "${theme}"'';
   xsettingsdDark = xsettingsd "Adwaita-dark";
@@ -170,7 +186,13 @@ let
     then
         ${pkgs.coreutils-full}/bin/mkdir ${gtk3ConfLoc}
     fi
+    if [ ! -d ${gtk4ConfLoc} ]
+    then
+        ${pkgs.coreutils-full}/bin/mkdir ${gtk4ConfLoc}
+    fi
     ${pkgs.coreutils-full}/bin/touch ${gtk3ConfPath}
+    ${pkgs.coreutils-full}/bin/touch ${gtk4ConfPath}
+    ${pkgs.coreutils-full}/bin/touch ${gtk4CssPath}
     ${pkgs.coreutils-full}/bin/touch ${gtk2ConfPath}
     ${pkgs.coreutils-full}/bin/touch ${xsettingsdPath}
   '';
@@ -196,6 +218,8 @@ in {
       };
 
       Service.ExecStart = pkgs.writeShellScript "themeChange" ''
+        export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}
+:$XDG_DATA_DIRS"
         TIME=$(${pkgs.coreutils-full}/bin/date +%H%M)
         ${prepareFiles}
         if [[ $TIME < 0630 || $TIME > 1930 ]]
@@ -205,9 +229,14 @@ in {
           ${pkgs.coreutils-full}/bin/cp ${rofiDark} ${rofiConfPath}
           ${pkgs.coreutils-full}/bin/cp ${gtk2ConfDark} ${gtk2ConfPath}
           ${pkgs.coreutils-full}/bin/cp ${gtk3ConfDark} ${gtk3ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk3ConfDark} ${gtk4ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk4CssDark} ${gtk4ConfPath}
           ${pkgs.dconf}/bin/dconf load / < ${dconfDark}
           ${config.services.emacs.package}/bin/emacsclient -e "(load-theme 'doom-gruvbox t)"
           ${pkgs.coreutils-full}/bin/cp ${xsettingsdDark} ${xsettingsdPath}
+          ${pkgs.coreutils-full}/bin/cp ${xsettingsdDark} ${xsettingsdPath}
+          ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "Adwaita-dark"
+          ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
           echo ${darkBackground}> ~/.var/bgcolor
           echo BAT_THEME=gruvbox-dark > ~/.env
         else
@@ -216,9 +245,13 @@ in {
           ${pkgs.coreutils-full}/bin/cp ${rofiLight} ${rofiConfPath}
           ${pkgs.coreutils-full}/bin/cp ${gtk2ConfLight} ${gtk2ConfPath}
           ${pkgs.coreutils-full}/bin/cp ${gtk3ConfLight} ${gtk3ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk3ConfLight} ${gtk4ConfPath}
+          ${pkgs.coreutils-full}/bin/cp ${gtk4CssLight} ${gtk4CssPath}
           ${pkgs.dconf}/bin/dconf load / < ${dconfLight}
           ${config.services.emacs.package}/bin/emacsclient -e "(load-theme 'doom-gruvbox-light t)"
           ${pkgs.coreutils-full}/bin/cp ${xsettingsdLight} ${xsettingsdPath}
+          ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface gtk-theme "Adwaita"
+          ${pkgs.glib}/bin/gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
           echo ${lightBackground} > ~/.var/bgcolor
           echo BAT_THEME=gruvbox-light > ~/.env
         fi
@@ -228,4 +261,9 @@ in {
   };
 
   services.xsettingsd.enable = true;
+
+  xdg.systemDirs.data = [
+    "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
+    "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
+  ];
 }
