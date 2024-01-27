@@ -34,11 +34,6 @@ in {
       package = base;
       extraEmacsPackages = epkgs:
         [epkgs.treesit-grammars.with-all-grammars epkgs.pdf-tools];
-      override = _: eprev: rec {
-        my-nix-paths = pkgs.callPackage ../packages/emacs/my-nix-paths.nix {
-          inherit (eprev) trivialBuild;
-        };
-      };
     };
     in lib.mkIf config.emacs.enable {
     services.emacs = {

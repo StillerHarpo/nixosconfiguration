@@ -114,6 +114,11 @@
         nativeBuildInputs = [ pbr ];
       };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
+    emacsPackagesFor = emacs: (
+      (prev.emacsPackagesFor emacs).overrideScope' (_: eprev: {
+        my-nix-paths = final.callPackage ./packages/emacs/my-nix-paths { inherit (eprev) trivialBuild; };
+      })
+    );
   };
   emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;
