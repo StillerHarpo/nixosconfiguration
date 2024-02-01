@@ -216,6 +216,7 @@
                 kubectl
                 k9s
                 tor-browser-bundle-bin
+                docker-compose
               ];
               rules = lib.apparmor.defaultRules;
             }
@@ -511,8 +512,7 @@
         distributedBuilds = false;
       };
 
-      # Disable docker. Somehow leads to xserver failure
-      # virtualisation.docker.enable = true;
+      virtualisation.docker.enable = true;
 
       nixpkgs.hostPlatform = "x86_64-linux";
 
