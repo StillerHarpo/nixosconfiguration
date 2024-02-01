@@ -158,7 +158,29 @@ in
                   xkb_options = "eurosign:e,caps:escape";
                   xkb_variant = "altgr-intl";
                 };
+                startup = [
+                  { command = "${pkgs.lib.getExe pkgs.sway-contrib.inactive-windows-transparency}"; }
+                ];
+                window = {
+                  titlebar = false;
+                  border = 0;
+                  hideEdgeBorders = "both";
+                };
+                floating = {
+                  titlebar = false;
+                  border = 0;
+                };
                 terminal = "${pkgs.alacritty}/bin/alacritty";
+                bars = [
+                  {
+                    mode = "hide";
+                    statusCommand = "${pkgs.i3status}/bin/i3status";
+                    fonts = {
+                      names = [ "monospace" ];
+                      size = 10.0;
+                    };
+                  }
+                ];
               };
             };
         };
