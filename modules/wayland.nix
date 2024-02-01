@@ -74,7 +74,6 @@ in
                     criteria = "AU Optronics 0x2336 Unknown";
                     position = "0,0";
                     mode = "2560x1440@60.01";
-                    scale = 1.5;
                   }];
                 };
                 home = {
@@ -96,19 +95,21 @@ in
                   outputs = [
                     {
                       criteria = "AU Optronics 0x2336 Unknown";
-                      position = "0,1440";
+                      position = "0,959";
                       mode = "2560x1440@60.01Hz";
                     }
                     {
                       criteria = "Dell Inc. DELL U2713HM 7JNY53CB723S";
-                      position = "0,0";
+                      position = "456,0";
                       mode = "2560x1440@59.951Hz";
+                      scale = 1.5;
                     }
                   ];
                 };
               };
             };
           };
+
           wayland.windowManager.sway =
             let modifier = "Mod4";
                 dbus = "dbus-send --print-reply ";
