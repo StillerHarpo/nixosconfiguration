@@ -154,6 +154,7 @@ in
                   })
                 ];
                 input."type:keyboard" = {
+                  xkb_layout = "us";
                   xkb_options = "eurosign:e,caps:escape";
                   xkb_variant = "altgr-intl";
                 };
