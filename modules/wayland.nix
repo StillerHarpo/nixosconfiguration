@@ -50,12 +50,18 @@ in
           ];
 
 
-        home-manager.users.florian = { config, ... }: {
+        home-manager.users.florian = { config, osConfig, ... }: {
+
           programs = {
             wofi.enable = true;
             swaylock.enable = true;
           };
           services = {
+            gammastep = {
+              enable = true;
+              longitude = osConfig.location.longitude;
+              latitude = osConfig.location.latitude;
+            };
             swayidle = {
               enable = true;
               timeouts = [
