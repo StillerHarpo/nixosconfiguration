@@ -208,8 +208,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   systemd.services.lightAutomation = {
       enable = true;
       description = "Automatically change color";
-      wants = [ "zigbee2mqtt.service" "mosquitto.service" ];
+      wantedBy = [ "zigbee2mqtt.service" "mosquitto.service" ];
       after = [ "zigbee2mqtt.service" "mosquitto.service" ];
+      partOf = [ "zigbee2mqtt.service" "mosquitto.service" ];
+      bindsTo = [ "zigbee2mqtt.service" "mosquitto.service" ];
       serviceConfig = {
         ExecStart = pkgs.writers.writeHaskell
           "light-automation"
