@@ -15,8 +15,8 @@ fn main() {
         .iter()
         .map(|wow| (format!("{wow}"), wow.window.id))
         .collect();
-    let bookmarks: HashMap<&str, &str> = HashMap::from(PROGRAMS);
-    let windows_and_cmds: HashMap<String, OpenOrRaise> = windows
+    let bookmarks: Vec<(&str, &str)> = Vec::from(PROGRAMS);
+    let windows_and_cmds: Vec<(String, OpenOrRaise)> = windows
         .into_iter()
         .map(|nid| (nid.0, OpenOrRaise::WindowId(nid.1)))
         .chain(
@@ -25,7 +25,7 @@ fn main() {
                 .map(|bkms| (String::from(bkms.0), OpenOrRaise::Cmd(bkms.1))),
         )
         .collect();
-    let input: Vec<String> = windows_and_cmds.keys().cloned().collect();
+    let input: Vec<String> = windows_and_cmds.clone().into_iter().map(|x| x.0).collect();
     let mut child = Command::new("wofi")
         .arg("--dmenu")
         .arg("--insensitive")
@@ -38,7 +38,7 @@ fn main() {
     child_stdin.flush().unwrap();
     let output = child.wait_with_output().unwrap();
     let output_string = std::str::from_utf8(&output.stdout).unwrap();
-    match windows_and_cmds.get(&output_string[..output_string.len() - 1]) {
+    match &windows_and_cmds.into_iter().find(|kvs| kvs.0 == &output_string[..output_string.len() - 1]) {
         None => {
             if output_string.len() > 0 {
                 conn.run_command(format!(
@@ -47,7 +47,7 @@ fn main() {
                 .unwrap();
             }
         }
-        Some(oor) => run_open_or_raise(oor, &mut conn),
+        Some(oor) => run_open_or_raise(&oor.1, &mut conn),
     }
 }
 
@@ -82,6 +82,7 @@ fn get_windows(node: Node) -> Vec<Window> {
             Some(name) => {
                 return vec![Window {
                     name,
+		    app_id: node.app_id,
                     id: WindowId(node.id),
                 }]
             }
@@ -128,12 +129,16 @@ impl fmt::Display for WindowId {
 struct Window {
     /// human readable name of the window
     name: String,
+    app_id: Option<String>,
     id: WindowId,
 }
 
 impl fmt::Display for Window {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{} {}", self.name, self.id)
+	match &self.app_id {
+	    None => write!(f, "{} {}", self.name, self.id),
+	    Some(app_id) => write!(f, "{} - {} {}", app_id, self.name, self.id),
+	}
     }
 }
 
