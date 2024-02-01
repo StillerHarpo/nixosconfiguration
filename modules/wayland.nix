@@ -29,6 +29,27 @@ in
           };
         };
 
+        apparmor.systemPackages =
+          [ { pkgs = with pkgs; [
+                wl-clipboard
+                grim
+                slurp
+                adw-gtk3
+                adwaita-qt
+                adwaita-qt6
+                wdisplays
+                slack-wayland
+              ];
+              rules = lib.apparmor.defaultRules;
+            }
+            { pkgs = [pkgs.wofi-pass];
+              rules = ''
+                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ]}
+              '';
+            }
+          ];
+
+
         home-manager.users.florian = { config, ... }: {
           programs = {
             wofi.enable = true;

@@ -126,7 +126,6 @@
                 file
                 element-desktop
                 ### screenshots ###
-                scrot
                 pinta
                 ### screenshots ###
                 inputs.nix-alien.packages."x86_64-linux".nix-alien
@@ -202,18 +201,18 @@
                 git-crypt
                 tigervnc
                 ### chat ###
-                slack
                 signal-desktop
                 mumble
                 teamspeak_client
                 ### chat ###
                 xsecurelock
                 fzf
-                ## better rust tools
+                ## better rust tools ###
                 procs
                 delta
                 du-dust
                 grex
+                ## better rust tools ###
                 kubectl
                 k9s
                 tor-browser-bundle-bin

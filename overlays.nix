@@ -114,12 +114,23 @@
         nativeBuildInputs = [ pbr ];
       };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
+    wofi-pass = final.callPackage "${inputs.nixpkgs-unstable.outPath}/pkgs/tools/security/pass/wofi-pass.nix" {};
     emacsPackagesFor = emacs: (
       (prev.emacsPackagesFor emacs).overrideScope' (_: eprev: {
         ghcid = final.callPackage ./packages/emacs/ghcid { inherit (eprev) trivialBuild; };
         my-nix-paths = final.callPackage ./packages/emacs/my-nix-paths { inherit (eprev) trivialBuild; };
       })
     );
+    slack-wayland = prev.slack.overrideAttrs (oldAttrs: rec {
+      fixupPhase = ''
+        sed -i -e 's/,"WebRTCPipeWireCapturer"/,"LebRTCPipeWireCapturer"/' $out/lib/slack/resources/app.asar
+        rm $out/bin/slack
+        makeWrapper $out/lib/slack/slack $out/bin/slack \
+          --prefix XDG_DATA_DIRS : $GSETTINGS_SCHEMAS_PATH \
+          --suffix PATH : ${final.lib.makeBinPath [ final.xdg-utils ]} \
+          --add-flags "--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations,WebRTCPipeWireCapturer"
+      '';
+});
   };
   emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlay;

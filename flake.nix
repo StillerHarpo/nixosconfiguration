@@ -2,11 +2,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
     nixpkgs-lesspipe.url = "github:anund/nixpkgs/fix_less_pipe_dependency";
-    nixpkgsUnstable.url = "github:NixOS/nixpkgs?rev=7c9cc5a6e5d38010801741ac830a3f8fd667a7a0";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-deck.url = "github:NixOS/nixpkgs?rev=7c9cc5a6e5d38010801741ac830a3f8fd667a7a0";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS?rev=2965d86926177af95af615a09138e0aaaaec56fa";
-      inputs.nixpkgs.follows = "nixpkgsUnstable";
+      inputs.nixpkgs.follows = "nixpkgs-deck";
     };
     nix-alien = {
       url = "github:thiagokokada/nix-alien";
@@ -35,9 +36,9 @@
       url = "github:nix-community/home-manager/release-23.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    home-manager-flake-unstable = {
+    home-manager-flake-deck = {
       url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgsUnstable";
+      inputs.nixpkgs.follows = "nixpkgs-deck";
     };
     nur.url = "github:nix-community/NUR";
     deploy-rs = {
@@ -221,7 +222,7 @@
           ];
         };
         
-        flosDeck =  inputs.nixpkgsUnstable.lib.nixosSystem {
+        flosDeck =  inputs.nixpkgs-deck.lib.nixosSystem {
           specialArgs = {
             inherit inputs outputs;
             private = import ./private.nix;
@@ -230,7 +231,7 @@
             inputs.jovian.nixosModules.jovian
             inputs.agenix.nixosModules.age
             inputs.disko.nixosModules.disko
-            inputs.home-manager-flake-unstable.nixosModules.home-manager
+            inputs.home-manager-flake-deck.nixosModules.home-manager
             ./linux/deck/configuration.nix
             outputs.nixosModules
           ];

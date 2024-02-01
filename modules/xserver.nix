@@ -11,6 +11,13 @@ in
     autoLogin = mkEnableOption (lib.mdDoc "Wether to autologin into wayland");
   };
   config = mkIf cfg.enable {
+
+    apparmor.systemPackages =
+      [ { pkgs = with pkgs; [scrot slack];
+          rules = lib.apparmor.defaultRules;
+        }
+      ];
+
     services = {
 
       xserver = {
