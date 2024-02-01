@@ -203,7 +203,11 @@ let
 in {
   systemd.user = {
     timers.themeChange = {
-      Unit.Description = "Automatically change the theme";
+      Install.WantedBy = [ "graphical-session.target" "emacs-daemon.service" ];
+      Unit = {
+        Description = "Automatically change the theme";
+        After = [ "multi-user.target" "emacs-daemon.service" ];
+      };
       Timer = {
         Unit = "themeChange.service";
         OnCalendar = [ "*-*-* 20:00:00" "*-*-* 07:00:00" ];
@@ -211,15 +215,17 @@ in {
       };
     };
     services.themeChange = {
+      Install.WantedBy = [ "graphical-session.target" "emacs-daemon.service" ];
       Unit = {
         Description = "Automatically change the theme";
-        Wants = [ "multi-user.target" "emacs-daemon.service" ];
-        After = [ "multi-user.target" "emacs-daemon.service" ];
+        After = [ "emacs-daemon.service" ];
+        PartOf = [ "graphical-session.target" ];
+        BindsTo = [ "graphical-session.target" ];
       };
 
       Service.ExecStart = pkgs.writeShellScript "themeChange" ''
-        export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}
-:$XDG_DATA_DIRS"
+        export GIO_EXTRA_MODULES=${pkgs.dconf.lib}/lib/gio/modules
+        export XDG_DATA_DIRS="${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:$XDG_DATA_DIRS"
         TIME=$(${pkgs.coreutils-full}/bin/date +%H%M)
         ${prepareFiles}
         if [[ $TIME < 0630 || $TIME > 1930 ]]
