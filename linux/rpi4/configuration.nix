@@ -171,7 +171,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       externalInterface = "enabcm6e4ei0";
       internalInterfaces = [ "wgHome" ];
     };
-    firewall.allowedUDPPorts = [ 51820 ];
+    firewall.allowedUDPPorts = [ 51820 53 ];
     firewall.allowedTCPPorts = [ 5232 ];
 
     wireguard.interfaces = {
