@@ -51,10 +51,11 @@
         normalInternet.configuration = {
         networking.wg-quick.interfaces.vpn.autostart = false;
       };
-        wayland.configuration = {
-          wayland.enable = lib.mkForce true;
-          wayland.autoLogin = lib.mkForce true;
-          xserver.enable = lib.mkForce false;
+        xserver.configuration = {
+          wayland.enable = lib.mkForce false;
+          wayland.autoLogin = lib.mkForce false;
+          xserver.enable = lib.mkForce true;
+          xserver.autoLogin = lib.mkForce true;
         };
       };
     })
@@ -324,8 +325,7 @@
         };
       };
 
-
-      xserver = {
+      wayland = {
         enable = true;
         autoLogin = true;
       };
