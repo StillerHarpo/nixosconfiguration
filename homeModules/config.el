@@ -129,6 +129,12 @@
   (xref-show-definitions-function 'consult-xref)
   (completion-in-region-function 'consult-completion-in-region))
 
+(defun xref-find-references-with-buffer ()
+  "Shows the references in extra buffer"
+  (interactive)
+  (let ((xref-show-xrefs-function 'xref--show-xref-buffer))
+    (call-interactively 'xref-find-references)))
+
 (use-package avy :ensure)
 
 (use-package doom-themes
