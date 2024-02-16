@@ -203,24 +203,17 @@ let
 in {
   systemd.user = {
     timers.themeChange = {
-      Install.WantedBy = [ "graphical-session.target" "emacs-daemon.service" ];
-      Unit = {
-        Description = "Automatically change the theme";
-        After = [ "multi-user.target" "emacs-daemon.service" ];
-      };
+      Install.WantedBy = [ "timers.target" ];
       Timer = {
-        Unit = "themeChange.service";
         OnCalendar = [ "*-*-* 20:00:00" "*-*-* 07:00:00" ];
         Persistent = true;
       };
     };
     services.themeChange = {
-      Install.WantedBy = [ "graphical-session.target" "emacs-daemon.service" ];
+      Install.WantedBy = [ "emacs.service" ];
       Unit = {
         Description = "Automatically change the theme";
-        After = [ "emacs-daemon.service" ];
-        PartOf = [ "graphical-session.target" ];
-        BindsTo = [ "graphical-session.target" ];
+        After = [ "emacs.service" ];
       };
 
       Service.ExecStart = pkgs.writeShellScript "themeChange" ''
