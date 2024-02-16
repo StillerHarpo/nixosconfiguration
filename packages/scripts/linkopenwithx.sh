@@ -3,9 +3,20 @@
 printf %s "${1}" | xsel -b
 color=$(cat ~/.var/bgcolor)
 checkYoutubeStartpoint() {
-   maxRes=$(xrandr -q | grep "\*\+" | cut -d'x' -f2 | cut -d' ' -f1 | sort -n | tail -n1)
+   if [[ "$XDG_CURRENT_DESKTOP" == "sway" ]]
+   then
+      maxRes=$(swaymsg -r -t get_outputs | jq 'map(select(.focused)).[0].current_mode.height')
+   elif [[ "$XDG_SESSION_TYPE"  == "x11" ]]
+   then
+      maxRes=$(xrandr -q | grep "\*\+" | cut -d'x' -f2 | cut -d' ' -f1 | sort -n | tail -n1)
+   fi
    MPV() {
-      mpv --really-quiet --no-osc --ytdl-format="best[height<=${maxRes}]" "$@"
+      if [ -z ${maxRes+x} ]
+      then
+          mpv --no-osc --ytdl-format="best[height<=${maxRes}]" "$@"
+      else
+          mpv --no-osc "$@"
+      fi
    }
    if echo "${link}" | grep -q -e '[?#&]t=[0-9]\+s\?$'
    then
