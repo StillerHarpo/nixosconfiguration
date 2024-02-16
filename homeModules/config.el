@@ -1024,21 +1024,17 @@ Called via the `after-load-functions' special hook."
  :keymaps 'emacs-lisp-mode-map
   "m e e" 'eval-last-sexp)
 
-(set-frame-font "monospace 14")
 ;; Font size adjustment
 (defun hoagie-adjust-font-size (frame)
   "Inspired by https://emacs.stackexchange.com/a/44930/17066. FRAME is ignored.
 If I let Windows handle DPI everything looks blurry."
-  (unless (equal (getenv "XDG_SESSION_TYPE") "wayland")
-    (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
-	   (width-px (-fourth-item (-second-item attrs)))
-	   (size 18))
-      (when (eq width-px 2560) ;; laptop screen
-	(setq size 20))
-      (when (eq width-px 1920)  ;; External monitor at home
-	(setq size 18))
-      (set-frame-font (format "monospace %s" size))
-      )))
+  (if (equal (getenv "XDG_SESSION_TYPE") "x11")
+      (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
+	     (width-px (-fourth-item (-second-item attrs))))
+	(cond ((eq width-px 2560) (set-frame-font "monospace 20"))  ;; laptop screen
+	      ((eq width-px 1920) (set-frame-font "monospace 18")) ;; External monitor at home
+	      (t (set-frame-font "monospace 18"))))
+    (set-frame-font "monospace 14")))
 (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
 (add-to-list 'display-buffer-alist
