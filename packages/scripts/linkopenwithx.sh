@@ -18,26 +18,19 @@ checkYoutubeStartpoint() {
           mpv --no-osc "$@"
       fi
    }
-   if echo "${link}" | grep -q -e '[?#&]t=[0-9]\+s\?$'
+   if echo "${1}" | grep -q -e '[?#&]t=[0-9]\+s\?$'
    then
-       second=$(echo "${link}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)s\?$/\1/')
-       link=$(echo "${link}" | sed 's/[?#&]t\\\?=[0-9]\+s\?$//')
-       MPV "${link}" --start=+"${second}" ||\
-           link=$(echo "${link}" | sed 's/pak/tube/')&&\
-           MPV "${link}" --start=+"${second}"
-   elif echo "${link}" | grep -q -e '[?#&]t\\\?=[0-9]\+m[0-9]\+s\?$'
+       second=$(echo "${1}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)s\?$/\1/')
+       link=$(echo "${1}" | sed 's/[?#&]t\\\?=[0-9]\+s\?$//')
+       MPV "${link}" --start=+"${second}"
+   elif echo "${1}" | grep -q -e '[?#&]t\\\?=[0-9]\+m[0-9]\+s\?$'
    then
-       second=$(echo "${link}" | sed 's/.*[?#&]t\\\?=[0-9]\+m\([0-9]\+\)s\?$/\1/')
-       minute=$(echo "${link}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)m[0-9]\+s\?$/\1/')
-       link=$(echo "${link}" | sed 's/[?#&]t=[0-9]\+m[0-9]\+s\?$//')
-       MPV "${link}" --start=+"${minute}":"${second}" ||\
-           link=$(echo "${link}" | sed 's/pak/tube/') &&\
-           MPV --really-quiet --no-osc "${link}" --start=+"${minute}":"${second}"
+       second=$(echo "${1}" | sed 's/.*[?#&]t\\\?=[0-9]\+m\([0-9]\+\)s\?$/\1/')
+       minute=$(echo "${1}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)m[0-9]\+s\?$/\1/')
+       link=$(echo "${1}" | sed 's/[?#&]t=[0-9]\+m[0-9]\+s\?$//')
+       MPV "${link}" --start=+"${minute}":"${second}"
    else
-       MPV "${link}" || (
-         link=$(echo "${link}" | sed 's/pak/tube/')
-         MPV "${link}"
-       )
+       MPV "$1"
    fi
 }
 if echo "${1}" | grep -q -e \.mp3$ -e \.mp4$ -e \.m4v$ -e v\.redd\.it
@@ -49,16 +42,13 @@ then
     mpv --really-quiet --no-osc -no-audio-display "${redirect}"
 elif echo "${1}" | grep -q -e m\.youtube\. 
 then
-    link=$(echo "$1" | sed 's/m\.//' | sed 's/tube/pak/')
-    checkYoutubeStartpoint
+    checkYoutubeStartpoint "$@"
 elif echo "${1}" | grep -q -e youtube\. 
 then
-    link=$(echo "$1" | sed 's/tube/pak/')
-    checkYoutubeStartpoint
+    checkYoutubeStartpoint "$@"
 elif echo "${1}" | grep -q -e youtu\.be
 then
-    link=$(echo "$1" | sed 's/tu\.be\//pak.com\/watch?v=/')
-    checkYoutubeStartpoint
+    checkYoutubeStartpoint "$@"
 elif echo "${1}" | grep -q -e dailymotion\. -e streamable\.com -e liveleak\.com -e vimeo\.com
 then
     mpv --really-quiet --no-osc "${1}"
