@@ -579,6 +579,8 @@
   (tide-server-max-response-length 204800)
   (typescript-ts-mode-indent-offset 4)
   :init
+  (add-hook 'typescript-ts-mode-hook (lambda () (setq indent-tabs-mode nil)))
+  (add-hook 'tide-mode-hook (lambda () (setq indent-tabs-mode nil)))
   :hook ((typescript-ts-mode . tide-setup)
          (tsx-ts-mode . tide-setup)
          (typescript-ts-mode . tide-hl-identifier-mode))
