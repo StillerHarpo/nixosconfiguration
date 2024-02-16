@@ -10,27 +10,11 @@ checkYoutubeStartpoint() {
    then
       maxRes=$(xrandr -q | grep "\*\+" | cut -d'x' -f2 | cut -d' ' -f1 | sort -n | tail -n1)
    fi
-   MPV() {
-      if [ -z ${maxRes+x} ]
-      then
-          mpv --no-osc --ytdl-format="best[height<=${maxRes}]" "$@"
-      else
-          mpv --no-osc "$@"
-      fi
-   }
-   if echo "${1}" | grep -q -e '[?#&]t=[0-9]\+s\?$'
+   if [ -z ${maxRes+x} ]
    then
-       second=$(echo "${1}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)s\?$/\1/')
-       link=$(echo "${1}" | sed 's/[?#&]t\\\?=[0-9]\+s\?$//')
-       MPV "${link}" --start=+"${second}"
-   elif echo "${1}" | grep -q -e '[?#&]t\\\?=[0-9]\+m[0-9]\+s\?$'
-   then
-       second=$(echo "${1}" | sed 's/.*[?#&]t\\\?=[0-9]\+m\([0-9]\+\)s\?$/\1/')
-       minute=$(echo "${1}" | sed 's/.*[?#&]t\\\?=\([0-9]\+\)m[0-9]\+s\?$/\1/')
-       link=$(echo "${1}" | sed 's/[?#&]t=[0-9]\+m[0-9]\+s\?$//')
-       MPV "${link}" --start=+"${minute}":"${second}"
+       mpv --no-osc --ytdl-format="best[height<=${maxRes}]" "$@"
    else
-       MPV "$1"
+       mpv --no-osc "$@"
    fi
 }
 if echo "${1}" | grep -q -e \.mp3$ -e \.mp4$ -e \.m4v$ -e v\.redd\.it
