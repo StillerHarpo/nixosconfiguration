@@ -101,8 +101,9 @@ in
                   outputs = [
                     {
                       criteria = "AU Optronics 0x2336 Unknown";
-                      position = "0,959";
+                      position = "456,1040";
                       mode = "2560x1440@60.01Hz";
+                      scale = 1.5;
                     }
                     {
                       criteria = "Dell Inc. DELL U2713HM 7JNY53CB723S";
