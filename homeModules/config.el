@@ -1110,11 +1110,13 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/checkpad-ghcid ()
   "Run ghcid script from checkpad"
   (interactive)
-  (cl-letf ((default-directory (project-root (project-current)))
-	    (target (my/checkpad-shake-targets))
-	    ((symbol-function 'ghcid-command)
-	     (lambda (h)
-	       (format "%sscripts/ghcid %s -- -h %s\n" default-directory target h))))
+  (cl-letf* ((default-directory (project-root (project-current)))
+	     (progs (mapconcat 'file-name-as-directory `(,default-directory "src" "progs")))
+	     (files (directory-files progs nil (rx (seq (one-or-more anychar) ".hs" eol))))
+	     (what (completing-read "progs: " (mapcar (lambda (f) (car (s-split (rx ".") f))) files)))
+	     ((symbol-function 'ghcid-command)
+	      (lambda (h)
+		(format "%sscripts/ghcid %s -- -h %s\n" default-directory what h))))
     (ghcid)))
 
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
