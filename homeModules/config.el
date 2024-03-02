@@ -1068,6 +1068,7 @@ If I let Windows handle DPI everything looks blurry."
 
 ;; tabs
 (setq indent-tabs-mode nil)
+(add-hook 'js-json-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (add-hook 'nxml-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
 (defun my/checkpad-format ()
