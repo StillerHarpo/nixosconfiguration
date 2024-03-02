@@ -8,7 +8,7 @@ trivialBuild {
   pname = "ghcid";
   version = "master";
   src = fetchurl {
-    url = https://raw.githubusercontent.com/ndmitchell/ghcid/master/plugins/emacs/ghcid.el;
-    hash = "sha256-b57Setg7hCC6cbKIZAe4xLHWj6HCb4FE8yj5jyZdqC8=";
+    url = https://raw.githubusercontent.com/StillerHarpo/ghcid/fix-emacs-plugin-for-emacs29/plugins/emacs/ghcid.el;
+    hash = "sha256-xq5VSJEmdV5FdnUTVo63YVOI4Fv+4SHkunTXzztCSWk=";
   };
 }

@@ -556,15 +556,7 @@
   (evil-add-command-properties #'haskell-mode-tag-find :jump t))
 
 (use-package ghcid
-  :ensure
-  :init
-  (advice-add
-   'ghcid-mode
-   :around
-   (lambda (f &rest args)
-     (if (fboundp 'linium-mode)
-         (apply f args)
-       (cl-letf (((symbol-function 'linum-mode) 'ignore)) (apply f args))))))
+  :ensure t)
 
 (use-package rustic :ensure
   :init
