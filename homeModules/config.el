@@ -989,6 +989,8 @@ if one already exists."
  "q q" 'save-buffers-kill-terminal
  "c" '(:ignore t :which-key "code")
  "c c" 'compile
+ "c i" 'eldoc-print-current-symbol-info
+ "c r" 'eglot-rename
  "o" '(:ignore t :which-key "open")
  "o e" 'elfeed
  "o c" 'ement-connect
