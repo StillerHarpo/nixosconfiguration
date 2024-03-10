@@ -1,48 +1,34 @@
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE TupleSections #-}
-{-# LANGUAGE ViewPatterns #-}
 
-import Control.Concurrent
-import Control.Monad
-import Data.Aeson
-import Data.Aeson.Types (Parser)
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BS
-import Data.ByteString.Lazy (ByteString)
-import qualified Data.ByteString.Lazy as LBS
-import Data.Char
-import Data.Text (Text)
+module HomeAutomation where
+import GHC.Generics
+import Network.MQTT.Topic
 import Data.Time.Clock
 import Data.Time.LocalTime
-import GHC.Generics
-import Network.MQTT.Client
-import Network.MQTT.Topic
-import Network.URI (URI)
-import Network.URI.Static (staticURI)
+import Data.Text (Text)
+import Data.Aeson
+import Data.Aeson.Types (Parser)
 
 data State = ON | OFF | TOGGLE
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
 
 data ColorTemp = Exact Int | Coolest | Cool | Neutral | Warm | Warmest
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
 
 data ColorTempStartup = ColorTemp ColorTemp | Previous
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
 
 data Color = ColorXY {x :: Int, y :: Int} | ColorRGB {red :: Int, green :: Int, blue :: Int}
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
 
 data Move = Step Int | Stop
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
 
-data Light = Light
+data ChangeLight = ChangeLight
   { state :: Maybe State,
     brightness :: Maybe Int,
     colorTemp :: Maybe ColorTemp,
@@ -54,7 +40,24 @@ data Light = Light
     colorTempMove :: Maybe Move,
     colorTempStep :: Maybe Int
   }
-  deriving (Generic, Show)
+  deriving (Generic, Show, Eq)
+
+data Light = Light
+  { topic :: Topic,
+    maxStep :: Maybe Int,
+    lowestColorTemp :: Int,
+    highestColorTemp :: Int
+  }
+
+data Direction a = Up a | Down a
+   deriving (Show, Eq)
+
+data LightStepper = LightStepper
+  { colorTempStart :: Int,
+    steps :: Int,
+    colorTempChange :: Int,
+    stepDuration :: DiffTime
+   } deriving (Show, Eq)
 
 data Status = Started | Successful | Failed
   deriving (Generic, Show)
@@ -125,10 +128,10 @@ instance ToJSON Move where
 instance FromJSON Move where
   parseJSON = myGenericParseJSON
 
-instance ToJSON Light where
+instance ToJSON ChangeLight where
   toJSON = myGenericToJSON
 
-instance FromJSON Light where
+instance FromJSON ChangeLight where
   parseJSON = myGenericParseJSON
 
 instance ToJSON Status where
@@ -188,9 +191,9 @@ instance FromJSON BridgeEvent where
        "device_announce" -> pure BridgeEventDeviceAnnounce
      pure BridgeEvent{..}
 
-light :: Light
-light =
-  Light
+changeLight :: ChangeLight
+changeLight =
+  ChangeLight
     { state = Nothing,
       brightness = Nothing,
       colorTemp = Nothing,
@@ -203,34 +206,68 @@ light =
       colorTempStep = Nothing
     }
 
--- run Light over
-puplishLightSteps :: DiffTime -> MQTTClient -> Topic -> IO ()
-puplishLightSteps stepDuration client topic =
-  forM_ (undefined :: [Light]) $ \light -> do
-    publishLight client topic light
-    threadDelay (diffTimeToSeconds stepDuration)
+-- | Get LightStepper to get from lowest color temp to highest (or vice versa)
+getLightStepper :: Direction DiffTime -> Light -> LightStepper
+getLightStepper td lc =
+  LightStepper {
+    stepDuration = maybe dt (secondsToDiffTime . fromIntegral) $ maxStep lc,
+    ..
+    }
+  where
+    steps = maybe 1 (diffTimeToSeconds dt `div`) (maxStep lc)
+    (dt, colorTempStart, colorTempChange) =
+      case td of
+        Up dt -> let
+          startTemp =
+            round $
+              transformPointToOtherRange
+                0 (fromIntegral $ diffTimeToPicoseconds duration) (fromIntegral . diffTimeToPicoseconds $ duration - dt)
+                (fromIntegral $ lowestColorTemp lc) (fromIntegral $ highestColorTemp lc)
+          in (dt, startTemp, (highestColorTemp lc - startTemp) `div` steps)
+        Down dt -> let
+          startTemp =
+            round $
+              transformPointToOtherRange
+                0 (fromIntegral $ diffTimeToPicoseconds duration) (fromIntegral $ diffTimeToPicoseconds dt)
+                (fromIntegral $ lowestColorTemp lc) (fromIntegral $ highestColorTemp lc)
+          in (dt, startTemp, (-1) * ((startTemp - lowestColorTemp lc) `div` steps))
 
--- publish a mqtt message to a light
-publishLight :: MQTTClient -> Topic -> Light -> IO ()
-publishLight client topic light = do
-  putStrLn $ "Changing light for " <> show topic
-  publish client topic (encode light) False
+changeLightSteps :: LightStepper -> (ChangeLight, [ChangeLight])
+changeLightSteps stepper =
+  (changeLight { colorTemp = Just . Exact $ colorTempStart stepper},
+    map (\temp ->
+           changeLight {
+            colorTemp = Just . Exact $ temp + colorTempStart stepper,
+            transition = Just (diffTimeToSeconds (stepDuration stepper))
+            })
+    . scanl1 (+) $ replicate (steps stepper) (colorTempChange stepper))
 
+-- | cuts the list down to a fraction of to numbers by removing at the front
+dropFraction :: (RealFrac a, Fractional a) => a -> a  -> [b] -> [b]
+dropFraction x y xs = drop (round (fromIntegral (length xs - 1) / (x / y))) xs
 
-diffTimeToSeconds :: DiffTime -> Int
-diffTimeToSeconds = div 1000 . fromInteger . diffTimeToMicroseconds
+-- | given an point on a range give the corresponding point on another range
+-- where the ratio to its lower and upper bound is the same
+transformPointToOtherRange :: Fractional a => a -> a -> a -> a -> a -> a
+transformPointToOtherRange lower upper point lower' upper' = (upper' - lower') * ((point - lower) / (upper - lower)) + lower'
 
--- Calculates a color temp based on the given time. At Night in should be a warm temp
+-- | Calculates a color temp based on the given time. At Night in should be a warm temp
 -- and during the day it should be cold temp. Between night and day and vice versa is a transition
 -- over 1 hour
-timeToColorTemp :: TimeOfDay -> Light
-timeToColorTemp t 
-  | t >= dayTimeStart  && timeOfDayToTime t >= timeOfDayToTime t + duration =
-    light {colorTemp = Just Coolest, transition = Just . diffTimeToSeconds $ timeOfDayToTime dayTimeStart + duration - timeOfDayToTime t}
-  | timeOfDayToTime t >= timeOfDayToTime dayTimeStart + duration && t <= nightTimeStart = light {colorTemp = Just Coolest}
-  | t >= nightTimeStart  && timeOfDayToTime t >= timeOfDayToTime t + duration =
-    light {colorTemp = Just Warmest, transition = Just . diffTimeToSeconds $ timeOfDayToTime nightTimeStart + duration - timeOfDayToTime t}
-  | otherwise = light {colorTemp = Just Warmest }
+timeToColorTemp :: TimeOfDay -> Light ->  (ChangeLight, [ChangeLight])
+timeToColorTemp t light
+  | t >= dayTimeStart && timeOfDayToTime t <= timeOfDayToTime dayTimeStart + duration =
+    let
+      restDuration = timeOfDayToTime dayTimeStart + duration - timeOfDayToTime t
+      stepper = getLightStepper (Down restDuration) light
+    in changeLightSteps stepper
+  | timeOfDayToTime t > timeOfDayToTime dayTimeStart + duration && t < nightTimeStart =
+    (changeLight {colorTemp = Just Coolest}, [])
+  | t >= nightTimeStart  && timeOfDayToTime t <= timeOfDayToTime t + duration = let
+      restDuration = timeOfDayToTime nightTimeStart + duration - timeOfDayToTime t
+      stepper = getLightStepper (Up restDuration) light
+    in changeLightSteps stepper
+  | otherwise = (changeLight {colorTemp = Just Warmest }, [])
 
 duration :: DiffTime
 duration = secondsToDiffTime (60 * 60)
@@ -243,27 +280,9 @@ dayTimeStart = hour 8
 
 -- calculate the next time we want to shift colors
 getNextTimeColorShift :: TimeOfDay -> TimeOfDay
-getNextTimeColorShift t 
+getNextTimeColorShift t
   | timeUntil t nightTimeStart < timeUntil t dayTimeStart = nightTimeStart
   | otherwise = dayTimeStart
-
-getCurrentTimeOfDay :: IO TimeOfDay
-getCurrentTimeOfDay = do
-  time <- getCurrentTime
-  timeZone <- getTimeZone time
-  pure $ localTimeOfDay $ utcToLocalTime timeZone time
-
-colorTempRunner :: MQTTClient -> [Topic] -> IO ()
-colorTempRunner client topics = do
-  forever $ do
-    timeBeforeSleep <- getCurrentTimeOfDay
-    let seconds = minimum $ map (timeUntil timeBeforeSleep) [dayTimeStart, nightTimeStart]
-    threadDelay (fromIntegral $ diffTimeToMicroseconds seconds)
-    lightChangeTime <- getCurrentTimeOfDay
-    forM_ topics $ \topic -> publishLight client topic (timeToColorTemp $ getNextTimeColorShift lightChangeTime)
-
-mosquittoURI :: URI
-mosquittoURI = $$(staticURI "mqtt://localhost")
 
 timeUntil :: TimeOfDay -> TimeOfDay -> DiffTime
 timeUntil from to = if t > 0 then t else timeOfDayToTime (TimeOfDay 24 0 0) + t
@@ -275,6 +294,9 @@ hour h = TimeOfDay h 0 0
 
 diffTimeToMicroseconds :: DiffTime -> Integer
 diffTimeToMicroseconds = (`div` 1000) . (`div` 1000) . diffTimeToPicoseconds
+
+diffTimeToSeconds :: DiffTime -> Int
+diffTimeToSeconds = (`div` 1000) . (`div` 1000) . fromInteger . diffTimeToMicroseconds
 
 zigbee2mqttT, lightsT, kitchenT, livingRoomT, kitchenOneT, kitchenTwoT, kitchenThreeT, allT, setT, availabilityT :: Topic
 zigbee2mqttT = "zigbee2mqtt"
@@ -288,28 +310,25 @@ allT = "all"
 setT = "set"
 availabilityT = "availability"
 
-main :: IO ()
-main = do
-  mc <- connectURI mqttConfig {_msgCB = SimpleCallback handleMessage} mosquittoURI
-  subscribe mc (map ((, subOptions) . toFilter) ["zigbee2mqtt/switch/action", kitchenOneT, kitchenTwoT, kitchenThreeT, livingRoomT]) []
-  forkIO $ colorTempRunner mc [livingRoomT <> setT, kitchenT <> setT]
-  waitForClient mc -- wait for the client to disconnect
+livingRoom :: Light
+livingRoom = Light {
+  topic = livingRoomT,
+  maxStep = Nothing,
+  lowestColorTemp = 150,
+  highestColorTemp = 500
+  }
 
-handleMessage :: MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
-handleMessage client reasonTopic m _ = do
-  putStrLn $ "Handle message of topic" <> show reasonTopic
-  time <- getCurrentTimeOfDay
-  when (m == "on_press_release") $ do
-    publishLight client (livingRoomT <> setT) (light { state = Just TOGGLE })
-  when (m == "off_press_release") $ do
-    publishLight client (kitchenT <> allT <> setT) (light { state = Just TOGGLE })
-    publishLight client (kitchenT <> allT <> setT) (timeToColorTemp time)
-  when (m == "up_hold" || m == "up_press") $ 
-    publishLight client (lightsT  <> allT <> setT) (light { brightnessStep = Just 30, transition = Just 2 })
-  when (m == "down_hold" || m == "up_press") $ 
-    publishLight client (lightsT  <> allT <> setT) (light { brightnessStep = Just (-30), transition = Just 2 })
-  case decode m of
-    Nothing -> putStrLn $ "Parsing of event not implemented: " <> show m
-    Just BridgeEvent{eventKind = BridgeEventDeviceJoined, friendlyName = Just (mkTopic -> Just name)} -> do
-      publishLight client (zigbee2mqttT <> name <> setT) (timeToColorTemp time)
-    Just ev -> putStrLn $ "Ignoring event: " <> show ev
+kitchen :: Light
+kitchen = Light {
+  topic = kitchenT <> allT,
+  maxStep = Just 30,
+  lowestColorTemp = 153,
+  highestColorTemp = 500
+  }
+
+-- TODO
+matchLight :: Topic -> Maybe Light
+matchLight t
+  | t == topic kitchen = Just kitchen
+  | t == topic livingRoom = Just livingRoom
+  | otherwise = Nothing

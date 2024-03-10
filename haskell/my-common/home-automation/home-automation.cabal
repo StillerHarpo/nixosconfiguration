@@ -1,0 +1,10 @@
+cabal-version:      2.4
+name:               my-common
+version:            0.1.0.0
+
+author:             Florian Engel
+maintainer:         engelflorian@posteo.de
+
+library
+  build-depends:    base, text, net-mqtt, time, aeson
+  exposed-modules:  HomeAutomation

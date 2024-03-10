@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, private, ... }:
+{ config, pkgs, lib, inputs, private, outputs, ... }:
 
 let sshKeys = import ../thinkpad/sshKeys.nix; in
 
@@ -77,6 +77,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       options = "--delete-older-than 7d";
     };
   };
+
+  nixpkgs.overlays = builtins.attrValues outputs.overlays;
 
   services = {
     radicale = {
@@ -216,9 +218,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         ExecStart = pkgs.writers.writeHaskell
           "light-automation"
           {
-            libraries = with pkgs.haskellPackages; [ aeson net-mqtt network-uri ];
+            libraries = with pkgs.haskellPackages;
+              [ aeson net-mqtt network-uri home-automation];
           }
-          ../../haskell/home-automation/automation.hs;
+          ../../haskell/home-automation/Main.hs;
         CapabilityBoundingSet = "";
         LockPersonality = true;
         MemoryDenyWriteExecute = false;

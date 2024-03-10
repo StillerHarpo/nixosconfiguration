@@ -20,6 +20,8 @@
           efi.canTouchEfiVariables = true;
         };
         kernel.sysctl."kernel.yama.ptrace_scope" = 1;
+        # we need this for deploy-rs together with import-from-derivation (e.g. callCabal2nix)
+        binfmt.emulatedSystems = [ "aarch64-linux" ];
       };
       age = {
         identityPaths = [ "/root/.ssh/id_rsa" ];

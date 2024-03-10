@@ -16,9 +16,16 @@ executable scans
   default-language: Haskell2010
 
 executable home-automation
-  main-is:          haskell/home-automation/automation.hs
-  build-depends:    base, aeson, net-mqtt, network-uri, time, bytestring, text
+  main-is:          haskell/home-automation/Main.hs
+  build-depends:    base, net-mqtt, network-uri, bytestring, text, time, aeson, haskell
   default-language: Haskell2010
+
+test-suite tests
+  default-language: Haskell2010
+  type: exitcode-stdio-1.0
+  main-is: haskell/tests/Tests.hs
+  ghc-options:  -main-is Tests
+  build-depends: base, tasty, tasty-hunit, time, haskell
 
 executable xmonad-desktop
   main-is:          haskell/xmonad-desktop/xmonad.hs
@@ -40,6 +47,6 @@ executable xmonad-thinkpad
   default-language: Haskell2010
 
 library
-  hs-source-dirs:   haskell/my-common
-  build-depends:    base, protolude, text, xmonad-contrib
-  exposed-modules:  Bookmarks, Xrandr, Utils
+  hs-source-dirs:   haskell/my-common, haskell/my-common/home-automation
+  build-depends:    base, protolude, text, xmonad-contrib, net-mqtt, time, aeson
+  exposed-modules:  Bookmarks, Xrandr, Utils, HomeAutomation
