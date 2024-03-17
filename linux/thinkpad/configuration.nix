@@ -160,7 +160,6 @@
                 networkmanagerapplet
                 mtpfs
                 wget
-                cachix
                 vim
                 shellcheck
                 ######## Games ###############
