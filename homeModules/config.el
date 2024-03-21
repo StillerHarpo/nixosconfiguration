@@ -562,7 +562,6 @@
   :init
   (setq rustic-lsp-client 'eglot))
 
-(use-package nix-mode :ensure)
 
 (use-package tide
   :ensure t
