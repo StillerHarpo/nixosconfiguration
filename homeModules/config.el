@@ -892,6 +892,10 @@ if one already exists."
     (consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
     (consult-ripgrep)))
 
+(defun my/consult-ripgrep-from-kill-ring ()
+  (interactive)
+  (consult-ripgrep nil (read-from-kill-ring "ripgrep")))
+
 (defun my/consult-line ()
   (interactive)
   (if evil-visual-region-expanded
@@ -899,6 +903,10 @@ if one already exists."
       (evil-force-normal-state)
       (consult-line (replace-regexp-in-string " " "\\\\s-" (regexp-quote region))))
     (consult-line)))
+
+(defun my/consult-line-from-kill-ring ()
+  (interactive)
+  (consult-line (read-from-kill-ring "ripgrep")))
 
 (defvar my-keys-minor-mode-map
   (make-sparse-keymap)
@@ -997,7 +1005,11 @@ if one already exists."
  "o t" 'vterm
  "o y" 'ytel
  "o p" 'peertube
- "o m" '(my/notmuch-search :which-key "notmuch"))
+ "o m" '(my/notmuch-search :which-key "notmuch")
+ "k" '(:ignore t :which-key "killring")
+ "k y" 'yank-from-kill-ring
+ "k p" 'my/consult-ripgrep-from-kill-ring
+ "k s" 'my/consult-line-from-kill-ring)
 
 (my-keys-minor-mode 1)
 
