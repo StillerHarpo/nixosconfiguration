@@ -908,6 +908,17 @@ if one already exists."
   (interactive)
   (consult-line (read-from-kill-ring "ripgrep")))
 
+(defun my/open-pdf ()
+  (interactive)
+  "open corresponding pdf to txt file if it exist"
+  (find-file (concat (file-name-base (buffer-name)) ".pdf")))
+
+(general-define-key
+ :states '(normal visual)
+ :prefix "SPC"
+ :keymaps 'text-mode-map
+  "m o" 'my/open-pdf)
+
 (defvar my-keys-minor-mode-map
   (make-sparse-keymap)
   "my-keys-minor-mode keymap.")
