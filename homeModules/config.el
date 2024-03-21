@@ -790,7 +790,7 @@ Returns nil if not and (sec min hour) if it has."
   "s" 'consult-info)
 
 (general-define-key
- :states '(text-mode-map prog-mode-map)
+ :keymaps '(text-mode-map prog-mode-map)
  "<tab>" 'completion-at-point)
 
 (defun my/delete-this-file ()
