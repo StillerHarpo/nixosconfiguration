@@ -562,6 +562,7 @@
   :init
   (setq rustic-lsp-client 'eglot))
 
+(use-package protobuf-mode :ensure t)
 
 (use-package tide
   :ensure t
