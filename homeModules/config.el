@@ -87,7 +87,9 @@
 
 (use-package vertico
   :init
-  (vertico-mode))
+  (vertico-mode)
+  :config
+  (vertico-multiform-mode 1))
 
 ;; Optionally use the `orderless' completion style.
 (use-package orderless
@@ -193,8 +195,6 @@
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
   (add-hook 'org-mode-hook #'auto-revert-mode)
-  (add-hook 'org-mode-hook #'(lambda () (ispell-change-dictionary "de_DE")))
-  (advice-add #'org-agenda-switch-to :after #'(lambda () (ispell-change-dictionary "de_DE")))
 
   (defun my/org-insert-auto-schedule (heading)
     "Schedules an heading to the current date. Inserts the heading if doesn't exist"
@@ -757,6 +757,19 @@ Returns nil if not and (sec min hour) if it has."
   (org-caldav-resume-aborted 'never)
   )
 
+(use-package jinx
+  :custom
+  (jinx-languages "de_DE en-computers en_US")
+  :init
+  (global-jinx-mode 1)
+  :config
+  (setq vertico-multiform-categories
+             '((jinx grid (vertico-grid-annotate . 20))))
+  :general
+  (:states '(normal visual)
+   :prefix "SPC"
+   "j" 'jinx-correct))
+
 (recentf-mode 1)
 (winner-mode 1)
 
@@ -1078,10 +1091,6 @@ If I let Windows handle DPI everything looks blurry."
    )))
 
 (add-hook 'prog-mode-hook 'hs-minor-mode)
-
-;;spelling
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
-(add-hook 'text-mode-hook 'flyspell-mode)
 
 ;; tabs
 (setq indent-tabs-mode nil)

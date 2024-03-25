@@ -65,6 +65,13 @@
   };
   additions = final: prev: {
     inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install;
+    myAspellWithDicts =
+      (final.aspellWithDicts (dicts: [
+        dicts.de
+        dicts.en
+        dicts.en-computers
+        dicts.en-science
+      ]));
     haskellPackages = prev.haskellPackages.extend (_: hPrev: {
       my-common = prev.haskell.lib.overrideCabal
         (hPrev.callCabal2nix "my-common" ./haskell/my-common { }) (_: {

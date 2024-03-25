@@ -2,12 +2,7 @@
 
 {
   environment.systemPackages = [
-    (pkgs.aspellWithDicts (dicts: [
-      dicts.de
-      dicts.en
-      dicts.en-computers
-      dicts.en-science
-    ]))
+     pkgs.myAspellWithDicts
   ];
 
   fonts = {

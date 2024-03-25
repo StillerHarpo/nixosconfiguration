@@ -218,6 +218,11 @@ in {
           dmenu_passphrase.rofi_obscure = true;
           editor.terminal = "alacritty";
         };
+
+      home.file.".aspell.conf".source = pkgs.runCommand "aspell.conf" {} ''
+        ${pkgs.lib.getExe' pkgs.myAspellWithDicts "aspell"} dump config > $out
+      '';
+
       home.file.".kodi/userdata/addon_data/plugin.video.invidious/settings.xml".source =
         ./kodi/invidious.xml;
       home.file.".kodi/userdata/addon_data/plugin.video.arteplussept/settings.xml".source =
@@ -227,6 +232,7 @@ in {
         ./kodi/estuary.xml;
       home.file.".kodi/userdata/sources.xml".source = ./kodi/sources.xml;
       home.file.".authinfo.gpg".source = ./authinfo.gpg;
+
     }
   ];
 }
