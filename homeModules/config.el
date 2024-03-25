@@ -1012,6 +1012,7 @@ if one already exists."
  "w |" 'evil-window-set-width
  "s" '(:ignore t :which-key "search")
  "s s" 'my/consult-line
+ "s i" 'imenu
  "SPC" 'project-find-file
  "p" '(:ignore t :which-key "project")
  "p p" 'project-switch-project
