@@ -570,6 +570,7 @@
   :custom
   (tide-server-max-response-length 204800)
   (typescript-ts-mode-indent-offset 4)
+  (tide-node-executable "direnv exec . node")
   :init
   (add-hook 'typescript-ts-mode-hook (lambda () (setq indent-tabs-mode nil)))
   (add-hook 'tide-mode-hook (lambda () (setq indent-tabs-mode nil)))
@@ -1104,7 +1105,7 @@ If I let Windows handle DPI everything looks blurry."
     (envrc-propagate-environment
      'shell-command
      (string-join
-      `("scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
+      `("direnv exec scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
     (revert-buffer :NOCONFIRM t)))
 
 (defun my/checkpad-format-on-save ()
