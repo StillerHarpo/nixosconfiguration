@@ -363,6 +363,10 @@
                 path = "/home/florian/android/photos";
                 devices = [ "android" ];
               };
+              "android-pictures" = {
+                path = "/home/florian/android/pictures";
+                devices = [ "android" ];
+              };
               "android-org" = {
                 path = "/home/florian/android/org";
                 devices = [ "android" ];
