@@ -693,7 +693,8 @@
   :custom
   (tide-server-max-response-length 204800)
   (typescript-ts-mode-indent-offset 4)
-  (tide-node-executable "direnv exec . node")
+  ;; FIXME use direnv. This only allows one command without arguments
+  (tide-node-executable "node")
   :init
   (add-hook 'typescript-ts-mode-hook (lambda () (setq indent-tabs-mode nil)))
   (add-hook 'tide-mode-hook (lambda () (setq indent-tabs-mode nil)))
