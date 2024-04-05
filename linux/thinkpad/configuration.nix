@@ -104,13 +104,6 @@
             }
             {
               pkgs = with pkgs; [
-                tmux
-                #### Java ####
-                maven
-                eclipses.eclipse-java
-                jetbrains.idea-ultimate
-                openjdk
-                ##############
                 nixpkgs-review
                 nixpkgs-hammering
                 gnome3.adwaita-icon-theme
@@ -127,30 +120,10 @@
                 ### screenshots ###
                 inputs.nix-alien.packages."x86_64-linux".nix-alien
                 languagetool
-                xclip
-                (kodi.withPackages (kodiPkgs:
-                  with kodiPkgs; [
-                    netflix
-                    steam-controller
-                    # FIXME Remove this when https://github.com/NixOS/nixpkgs/pull/215792 is in stable
-                    (kodiPkgs.invidious.overrideAttrs (_: {
-                      src = fetchFromGitHub {
-                        owner = "TheAssassin";
-                        repo = "kodi-invidious-plugin";
-                        rev = "85b66525632d94630c9301d9c490fc002a335d77";
-                        hash =
-                          "sha256-DpsAQUOUYCs3rpWwsk82+00KME4J+Iocu/v781dyyws=";
-                      };
-                    }))
-                    arteplussept
-                  ]))
                 remmina
-                mullvad-vpn
                 sqlite
                 pamixer
-                aria
                 pavucontrol
-                arandr
                 networkmanagerapplet
                 mtpfs
                 wget
@@ -163,17 +136,12 @@
                 xonotic
                 #############
                 sshfs
-                dzen2
                 chromium
-                w3m
                 passff-host
                 neomutt
                 mu
-                toxic
                 poppler
                 tuir
-                xsel
-                silver-searcher
                 (mpv.override { scripts = [ mpvScripts.mpris ]; })
                 rlwrap
                 you-get
@@ -181,27 +149,20 @@
                 pandoc
                 mytexlive
                 python3Packages.pygments
-                bc
                 anki
                 nix-prefetch-git
                 youtube-dl
                 libnotify
                 unzip
                 rofi
-                wmctrl
                 unclutter-xfixes
                 cabal2nix
                 niv
-                networkmanager-openvpn
-                networkmanager_dmenu
                 git-crypt
-                tigervnc
                 ### chat ###
                 signal-desktop
                 mumble
-                teamspeak_client
                 ### chat ###
-                xsecurelock
                 fzf
                 ## better rust tools ###
                 procs
@@ -209,8 +170,6 @@
                 du-dust
                 grex
                 ## better rust tools ###
-                kubectl
-                k9s
                 tor-browser-bundle-bin
                 docker-compose
               ];

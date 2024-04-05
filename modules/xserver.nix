@@ -13,7 +13,15 @@ in
   config = mkIf cfg.enable {
 
     apparmor.systemPackages =
-      [ { pkgs = with pkgs; [scrot slack];
+      [ { pkgs = with pkgs; [
+            scrot
+            slack
+            arandr
+            xsel
+            xsecurelock
+            dzen2
+            xclip
+          ];
           rules = lib.apparmor.defaultRules;
         }
       ];
