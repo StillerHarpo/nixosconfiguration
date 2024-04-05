@@ -503,7 +503,117 @@
 
 (use-package forge
   :after magit
-  :ensure t)
+  :ensure t
+  :general
+  (:states
+   '(normal visual motion)
+   :keymaps '(forge-pullreq-mode-map)
+   :prefix "SPC"
+   "m r" '(forge-topic-set-review-requests :which-key "request reviews")
+   "m k" 'forge-delete-comment
+   "m n" 'forge-create-post
+   "m RET" 'forge-topic-menu
+   "m c" '(magit-dispatch :which-key "magit-dispatch")
+   "m e" 'magit-edit-thing
+   "m o" 'magit-browse-thing
+   "m w" 'magit-copy-thing
+   "m d" 'magit-topic-toggle-draft)
+  :general
+  (:states
+   '(normal visual motion)
+   :keymaps '(forge-post-mode-map)
+   :prefix "SPC"
+   "m '" 'markdown-edit-code-block
+   "m -" 'markdown-insert-hr
+   "m <" 'markdown-outdent-region
+   "m <down>" 'markdown-move-down
+   "m <left>" 'markdown-promote
+   "m <right>" 'markdown-demote
+   "m <up>" 'markdown-move-up
+   "m >" 'markdown-indent-region
+   "m /" 'markdown-promote
+   "m =" 'markdown-demote
+   "m h" 'markdown-mark-subtree
+   "m ]" 'markdown-complete
+   "m a" '(:ignore t :which-key "markdown link")
+   "m a L" 'markdown-insert-link
+   "m a f" 'markdown-insert-footnote
+   "m a l" 'markdown-insert-link
+   "m a r" 'markdown-insert-link
+   "m a u" 'markdown-insert-uri
+   "m a w" 'markdown-insert-wiki-link
+   "m b" 'markdown-outline-previous-same-level
+   "m c" '(forge-post-submit :which-key "forge-post-submit")
+   "m d" 'markdown-do
+   "m e" 'forge-post-dispatch
+   "m f" 'markdown-outline-next-same-level
+   "m j" 'markdown-insert-list-item
+   "m k" 'forge-post-cancel
+   "m l" 'markdown-insert-link
+   "m n" 'markdown-outline-next
+   "m o" 'markdown-follow-thing-at-point
+   "m p" 'markdown-outline-previous
+   "m i" '(:ignore t :which-key "markdown insert")
+   "m i !" 'markdown-insert-header-setext-1
+   "m i -" 'markdown-insert-hr
+   "m i 1" 'markdown-insert-header-atx-1
+   "m i 2" 'markdown-insert-header-atx-2
+   "m i 3" 'markdown-insert-header-atx-3
+   "m i 4" 'markdown-insert-header-atx-4
+   "m i 5" 'markdown-insert-header-atx-5
+   "m i 6" 'markdown-insert-header-atx-6
+   "m i @" 'markdown-insert-header-setext-2
+   "m i C" 'markdown-insert-gfm-code-block
+   "m i F" 'markdown-insert-foldable-block
+   "m i H" 'markdown-insert-header-setext-dwim
+   "m i P" 'markdown-pre-region
+   "m i Q" 'markdown-blockquote-region
+   "m i [" 'markdown-insert-gfm-checkbox
+   "m i b" 'markdown-insert-bold
+   "m i c" 'markdown-insert-code
+   "m i d" 'markdown-insert-strike-through
+   "m i e" 'markdown-insert-italic
+   "m i f" 'markdown-insert-footnote
+   "m i h" 'markdown-insert-header-dwim
+   "m i i" 'markdown-insert-italic
+   "m i k" 'markdown-insert-kbd
+   "m i l" 'markdown-insert-link
+   "m i p" 'markdown-insert-pre
+   "m i q" 'markdown-insert-blockquote
+   "m i s" 'markdown-insert-strike-through
+   "m i t" 'markdown-insert-table
+   "m i w" 'markdown-insert-wiki-link
+   "m t" '(:ignore t :which-key "markdown table")
+   "m t <down>" 'markdown-table-insert-row
+   "m t <left>" 'markdown-table-delete-column
+   "m t <right>" 'markdown-table-insert-column
+   "m t <up>" 'markdown-table-delete-row
+   "m t !" 'markdown-insert-header-setext-1
+   "m t 1" 'markdown-insert-header-atx-1
+   "m t 2" 'markdown-insert-header-atx-2
+   "m t 3" 'markdown-insert-header-atx-3
+   "m t 4" 'markdown-insert-header-atx-4
+   "m t 5" 'markdown-insert-header-atx-5
+   "m t 6" 'markdown-insert-header-atx-6
+   "m t @" 'markdown-insert-header-setext-2
+   "m t H" 'markdown-insert-header-setext-dwim
+   "m t h" 'markdown-insert-header-dwim
+   "m t s" 'markdown-insert-header-setext-2
+   "m t t" 'markdown-insert-header-setext-1
+   "m u" 'markdown-outline-up
+   "m x" '(:ignore t :which-key "mardown toogle")
+   "m x e" 'markdown-toggle-math
+   "m x f" 'markdown-toggle-fontify-code-blocks-natively
+   "m x l" 'markdown-toggle-url-hiding
+   "m x x" 'markdown-toggle-gfm-checkbox
+   "m x RET" 'markdown-toggle-markup-hiding
+   "m x TAB" 'markdown-toggle-inline-images
+   "m x d" 'markdown-move-down
+   "m x l" 'markdown-promote
+   "m x m" 'markdown-insert-list-item
+   "m x r" 'markdown-demote
+   "m x u" 'markdown-move-up
+   "m TAB" 'markdown-insert-image))
 
 (use-package pr-review
   :after magit
@@ -513,10 +623,23 @@
     "opens the pull request at point in pr-review"
     (interactive)
     (if-let ((url (forge-get-url (or (forge-post-at-point)
-                                   (forge-current-topic)))))
-        (pr-review url)
+				     (forge-current-topic)))))
+	(pr-review url)
       (user-error "Nothing at point with a URL")))
-  )
+  :general
+  (:states
+   '(normal visual motion)
+   :keymaps '(pr-review-mode-map)
+   :prefix "SPC"
+   "m c" 'pr-review-context-comment
+   "m e" 'pr-review-context-edit
+   "m f" 'pr-review-goto-file
+   "m o" 'pr-review-open-in-default-browser
+   "m q" 'pr-review-request-reviews
+   "m r" '(pr-review-refresh :which-key "pr-review-refresh")
+   "m s" 'pr-review-context-action
+   "m v" 'pr-review-view-file
+   "m TAB" 'magit-section-cycle))
 
 (use-package flycheck
   :ensure t
