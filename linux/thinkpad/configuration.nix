@@ -51,13 +51,7 @@
 
       specialisation = {
         normalInternet.configuration = {
-        networking.wg-quick.interfaces.vpn.autostart = false;
-      };
-        xserver.configuration = {
-          wayland.enable = lib.mkForce false;
-          wayland.autoLogin = lib.mkForce false;
-          xserver.enable = lib.mkForce true;
-          xserver.autoLogin = lib.mkForce true;
+          networking.wg-quick.interfaces.vpn.autostart = false;
         };
       };
     })
