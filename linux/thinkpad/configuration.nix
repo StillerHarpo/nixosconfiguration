@@ -27,14 +27,17 @@
         identityPaths = [ "/root/.ssh/id_rsa" ];
         secrets = {
           florian.file = ./secrets/florian.age;
-          vpn.file = ./secrets/vpn.age;
           thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
+          vpnPrivateKey.file = ./secrets/vpnPrivateKey.age;
+          vpnPresharedKey.file = ./secrets/vpnPresharedKey.age;
         };
       };
       myHardware.enable = true;
       backup.enable = true;
-      wireguard.enable = true;
-      networking.wg-quick.interfaces.vpn.configFile = config.age.secrets.vpn.path;
+      wireguard = {
+        rpi4.enable = true;
+        vpn.enable = true;
+      };
 
       location = import ../cords.nix;
 
@@ -49,11 +52,6 @@
         batteryNotifier.enable = true;
       };
 
-      specialisation = {
-        normalInternet.configuration = {
-          networking.wg-quick.interfaces.vpn.autostart = false;
-        };
-      };
     })
     (lib.mkIf (!config.isRealSystem) {
       age = {

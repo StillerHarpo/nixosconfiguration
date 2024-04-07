@@ -1,28 +1,61 @@
 { config, pkgs, lib, inputs, private, ... }:
-
-let listenPort = 51820;
+let
+  cfg = config.wireguard;
 in {
-  options.wireguard.enable = lib.mkEnableOption (lib.mdDoc "Wether to use wireguard");
+  options.wireguard.rpi4.enable = lib.mkEnableOption (lib.mdDoc "Wether to use wireguard to connect to rpi4");
+  options.wireguard.vpn.enable = lib.mkEnableOption (lib.mdDoc "Wether to use wireguard to connect to vpn");
 
-  config = lib.mkIf config.wireguard.enable {
-    networking = {
-      firewall = {
-        allowedUDPPorts = [ listenPort ];
-      };
-      wireguard.interfaces.wgHome =
-        {
-          ips = [ "10.100.0.2/24" ];
-          inherit listenPort;
-          privateKeyFile = config.age.secrets.thinkpadWireguardPrivate.path;
-          peers = [
-            {
-              publicKey = "obpVqe+eZULOcAqlZk+jUhqFXIjFtzhQG9jgbDUCvQU=";
-              allowedIPs = ["192.168.178.53/32"];
-              endpoint = "${private.dyndns}:51820";
-              persistentKeepalive = 25;
-            }
-          ];
-        };
-    };
-  };
+  config = lib.mkMerge [
+    {
+      networking =
+        let listenPort = 51821;
+        in lib.mkIf cfg.rpi4.enable
+          {
+            firewall = {
+              allowedUDPPorts =  [ listenPort ];
+            };
+            wireguard.interfaces.wgHome =
+              {
+                ips = [ "10.100.0.2/24" ];
+                inherit listenPort;
+                privateKeyFile = config.age.secrets.thinkpadWireguardPrivate.path;
+                peers = [
+                  {
+                    publicKey = "obpVqe+eZULOcAqlZk+jUhqFXIjFtzhQG9jgbDUCvQU=";
+                    allowedIPs = ["192.168.178.53/32"];
+                    endpoint = "${private.dyndns}:51820";
+                    persistentKeepalive = 25;
+                  }
+                ];
+              };
+          };
+    }
+    (lib.mkIf cfg.vpn.enable {
+
+       networking = {
+         wireguard.interfaces.airvpn = {
+           preSetup = ''
+             ip netns add airvpnns || true
+             ip -n airvpnns link set dev lo up
+           '';
+           postSetup = ''
+             ip netns exec airvpnns wg set airvpn listen-port 0
+             ip netns exec airvpnns wg set airvpn fwmark 0
+             ip -n airvpnns link set dev airvpn mtu 1320 up
+           '';
+           interfaceNamespace = "airvpnns";
+           ips = [ "10.147.121.110" "fd7d:76ee:e68f:a993:a7f4:8d2b:fb6:5733" ];
+           privateKeyFile = config.age.secrets.vpnPrivateKey.path;
+           mtu = 1320;
+           peers = [{
+             publicKey = "PyLCXAQT8KkM4T+dUsOQfn+Ub3pGxfGlxkIApuig+hk=";
+             presharedKeyFile = config.age.secrets.vpnPresharedKey.path;
+             endpoint = "146.70.115.221:1637";
+             allowedIPs = [ "0.0.0.0/0" "::0/0" ];
+             persistentKeepalive = 15;
+           }];
+         };
+       };
+     })
+  ];
 }
