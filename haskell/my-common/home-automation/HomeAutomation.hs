@@ -321,7 +321,7 @@ livingRoom = Light {
 kitchen :: Light
 kitchen = Light {
   topic = kitchenT <> allT,
-  maxStep = Just 30,
+  maxStep = Nothing,
   lowestColorTemp = 153,
   highestColorTemp = 500
   }

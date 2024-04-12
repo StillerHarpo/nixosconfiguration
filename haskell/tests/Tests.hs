@@ -55,13 +55,13 @@ main = defaultMain $ testGroup "automation"
             )
       in changeLightSteps lightStepper @?= res,
     testCase "kitchen at the middle of night" $
-      timeToColorTemp (TimeOfDay 2 22 22) kitchen @?=
+      timeToColorTemp (TimeOfDay 2 22 22) kitchen30 @?=
         (changeLight { colorTemp = Just Warmest }, []),
     testCase "living room at middle of night" $
       timeToColorTemp (TimeOfDay 2 22 22) livingRoom @?=
         (changeLight { colorTemp = Just Warmest }, []),
     testCase "kitchen at middle of day" $
-      timeToColorTemp (TimeOfDay 14 22 22) kitchen @?=
+      timeToColorTemp (TimeOfDay 14 22 22) kitchen30 @?=
         (changeLight { colorTemp = Just Coolest }, []),
     testCase "living room at middle of day" $
       timeToColorTemp (TimeOfDay 14 22 22) livingRoom @?=
@@ -111,7 +111,7 @@ main = defaultMain $ testGroup "automation"
           [changeLight { colorTemp = Just (Exact 150), transition = Just (30 * 60)}]
         ),
     testCase "getLightStepper: kitchen 60 seconds before end of shift to night" $
-      getLightStepper (Up (secondsToDiffTime 60)) kitchen @?=
+      getLightStepper (Up (secondsToDiffTime 60)) kitchen30 @?=
         LightStepper {
           colorTempStart = 494,
           steps = 2,
@@ -119,7 +119,7 @@ main = defaultMain $ testGroup "automation"
           stepDuration = secondsToDiffTime 30
           },
     testCase "kitchen 60 seconds before end of shift to night" $
-      timeToColorTemp (TimeOfDay 19 59  0) kitchen @?=
+      timeToColorTemp (TimeOfDay 19 59  0) kitchen30 @?=
         (
           changeLight { colorTemp = Just (Exact 494)},
           [
@@ -128,7 +128,7 @@ main = defaultMain $ testGroup "automation"
           ]
         ),
     testCase "kitchen 60 seconds before end of shift to day" $
-      timeToColorTemp (TimeOfDay 8 59 0) kitchen @?=
+      timeToColorTemp (TimeOfDay 8 59 0) kitchen30 @?=
         (
           changeLight { colorTemp = Just (Exact 159)},
           [
@@ -137,3 +137,5 @@ main = defaultMain $ testGroup "automation"
           ]
         )
   ]
+  where
+    kitchen30 = kitchen { maxStep = Just 30 }
