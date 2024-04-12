@@ -217,7 +217,11 @@
               '';
             }
             {
-              pkgs = [ inputs.deploy-rs.defaultPackage."x86_64-linux" pkgs.tmux-xpanes ];
+              pkgs = [
+                inputs.deploy-rs.defaultPackage."x86_64-linux"
+                pkgs.tmux
+                pkgs.tmux-xpanes
+              ];
               rules = ''
                 ${lib.apparmor.generateFileRules [ "ssh" ]}
               '';
