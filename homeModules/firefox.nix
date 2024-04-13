@@ -1,6 +1,6 @@
 { config, osConfig, lib, pkgs, ... }:
 
-let 
+let
   cfg = config.firefox;
   firefox-addons =  pkgs.nur.repos.rycee.firefox-addons;
   ffreszoom = let version = "0.4";
@@ -36,7 +36,7 @@ let
       platforms = lib.platforms.all;
     };
   };
-  extensions = 
+  extensions =
     with firefox-addons; [
       user-agent-string-switcher
       tridactyl
