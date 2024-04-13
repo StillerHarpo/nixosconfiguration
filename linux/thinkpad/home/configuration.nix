@@ -78,7 +78,7 @@ in {
 
       firefox = {
         enable = true;
-        workProfile = true;
+        additionalProfiles.work.id = 1;
       };
 
       programs = {

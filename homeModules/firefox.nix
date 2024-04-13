@@ -95,7 +95,18 @@ let
 in {
   options.firefox = {
     enable = lib.mkEnableOption (lib.mdDoc "Wether to use firefox");
-    workProfile = lib.mkEnableOption (lib.mdDoc "Wether to install a firefox work profie");
+
+    additionalProfiles = lib.mkOption {
+      description = "Firefox profiles which have my extensions and settings as default";
+      default = { };
+      type = lib.types.attrsOf (lib.types.submodule {
+        options.id = lib.mkOption {
+          type = lib.types.int;
+          description = "id of the profile";
+        };
+
+      });
+    };
   };
   config = lib.mkIf cfg.enable {
     programs.firefox = {
@@ -107,13 +118,13 @@ in {
             inherit extensions;
           };
         }
-        (lib.mkIf cfg.workProfile {
-          work = {
-            id = 1;
-            settings = commonSettings;
-            inherit extensions;
-          };
+      (lib.flip lib.mapAttrs cfg.additionalProfiles (_: v:
+        {
+          id = v.id;
+          settings = commonSettings;
+          inherit extensions;
         })
+      )
       ];
     };
   };
