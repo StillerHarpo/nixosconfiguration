@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, ... }:
 
 let 
   cfg = config.firefox;
@@ -42,9 +42,9 @@ let
       tridactyl
       noscript
       ublock-origin
-      ffreszoom
       german-dictonary
-    ];
+    ] ++
+    (if osConfig.xserver.enable then [ffreszoom] else []);
   commonSettings = {
     # colors
     "widget.content.allow-gtk-dark-theme" = true;
