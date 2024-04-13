@@ -81,5 +81,5 @@ elif echo "${1}" | grep -q -e medilyse -e factisresearch
 then
     firefox -P work --new-window "${1}"
 else
-    firefox --new-window "${1}"
-fi || firefox --new-window "${1}"
+    sudo -En firefox-airvpn "${1}"
+fi || sudo -En firefox-airvpn "${1}"

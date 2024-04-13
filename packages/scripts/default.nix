@@ -31,10 +31,10 @@ let
     "zathura"
     "you-get"
     "tuir"
-    "firefox"
     "fbv"
     "w3m"
     "pass"
+    "jq"
   ]);
   my-linkopenwithoutx =
     makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
@@ -48,7 +48,7 @@ in rec {
     zathura
     you-get
     tuir
-    firefox
+    jq
   ]);
   my-linkopen = makeScript "linkopen" [
     {
@@ -83,5 +83,17 @@ in rec {
       replacement = (import ../../variables.nix).nixosDeckIP;
     }
   ]);
+  live-streams =
+    let database = pkgs.fetchurl {
+           url = https://iptv-org.github.io/api/streams.json;
+           hash = pkgs.lib.fakeHash;
+        };
+  in pkgs.writeScriptBin "live-streams" ''
+      allChannels = ${pkgs.lib.getExe pkgs.jq} 'map(select(.channel)) | map(.channel) | join("\n")' ${database}
+      selectedChannel = $(${pkgs.lib.getExe pkgs.fzf} -i $allChannels)
+      url = $(${pkgs.lib.getExe pkgs.jq} 'map(select(.channel == $channel)) | .[0] | .url' --raw-output --arg channel $selectedChannel ${database})
+      allChannels = $( $(jq 'map(select(.channel)) | map(.channel) | join("\n")'
+      ${pkgs.lib.getExe pkgs.mpv} $selectedChannel
+  '';
 
 }
