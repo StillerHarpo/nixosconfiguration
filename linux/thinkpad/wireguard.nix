@@ -37,7 +37,7 @@ in {
             runInNetworkNamespace = "${lib.getExe' pkgs.iproute2 "ip"} netns exec airvpnns sudo -E -u florian -g users";
             firefoxAirvpn =
               pkgs.writeScriptBin "firefox-airvpn" ''
-                ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} -P private -no-remote -private-window "$1"
+                ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} -P private --new-window ''${1}
               '';
           in {
 
