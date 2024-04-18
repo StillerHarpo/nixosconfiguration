@@ -102,6 +102,7 @@
             }
             {
               pkgs = with pkgs; [
+                difftastic
                 nixpkgs-review
                 nixpkgs-hammering
                 gnome3.adwaita-icon-theme
