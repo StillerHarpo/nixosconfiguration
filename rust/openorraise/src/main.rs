@@ -41,8 +41,9 @@ fn main() {
     match &windows_and_cmds.into_iter().find(|kvs| kvs.0 == &output_string[..output_string.len() - 1]) {
         None => {
             if output_string.len() > 0 {
+                let search_string = str::replace(output_string, " ", "+");
                 conn.run_command(format!(
-                    "exec sudo -En firefox-airvpn 'duckduckgo.com\\?q={output_string}'"
+                    "exec sudo -En firefox-airvpn 'duckduckgo.com\\?q={search_string}'"
                 ))
                 .unwrap();
             }
