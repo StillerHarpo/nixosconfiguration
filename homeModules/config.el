@@ -494,16 +494,16 @@
   :hook (magit-status-mode-hook . so-long-minor-mode)
   :general
   (:states '(normal visual)
-   :keymaps 'magit-status-mode-map
-   "S-SPC" 'magit-diff-show-or-scroll-up)
+	   :keymaps 'magit-status-mode-map
+	   "S-SPC" 'magit-diff-show-or-scroll-up)
   :general
   (:states '(normal visual motion emacs)
-   :keymaps '(my-keys-minor-mode-map)
-  :prefix "SPC"
-   "g" '(:ignore t :which-key "magit")
-   "g g" 'magit-status
-   "g c" 'magit-clone
-   "g b" 'magit-blame-addition)
+	   :keymaps '(my-keys-minor-mode-map)
+	   :prefix "SPC"
+	   "g" '(:ignore t :which-key "magit")
+	   "g g" 'magit-status
+	   "g c" 'magit-clone
+	   "g b" 'magit-blame-addition)
   :config
   (with-eval-after-load 'magit-log
     (define-key magit-log-mode-map (kbd "SPC") nil))
