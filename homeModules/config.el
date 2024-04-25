@@ -797,13 +797,19 @@
 (use-package nix-mode
   :mode "\\.nix\\'")
 
+(defun my/checkpad-server-respository? ()
+  (and (project-current)
+       (string-match
+	(rx (and "/checkpad/" (zero-or-more anychar) "server/" line-end))
+	(project-root (project-current)))))
+
 (use-package haskell-mode
   :ensure t
   :init
   (defun my/init-haskell ()
     "init haskell-mode with etags or eglot depending on the project"
     (interactive)
-    (if (and (project-current) (string-match (rx (and "/checkpad/server/" line-end)) (project-root (project-current))))
+    (if (my/checkpad-server-respository?)
 	(progn
 	  (custom-set-variables '(haskell-tags-on-save t))
           (set (make-local-variable 'company-backends)
@@ -1382,8 +1388,8 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/checkpad-format-on-save ()
   "formats the current buffer with the checkpad script if the project is checkpad"
   (when (and (project-current)
-	     (string-match "/checkpad/server/" (project-root (project-current)))
 	     (string-match (rx (or (seq ".ts" eol) (seq ".hs" eol)))
+	     (my/checkpad-server-respository?)
 			   (buffer-file-name (current-buffer))))
     (my/checkpad-format)))
 
