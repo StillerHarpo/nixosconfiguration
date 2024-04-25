@@ -1388,8 +1388,8 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/checkpad-format-on-save ()
   "formats the current buffer with the checkpad script if the project is checkpad"
   (when (and (project-current)
-	     (string-match (rx (or (seq ".ts" eol) (seq ".hs" eol)))
 	     (my/checkpad-server-respository?)
+	     (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
 			   (buffer-file-name (current-buffer))))
     (my/checkpad-format)))
 
