@@ -503,7 +503,8 @@
 	   "g" '(:ignore t :which-key "magit")
 	   "g g" 'magit-status
 	   "g c" 'magit-clone
-	   "g b" 'magit-blame-addition)
+	   "g b" 'magit-blame-addition
+	   "g i" 'magit-init)
   :config
   (with-eval-after-load 'magit-log
     (define-key magit-log-mode-map (kbd "SPC") nil))
