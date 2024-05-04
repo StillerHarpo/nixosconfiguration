@@ -798,15 +798,16 @@
    '(normal visual motion)
    :keymaps '(pr-review-mode-map)
    :prefix "SPC"
-   "m c" 'pr-review-context-comment
+   "m c" '(pr-review-context-comment :which-key "pr-review-context-comment")
    "m e" 'pr-review-context-edit
    "m f" 'pr-review-goto-file
    "m o" 'pr-review-open-in-default-browser
    "m q" 'pr-review-request-reviews
    "m r" '(pr-review-refresh :which-key "pr-review-refresh")
-   "m s" 'pr-review-context-action
+   "m a" '(pr-review-context-action :which-key "pr-review-context-action")
    "m v" 'pr-review-view-file
-   "m TAB" 'magit-section-cycle))
+   "m p" '(pr-review-add-pending-review-thread :which-key "pr-review-add-pending-review-thread")
+   "m s" '(pr-review-submit-review :which-key "pr-review-submit-review")))
 
 (use-package flycheck
   :ensure t
