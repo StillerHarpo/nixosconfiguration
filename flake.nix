@@ -150,7 +150,9 @@
               config = lib.mkMerge [
                 { isRealSystem = false; }
                 (lib.mkIf config.wayland.enable {
-                  virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                  virtualisation.vmVariant = {
+                    virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                  };
                 })
               ];
             })
@@ -329,7 +331,7 @@
                 config = lib.mkMerge [
                   { isRealSystem = false; }
                   (lib.mkIf config.wayland.enable {
-                    virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                   virtualisation.vmVariant.virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
                   })
                 ];
               };
