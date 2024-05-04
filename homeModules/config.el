@@ -17,6 +17,34 @@
   (interactive)
   (ediff (bookmark-buffer-file-name) (make-auto-save-file-name)))
 
+(defun my/recover-some-files ()
+  "ask to recover files which have autosaves"
+  (interactive)
+  (map-y-or-n-p
+   (lambda (recover-and-file) (format "Recover file %s? " (cadr recover-and-file)))
+   (lambda (recover-and-file) (apply 'rename-file `(,@recover-and-file t)))
+   (-map
+    (lambda (auto-save-file)
+      `(,(concat emacsAutoSaveDir auto-save-file)
+	,(replace-regexp-in-string "!" "/" (replace-regexp-in-string "#" "" auto-save-file))))
+    (directory-files emacsAutoSaveDir nil (rx (seq "#" (one-or-more anychar) "#"))))
+   nil
+   `((?d ,(lambda (recover-and-file)
+	    (require 'diff)            ;for diff-no-select.
+	    (let ((diffbuf (diff-no-select (cadr recover-and-file) (car recover-and-file)
+					   nil 'noasync)))
+	      (if (not enable-recursive-minibuffers)
+		  (progn (display-buffer diffbuf)
+			 (setq other-window-scroll-buffer diffbuf))
+		(view-buffer diffbuf (lambda (_) (exit-recursive-edit)))
+		(recursive-edit)))
+	    ;; Return nil to ask about BUF again.
+	    nil)
+	 ,(purecopy "view changes of auto-save"))
+     (?D ,(lambda (recover-and-file)
+	    (delete-file (car recover-and-file)))
+	 ,(purecopy "view changes of auto-save")))))
+
 (require 'use-package)
 
 (use-package my-nix-paths
