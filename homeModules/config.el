@@ -1502,3 +1502,9 @@ If I let Windows handle DPI everything looks blurry."
 	  (my/org-insert-auto-schedule error-msg)
 	  (message error-msg))
       (message "calendar synced"))))
+
+(use-package eglot
+  :config
+  (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
+  :hook
+  (nix-mode . eglot-ensure))

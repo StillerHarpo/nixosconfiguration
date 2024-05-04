@@ -102,6 +102,7 @@
             }
             {
               pkgs = with pkgs; [
+                nil
                 difftastic
                 nixpkgs-review
                 nixpkgs-hammering
