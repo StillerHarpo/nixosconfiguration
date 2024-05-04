@@ -1063,6 +1063,11 @@ Returns nil if not and (sec min hour) if it has."
   (org-caldav-resume-aborted 'never)
   )
 
+(use-package org-tidy
+  :ensure t
+  :hook
+  (org-mode . org-tidy-mode))
+
 (use-package jinx
   :custom
   (jinx-languages "de_DE en-computers en_US")
