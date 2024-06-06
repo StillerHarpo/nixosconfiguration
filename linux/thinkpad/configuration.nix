@@ -288,6 +288,8 @@
         autoLogin = true;
       };
 
+      services.dbus.packages = [ pkgs.gcr ];
+
       # powerManagement.enable = false;
       services = {
         tlp.enable = true;
