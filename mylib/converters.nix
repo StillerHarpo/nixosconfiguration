@@ -44,8 +44,6 @@ in {
       (filterAttrs (n: _: n == "@import") attrs)
       (removeAttrs attrs [ "@theme" "@import" ])
     ]);
-  toAlacrittyJSON = attrs:
-    (replaceStrings [ "\\\\" ] [ "\\" ] (builtins.toJSON attrs));
   toGtk3Ini = generators.toINI {
     mkKeyValue = key: value:
       let

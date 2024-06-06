@@ -74,46 +74,54 @@ in
             };
             kanshi = {
               enable = true;
-              profiles = {
-                default = {
-                  outputs = [{
-                    criteria = "AU Optronics 0x2336 Unknown";
-                    position = "0,0";
-                    mode = "2560x1440@60.01";
-                  }];
-                };
-                home = {
-                  outputs = [
-                    {
+              settings = [
+                {
+                  profile = {
+                    name = "default";
+                    outputs = [{
                       criteria = "AU Optronics 0x2336 Unknown";
-                      position = "0,1080";
-                      mode = "2560x1440@60.01Hz";
-                      scale = 1.5;
-                    }
-                    {
-                      criteria = "BNQ BenQ GL2450H G6G05576019";
                       position = "0,0";
-                      mode = "1920x1080@60.01Hz";
-                    }
-                  ];
-                };
-                work = {
-                  outputs = [
-                    {
-                      criteria = "AU Optronics 0x2336 Unknown";
-                      position = "456,1040";
-                      mode = "2560x1440@60.01Hz";
-                      scale = 1.5;
-                    }
-                    {
-                      criteria = "Dell Inc. DELL U2713HM 7JNY53CB723S";
-                      position = "456,0";
-                      mode = "2560x1440@59.951Hz";
-                      scale = 1.5;
-                    }
-                  ];
-                };
-              };
+                      mode = "2560x1440@60.01";
+                    }];
+                  };
+                }
+                {
+                  profile = {
+                    name = "home";
+                    outputs = [
+                      {
+                        criteria = "AU Optronics 0x2336 Unknown";
+                        position = "0,1080";
+                        mode = "2560x1440@60.01Hz";
+                        scale = 1.5;
+                      }
+                      {
+                        criteria = "BNQ BenQ GL2450H G6G05576019";
+                        position = "0,0";
+                        mode = "1920x1080@60.01Hz";
+                      }
+                    ];
+                  };
+                }
+                { profile = {
+                    name = "work";
+                    outputs = [
+                      {
+                        criteria = "AU Optronics 0x2336 Unknown";
+                        position = "456,1040";
+                        mode = "2560x1440@60.01Hz";
+                        scale = 1.5;
+                      }
+                      {
+                        criteria = "Dell Inc. DELL U2713HM 7JNY53CB723S";
+                        position = "456,0";
+                        mode = "2560x1440@59.951Hz";
+                        scale = 1.5;
+                      }
+                    ];
+                  };
+                }
+              ];
             };
           };
 

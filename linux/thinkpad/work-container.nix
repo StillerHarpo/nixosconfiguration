@@ -135,7 +135,7 @@ in {
                 "..." = "cd ../../..";
                 "...." = "cd ../../../..";
               };
-              enableAutosuggestions = true;
+              autosuggestion.enable = true;
               oh-my-zsh = {
                 enable = true;
                 plugins = [ "vi-mode" "per-directory-history" ];

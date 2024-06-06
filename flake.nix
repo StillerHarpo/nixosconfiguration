@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-lesspipe.url = "github:anund/nixpkgs/fix_less_pipe_dependency";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-deck.url = "github:NixOS/nixpkgs?rev=7c9cc5a6e5d38010801741ac830a3f8fd667a7a0";
@@ -33,7 +33,7 @@
       };
     };
     home-manager-flake = {
-      url = "github:nix-community/home-manager/release-23.11";
+      url = "github:nix-community/home-manager/release-24.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake-deck = {
@@ -50,11 +50,11 @@
       };
     };
     disko = {
-      url = github:nix-community/disko;
+      url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixos-anywhere = {
-      url = github:numtide/nixos-anywhere;
+      url = "github:numtide/nixos-anywhere";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         disko.follows = "disko";

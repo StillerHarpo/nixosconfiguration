@@ -51,7 +51,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
 
   nix = {
-    package = pkgs.nixUnstable;
     extraOptions = ''
       experimental-features = nix-command flakes
       keep-outputs = true

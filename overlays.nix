@@ -124,7 +124,7 @@
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
     wofi-pass = final.callPackage "${inputs.nixpkgs-unstable.outPath}/pkgs/tools/security/pass/wofi-pass.nix" {};
     emacsPackagesFor = emacs: (
-      (prev.emacsPackagesFor emacs).overrideScope' (_: eprev: {
+      (prev.emacsPackagesFor emacs).overrideScope (_: eprev: {
         ghcid = final.callPackage ./packages/emacs/ghcid { inherit (eprev) trivialBuild; };
         my-nix-paths = final.callPackage ./packages/emacs/my-nix-paths { inherit (eprev) trivialBuild; };
       })

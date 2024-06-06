@@ -34,11 +34,7 @@ let
     };
   };
   alacrittyConf = colors:
-    pkgs.writeTextFile {
-      name = "alacritty.yml";
-      text =
-        toAlacrittyJSON (lib.attrsets.recursiveUpdate colors alacrittyCommon);
-    };
+    (pkgs.formats.toml { }).generate "alacritty.toml" (lib.attrsets.recursiveUpdate colors alacrittyCommon);
   darkBackground = "#282828";
   alacrittyDark = alacrittyConf {
     env.BAT_THEME = "gruvbox-dark";
@@ -110,7 +106,7 @@ let
     };
   };
   alacrittyConfLoc = "~/.config/alacritty";
-  alacrittyConfPath = "${alacrittyConfLoc}/alacritty.yml";
+  alacrittyConfPath = "${alacrittyConfLoc}/alacritty.toml";
   rofiCommon.window.fullscreen = true;
   rofiConf = theme:
     builtins.toFile "rofi.rasi" (toRofiRasi rofiCommon + ''
@@ -128,7 +124,7 @@ let
   gtk3ConfDark = gtk3Conf "Adwaita-dark";
   gtk3ConfLight = gtk3Conf "Adwaita";
   gtk2Conf = theme:
-    builtins.toFile ".gtkrc-2.0" ''
+    builtins.toFile "gtkrc-2.0" ''
       gtk-icon-theme-name = "${theme}"
       gtk-theme-name = "${theme}"
     '';
@@ -165,7 +161,7 @@ let
   gtk4ConfPath = "${gtk4ConfLoc}/settings.ini";
   gtk4CssPath = "${gtk4ConfLoc}/gtk.css";
   xsettingsd = theme:
-    builtins.toFile ".xsettingsd" ''Net/ThemeName "${theme}"'';
+    builtins.toFile "xsettingsd" ''Net/ThemeName "${theme}"'';
   xsettingsdDark = xsettingsd "Adwaita-dark";
   xsettingsdLight = xsettingsd "Adwaita";
   xsettingsdPath = "~/.xsettingsd";

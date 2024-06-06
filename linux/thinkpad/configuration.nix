@@ -108,7 +108,7 @@
                 nixpkgs-hammering
                 gnome3.adwaita-icon-theme
                 ical2orgpy
-                nixfmt
+                nixfmt-classic
                 libreoffice
                 prismlauncher
                 minetest
@@ -404,7 +404,7 @@
         printing.enable = true;
         avahi = {
           enable = true;
-          nssmdns = true;
+          nssmdns4 = true;
           # for a WiFi printer
           openFirewall = true;
         };
