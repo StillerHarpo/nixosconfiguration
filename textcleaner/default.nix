@@ -1,4 +1,4 @@
-{ stdenvNoCC, fetchurl, imagemagick, ... }:
+{ stdenvNoCC, fetchurl, imagemagick, bc, ... }:
 
 stdenvNoCC.mkDerivation rec {
   name = "textcleaner";
@@ -16,5 +16,6 @@ stdenvNoCC.mkDerivation rec {
     cp ${name} $out/bin/
     chmod +x $out/bin/${name}
     substituteInPlace $out/bin/${name} --replace convert ${imagemagick}/bin/convert
+    substituteInPlace $out/bin/${name} --replace bc ${bc}/bin/bc
   '';
 }
