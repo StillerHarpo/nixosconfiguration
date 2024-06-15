@@ -1,0 +1,30 @@
+{
+  "enabled": 1,
+  "hidden": false,
+  "description": "jobset definitions",
+  "nixexprinput": "nixexpr",
+  "nixexprpath": ".hydra/jobsets.nix",
+  "checkinterval": 3600,
+  "schedulingshares": 100,
+  "enableemail": false,
+  "emailoverride": "",
+  "keepnr": 5,
+  "type": 0,
+  "inputs": {
+    "nixexpr": {
+      "value": "https://gitlab.com/StillerHarpo/nixosconfiguration master",
+      "type": "git",
+      "emailresponsible": false
+    },
+    "nixpkgs": {
+      "value": "https://github.com/NixOS/nixpkgs nixos-unstable",
+      "type": "git",
+      "emailresponsible": false
+    },
+   "pulls": {
+      "type": "gitlabpulls",
+      "value": "https://gitlab.com 6901196",
+      "emailresponsible": false
+   }
+  }
+}

@@ -283,6 +283,13 @@
         };
       };
 
+      hydraJobs = {
+        nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel)
+          { inherit (outputs.nixosConfigurations) nixosRpi4 flosDeck; };
+        packages = builtins.mapAttrs (_: pkgs: pkgs) outputs.packages;
+      };
+
+
       images.rpi2 = self.nixosConfigurations.rpi2.config.system.build.sdImage;
 
       deploy.nodes = {
