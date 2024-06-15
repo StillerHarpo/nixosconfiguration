@@ -93,7 +93,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       arc-theme # theme
       tailscale
       steamdeck-firmware
-      yuzu-ea
       ryujinx
       steam-rom-manager
       nvtop-amd
