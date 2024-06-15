@@ -292,7 +292,6 @@
         nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel)
           { nixosRpi4 = mkNixosRpi4 fakePrivate;
             flosDeck = mkFlosDeck fakePrivate; };
-        packages = builtins.mapAttrs (_: pkgs: pkgs) outputs.packages;
       };
 
 
