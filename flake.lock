@@ -294,7 +294,7 @@
     "home-manager-flake-deck": {
       "inputs": {
         "nixpkgs": [
-          "nixpkgs-deck"
+          "nixpkgs-unstable"
         ]
       },
       "locked": {
@@ -316,21 +316,20 @@
       "inputs": {
         "nix-github-actions": "nix-github-actions",
         "nixpkgs": [
-          "nixpkgs-deck"
+          "nixpkgs-unstable"
         ]
       },
       "locked": {
-        "lastModified": 1697700248,
-        "narHash": "sha256-z45M6Fna2mR9zEK9fe9ng1XN+T7CvpmKBn/SaK9zwO4=",
+        "lastModified": 1718431241,
+        "narHash": "sha256-vOsklVeiGCvf9LBOz0sjHMNvohgUw8/Oe/8MpdFnF+Y=",
         "owner": "Jovian-Experiments",
         "repo": "Jovian-NixOS",
-        "rev": "2965d86926177af95af615a09138e0aaaaec56fa",
+        "rev": "f02a01aab60c68b7898043c2e7f5bc97c93fb07b",
         "type": "github"
       },
       "original": {
         "owner": "Jovian-Experiments",
         "repo": "Jovian-NixOS",
-        "rev": "2965d86926177af95af615a09138e0aaaaec56fa",
         "type": "github"
       }
     },
@@ -551,22 +550,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-deck": {
-      "locked": {
-        "lastModified": 1697723726,
-        "narHash": "sha256-SaTWPkI8a5xSHX/rrKzUe+/uVNy6zCGMXgoeMb7T9rg=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "7c9cc5a6e5d38010801741ac830a3f8fd667a7a0",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "7c9cc5a6e5d38010801741ac830a3f8fd667a7a0",
-        "type": "github"
-      }
-    },
     "nixpkgs-lesspipe": {
       "locked": {
         "lastModified": 1703662513,
@@ -664,7 +647,6 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_2",
-        "nixpkgs-deck": "nixpkgs-deck",
         "nixpkgs-lesspipe": "nixpkgs-lesspipe",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur"
