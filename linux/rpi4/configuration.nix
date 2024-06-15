@@ -159,7 +159,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         homeassistant = {
           name = "Home";
           unit_system = "metric";
-        } // import ../cords.nix;
+        } // private.cords;
       };
     };
   };

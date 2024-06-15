@@ -119,8 +119,37 @@
         workMail = "mail@mail.org";
         dyndns = "xxxxxxxxxxx.ddnss.ch";
         serverIP = "46.158.147.47";
+        cords = {
+          latitude = 0.0;
+          longitude = 0.0;
+        };
       };
 
+      mkNixosRpi4 = private: inputs.nixpkgs.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs outputs private;
+          };
+          system = "aarch64-linux";
+          modules = [
+            inputs.agenix.nixosModules.age
+            inputs.disko.nixosModules.disko
+            ./linux/rpi4/configuration.nix
+          ];
+        };
+
+      mkFlosDeck = private: inputs.nixpkgs-deck.lib.nixosSystem {
+          specialArgs = {
+            inherit inputs outputs private;
+          };
+          modules = [
+            inputs.jovian.nixosModules.jovian
+            inputs.agenix.nixosModules.age
+            inputs.disko.nixosModules.disko
+            inputs.home-manager-flake-deck.nixosModules.home-manager
+            ./linux/deck/configuration.nix
+            outputs.nixosModules
+          ];
+        };
     in {
 
       overlays = import ./overlays.nix { inherit inputs outputs; };
@@ -211,33 +240,9 @@
           ];
         };
 
-        nixosRpi4 =  inputs.nixpkgs.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs outputs;
-            private = import ./private.nix;
-          };
-          system = "aarch64-linux";
-          modules = [
-            inputs.agenix.nixosModules.age
-            inputs.disko.nixosModules.disko
-            ./linux/rpi4/configuration.nix
-          ];
-        };
+        nixosRpi4 = mkNixosRpi4 (import ./private.nix);
         
-        flosDeck =  inputs.nixpkgs-deck.lib.nixosSystem {
-          specialArgs = {
-            inherit inputs outputs;
-            private = import ./private.nix;
-          };
-          modules = [
-            inputs.jovian.nixosModules.jovian
-            inputs.agenix.nixosModules.age
-            inputs.disko.nixosModules.disko
-            inputs.home-manager-flake-deck.nixosModules.home-manager
-            ./linux/deck/configuration.nix
-            outputs.nixosModules
-          ];
-        };
+        flosDeck = mkFlosDeck (import ./private.nix);
 
         rpi2 = inputs.nixpkgs.lib.nixosSystem {
           system = "armv7l-linux";
@@ -285,7 +290,8 @@
 
       hydraJobs = {
         nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel)
-          { inherit (outputs.nixosConfigurations) nixosRpi4 flosDeck; };
+          { nixosRpi4 = mkNixosRpi4 fakePrivate;
+            flosDeck = mkFlosDeck fakePrivate; };
         packages = builtins.mapAttrs (_: pkgs: pkgs) outputs.packages;
       };
 

@@ -39,7 +39,7 @@
         vpn.enable = true;
       };
 
-      location = import ../cords.nix;
+      location = private.cords;
 
       # openvnp
       environment.etc."office.ovpn".source = ./office.ovpn;
