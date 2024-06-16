@@ -30,6 +30,13 @@
           thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
           vpnPrivateKey.file = ./secrets/vpnPrivateKey.age;
           vpnPresharedKey.file = ./secrets/vpnPresharedKey.age;
+          bookmarks = {
+            file = ./secrets/my-bookmarks.json.age;
+            path = "/home/florian/.my-bookmarks.json";
+            owner = "florian";
+            group = "users";
+            mode = "400";
+          };
         };
       };
       myHardware.enable = true;

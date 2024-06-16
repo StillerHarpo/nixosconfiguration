@@ -1,42 +1,143 @@
 use core::fmt;
 use std::collections::HashMap;
-use std::io::Write;
+use std::io::{Write, BufReader};
 use std::process::{Command, Stdio};
+use std::fs::File;
 use swayipc::Connection;
 use swayipc::Node;
+use serde_json::Value;
 
-mod internal;
-use internal::*;
+const BROWSE: &str = "firefox -new-window ";
+const WORK_BROWSE: &str = "firefox -P work -new-window ";
+const PRIVATE_BROWSE: &str = "sudo -En firefox-airvpn ";
+
+pub const PROGRAMS: [(&str, &str); 15] = [
+    ("firefox", "firefox"),
+    ("grim (screenshot to file)", "grim -g \"$(slurp)\""),
+    ("grim (screenshot to clipboard)", "grim -g \"$(slurp)\" - | wl-copy"),
+    ("grim (screenshot to text)", "grim -g \"$(slurp)\" - | tesseract - stdout | wl-copy"),
+    ("chromium", "chromium"),
+    ("signal", "signal-desktop"),
+    ("element", "element-desktop"),
+    ("steam", "steam"),
+    ("alacritty", "alacritty"),
+    ("pavucontrol", "pavucontrol"),
+    ("wdisplays", "wdisplays"),
+    ("blueman-manager", "blueman-manager"),
+    ("remmina", "remmina"),
+    ("slack", "slack"),
+    // Hotfix 
+    ("passmenu", "PASSWORD_STORE_DIR=\"${PASSWORD_STORE_DIR}\" wofi-pass")
+];
+
+fn parse_key_value_map<'a>(what: &'a str, v: Value) -> Result<Vec<(String, String)>, String> {
+    match v {
+	Value::Object(map) =>
+	    map.into_iter().map(|pair| {
+	    match pair.1 {
+		Value::String(s) => Ok((pair.0, s)),
+		_ => Err("not a string".to_string()),
+	    }
+	} ).collect(),
+	_ => Err(format!("object {} is not a map", what)),
+    }
+}
+
+
+fn parse_bookmarks() -> Result<Vec<(String, String)>, String> {
+    let file = File::open("/home/florian/.my-bookmarks.json").map_err(|err| err.to_string())?;
+    let reader = BufReader::new(file);
+    // Read the JSON contents of the file
+    let v = serde_json::from_reader(reader).map_err(|err| err.to_string())?;
+    match v {
+	Value::Object(map) => {
+	    let nested = map.into_iter().map(|kv| {
+		if kv.0 == "normal" {
+	            let key_values = parse_key_value_map("normal", kv.1)?;
+		    Ok(
+			key_values
+			    .into_iter()
+			    .map(|v| (v.0, format!("{} {}", BROWSE, v.1)))
+			    .collect::<Vec<_>>())
+		} else if kv.0 == "work" {
+		   // TODO add private firefox
+	            let key_values = parse_key_value_map("work", kv.1)?;
+		    Ok(
+			key_values
+			    .into_iter()
+			    .map(|v| (v.0, format!("{} {}", WORK_BROWSE, v.1)))
+			    .collect::<Vec<_>>())
+		} else if kv.0 == "private" {
+		   // TODO add private firefox
+	            let key_values = parse_key_value_map("private", kv.1)?;
+		    Ok(
+			key_values
+			    .into_iter()
+			    .map(|v| (v.0, format!("{} {}", PRIVATE_BROWSE, v.1)))
+			    .collect::<Vec<_>>())
+		} else {
+		   Err(format!("Unknown key: {}", kv.0))
+		}
+	    }).collect::<Result<Vec<_>, _>>()?;
+            Ok(nested.into_iter().flatten().collect())
+	},
+	_ => return Err("my-bookmarks.json doesn't contain a map".to_string()),
+
+    }
+}
+
+/// move input into wofi and gives back result
+fn exec_wofi<A: ToString>(s: A) -> Result<std::process::Output, std::io::Error> {
+    let mut child = Command::new("wofi")
+	.arg("--dmenu")
+	.arg("--insensitive")
+	.stdin(Stdio::piped())
+	.stdout(Stdio::piped())
+	.spawn()
+	.unwrap();
+    let child_stdin = child.stdin.as_mut().unwrap();
+    child_stdin.write_all(s.to_string().as_bytes()).unwrap();
+    child_stdin.flush().unwrap();
+    child.wait_with_output()
+}
+
+/// prints error, if it exists on wofi and exits
+fn error_on_wofi<A,B: ToString>(v: Result<A,B>) -> A {
+    match v {
+	Err(s) => {
+	    exec_wofi(s).unwrap();
+	    std::process::exit(1)
+	},
+	Ok(res) => res,
+    }
+}
 
 fn main() {
-    let mut conn = Connection::new().unwrap();
-    let tree = conn.get_tree().unwrap();
+    let mut conn = error_on_wofi(Connection::new());
+    let tree = error_on_wofi(conn.get_tree());
     let windows: HashMap<String, WindowId> = get_windows_of_workspace(tree)
         .iter()
         .map(|wow| (format!("{wow}"), wow.window.id))
         .collect();
-    let bookmarks: Vec<(&str, &str)> = Vec::from(PROGRAMS);
+    let programs: Vec<(&str, &str)> = Vec::from(PROGRAMS);
+    // TODO print error on wofi
+    let bookmarks: Vec<(String, String)> = error_on_wofi(parse_bookmarks());
     let windows_and_cmds: Vec<(String, OpenOrRaise)> = windows
         .into_iter()
         .map(|nid| (nid.0, OpenOrRaise::WindowId(nid.1)))
+	.chain(
+	    programs
+		.into_iter()
+                .map(|prgs| (prgs.0.to_string(), OpenOrRaise::Cmd(prgs.1.to_string()))),
+	)
         .chain(
             bookmarks
                 .into_iter()
-                .map(|bkms| (String::from(bkms.0), OpenOrRaise::Cmd(bkms.1))),
+                .map(|bkms| (bkms.0, OpenOrRaise::Cmd(bkms.1))),
         )
         .collect();
     let input: Vec<String> = windows_and_cmds.clone().into_iter().map(|x| x.0).collect();
-    let mut child = Command::new("wofi")
-        .arg("--dmenu")
-        .arg("--insensitive")
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap();
-    let child_stdin = child.stdin.as_mut().unwrap();
-    child_stdin.write_all(input.join("\n").as_bytes()).unwrap();
-    child_stdin.flush().unwrap();
-    let output = child.wait_with_output().unwrap();
+    let output = exec_wofi(input.join("\n")).unwrap();
     let output_string = std::str::from_utf8(&output.stdout).unwrap();
     match &windows_and_cmds.into_iter().find(|kvs| kvs.0 == &output_string[..output_string.len() - 1]) {
         None => {
@@ -160,7 +261,7 @@ impl fmt::Display for WindowOnWorkspace {
 #[derive(Clone, Debug)]
 enum OpenOrRaise {
     /// the command to open the window
-    Cmd(&'static str),
+    Cmd(String),
     /// the window id of the window to raisk
     WindowId(WindowId),
 }
