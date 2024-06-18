@@ -1232,16 +1232,53 @@ if one already exists."
   (interactive)
   (consult-line (read-from-kill-ring "ripgrep")))
 
-(defun my/open-pdf ()
+(defun my/switch-pdf-txt ()
   (interactive)
-  "open corresponding pdf to txt file if it exist"
-  (find-file (concat (file-name-base (buffer-name)) ".pdf")))
+  "open corresponding pdf to txt file or vice versa if it exist"
+  (if (string-equal (file-name-extension buffer-file-name) "pdf")
+      (find-file (concat (file-name-base (buffer-name)) ".txt"))
+    (find-file (concat (file-name-base (buffer-name)) ".pdf"))))
+
+(defun my/rename-pdf-txt (new-base &optional force-p)
+
+  "Move current pdf/txt pair to new base name new-base.
+
+If FORCE-P, overwrite the destination file if it exists, without confirmation."
+  (interactive
+   (list (read-string "Move scan to: ")
+         current-prefix-arg))
+  (unless (and buffer-file-name (file-exists-p buffer-file-name))
+    (user-error "Buffer is not visiting any file"))
+  (let ((old-base (file-name-base buffer-file-name))
+        (current-extension (file-name-extension buffer-file-name)))
+    (unless (or (string-equal current-extension "pdf") (string-equal current-extension "txt"))
+      (user-error "Buffer is not visiting pdf or txt file"))
+    (rename-file (file-name-with-extension old-base ".pdf") (file-name-with-extension new-base ".pdf") (or force-p 1))
+    (rename-file (file-name-with-extension old-base ".txt") (file-name-with-extension new-base ".txt") (or force-p 1))
+    (kill-current-buffer)
+    (find-file (file-name-with-extension new-base current-extension))
+    (message "Scan moved to %S" new-base)))
+
+(defvar scans-minor-mode-map
+  (make-sparse-keymap)
+  "scans-minor-mode keymap.")
+
+(define-minor-mode scans-minor-mode
+  "Toggle scans mode.  Keybindings for my scans."
+ :init-value t)
 
 (general-define-key
  :states '(normal visual)
  :prefix "SPC"
- :keymaps 'text-mode-map
-  "m o" 'my/open-pdf)
+ :keymaps 'scans-minor-mode-map
+ "m o" '(my/switch-pdf-txt :which-key "switch to the corresponding pdf/txt")
+ "m r" '(my/rename-pdf-txt :which-key "rename this pdf/txt pair"))
+
+(defun my/enable-scans-minor-mode ()
+  (when (s-prefix? (concat "/home/" (user-login-name) "/Dokumente/scans") buffer-file-name))
+    (scans-minor-mode 1))
+
+(add-hook 'find-file-hook 'my/enable-scans-minor-mode)
 
 (defvar my-keys-minor-mode-map
   (make-sparse-keymap)
