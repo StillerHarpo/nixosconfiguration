@@ -175,33 +175,36 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     firewall.allowedUDPPorts = [ 51820 53 ];
     firewall.allowedTCPPorts = [ 5232 ];
 
-    wireguard.interfaces = {
-      wgHome = {
-        ips = [ "10.100.0.1/24" ];
+    wireguard = {
+      enable = false;
+      interfaces = {
+        wgHome = {
+          ips = [ "10.100.0.1/24" ];
 
-        listenPort = 51820;
+          listenPort = 51820;
 
-        privateKeyFile = config.age.secrets.rpi4WireguardPrivate.path;
+          privateKeyFile = config.age.secrets.rpi4WireguardPrivate.path;
 
-       postSetup = ''
+          postSetup = ''
          ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
        '';
 
-       postShutdown = ''
+          postShutdown = ''
          ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
        '';
 
-        peers = [
-          { name = "thinkpad";
-            publicKey = "2uKX2MDYjMUHghbb+csZJ5MZwqRnIQCVSBt6hYJzNRQ=";
-            allowedIPs = [ "10.100.0.2/32" ];
-          }
-          {
-            name = "fairphone";
-            publicKey = "wANts2w3caH/+zjsoNbMRz1SCGDd5IyFObLXXvCaMDE=";
-            allowedIPs = [ "10.100.0.3/32" ];
-          }
-        ];
+          peers = [
+            { name = "thinkpad";
+              publicKey = "2uKX2MDYjMUHghbb+csZJ5MZwqRnIQCVSBt6hYJzNRQ=";
+              allowedIPs = [ "10.100.0.2/32" ];
+            }
+            {
+              name = "fairphone";
+              publicKey = "wANts2w3caH/+zjsoNbMRz1SCGDd5IyFObLXXvCaMDE=";
+              allowedIPs = [ "10.100.0.3/32" ];
+            }
+          ];
+        };
       };
     };
   };

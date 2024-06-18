@@ -42,7 +42,7 @@
       myHardware.enable = true;
       backup.enable = true;
       wireguard = {
-        rpi4.enable = true;
+        rpi4.enable = false;
         vpn.enable = true;
       };
 
