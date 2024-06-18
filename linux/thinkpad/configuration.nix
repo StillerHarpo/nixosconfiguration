@@ -117,7 +117,6 @@
                 ical2orgpy
                 nixfmt-classic
                 libreoffice
-                prismlauncher
                 minetest
                 textcleaner
                 file
@@ -162,9 +161,7 @@
                 libnotify
                 unzip
                 rofi
-                unclutter-xfixes
                 cabal2nix
-                niv
                 git-crypt
                 ### chat ###
                 signal-desktop
@@ -194,7 +191,6 @@
             {
               # FIXME only allow usage of program. Not access.
               pkgs = with pkgs; [
-                go-jira
                 (pass.override {
                   dmenu = writeScriptBin "dmenu" ''${rofi}/bin/rofi -dmenu "$@"'';
                 })
