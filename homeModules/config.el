@@ -893,8 +893,9 @@
   (:states '(normal visual motion)
    :keymaps '(tsx-ts-mode typescript-ts-mode)
   :prefix "SPC"
-  "c d" 'tide-jump-to-definition
-  "c r" 'tide-references))
+  "m r" 'tide-rename-symbol
+  "m f" 'tide-rename-file
+  "m a" 'tide-fix))
 
 (use-package csv-mode
   :ensure t
