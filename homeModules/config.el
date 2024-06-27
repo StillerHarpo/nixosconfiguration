@@ -793,6 +793,15 @@
 				     (forge-current-topic)))))
 	(pr-review url)
       (user-error "Nothing at point with a URL")))
+  (defun my/pr-review-in-buffer ()
+    "opens the pull request which is nearest point"
+    (interactive)
+
+    (if-let ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
+	     (_ (string-match (rx (seq "https://github.com" (repeat 2 2 (seq "/" (one-or-more (not "/")))) "/pull/"  (one-or-more num))) txt))
+	     (url (match-string 0 txt)))
+	(pr-review url)))
+
   :general
   (:states
    '(normal visual motion)
