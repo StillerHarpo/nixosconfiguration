@@ -150,6 +150,7 @@ in
                 export NIXOS_OZONE_WL=1
               '';
               wrapperFeatures.gtk = true;
+              systemd.enable = true;
               config = {
                 inherit modifier; 
                 keybindings = lib.mkMerge [
