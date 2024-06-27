@@ -59,24 +59,24 @@ mosquittoURI = $$(staticURI "mqtt://localhost")
 main :: IO ()
 main = do
   mc <- connectURI mqttConfig {_msgCB = SimpleCallback handleMessage} mosquittoURI
-  subscribe mc (map ((, subOptions) . toFilter) ["zigbee2mqtt/switch/action", kitchenOneT, kitchenTwoT, kitchenThreeT, livingRoomT]) []
-  forkIO $ colorTempRunner mc [livingRoom, kitchen]
+  subscribe mc (map ((, subOptions) . toFilter) [
+                   "zigbee2mqtt/switch/kitchen/action",
+                   "zigbee2mqtt/switch/livingRoom/action",
+                   "zigbee2mqtt/switch/hallway/action",
+                   "zigbee2mqtt/switch/bedroom/action",
+                   "zigbee2mqtt/bridge/event",
+                   kitchenOneT, kitchenTwoT, kitchenThreeT, livingRoomT, bedroomT, hallwayT, dinerRoomT]) []
+  forkIO $ colorTempRunner mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
   waitForClient mc -- wait for the client to disconnect
 
 handleMessage :: MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
 handleMessage client reasonTopic m _ = do
   putStrLn $ "Handle message of topic" <> show reasonTopic
   time <- getCurrentTimeOfDay
-  when (m == "on_press_release") $ do
-    publishLight client (livingRoomT <> setT) (changeLight { state = Just TOGGLE })
-    publishLightSteps client time livingRoom
-  when (m == "off_press_release") $ do
-    publishLight client (kitchenT <> allT <> setT) (changeLight { state = Just TOGGLE })
-    publishLightSteps client time kitchen
-  when (m == "up_hold" || m == "up_press") $
-    publishLight client (lightsT  <> allT <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
-  when (m == "down_hold" || m == "up_press") $
-    publishLight client (lightsT  <> allT <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
+  when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $ handleSwitch kitchenAndDinerRoom client m
+  when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $ handleSwitch livingRoom client m
+  when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $ handleSwitch hallway client m
+  when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $ handleSwitch bedroom client m
   when (reasonTopic == "zigbee2mqtt/bridge/event") $
     case decode m of
       Nothing -> putStrLn $ "Parsing of bridge event failed: " <> show m
@@ -88,3 +88,14 @@ handleMessage client reasonTopic m _ = do
           publishLightSteps client time light
       Just ev -> putStrLn $ "Ignoring event: " <> show ev
 
+-- | Handles which light one switch handles
+handleSwitch ::  Light -> MQTTClient -> ByteString -> IO ()
+handleSwitch light client m = do
+  time <- getCurrentTimeOfDay
+  when (m == "on_press_release" || m == "on") $ do
+    publishLight client (topic light <> setT) (changeLight { state = Just TOGGLE })
+    publishLightSteps client time light
+  when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
+    publishLight client (topic light  <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
+  when (m == "down_hold" || m == "down_press" || m == "brightness_move_down") $
+    publishLight client (topic light  <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
