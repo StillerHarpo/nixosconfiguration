@@ -77,13 +77,14 @@ handleMessage client reasonTopic m _ = do
     publishLight client (lightsT  <> allT <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
   when (m == "down_hold" || m == "up_press") $
     publishLight client (lightsT  <> allT <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
-  case decode m of
-    Nothing -> putStrLn $ "Parsing of event not implemented: " <> show m
-    Just BridgeEvent{eventKind = BridgeEventDeviceJoined, friendlyName = Just (mkTopic -> Just name)} -> do
-      -- TODO match light
-      T.putStrLn $ "got Event with name: " <> unTopic name
-      forM_ (matchLight name) $ \light -> do
-        publishLight client (name <> setT) (changeLight { state = Just ON })
-        publishLightSteps client time light
-    Just ev -> putStrLn $ "Ignoring event: " <> show ev
+  when (reasonTopic == "zigbee2mqtt/bridge/event") $
+    case decode m of
+      Nothing -> putStrLn $ "Parsing of bridge event failed: " <> show m
+      Just BridgeEvent{eventKind = BridgeEventDeviceAnnounce, friendlyName = Just (mkTopic -> Just name)} -> do
+        T.putStrLn $ "got Event with name: " <> unTopic name
+        forM_ (matchLight name) $ \light -> do
+          T.putStrLn "matched light"
+          publishLight client (name <> setT) (changeLight { state = Just ON })
+          publishLightSteps client time light
+      Just ev -> putStrLn $ "Ignoring event: " <> show ev
 
