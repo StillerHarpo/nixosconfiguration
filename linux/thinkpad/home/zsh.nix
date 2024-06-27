@@ -22,11 +22,14 @@
       }
       add-zsh-hook precmd precmd_in_nix_shell
     '';
-    localVariables.PROMPT = ''
-      if echo "$PATH" | grep -qc '/nix/store'
-      then
-      fi
-    '';
+    localVariables = {
+      PROMPT = ''
+        if echo "$PATH" | grep -qc '/nix/store'
+        then
+        fi
+      '';
+      CPM_COMPILE_CACHE_SPEC = "local:/tmp/";
+    };
   };
   home.file = {
     ".private-home/.zshrc".source = config.home.file.".zshrc".source;
