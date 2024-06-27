@@ -305,7 +305,11 @@ kitchenT = lightsT <> "kitchen"
 kitchenOneT = kitchenT <> "one"
 kitchenTwoT = kitchenT <> "two"
 kitchenThreeT = kitchenT <> "three"
+dinerRoomT = lightsT  <> "dinerRoom"
+kitchenAndDinerRoomT = lightsT  <> "kitchenAndDinerRoom"
 livingRoomT = lightsT  <> "livingRoom"
+hallwayT = lightsT  <> "hallway"
+bedroomT = lightsT  <> "bedroom"
 allT = "all"
 setT = "set"
 availabilityT = "availability"
@@ -318,13 +322,28 @@ livingRoom = Light {
   highestColorTemp = 500
   }
 
-kitchen :: Light
-kitchen = Light {
-  topic = kitchenT <> allT,
+mkIkeaLight :: Topic -> Light
+mkIkeaLight light = Light {
+  topic = light,
   maxStep = Nothing,
   lowestColorTemp = 153,
   highestColorTemp = 500
   }
+
+kitchen :: Light
+kitchen = mkIkeaLight (kitchenT <> allT)
+
+dinerRoom :: Light
+dinerRoom = mkIkeaLight dinerRoomT
+
+kitchenAndDinerRoom :: Light
+kitchenAndDinerRoom = mkIkeaLight kitchenAndDinerRoomT
+
+hallway :: Light
+hallway = mkIkeaLight hallwayT
+
+bedroom :: Light
+bedroom = mkIkeaLight bedroomT
 
 -- TODO
 matchLight :: Topic -> Maybe Light
