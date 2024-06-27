@@ -1316,6 +1316,7 @@ If FORCE-P, overwrite the destination file if it exists, without confirmation."
  "b b" 'consult-buffer
  "b r" 'revert-buffer
  "b d" 'kill-current-buffer
+ "b s" 'save-some-buffers
  "w" '(:ignore t :which-key "Window")
  "w m m" 'maximize-window
  "w j" 'evil-window-down
