@@ -52,6 +52,7 @@
       environment.etc."office.ovpn".source = ./office.ovpn;
 
       services = {
+        tailscale.enable = true;
         openvpn.servers.officeVPN = {
           config = "config /etc/office.ovpn ";
           autoStart = false;
