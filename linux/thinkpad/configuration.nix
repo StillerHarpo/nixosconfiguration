@@ -110,6 +110,7 @@
             }
             {
               pkgs = with pkgs; [
+                mqttx
                 nil
                 difftastic
                 nixpkgs-review
