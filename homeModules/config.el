@@ -785,7 +785,7 @@
 (use-package pr-review
   :after magit
   :ensure t
-  :config
+  :init
   (defun my/pr-review-at-point ()
     "opens the pull request at point in pr-review"
     (interactive)
