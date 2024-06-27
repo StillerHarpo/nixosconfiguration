@@ -116,7 +116,13 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
             lights_kitchen_two = "0x680ae2fffe6a2c41";
             lights_kitchen_three = "0x680ae2fffe6b7851";
             lights_livingRoom = "0x001788010b236902";
-            switch = "0x0017880109abe4d3";
+            lights_dinerRoom = "0x881a14fffe8eb8f9";
+            lights_hallway = "0x881a14fffea09b0f";
+            lights_bedroom = "0x881a14fffe8ed90c";
+            switch_hallway = "0x0017880109abe4d3";
+            switch_kitchen = "0x980c33fffefae5f3";
+            switch_livingRoom = "0x980c33fffefa99a2";
+            switch_bedroom = "0x60b647fffecf33dd";
           };
         in { 
           permit_join = true;
@@ -137,8 +143,12 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
               devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three];
             };
             "2" = {
+              friendly_name = "lights/kichenAndDinerRoom";
+              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_dinerRoom];
+            };
+            "3" = {
               friendly_name = "lights/all";
-              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_livingRoom];
+              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_hallway lights_livingRoom lights_dinerRoom lights_bedroom];
             };
           };
         };
