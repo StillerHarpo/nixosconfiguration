@@ -1531,14 +1531,17 @@ If I let Windows handle DPI everything looks blurry."
 	  "org-caldav-calendar-id"
 	  "org-caldav-resume-aborted"
 	  "org-caldav-files")))
-      ;; Make sure calendar.org does exist
-      (unless (file-exists-p org-caldav-inbox)
-	(make-empty-file org-caldav-inbox))
-      ;; Make sure we don't get stuck in a yes no prompt
-      (setq org-caldav-delete-org-entries 'always
-            org-caldav-delete-calendar-entries 'always)
-      (org-caldav-sync)
-      (org-caldav-sync-result-filter-errors)))
+      ;; Make sure url is reachable
+      (if (not (= (call-process "curl" nil nil nil "--connect-timeout" "10" org-caldav-url) 0))
+	  "can't connect to url"
+	;; Make sure calendar.org does exist
+	(unless (file-exists-p org-caldav-inbox)
+	  (make-empty-file org-caldav-inbox))
+	;; Make sure we don't get stuck in a yes no prompt
+	(setq org-caldav-delete-org-entries 'always
+	      org-caldav-delete-calendar-entries 'always)
+	(org-caldav-sync)
+	(org-caldav-sync-result-filter-errors))))
  '(lambda (errors)
     (if errors
 	(let ((error-msg (format "Syncing calendar failed: %s" errors)))
