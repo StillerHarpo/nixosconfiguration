@@ -174,7 +174,6 @@ in {
       };
       emacs.enable = true;
 
-      xsession.windowManager.xmonad.config = ../../../haskell/xmonad-thinkpad/xmonad.hs;
 
       services.dunst = {
         enable = true;

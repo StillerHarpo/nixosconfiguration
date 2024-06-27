@@ -12,6 +12,9 @@ in
   };
   config = mkIf cfg.enable {
 
+    home-manager.users.florian = { ... }: {
+      session.windowManager.xmonad.config = ../haskell/xmonad-thinkpad/xmonad.hs;
+    };
     apparmor.systemPackages =
       [ { pkgs = with pkgs; [
             scrot
