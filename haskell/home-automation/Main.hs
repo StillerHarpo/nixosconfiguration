@@ -35,7 +35,7 @@ publishLightSteps client tod light = do
 -- publish a mqtt message to a light
 publishLight :: MQTTClient -> Topic -> ChangeLight -> IO ()
 publishLight client topic light = do
-  putStrLn $ "Changing light for " <> show topic
+  putStrLn $ "Changing light for " <> show topic <> ": " <> show (encode light)
   publish client topic (encode light) False
 
 getCurrentTimeOfDay :: IO TimeOfDay
