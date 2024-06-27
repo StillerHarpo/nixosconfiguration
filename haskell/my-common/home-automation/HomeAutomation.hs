@@ -71,7 +71,7 @@ data Definition = Definition {
 
 data BridgeEvent = BridgeEvent
   { friendlyName :: Maybe Text,
-    ieeeAddress :: Maybe Int,
+    ieeeAddress :: Maybe Text,
     eventKind :: BridgeEventKind
   }
   deriving (Generic, Show)
@@ -184,8 +184,8 @@ instance FromJSON BridgeEvent where
      eventKind <- (v .: "type" :: Parser Text) >>= \case
        "device_joined" -> pure BridgeEventDeviceJoined
        "device_interview" -> do
-         status <- data' .:? "ieee_address"
-         definition <- data' .:? "ieee_address"
+         status <- data' .:? "status"
+         definition <- data' .:? "definition"
          pure BridgeEventDeviceInterview{..}
        "device_leave" -> pure BridgeEventDeviceLeave
        "device_announce" -> pure BridgeEventDeviceAnnounce
