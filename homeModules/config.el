@@ -1067,9 +1067,9 @@ Returns nil if not and (sec min hour) if it has."
     (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
   :custom
   (org-export-with-broken-links t)
-  (org-caldav-url "http://192.168.178.53:5232")
+  (org-caldav-url "http://flospi:5232")
   (org-caldav-inbox "~/Dokumente/calendar.org")
-  (org-caldav-calendar-id "any/35d8b866-3086-4e91-9165-b1eb08950ec8")
+  (org-caldav-calendar-id "any/d02d9914-eb09-4210-b1d1-1b330b274af9/")
   (org-caldav-resume-aborted 'never)
   )
 
