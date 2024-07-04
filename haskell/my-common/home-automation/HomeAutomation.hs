@@ -263,7 +263,7 @@ timeToColorTemp t light
     in changeLightSteps stepper
   | timeOfDayToTime t > timeOfDayToTime dayTimeStart + duration && t < nightTimeStart =
     (changeLight {colorTemp = Just Coolest}, [])
-  | t >= nightTimeStart  && timeOfDayToTime t <= timeOfDayToTime t + duration = let
+  | t >= nightTimeStart  && timeOfDayToTime t <= timeOfDayToTime nightTimeStart + duration = let
       restDuration = timeOfDayToTime nightTimeStart + duration - timeOfDayToTime t
       stepper = getLightStepper (Up restDuration) light
     in changeLightSteps stepper
