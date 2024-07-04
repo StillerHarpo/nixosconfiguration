@@ -21,21 +21,22 @@ import Data.Time.Clock
 import Data.Time.LocalTime
 import Data.Aeson
 import HomeAutomation
+import Control.Concurrent.Async
 
 -- send multiple signals to bulb according to step duration. This is
 -- necessary because some bulbs have an upper transition time
-publishLightSteps :: MQTTClient -> TimeOfDay -> Light -> IO ()
-publishLightSteps client tod light = do
+publishLightSteps :: MVar () -> MQTTClient -> TimeOfDay -> Light -> IO ()
+publishLightSteps lock client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
-  publishLight client (topic light <> setT) startTemp
+  publishLight lock client (topic light <> setT) startTemp
   forM_ steps $ \changeLight -> do
-    publishLight client (topic light <> setT) changeLight
+    publishLight lock client (topic light <> setT) changeLight
     threadDelay (maybe 0 (* (1000 * 1000)) $ transition changeLight)
 
 -- publish a mqtt message to a light
-publishLight :: MQTTClient -> Topic -> ChangeLight -> IO ()
-publishLight client topic light = do
-  putStrLn $ "Changing light for " <> show topic <> ": " <> show (encode light)
+publishLight :: MVar () -> MQTTClient -> Topic -> ChangeLight -> IO ()
+publishLight lock client topic light = do
+  asyncLog lock $ "Changing light for " <> unTopic topic <> ": " <> T.decodeUtf8 (BS.toStrict (encode light))
   publish client topic (encode light) False
 
 getCurrentTimeOfDay :: IO TimeOfDay
@@ -44,14 +45,14 @@ getCurrentTimeOfDay = do
   timeZone <- getTimeZone time
   pure $ localTimeOfDay $ utcToLocalTime timeZone time
 
-colorTempRunner :: MQTTClient -> [Light] -> IO ()
-colorTempRunner client lights = do
+colorTempRunner :: MVar () -> MQTTClient -> [Light] -> IO ()
+colorTempRunner lock client lights = do
   forever $ do
     timeBeforeSleep <- getCurrentTimeOfDay
     let seconds = minimum $ map (timeUntil timeBeforeSleep) [dayTimeStart, nightTimeStart]
     threadDelay (fromIntegral $ diffTimeToMicroseconds seconds)
     lightChangeTime <- getCurrentTimeOfDay
-    forM_ lights $ publishLightSteps client lightChangeTime
+    forM_ lights $ publishLightSteps lock client lightChangeTime
 
 mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
@@ -60,6 +61,7 @@ main :: IO ()
 main = do
   mc <- connectURI mqttConfig {_msgCB = SimpleCallback handleMessage} mosquittoURI
   subscribe mc (map ((, subOptions) . toFilter) [
+  lock <- newMVar ()
                    "zigbee2mqtt/switch/kitchen/action",
                    "zigbee2mqtt/switch/livingRoom/action",
                    "zigbee2mqtt/switch/hallway/action",
@@ -69,33 +71,36 @@ main = do
   forkIO $ colorTempRunner mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
   waitForClient mc -- wait for the client to disconnect
 
-handleMessage :: MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
-handleMessage client reasonTopic m _ = do
-  putStrLn $ "Handle message of topic" <> show reasonTopic
+asyncLog :: MVar () -> T.Text -> IO ()
+asyncLog lock msg = withMVar lock $ \_ -> T.putStrLn msg 
+
+handleMessage :: MVar () -> MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
+handleMessage lock client reasonTopic m _ = do
+  asyncLog lock $ "Handle message of topic" <> unTopic reasonTopic
   time <- getCurrentTimeOfDay
-  when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $ handleSwitch kitchenAndDinerRoom client m
-  when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $ handleSwitch livingRoom client m
-  when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $ handleSwitch hallway client m
-  when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $ handleSwitch bedroom client m
+  when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $ handleSwitch lock kitchenAndDinerRoom client m
+  when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $ handleSwitch lock livingRoom client m
+  when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $ handleSwitch lock hallway client m
+  when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $ handleSwitch lock bedroom client m
   when (reasonTopic == "zigbee2mqtt/bridge/event") $
     case decode m of
-      Nothing -> putStrLn $ "Parsing of bridge event failed: " <> show m
+      Nothing -> asyncLog lock $ "Parsing of bridge event failed: " <> T.decodeUtf8 (BS.toStrict m)
       Just BridgeEvent{eventKind = BridgeEventDeviceAnnounce, friendlyName = Just (mkTopic -> Just name)} -> do
-        T.putStrLn $ "got Event with name: " <> unTopic name
+        asyncLog lock $ "got Event with name: " <> unTopic name
         forM_ (matchLight name) $ \light -> do
-          T.putStrLn "matched light"
-          publishLight client (name <> setT) (changeLight { state = Just ON })
-          publishLightSteps client time light
-      Just ev -> putStrLn $ "Ignoring event: " <> show ev
+          asyncLog lock "matched light"
+          publishLight lock client (name <> setT) (changeLight { state = Just ON })
+          publishLightSteps lock client time light
+      Just ev -> asyncLog lock $ "Ignoring event: " <> T.pack (show ev)
 
 -- | Handles which light one switch handles
-handleSwitch ::  Light -> MQTTClient -> ByteString -> IO ()
-handleSwitch light client m = do
+handleSwitch :: MVar () -> Light -> MQTTClient -> ByteString -> IO ()
+handleSwitch lock light client m = do
   time <- getCurrentTimeOfDay
   when (m == "on_press_release" || m == "on") $ do
-    publishLight client (topic light <> setT) (changeLight { state = Just TOGGLE })
-    publishLightSteps client time light
+    publishLight lock client (topic light <> setT) (changeLight { state = Just TOGGLE })
+    publishLightSteps lock client time light
   when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
-    publishLight client (topic light  <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
+    publishLight lock client (topic light  <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
   when (m == "down_hold" || m == "down_press" || m == "brightness_move_down") $
-    publishLight client (topic light  <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
+    publishLight lock client (topic light  <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
