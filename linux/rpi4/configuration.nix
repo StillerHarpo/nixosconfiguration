@@ -80,6 +80,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   nixpkgs.overlays = builtins.attrValues outputs.overlays;
 
   services = {
+    tailscale.enable = true;
     radicale = {
       enable = true;
       settings.server.hosts = [ "0.0.0.0:5232" ];
