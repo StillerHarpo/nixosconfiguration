@@ -7,10 +7,10 @@ import Control.Concurrent
 import Control.Monad
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import qualified Data.Text.Encoding as T
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BS
 import Data.ByteString.Lazy (ByteString)
-import qualified Data.ByteString.Lazy as LBS
 import Data.Char
 import Data.Maybe (fromMaybe)
 import Network.MQTT.Client
@@ -21,6 +21,7 @@ import Data.Time.Clock
 import Data.Time.LocalTime
 import Data.Aeson
 import HomeAutomation
+import Control.Exception (bracket)
 import Control.Concurrent.Async
 
 -- send multiple signals to bulb according to step duration. This is
@@ -59,17 +60,22 @@ mosquittoURI = $$(staticURI "mqtt://localhost")
 
 main :: IO ()
 main = do
-  mc <- connectURI mqttConfig {_msgCB = SimpleCallback handleMessage} mosquittoURI
-  subscribe mc (map ((, subOptions) . toFilter) [
   lock <- newMVar ()
+  bracket
+    (connectURI mqttConfig {_msgCB = SimpleCallback (handleMessage lock)} mosquittoURI)
+    (\mc -> do
+        subscribe mc (map ((, subOptions) . toFilter) [
                    "zigbee2mqtt/switch/kitchen/action",
                    "zigbee2mqtt/switch/livingRoom/action",
                    "zigbee2mqtt/switch/hallway/action",
                    "zigbee2mqtt/switch/bedroom/action",
                    "zigbee2mqtt/bridge/event",
                    kitchenOneT, kitchenTwoT, kitchenThreeT, livingRoomT, bedroomT, hallwayT, dinerRoomT]) []
-  forkIO $ colorTempRunner mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
-  waitForClient mc -- wait for the client to disconnect
+        colorTempRunner lock mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
+        waitForClient mc)
+    (\mc -> do
+      asyncLog lock "Terminating program"
+      stopClient mc)
 
 asyncLog :: MVar () -> T.Text -> IO ()
 asyncLog lock msg = withMVar lock $ \_ -> T.putStrLn msg 
