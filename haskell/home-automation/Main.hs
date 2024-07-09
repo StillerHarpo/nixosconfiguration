@@ -2,7 +2,9 @@
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE LambdaCase #-}
 
+import System.IO
 import Control.Concurrent
 import Control.Monad
 import qualified Data.Text as T
@@ -23,21 +25,26 @@ import Data.Aeson
 import HomeAutomation
 import Control.Exception (bracket)
 import Control.Concurrent.Async
+import Control.Concurrent.STM
+import Control.Concurrent.STM.TQueue
 
 -- send multiple signals to bulb according to step duration. This is
 -- necessary because some bulbs have an upper transition time
-publishLightSteps :: MVar () -> MQTTClient -> TimeOfDay -> Light -> IO ()
-publishLightSteps lock client tod light = do
+publishLightSteps :: TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO ()
+publishLightSteps queue client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
-  publishLight lock client (topic light <> setT) startTemp
+  publishLight queue client (topic light <> setT) startTemp
   forM_ steps $ \changeLight -> do
-    publishLight lock client (topic light <> setT) changeLight
+    publishLight queue client (topic light <> setT) changeLight
     threadDelay (maybe 0 (* (1000 * 1000)) $ transition changeLight)
 
 -- publish a mqtt message to a light
-publishLight :: MVar () -> MQTTClient -> Topic -> ChangeLight -> IO ()
-publishLight lock client topic light = do
-  asyncLog lock $ "Changing light for " <> unTopic topic <> ": " <> T.decodeUtf8 (BS.toStrict (encode light))
+publishLight :: TQueue Logger -> MQTTClient -> Topic -> ChangeLight -> IO ()
+publishLight queue client topic light = do
+  atomically
+    . writeTQueue queue
+    . LogMessage
+    $ "Changing light for " <> unTopic topic <> ": " <> T.decodeUtf8 (BS.toStrict (encode light))
   publish client topic (encode light) False
 
 getCurrentTimeOfDay :: IO TimeOfDay
@@ -46,23 +53,25 @@ getCurrentTimeOfDay = do
   timeZone <- getTimeZone time
   pure $ localTimeOfDay $ utcToLocalTime timeZone time
 
-colorTempRunner :: MVar () -> MQTTClient -> [Light] -> IO ()
-colorTempRunner lock client lights = do
+colorTempRunner :: TQueue Logger -> MQTTClient -> [Light] -> IO ()
+colorTempRunner queue client lights = do
   forever $ do
     timeBeforeSleep <- getCurrentTimeOfDay
     let seconds = minimum $ map (timeUntil timeBeforeSleep) [dayTimeStart, nightTimeStart]
     threadDelay (fromIntegral $ diffTimeToMicroseconds seconds)
     lightChangeTime <- getCurrentTimeOfDay
-    forM_ lights $ publishLightSteps lock client lightChangeTime
+    forM_ lights $ publishLightSteps queue client lightChangeTime
 
 mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
 
-main :: IO ()
-main = do
-  lock <- newMVar ()
+runMqtt :: TQueue Logger -> IO ()
+runMqtt queue = 
   bracket
-    (connectURI mqttConfig {_msgCB = SimpleCallback (handleMessage lock)} mosquittoURI)
+    (connectURI mqttConfig {_msgCB = SimpleCallback (handleMessage queue)} mosquittoURI)
+    (\mc -> do
+      stopClient mc
+      atomically $ writeTQueue queue StopLogging)
     (\mc -> do
         subscribe mc (map ((, subOptions) . toFilter) [
                    "zigbee2mqtt/switch/kitchen/action",
@@ -71,42 +80,60 @@ main = do
                    "zigbee2mqtt/switch/bedroom/action",
                    "zigbee2mqtt/bridge/event",
                    kitchenOneT, kitchenTwoT, kitchenThreeT, livingRoomT, bedroomT, hallwayT, dinerRoomT]) []
-        colorTempRunner lock mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
+        colorTempRunner queue mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
         waitForClient mc)
-    (\mc -> do
-      asyncLog lock "Terminating program"
-      stopClient mc)
 
-asyncLog :: MVar () -> T.Text -> IO ()
-asyncLog lock msg = withMVar lock $ \_ -> T.putStrLn msg 
+main :: IO ()
+main = do
+  hSetBuffering stdout LineBuffering 
+  queue <- atomically newTQueue
+  withAsync (runMqtt queue) $ \_ -> do
+    logger queue
+    putStrLn "Terminating program"
 
-handleMessage :: MVar () -> MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
-handleMessage lock client reasonTopic m _ = do
-  asyncLog lock $ "Handle message of topic" <> unTopic reasonTopic
+data Logger =
+  LogMessage T.Text
+  | StopLogging
+
+logger :: TQueue Logger -> IO ()
+logger queue = atomically (readTQueue queue) >>= \case
+  LogMessage msg -> do
+    T.putStrLn msg
+    logger queue
+  StopLogging -> pure ()
+
+
+handleMessage :: TQueue Logger -> MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
+handleMessage queue client reasonTopic m _ = do
+  atomically . writeTQueue queue . LogMessage $ "Handle message of topic: " <> unTopic reasonTopic
   time <- getCurrentTimeOfDay
-  when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $ handleSwitch lock kitchenAndDinerRoom client m
-  when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $ handleSwitch lock livingRoom client m
-  when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $ handleSwitch lock hallway client m
-  when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $ handleSwitch lock bedroom client m
+  when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $ handleSwitch queue kitchenAndDinerRoom client m
+  when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $ handleSwitch queue livingRoom client m
+  when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $ handleSwitch queue hallway client m
+  when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $ handleSwitch queue bedroom client m
   when (reasonTopic == "zigbee2mqtt/bridge/event") $
     case decode m of
-      Nothing -> asyncLog lock $ "Parsing of bridge event failed: " <> T.decodeUtf8 (BS.toStrict m)
+      Nothing ->
+        atomically
+        . writeTQueue queue
+        . LogMessage
+        $ "Parsing of bridge event failed: " <> T.decodeUtf8 (BS.toStrict m)
       Just BridgeEvent{eventKind = BridgeEventDeviceAnnounce, friendlyName = Just (mkTopic -> Just name)} -> do
-        asyncLog lock $ "got Event with name: " <> unTopic name
+        atomically . writeTQueue queue . LogMessage $ "got Event with name: " <> unTopic name
         forM_ (matchLight name) $ \light -> do
-          asyncLog lock "matched light"
-          publishLight lock client (name <> setT) (changeLight { state = Just ON })
-          publishLightSteps lock client time light
-      Just ev -> asyncLog lock $ "Ignoring event: " <> T.pack (show ev)
+          atomically . writeTQueue queue $ LogMessage "matched light"
+          publishLight queue client (name <> setT) (changeLight { state = Just ON })
+          publishLightSteps queue client time light
+      Just ev -> atomically . writeTQueue queue . LogMessage $ "Ignoring event: " <> T.pack (show ev)
 
 -- | Handles which light one switch handles
-handleSwitch :: MVar () -> Light -> MQTTClient -> ByteString -> IO ()
-handleSwitch lock light client m = do
+handleSwitch :: TQueue Logger -> Light -> MQTTClient -> ByteString -> IO ()
+handleSwitch queue light client m = do
   time <- getCurrentTimeOfDay
   when (m == "on_press_release" || m == "on") $ do
-    publishLight lock client (topic light <> setT) (changeLight { state = Just TOGGLE })
-    publishLightSteps lock client time light
+    publishLight queue client (topic light <> setT) (changeLight { state = Just TOGGLE })
+    publishLightSteps queue client time light
   when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
-    publishLight lock client (topic light  <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
+    publishLight queue client (topic light  <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
   when (m == "down_hold" || m == "down_press" || m == "brightness_move_down") $
-    publishLight lock client (topic light  <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
+    publishLight queue client (topic light  <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
