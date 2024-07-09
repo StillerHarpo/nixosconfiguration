@@ -144,7 +144,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
               devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three];
             };
             "2" = {
-              friendly_name = "lights/kichenAndDinerRoom";
+              friendly_name = "lights/kitchenAndDinerRoom";
               devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_dinerRoom];
             };
             "3" = {
