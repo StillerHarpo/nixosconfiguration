@@ -74,11 +74,11 @@
       ]));
     haskellPackages = prev.haskellPackages.extend (_: hPrev: {
       my-common = prev.haskell.lib.overrideCabal
-        (hPrev.callCabal2nix "my-common" ./haskell/my-common { }) (_: {
+        (hPrev.callPackage ./haskell/my-common { }) (_: {
           prePatch =
             "substituteInPlace Xrandr.hs --replace 'xrandr' '${prev.xorg.xrandr}/bin/xrandr'";
         });
-      home-automation = hPrev.callCabal2nix "home-automation" ./haskell/my-common/home-automation { };
+      home-automation = hPrev.callPackage ./haskell/my-common/home-automation { };
     });
     monitor-changer = prev.writers.writeHaskellBin "monitor-changer" {
       libraries = [ final.haskellPackages.my-common ];
