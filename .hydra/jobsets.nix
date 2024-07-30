@@ -11,7 +11,7 @@ let
         emailoverride = "";
         enabled = 1;
         enableemail = false;
-        flake = "git+https://gitlab.com/StillerHarpo/nixosconfiguration?rev=${info.head.sha}";
+        flake = "git+https://gitlab.com/StillerHarpo/nixosconfiguration?rev=${info.sha}";
         hidden = false;
         keepnr = 1;
         schedulingshares = 20;
