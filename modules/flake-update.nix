@@ -133,7 +133,27 @@ in
          ];
 
          path = with pkgs; [ nix git] ++ (if cfg.ssh != null then [openssh] else []);
-
+         serviceConfig = mkMerge [
+           {
+             Type = "oneshot";
+             CapabilityBoundingSet = "";
+             LockPersonality = true;
+             ProtectHostname = true;
+             ProtectKernelLogs = true;
+             ProtectKernelModules = true;
+             ProtectKernelTunables = true;
+             PrivateDevices = true;
+             WorkingDirectory = "/var/lib/${serviceName}";
+             StateDirectory = serviceName;
+             RestrictNamespaces = true;
+             RestrictRealtime = true;
+             DynamicUser = true;
+           }
+           (mkIf (cfg.credentials != null) {
+             LoadCredential = "passwordFile:${cfg.credentials.passwordFile}";
+           })
+           (mkIf (cfg.ssh != null) { LoadCredential = "sshKey:${cfg.ssh.key}"; })
+         ];
          script = ''
            if [[ -d repo/.git ]]; then
              cd repo
