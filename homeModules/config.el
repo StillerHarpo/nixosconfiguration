@@ -1280,10 +1280,11 @@ If FORCE-P, overwrite the destination file if it exists, without confirmation."
  "m r" '(my/rename-pdf-txt :which-key "rename this pdf/txt pair"))
 
 (defun my/enable-scans-minor-mode ()
-  (when (s-prefix? (concat "/home/" (user-login-name) "/Dokumente/scans") buffer-file-name))
-    (scans-minor-mode 1))
+  (if (s-prefix? (concat "/home/" (user-login-name) "/Dokumente/scans") buffer-file-name)
+      (scans-minor-mode 1)
+    (scans-minor-mode -1)))
 
-(add-hook 'find-file-hook 'my/enable-scans-minor-mode)
+(add-hook 'post-command-hook 'my/enable-scans-minor-mode)
 
 (defvar my-keys-minor-mode-map
   (make-sparse-keymap)
