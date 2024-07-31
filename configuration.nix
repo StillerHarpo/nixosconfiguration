@@ -14,7 +14,15 @@
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
-    settings.max-jobs = lib.mkDefault 8;
+    settings = {
+      max-jobs = lib.mkDefault 8;
+      substituters = lib.mkAfter [
+        "https://cache.ts.haering.dev?priority=39"
+      ];
+      trusted-public-keys = [
+        "cache.ts.haering.dev:II5Re1ZjWdDCZBSXWC2gA35H57r5eJTRl5bv++delZ4="
+      ];
+    };
     registry.nixpkgs.flake = inputs.nixpkgs;
     nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
   };

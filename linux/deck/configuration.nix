@@ -120,14 +120,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       dates = "daily";
       options = "--delete-older-than 7d";
     };
-    settings = {
-      substituters = lib.mkAfter [
-        "https://cache.ts.haering.dev?priority=39"
-      ];
-      trusted-public-keys = [
-        "ssh-serve:WltAxNNiDoufj5yg7k9tJHKoN7D5PgIZUyqDOMBOaGM="
-      ];
-    };
   };
 
   boot.loader = {
