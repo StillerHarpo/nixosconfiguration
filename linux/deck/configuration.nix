@@ -32,10 +32,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   # Set your time zone.
   time.timeZone = "Europe/Berlin";
 
-  sound.enable = true;
-
   hardware.bluetooth.enable = true;
-
 
   services = {
     blueman.enable = true;
