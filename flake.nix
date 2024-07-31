@@ -297,15 +297,6 @@
       images.rpi2 = self.nixosConfigurations.rpi2.config.system.build.sdImage;
 
       deploy.nodes = {
-        desktop = {
-          hostname = "192.168.178.24";
-          profiles.system = {
-            user = "root";
-            sshUser = "root";
-            path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos
-              self.nixosConfigurations.desktop;
-          };
-        };
         rpi4 = {
           hostname = (import ./variables.nix).nixosRpi4IP;
           profiles.system = {
