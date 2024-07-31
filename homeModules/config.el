@@ -1582,3 +1582,35 @@ If I let Windows handle DPI everything looks blurry."
 		    `(("  ERROR in ./\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\)"
 		       (1 ,ts-root) 2 3 nil nil)))))))
     (compile webpack)))
+(defun joaot/eglot-project-find-function (dir)
+  (when eglot-lsp-context
+    (let* ((marker nil)
+           ;; We use "dominating files" here, but we could use some
+           ;; other criteria, like an Elisp data structure, or hack in
+           ;; dir-locals for DIR (maybe with
+           ;; `hack-dir-local-variables-non-file-buffer').
+           (root (locate-dominating-file
+                  dir
+                  (lambda (d)
+                    ;; Here, we search for these markers regardless of
+                    ;; other state such current major mode.  We could
+                    ;; fix that easily, but that's out of scope for this small example.
+                    (let ((files (directory-files d nil (rx (or "pyrightconfig.json" "pyproject.toml" (sequence (one-or-more any) ".cabal"))))))
+                             (if files
+			        (progn (setq marker (car files))
+                                       t)
+			        nil))))))
+      (message root)
+      (message marker)
+      (when root
+        ;; Use the experimental eglot--project project type in latest
+        ;; Eglot which has some space for user-defined props,
+        ;; `:marker' in this case.  One could make use of it, say, in a
+        ;; functional entry to `eglot-server-programs', to decide
+        ;; which server to run based on the marker or the type of
+        ;; the project.
+        `(eglot--project ,root :marker ,marker)))))
+
+(add-to-list 'project-find-functions
+             #'joaot/eglot-project-find-function)
+
