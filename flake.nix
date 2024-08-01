@@ -149,6 +149,15 @@
             outputs.nixosModules
           ];
         };
+      mkNixosThinkpad = private: inputs.nixpkgs.lib.nixosSystem {
+          inherit lib;
+          specialArgs = thinkpad-specialArgs // {
+            inherit private;
+          };
+          modules = thinkpad-modules ++ [
+            inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
+          ];
+        };
     in {
 
       overlays = import ./overlays.nix { inherit inputs outputs; };
@@ -158,15 +167,8 @@
       homeModules = ./homeModules;
 
       nixosConfigurations = {
-        nixosThinkpad = inputs.nixpkgs.lib.nixosSystem {
-          inherit lib;
-          specialArgs = thinkpad-specialArgs // {
-            private = import ./private.nix;
-          };
-          modules = thinkpad-modules ++ [
-            inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
-          ];
-        };
+
+        nixosThinkpad = mkNixosThinkpad (import ./private.nix);
 
         thinkpadVM = inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
@@ -290,7 +292,9 @@
       hydraJobs = {
         nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel)
           { nixosRpi4 = mkNixosRpi4 fakePrivate;
-            flosDeck = mkFlosDeck fakePrivate; };
+            flosDeck = mkFlosDeck fakePrivate;
+            nixosThinkpad = mkNixosThinkpad fakePrivate;
+          };
       };
 
 
