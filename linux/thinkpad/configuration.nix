@@ -160,7 +160,7 @@
                 python3Packages.pygments
                 anki
                 nix-prefetch-git
-                youtube-dl
+                yt-dlp
                 libnotify
                 unzip
                 rofi
