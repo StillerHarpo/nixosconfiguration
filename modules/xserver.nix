@@ -34,7 +34,7 @@ in
       xserver = {
         enable = true;
         xkbOptions = "eurosign:e, caps:escape, grp:alt_shift_toggle";
-        xkbVariant = "altgr-intl";
+        xkb.variant = "altgr-intl";
         monitorSection = ''Option "DPMS" "false"'';
         serverLayoutSection = ''
         Option          "BlankTime"     "0"

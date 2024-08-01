@@ -41,17 +41,19 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       enable = true;
       settings.PasswordAuthentication = false;
     };
+    libinput.enable = true;
     xserver = {
       desktopManager.plasma5 = {
         enable = true;
         runUsingSystemd = true;
       };
-      libinput.enable = true;
       autoRepeatDelay = 250;
       autoRepeatInterval = 100;
       enable = true;
-      layout = "us";
-      xkbVariant = "altgr-intl";
+      xkb = {
+        layout = "us";
+        variant = "altgr-intl";
+      };
       serverLayoutSection = ''
         Option  "BlankTime"   "0"
         Option  "OffTime"     "0"
