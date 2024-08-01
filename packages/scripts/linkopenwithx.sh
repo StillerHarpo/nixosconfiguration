@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 # a script to handle different links, when open from terminal with X
-printf %s "${1}" | xsel -b
+if [[ "$XDG_CURRENT_DESKTOP" == "sway" ]]
+then
+    printf %s "${1}" | wl-copy
+elif [[ "$XDG_SESSION_TYPE"  == "x11" ]]
+then
+    printf %s "${1}" | xsel -b
+fi
 color=$(cat ~/.var/bgcolor)
 checkYoutubeStartpoint() {
    if [[ "$XDG_CURRENT_DESKTOP" == "sway" ]]
