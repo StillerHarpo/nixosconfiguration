@@ -7,7 +7,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   imports = [ ./disko.nix ];
   age = {
     identityPaths = [ "/root/.ssh/rpi4" ];
-    secrets.rpi4WireguardPrivate.file = ./secrets/rpi4WireguardPrivate.age;
+    secrets = {
+      rpi4WireguardPrivate.file = ./secrets/rpi4WireguardPrivate.age;
+      flake-update.file = ./secrets/flake-update.age;
+    };
   };
 
   # Select internationalisation properties.
@@ -267,6 +270,18 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         ];
         UMask = "0077";
       };
+  };
+
+  flake-remote-update = {
+    enable = true;
+    remote = "https://gitlab.com/StillerHarpo/nixosconfiguration";
+    credentials = {
+      user = "StillerHarpo";
+      passwordFile = config.age.secrets.flake-update.path;
+    };
+    updateBranch = "update";
+    mainBranch = "master";
+    dates = "weekly";
   };
 
   system.stateVersion = "23.11";

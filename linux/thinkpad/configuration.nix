@@ -37,7 +37,6 @@
             group = "users";
             mode = "400";
           };
-          flake-update.file = ./secrets/flake-update.age;
         };
       };
       myHardware.enable = true;
@@ -486,17 +485,6 @@
 
       nixpkgs.hostPlatform = "x86_64-linux";
 
-      flake-remote-update = {
-        enable = true;
-        remote = "https://gitlab.com/StillerHarpo/nixosconfiguration";
-        credentials = {
-          user = "StillerHarpo";
-          passwordFile = config.age.secrets.flake-update.path;
-        };
-          updateBranch = "update";
-          mainBranch = "master";
-          dates = "weekly";
-      };
     }
   ];
 }

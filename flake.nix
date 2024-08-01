@@ -133,6 +133,8 @@
             inputs.agenix.nixosModules.age
             inputs.disko.nixosModules.disko
             ./linux/rpi4/configuration.nix
+            inputs.home-manager-flake.nixosModules.home-manager
+            outputs.nixosModules
           ];
         };
 
