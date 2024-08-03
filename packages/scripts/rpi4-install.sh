@@ -25,7 +25,7 @@ pass nixosRpi4_ssh_initrd_ed25519_key > "$temp/boot/initrd-ssh-key"
 # Intall rashberry pi uefi firmware
 cp -r --no-preserve="all" rpi4-uefi-firmware/* "$temp/boot/"
 
-# Call nixos-anywhere with disk encryption keys and ssh hostek
+# Call nixos-anywhere with disk encryption keys and ssh hostkey
 nixos-anywhere \
   --disk-encryption-keys /tmp/secret.key <(echo -n $(pass nixosRpi4Encryption)) \
   --extra-files "$temp" \
