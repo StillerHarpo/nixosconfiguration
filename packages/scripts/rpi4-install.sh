@@ -13,6 +13,10 @@ trap cleanup EXIT
 install -d -m755 "$temp/etc/ssh"
 
 # Decrypt your private key from the password store and copy it to the temporary directory
+# generated with
+# ssh-keygen
+# cat nixosRpi4_ssh_host_ed25519_key | wl-copy
+# pass insert -m nixosRpi4_ssh_host_ed25519_key
 pass nixosRpi4_ssh_host_ed25519_key > "$temp/etc/ssh/ssh_host_ed25519_key"
 
 # Set the correct permissions so sshd will accept the key
