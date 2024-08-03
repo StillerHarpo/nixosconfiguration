@@ -16,19 +16,6 @@ in
   config = mkIf cfg.enable (
     mkMerge [
       {
-        xdg.portal = {
-          enable = true;
-          wlr.enable = true;
-          extraPortals = [pkgs.xdg-desktop-portal-gtk];
-          config.common = {
-            # use xdg-desktop-portal-gtk for every portal interface
-            default="gtk";
-            # except for the xdg-desktop-portal-wlr supplied interfaces
-            "org.freedesktop.impl.portal.Screencast"="wlr";
-            "org.freedesktop.impl.portal.Screenshot"="wlr";
-          };
-        };
-
         apparmor.systemPackages =
           [ { pkgs = with pkgs; [
                 wl-clipboard
@@ -199,7 +186,21 @@ in
                 ];
               };
             };
+          xdg.portal = {
+            enable = true;
+            xdgOpenUsePortal = true;
+            extraPortals = [pkgs.xdg-desktop-portal-wlr pkgs.xdg-desktop-portal-gtk];
+            config.common = {
+              # use xdg-desktop-portal-gtk for every portal interface
+              default="gtk";
+              # except for the xdg-desktop-portal-wlr supplied interfaces
+              # this are the only portals, that xdg-desktop-portal-wlr supports
+              "org.freedesktop.impl.portal.Screencast"="wlr";
+              "org.freedesktop.impl.portal.Screenshot"="wlr";
+            };
+          };
         };
+        environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
         security.pam.services.swaylock = {};
       }
       (mkIf config.wayland.autoLogin {
