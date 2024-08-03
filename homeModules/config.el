@@ -1610,3 +1610,4 @@ If I let Windows handle DPI everything looks blurry."
 (add-to-list 'project-find-functions
              #'joaot/eglot-project-find-function)
 
+(add-hook 'before-save-hook 'eglot-format-buffer)
