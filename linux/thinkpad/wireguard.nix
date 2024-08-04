@@ -34,7 +34,7 @@ in {
       lib.mkIf cfg.vpn.enable
         (
           let
-            runInNetworkNamespace = "${lib.getExe' pkgs.iproute2 "ip"} netns exec airvpnns sudo -E -u florian -g users";
+            runInNetworkNamespace = "nsenter --net=/var/run/netns/airvpnns sudo -E -u florian -g users";
             firefoxAirvpn =
               pkgs.writeScriptBin "firefox-airvpn" ''
                 ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} -P private --new-window ''${1}
