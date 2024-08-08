@@ -20,9 +20,14 @@
             root = {
               size = "100%";
               content = {
+                type = "luks";
+                name = "crypted";
+                keyFile = "/tmp/secret.key";
+                content = {
                   type = "filesystem";
                   format = "ext4";
                   mountpoint = "/";
+                };
               };
             };
           };

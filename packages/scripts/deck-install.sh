@@ -23,6 +23,7 @@ pass flosDeck_ssh_host_ed25519_key > "$temp/etc/ssh/ssh_host_ed25519_key"
 chmod 600 "$temp/etc/ssh/ssh_host_ed25519_key"
 
 nixos-anywhere \
+  --disk-encryption-keys /tmp/secret.key <(echo -n $(pass nixosDeckEncryption)) \
   --extra-files "$temp" \
   --flake '.#flosDeck' \
   root@nixosDeckIP

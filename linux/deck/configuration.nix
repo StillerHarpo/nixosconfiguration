@@ -124,12 +124,20 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     };
   };
 
-  boot.loader = {
-    efi.canTouchEfiVariables = true;
-    timeout = 5;
-    systemd-boot = {
-      editor = false;
-      enable = true;
+
+  boot = {
+    initrd = {
+      availableKernelModules = ["evdev" "hid-generic" "i2c_hid_api" "hid_multitouch"];
+      unl0kr.enable = true;
+      systemd.enable = true;
+    };
+    loader = {
+      efi.canTouchEfiVariables = true;
+      timeout = 5;
+      systemd-boot = {
+        editor = false;
+        enable = true;
+      };
     };
   };
 
