@@ -7,4 +7,4 @@ maintainer:         engelflorian@posteo.de
 
 library
   build-depends:    base, protolude, text, xmonad-contrib
-  exposed-modules:  Bookmarks, Xrandr, Utils
+  exposed-modules:  Xrandr, Utils

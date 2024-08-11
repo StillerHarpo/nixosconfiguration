@@ -75,6 +75,11 @@ in {
           mountPoint = hostPath;
           isReadOnly = true;
         };
+        officeOvpn = rec {
+          hostPath = config.age.secrets.officeOvpn.path;
+          mountPoint = hostPath;
+          isReadOnly = true;
+        };
       };
 
       enableTun = true;
@@ -111,10 +116,8 @@ in {
 
         environment.systemPackages = with pkgs; [ git firefox remmina ];
 
-        environment.etc."office.ovpn".source = ./office.ovpn;
-
         services.openvpn.servers.officeVPN = {
-          config = "config /etc/office.ovpn ";
+          config = "config ${config.age.secrets.officeOvpn.path}";
           autoStart = true;
         };
 

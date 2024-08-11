@@ -30,9 +30,16 @@
           thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
           vpnPrivateKey.file = ./secrets/vpnPrivateKey.age;
           vpnPresharedKey.file = ./secrets/vpnPresharedKey.age;
+          officeOvpn.file = ./secrets/office.ovpn.age;
           bookmarks = {
             file = ./secrets/my-bookmarks.json.age;
             path = "/home/florian/.my-bookmarks.json";
+            owner = "florian";
+            group = "users";
+            mode = "400";
+          };
+          notmuchTags = {
+            file = ./secrets/notmuchTags.age;
             owner = "florian";
             group = "users";
             mode = "400";
@@ -48,13 +55,11 @@
 
       location = private.cords;
 
-      # openvnp
-      environment.etc."office.ovpn".source = ./office.ovpn;
-
       services = {
         tailscale.enable = true;
         openvpn.servers.officeVPN = {
-          config = "config /etc/office.ovpn ";
+
+          config = "config ${config.age.secrets.officeOvpn.path}";
           autoStart = false;
         };
         batteryNotifier.enable = true;

@@ -2,12 +2,14 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-import Bookmarks (bookmarks, workBookmarks)
+import Data.Aeson
+import qualified Data.ByteString.Lazy as BSL
 import Data.List (last)
 import qualified Data.Map as M
 import qualified Data.Text as T
@@ -59,11 +61,35 @@ newtype ListStorage = ListStorage [Window] deriving (Typeable)
 instance ExtensionClass ListStorage where
   initialValue = ListStorage []
 
-termCommand :: IsString a => a
+termCommand :: (IsString a) => a
 termCommand = "alacritty"
 
+data Bookmarks = Bookmarks
+  { normal :: [(Text, Text)],
+    private :: [(Text, Text)],
+    work :: [(Text, Text)]
+  }
+
+instance FromJSON Bookmarks where
+  parseJSON (Object v) = do
+    normal <- v .: "normal"
+    private <- v .: "private"
+    work <- v .: "work"
+    pure Bookmarks {..}
+
 main :: IO ()
-main =
+main = do
+  bookmarksJson <- BSL.readFile "/home/florian/.my-bookmarks.json"
+  bookmarks <- case eitherDecode bookmarksJson of
+    Left err -> do
+      hPutStrLn stderr $ "Error while parsing bookmarks: " <> err
+      pure
+        Bookmarks
+          { normal = [],
+            private = [],
+            work = []
+          }
+    Right v -> pure v
   xmonad $
     withUrgencyHook LibNotifyUrgencyHook $
       ewmhFullscreen
@@ -100,13 +126,13 @@ main =
                              ((mod4Mask, xK_u), spawn "sleep 2 && XSECURELOCK_COMPOSITE_OBSCURER=0 xsecurelock"),
                              ( (mod4Mask, xK_f),
                                composeAll
-                                 [ runOrShift,
+                                 [ runOrShift bookmarks,
                                    saveFocus
                                  ]
                              ),
                              ( (mod4Mask .|. shiftMask, xK_f),
                                composeAll
-                                 [ runOrRaise,
+                                 [ runOrRaise bookmarks,
                                    saveFocus
                                  ]
                              ),
@@ -165,7 +191,7 @@ main =
         ++ " && systemctl --user stop redshift.service"
         ++ " || systemctl --user start redshift.service"
 
-toggleMonitor :: MonadIO m => m ()
+toggleMonitor :: (MonadIO m) => m ()
 toggleMonitor =
   findM (fmap isConnected . monitorStatus) ["DP-1", "DP-2", "HDMI-A-1", "HDMI-A-2"]
     >>= maybe
@@ -262,9 +288,11 @@ myLayout = Full ||| shrinked ||| tabbed
 
 -- | programms that can be started from rofi
 programms ::
+  -- | bookmarks to open in browser
+  Bookmarks ->
   -- | (name in dmenu, executable)
   [(Text, Text)]
-programms =
+programms bookmarks =
   [ ("firefox", "firefox"),
     ("chromium", "chromium"),
     ("anki", "anki"),
@@ -285,8 +313,9 @@ programms =
     ("remmina", "remmina"),
     ("slack", "slack")
   ]
-    ++ map (second browser) bookmarks
-    ++ map (second (browserWithProfile "work")) workBookmarks
+    ++ map (second browser) (normal bookmarks)
+    ++ map (second vpnBrowser) (private bookmarks)
+    ++ map (second (browserWithProfile "work")) (work bookmarks)
   where
     startTerm s =
       termCommand
@@ -353,18 +382,26 @@ addCont w l@(ListStorage ws)
   | w `elem` ws = l
   | otherwise = ListStorage $ ws ++ [w]
 
--- | open url in browser with specified profile
-browserWithProfile :: Text -> Text -> Text
-browserWithProfile profile url = "firefox -P " <> profile <> " -new-window \"" <> urlWithSearch <> "\""
+-- | open url with specified browser
+mkBrowser :: Text -> Text -> Text
+mkBrowser browser url = browser <> " \"" <> urlWithSearch <> "\""
   where
     urlWithSearch =
       if (T.any (== '.') url || T.isInfixOf "localhost" url) && not (T.any (== ' ') url)
         then url
         else "duckduckgo.com\\?q=" <> replaceSpaces url
 
+-- | open url in browser with specified profile
+browserWithProfile :: Text -> Text -> Text
+browserWithProfile profile = mkBrowser $ "firefox -P " <> profile <> " -new-window \""
+
 -- | open url in browser
 browser :: Text -> Text
 browser = browserWithProfile "default"
+
+-- | open url vpn in browser
+vpnBrowser :: Text -> Text
+vpnBrowser = mkBrowser "sudo -En firefox-airvpn"
 
 getFontFromScreenWidth :: X Text
 getFontFromScreenWidth = do
@@ -376,12 +413,14 @@ getFontFromScreenWidth = do
 -- | Calls dmenuMap to grab the appropriate Window or program, and hands it off to action
 --   if found .
 actionMenu ::
+  -- | bookmarks to open in menu
+  Bookmarks ->
   -- | the action
   (Window -> X ()) ->
   -- | should the program be open on a new workspace
   Bool ->
   X ()
-actionMenu action viewEmpty = do
+actionMenu bookmarks action viewEmpty = do
   time <- clockText
   font <- getFontFromScreenWidth
   let menuMapFunction =
@@ -403,7 +442,7 @@ actionMenu action viewEmpty = do
       when (T.length url > 0) $
         composeAll $
           [viewEmptyWorkspace | viewEmpty]
-            ++ [spawn . T.unpack $ browser url]
+            ++ [spawn . T.unpack $ vpnBrowser url]
     windowMap :: X (M.Map Text (X ()))
     windowMap = do
       ws <- gets $ W.workspaces . windowset
@@ -423,7 +462,7 @@ actionMenu action viewEmpty = do
                     )
                 )
             )
-            programms
+            (programms bookmarks)
             <> commands
 
 passMenu :: X ()
@@ -431,11 +470,11 @@ passMenu = do
   font <- T.unpack <$> getFontFromScreenWidth
   safeSpawn "passmenu" ["-font", font, "-i", "-p", "pass"]
 
-runOrRaise :: X ()
-runOrRaise = actionMenu (windows . greedyFocusWindow) True
+runOrRaise :: Bookmarks -> X ()
+runOrRaise bookmarks = actionMenu bookmarks (windows . greedyFocusWindow) True
 
-runOrShift :: X ()
-runOrShift = actionMenu action False
+runOrShift :: Bookmarks -> X ()
+runOrShift bookmarks = actionMenu bookmarks action False
   where
     action w = do
       idx <- W.currentTag <$> gets windowset
@@ -471,7 +510,7 @@ delWin n w s = case W.findTag w s of
 
 -- | Like 'menuMapArgs' but also takes a default command
 menuMapArgsDefault ::
-  MonadIO m =>
+  (MonadIO m) =>
   Text ->
   [Text] ->
   (Text -> a) ->
