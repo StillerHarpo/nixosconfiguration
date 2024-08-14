@@ -115,6 +115,7 @@
             }
             {
               pkgs = with pkgs; [
+                librespeed-cli
                 mqttx
                 nil
                 difftastic

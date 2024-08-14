@@ -85,6 +85,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       plasma-browser-integration
     ];
     systemPackages = with pkgs; [
+      librespeed-cli
       xonotic
       openarena
       airshipper
