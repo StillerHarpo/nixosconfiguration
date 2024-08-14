@@ -111,6 +111,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       (kodi.withPackages (kodiPkgs:
         with kodiPkgs; [mediathekview invidious]
       ))
+      libcec
+      v4l-utils
     ];
   };
 
@@ -159,7 +161,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       hashedPasswordFile = config.age.secrets.florian.path;
       description = "Florian Engel";
       extraGroups =
-        [ "wheel" "networkmanager" ];
+        [ "wheel" "networkmanager" "dialout" "video" ];
       isNormalUser = true;
       openssh.authorizedKeys.keys = sshKeys;
     };
