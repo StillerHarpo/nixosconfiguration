@@ -83,7 +83,7 @@ then
 elif echo "${1}" | grep -q -e www.reddit
 then
     tuir -l "${1}"
-elif echo "${1}" | grep -q -e medilyse -e factisresearch
+elif echo "${1}" | grep -q -e medilyse -e factisresearch -e docs\.google
 then
     firefox -P work --new-window "${1}"
 else
