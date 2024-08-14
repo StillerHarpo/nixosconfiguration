@@ -1017,7 +1017,7 @@
 (use-package ement :ensure t)
 
 (use-package empv
- :custom (empv-invidious-instance "https://yt.cdaut.de/api/v1")
+ :custom (empv-invidious-instance "https://yt.artemislena.eu/api/v1")
  :config
  ; TODO find better bindings
  (defhydra hydra-empv (evil-normal-state-map "SPC o i")
