@@ -553,22 +553,6 @@
         "type": "github"
       }
     },
-    "nixpkgs-lesspipe": {
-      "locked": {
-        "lastModified": 1703662513,
-        "narHash": "sha256-T/dnWDOPYKJgkpD+lj70RhWxL+3VmWTa1P80GQewZ44=",
-        "owner": "anund",
-        "repo": "nixpkgs",
-        "rev": "2e2671126e2e1af4621e31c159f1a32b0ef8a903",
-        "type": "github"
-      },
-      "original": {
-        "owner": "anund",
-        "ref": "fix_less_pipe_dependency",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "nixpkgs-stable": {
       "locked": {
         "lastModified": 1723282977,
@@ -634,7 +618,6 @@
         "nixos-generators": "nixos-generators",
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs",
-        "nixpkgs-lesspipe": "nixpkgs-lesspipe",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur"
       }
