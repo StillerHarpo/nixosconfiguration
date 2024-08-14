@@ -7,7 +7,16 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     ./disko.nix
   ];
 
-  age.secrets.florian.file = ./secrets/florian.age;
+  age.secrets = {
+    florian.file = ./secrets/florian.age;
+    mediasourcesXml = {
+      file = ./secrets/mediasources.xml.age;
+      path = /home/florian/.kodi/userdata/mediasources.xml;
+      owner = "florian";
+      group = "users";
+      mode = "400";
+    };
+  };
 
   jovian = {
     steam = {
@@ -98,6 +107,9 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       lutris
       wine-staging
       lolcat
+      (kodi.withPackages (kodiPkgs:
+        with kodiPkgs; [mediathekview invidious]
+      ))
     ];
   };
 
@@ -161,6 +173,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       imports = [  outputs.homeModules ];
       firefox.enable = true;
       home.stateVersion = "23.05";
+      home.file.".kodi/userdata/addon_data/plugin.video.invidious/settings.xml".source = ./invidious.xml;
     };
   };
 
