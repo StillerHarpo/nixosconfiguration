@@ -5,6 +5,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 {
   imports = [
     ./disko.nix
+    ../configuration.nix
   ];
 
   age.secrets = {
@@ -121,25 +122,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     interfaces.wlo1.useDHCP = true;
   };
 
-
-  nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-      keep-outputs = true
-      keep-derivations = true
-    '';
-    optimise = {
-      automatic = true;
-      dates = [ "daily" ];
-    };
-    gc = {
-      automatic = true;
-      dates = "daily";
-      options = "--delete-older-than 7d";
-    };
-  };
-
-
   boot = {
     initrd = {
       availableKernelModules = ["evdev" "hid-generic" "i2c_hid_api" "hid_multitouch"];
@@ -188,6 +170,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     config.allowUnfree = true;
   };
 
+  nix.settings.trusted-users = [ "florian" ];
 
   dnscrypt.enable = true;
 

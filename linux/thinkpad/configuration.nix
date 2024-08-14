@@ -13,6 +13,7 @@
 
   config = lib.mkMerge [
     (lib.mkIf config.isRealSystem {
+      dnscrypt.enable = true;
       boot = {
         # Use the systemd-boot EFI boot loader.
         loader = {
@@ -285,10 +286,11 @@
       users = {
         users = {
           florian = {
+            isNormalUser = true;
             hashedPasswordFile = config.age.secrets.florian.path;
             description = "Florian Engel";
             extraGroups =
-              [ "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
+              [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
           };
           playground = { isNormalUser = true; };
         };
@@ -299,10 +301,19 @@
         autoLogin = true;
       };
 
-      services.dbus.packages = [ pkgs.gcr ];
+      services.dbus.packages = [ pkgs.gcr pkgs.dconf ];
 
       # powerManagement.enable = false;
       services = {
+
+        pipewire = {
+          enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
+          pulse.enable = true;
+        };
         tlp.enable = true;
 
         # Go in hibernate at lid
@@ -437,6 +448,12 @@
           enable = true;
           interface = "wlp61s0";
         };
+        wireshark = {
+          enable = true;
+          package = pkgs.wireshark;
+        };
+        steam.enable = true;
+        gamemode.enable = true;
       };
 
       nix.envVars.SSH_AUTH_SOCK = "/run/user/1000/gnupg/S.gpg-agent.ssh";
@@ -491,6 +508,19 @@
 
       nixpkgs.hostPlatform = "x86_64-linux";
 
+      specialisation.normalInternet.configuration = {
+        dnscrypt.enable = lib.mkForce false;
+        virtualisation.docker.enable = lib.mkForce false;
+      };
+
+      nix = {
+        settings.trusted-users = [ "florian" ];
+        registry.nixpkgs.flake = inputs.nixpkgs;
+        nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
+      };
+
+      # The NixOS release to be compatible with for stateful data such as databases.
+      system.stateVersion = "21.05";
     }
   ];
 }

@@ -23,8 +23,6 @@
         "cache.ts.haering.dev:II5Re1ZjWdDCZBSXWC2gA35H57r5eJTRl5bv++delZ4="
       ];
     };
-    registry.nixpkgs.flake = inputs.nixpkgs;
-    nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
   };
 
   nixpkgs = {

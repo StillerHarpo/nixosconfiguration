@@ -4,7 +4,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
 {
 
-  imports = [ ./disko.nix ];
+  imports = [
+    ./disko.nix
+    ../configuration.nix
+  ];
   age = {
     identityPaths = [ "/root/.ssh/rpi4" ];
     secrets = {
@@ -52,32 +55,9 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     (python3.withPackages (py: [ py.zigpy-znp ]))
   ];
 
-
   nix = {
-    extraOptions = ''
-      experimental-features = nix-command flakes
-      keep-outputs = true
-      keep-derivations = true
-    '';
     registry.nixpkgs.flake = inputs.nixpkgs;
     nixPath = [ "nixpkgs=${inputs.nixpkgs.outPath}" ];
-    settings = {
-      substituters = lib.mkAfter [
-        "https://nix-community.cachix.org?priority=50"
-      ];
-      trusted-public-keys = [
-        "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-        "ssh-serve:WltAxNNiDoufj5yg7k9tJHKoN7D5PgIZUyqDOMBOaGM="
-      ];
-      trusted-users = [ "root" "florian" ];
-      auto-optimise-store = true;
-    };
-    gc = {
-      persistent = true;
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
   };
 
   nixpkgs.overlays = builtins.attrValues outputs.overlays;
