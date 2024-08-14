@@ -281,7 +281,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     };
     updateBranch = "update";
     mainBranch = "master";
-    dates = "weekly";
+    dates = "Monday 01:00";
   };
 
   system.stateVersion = "23.11";
