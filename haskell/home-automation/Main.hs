@@ -96,7 +96,7 @@ colorTempRunner stateVar queue client lights = do
     atomically
       . writeTQueue queue
       . LogMessage
-      $ "It is " <> T.pack (show timeBeforeSleep) <> ". Slepping for" <> T.pack (show seconds) <> " seconds."
+      $ "It is " <> T.pack (show timeBeforeSleep) <> ". Sleeping for" <> T.pack (show seconds) <> " seconds."
     threadDelay (fromIntegral $ diffTimeToMicroseconds seconds)
     lightChangeTime <- getCurrentTimeOfDay
     atomically
