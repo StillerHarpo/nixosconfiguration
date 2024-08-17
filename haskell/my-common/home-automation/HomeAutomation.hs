@@ -1,17 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module HomeAutomation where
-import GHC.Generics
-import Network.MQTT.Topic
-import Data.Time.Clock
-import Data.Time.LocalTime
-import Data.Text (Text)
+
 import Data.Aeson
 import Data.Aeson.Types (Parser)
+import Data.Text (Text)
+import Data.Time.Clock
+import Data.Time.LocalTime
+import GHC.Generics
+import Network.MQTT.Topic
 
 data State = ON | OFF | TOGGLE
   deriving (Generic, Show, Eq)
@@ -57,22 +58,24 @@ data Light = Light
     lowestColorTemp :: Int,
     highestColorTemp :: Int
   }
+  deriving (Show)
 
 data Direction a = Up a | Down a
-   deriving (Show, Eq)
+  deriving (Show, Eq)
 
 data LightStepper = LightStepper
   { colorTempStart :: Int,
     steps :: Int,
     colorTempChange :: Int,
     stepDuration :: DiffTime
-   } deriving (Show, Eq)
+  }
+  deriving (Show, Eq)
 
 data Status = Started | Successful | Failed
   deriving (Generic, Show)
 
-data Definition = Definition {
-    model :: Maybe Text,
+data Definition = Definition
+  { model :: Maybe Text,
     vendor :: Maybe Text,
     description :: Maybe Text
   }
@@ -85,12 +88,12 @@ data BridgeEvent = BridgeEvent
   }
   deriving (Generic, Show)
 
-data BridgeEventKind =
-  BridgeEventDeviceJoined
-  | BridgeEventDeviceInterview {
-      status :: Maybe Status,
-      definition :: Maybe Definition
-                               }
+data BridgeEventKind
+  = BridgeEventDeviceJoined
+  | BridgeEventDeviceInterview
+      { status :: Maybe Status,
+        definition :: Maybe Definition
+      }
   | BridgeEventDeviceLeave
   | BridgeEventDeviceAnnounce
   deriving (Generic, Show)
@@ -156,49 +159,51 @@ instance FromJSON Definition where
   parseJSON = myGenericParseJSON
 
 instance ToJSON BridgeEvent where
-  toJSON BridgeEvent{..} =
-    let commenData = [
-            "friendly_name" .= friendlyName,
+  toJSON BridgeEvent {..} =
+    let commenData =
+          [ "friendly_name" .= friendlyName,
             "ieee_address" .= ieeeAddress
           ]
-    in case eventKind of
-      BridgeEventDeviceJoined ->
-        object [
-         "type" .= ("device_joined" :: Text),
-         "data" .= object commenData
-        ]
-      BridgeEventDeviceInterview{..} ->
-        object [
-         "type" .= ("device_joined" :: Text),
-         "data" .= object (
-             commenData <> [ "status" .= status, "definition" .= definition ]
-             )
-        ]
-      BridgeEventDeviceLeave ->
-        object [
-         "type" .= ("device_leave" :: Text),
-         "data" .= object commenData
-        ]
-      BridgeEventDeviceAnnounce ->
-        object [
-         "type" .= ("device_announce" :: Text),
-         "data" .= object commenData
-        ]
+     in case eventKind of
+          BridgeEventDeviceJoined ->
+            object
+              [ "type" .= ("device_joined" :: Text),
+                "data" .= object commenData
+              ]
+          BridgeEventDeviceInterview {..} ->
+            object
+              [ "type" .= ("device_joined" :: Text),
+                "data"
+                  .= object
+                    ( commenData <> ["status" .= status, "definition" .= definition]
+                    )
+              ]
+          BridgeEventDeviceLeave ->
+            object
+              [ "type" .= ("device_leave" :: Text),
+                "data" .= object commenData
+              ]
+          BridgeEventDeviceAnnounce ->
+            object
+              [ "type" .= ("device_announce" :: Text),
+                "data" .= object commenData
+              ]
 
 instance FromJSON BridgeEvent where
   parseJSON = withObject "BridgeEvent" $ \v -> do
-     data' <- v .: "data"
-     friendlyName <- data' .:? "friendly_name"
-     ieeeAddress <- data' .:? "ieee_address"
-     eventKind <- (v .: "type" :: Parser Text) >>= \case
-       "device_joined" -> pure BridgeEventDeviceJoined
-       "device_interview" -> do
-         status <- data' .:? "status"
-         definition <- data' .:? "definition"
-         pure BridgeEventDeviceInterview{..}
-       "device_leave" -> pure BridgeEventDeviceLeave
-       "device_announce" -> pure BridgeEventDeviceAnnounce
-     pure BridgeEvent{..}
+    data' <- v .: "data"
+    friendlyName <- data' .:? "friendly_name"
+    ieeeAddress <- data' .:? "ieee_address"
+    eventKind <-
+      (v .: "type" :: Parser Text) >>= \case
+        "device_joined" -> pure BridgeEventDeviceJoined
+        "device_interview" -> do
+          status <- data' .:? "status"
+          definition <- data' .:? "definition"
+          pure BridgeEventDeviceInterview {..}
+        "device_leave" -> pure BridgeEventDeviceLeave
+        "device_announce" -> pure BridgeEventDeviceAnnounce
+    pure BridgeEvent {..}
 
 changeLight :: ChangeLight
 changeLight =
@@ -218,65 +223,74 @@ changeLight =
 -- | Get LightStepper to get from lowest color temp to highest (or vice versa)
 getLightStepper :: Direction DiffTime -> Light -> LightStepper
 getLightStepper td lc =
-  LightStepper {
-    stepDuration = maybe dt (secondsToDiffTime . fromIntegral) $ maxStep lc,
-    ..
+  LightStepper
+    { stepDuration = maybe dt (secondsToDiffTime . fromIntegral) $ maxStep lc,
+      ..
     }
   where
     steps = maybe 1 (diffTimeToSeconds dt `div`) (maxStep lc)
     (dt, colorTempStart, colorTempChange) =
       case td of
-        Up dt -> let
-          startTemp =
-            round $
-              transformPointToOtherRange
-                0 (fromIntegral $ diffTimeToPicoseconds duration) (fromIntegral . diffTimeToPicoseconds $ duration - dt)
-                (fromIntegral $ lowestColorTemp lc) (fromIntegral $ highestColorTemp lc)
-          in (dt, startTemp, (highestColorTemp lc - startTemp) `div` steps)
-        Down dt -> let
-          startTemp =
-            round $
-              transformPointToOtherRange
-                0 (fromIntegral $ diffTimeToPicoseconds duration) (fromIntegral $ diffTimeToPicoseconds dt)
-                (fromIntegral $ lowestColorTemp lc) (fromIntegral $ highestColorTemp lc)
-          in (dt, startTemp, (-1) * ((startTemp - lowestColorTemp lc) `div` steps))
+        Up dt ->
+          let startTemp =
+                round $
+                  transformPointToOtherRange
+                    0
+                    (fromIntegral $ diffTimeToPicoseconds duration)
+                    (fromIntegral . diffTimeToPicoseconds $ duration - dt)
+                    (fromIntegral $ lowestColorTemp lc)
+                    (fromIntegral $ highestColorTemp lc)
+           in (dt, startTemp, (highestColorTemp lc - startTemp) `div` steps)
+        Down dt ->
+          let startTemp =
+                round $
+                  transformPointToOtherRange
+                    0
+                    (fromIntegral $ diffTimeToPicoseconds duration)
+                    (fromIntegral $ diffTimeToPicoseconds dt)
+                    (fromIntegral $ lowestColorTemp lc)
+                    (fromIntegral $ highestColorTemp lc)
+           in (dt, startTemp, (-1) * ((startTemp - lowestColorTemp lc) `div` steps))
 
 changeLightSteps :: LightStepper -> (ChangeLight, [ChangeLight])
 changeLightSteps stepper =
-  (changeLight { colorTemp = Just . Exact $ colorTempStart stepper},
-    map (\temp ->
-           changeLight {
-            colorTemp = Just . Exact $ temp + colorTempStart stepper,
-            transition = Just (diffTimeToSeconds (stepDuration stepper))
-            })
-    . scanl1 (+) $ replicate (steps stepper) (colorTempChange stepper))
+  ( changeLight {colorTemp = Just . Exact $ colorTempStart stepper},
+    map
+      ( \temp ->
+          changeLight
+            { colorTemp = Just . Exact $ temp + colorTempStart stepper,
+              transition = Just (diffTimeToSeconds (stepDuration stepper))
+            }
+      )
+      . scanl1 (+)
+      $ replicate (steps stepper) (colorTempChange stepper)
+  )
 
 -- | cuts the list down to a fraction of to numbers by removing at the front
-dropFraction :: (RealFrac a, Fractional a) => a -> a  -> [b] -> [b]
+dropFraction :: (RealFrac a, Fractional a) => a -> a -> [b] -> [b]
 dropFraction x y xs = drop (round (fromIntegral (length xs - 1) / (x / y))) xs
 
 -- | given an point on a range give the corresponding point on another range
 -- where the ratio to its lower and upper bound is the same
-transformPointToOtherRange :: Fractional a => a -> a -> a -> a -> a -> a
+transformPointToOtherRange :: (Fractional a) => a -> a -> a -> a -> a -> a
 transformPointToOtherRange lower upper point lower' upper' = (upper' - lower') * ((point - lower) / (upper - lower)) + lower'
 
 -- | Calculates a color temp based on the given time. At Night in should be a warm temp
 -- and during the day it should be cold temp. Between night and day and vice versa is a transition
 -- over 1 hour
-timeToColorTemp :: TimeOfDay -> Light ->  (ChangeLight, [ChangeLight])
+timeToColorTemp :: TimeOfDay -> Light -> (ChangeLight, [ChangeLight])
 timeToColorTemp t light
   | t >= dayTimeStart && timeOfDayToTime t <= timeOfDayToTime dayTimeStart + duration =
-    let
-      restDuration = timeOfDayToTime dayTimeStart + duration - timeOfDayToTime t
-      stepper = getLightStepper (Down restDuration) light
-    in changeLightSteps stepper
+      let restDuration = timeOfDayToTime dayTimeStart + duration - timeOfDayToTime t
+          stepper = getLightStepper (Down restDuration) light
+       in changeLightSteps stepper
   | timeOfDayToTime t > timeOfDayToTime dayTimeStart + duration && t < nightTimeStart =
-    (changeLight {colorTemp = Just Coolest}, [])
-  | t >= nightTimeStart  && timeOfDayToTime t <= timeOfDayToTime nightTimeStart + duration = let
-      restDuration = timeOfDayToTime nightTimeStart + duration - timeOfDayToTime t
-      stepper = getLightStepper (Up restDuration) light
-    in changeLightSteps stepper
-  | otherwise = (changeLight {colorTemp = Just Warmest }, [])
+      (changeLight {colorTemp = Just Coolest}, [])
+  | t >= nightTimeStart && timeOfDayToTime t <= timeOfDayToTime nightTimeStart + duration =
+      let restDuration = timeOfDayToTime nightTimeStart + duration - timeOfDayToTime t
+          stepper = getLightStepper (Up restDuration) light
+       in changeLightSteps stepper
+  | otherwise = (changeLight {colorTemp = Just Warmest}, [])
 
 duration :: DiffTime
 duration = secondsToDiffTime (60 * 60)
@@ -314,30 +328,40 @@ kitchenT = lightsT <> "kitchen"
 kitchenOneT = kitchenT <> "one"
 kitchenTwoT = kitchenT <> "two"
 kitchenThreeT = kitchenT <> "three"
-dinerRoomT = lightsT  <> "dinerRoom"
-kitchenAndDinerRoomT = lightsT  <> "kitchenAndDinerRoom"
-livingRoomT = lightsT  <> "livingRoom"
-hallwayT = lightsT  <> "hallway"
-bedroomT = lightsT  <> "bedroom"
+
+dinerRoomT = lightsT <> "dinerRoom"
+
+kitchenAndDinerRoomT = lightsT <> "kitchenAndDinerRoom"
+
+livingRoomT = lightsT <> "livingRoom"
+
+hallwayT = lightsT <> "hallway"
+
+bedroomT = lightsT <> "bedroom"
+
 allT = "all"
+
 setT = "set"
+
 availabilityT = "availability"
 
 livingRoom :: Light
-livingRoom = Light {
-  topic = livingRoomT,
-  maxStep = Nothing,
-  lowestColorTemp = 150,
-  highestColorTemp = 500
-  }
+livingRoom =
+  Light
+    { topic = livingRoomT,
+      maxStep = Nothing,
+      lowestColorTemp = 150,
+      highestColorTemp = 500
+    }
 
 mkIkeaLight :: Topic -> Light
-mkIkeaLight light = Light {
-  topic = light,
-  maxStep = Nothing,
-  lowestColorTemp = 153,
-  highestColorTemp = 500
-  }
+mkIkeaLight light =
+  Light
+    { topic = light,
+      maxStep = Nothing,
+      lowestColorTemp = 153,
+      highestColorTemp = 500
+    }
 
 kitchen :: Light
 kitchen = mkIkeaLight (kitchenT <> allT)

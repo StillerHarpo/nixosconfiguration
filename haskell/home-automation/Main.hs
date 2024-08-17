@@ -1,36 +1,36 @@
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TupleSections #-}
 {-# LANGUAGE ViewPatterns #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE RecordWildCards #-}
 
-import System.IO
+import Control.Applicative ((<|>))
 import Control.Concurrent
+import Control.Concurrent.Async
+import Control.Concurrent.STM
+import Control.Concurrent.STM.TQueue
+import Control.Exception (bracket)
 import Control.Monad
-import qualified Data.Text as T
-import qualified Data.Text.IO as T
-import qualified Data.Text.Encoding as T
+import Data.Aeson
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Char8 as BS
 import Data.ByteString.Lazy (ByteString)
 import Data.Char
+import Data.Map.Strict (Map)
+import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
+import qualified Data.Text.IO as T
+import Data.Time.Clock
+import Data.Time.LocalTime
+import HomeAutomation
 import Network.MQTT.Client
 import Network.MQTT.Topic
 import Network.URI (URI)
 import Network.URI.Static (staticURI)
-import Data.Time.Clock
-import Data.Time.LocalTime
-import Data.Aeson
-import qualified Data.Map.Strict as Map
-import Data.Map.Strict (Map)
-import HomeAutomation 
-import Control.Exception (bracket)
-import Control.Concurrent.Async
-import Control.Concurrent.STM
-import Control.Concurrent.STM.TQueue
-import Control.Applicative ((<|>))
+import System.IO
 
 type MqttState = Map Topic ChangeLight
 
@@ -66,7 +66,7 @@ publishLightStepsIfOn stateVar queue client tod light = do
 publishLightStepsON :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO ()
 publishLightStepsON stateVar queue client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
-  publishLight queue client (topic light <> setT) startTemp { state = Just ON }
+  publishLight queue client (topic light <> setT) startTemp {state = Just ON}
   forM_ steps $ \changeLight -> do
     publishLight queue client (topic light <> setT) changeLight
     -- ich glaub das wird nie ausgeführt
@@ -110,43 +110,57 @@ mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
 
 runMqtt :: TVar MqttState -> TQueue Logger -> IO ()
-runMqtt stateVar queue = 
+runMqtt stateVar queue =
   bracket
     (connectURI mqttConfig {_msgCB = SimpleCallback (handleMessage stateVar queue)} mosquittoURI)
-    (\mc -> do
-      stopClient mc
-      atomically $ writeTQueue queue StopLogging)
-    (\mc -> do
-        subscribe mc (map ((, subOptions) . toFilter) [
-                   "zigbee2mqtt/switch/kitchen/action",
-                   "zigbee2mqtt/switch/livingRoom/action",
-                   "zigbee2mqtt/switch/hallway/action",
-                   "zigbee2mqtt/switch/bedroom/action",
-                   "zigbee2mqtt/bridge/event",
-                   kitchenOneT, kitchenTwoT, kitchenThreeT, livingRoomT, bedroomT, hallwayT, dinerRoomT]) []
+    ( \mc -> do
+        stopClient mc
+        atomically $ writeTQueue queue StopLogging
+    )
+    ( \mc -> do
+        subscribe
+          mc
+          ( map
+              ((,subOptions) . toFilter)
+              [ "zigbee2mqtt/switch/kitchen/action",
+                "zigbee2mqtt/switch/livingRoom/action",
+                "zigbee2mqtt/switch/hallway/action",
+                "zigbee2mqtt/switch/bedroom/action",
+                "zigbee2mqtt/bridge/event",
+                kitchenOneT,
+                kitchenTwoT,
+                kitchenThreeT,
+                livingRoomT,
+                bedroomT,
+                hallwayT,
+                dinerRoomT
+              ]
+          )
+          []
         colorTempRunner stateVar queue mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
-        waitForClient mc)
+        waitForClient mc
+    )
 
 main :: IO ()
 main = do
-  hSetBuffering stdout LineBuffering 
+  hSetBuffering stdout LineBuffering
   queue <- atomically newTQueue
   stateVar <- newTVarIO Map.empty
   withAsync (runMqtt stateVar queue) $ \_ -> do
     logger queue
     putStrLn "Terminating program"
 
-data Logger =
-  LogMessage T.Text
+data Logger
+  = LogMessage T.Text
   | StopLogging
 
 logger :: TQueue Logger -> IO ()
-logger queue = atomically (readTQueue queue) >>= \case
-  LogMessage msg -> do
-    T.putStrLn msg
-    logger queue
-  StopLogging -> pure ()
-
+logger queue =
+  atomically (readTQueue queue) >>= \case
+    LogMessage msg -> do
+      T.putStrLn msg
+      logger queue
+    StopLogging -> pure ()
 
 handleMessage :: TVar MqttState -> TQueue Logger -> MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
 handleMessage mqttState queue client reasonTopic m _ = do
@@ -164,10 +178,10 @@ handleMessage mqttState queue client reasonTopic m _ = do
     case decode m of
       Nothing ->
         atomically
-        . writeTQueue queue
-        . LogMessage
-        $ "Parsing of bridge event failed: " <> T.decodeUtf8 (BS.toStrict m)
-      Just BridgeEvent{eventKind = BridgeEventDeviceAnnounce, friendlyName = Just (mkTopic -> Just name)} -> do
+          . writeTQueue queue
+          . LogMessage
+          $ "Parsing of bridge event failed: " <> T.decodeUtf8 (BS.toStrict m)
+      Just BridgeEvent {eventKind = BridgeEventDeviceAnnounce, friendlyName = Just (mkTopic -> Just name)} -> do
         atomically . writeTQueue queue . LogMessage $ "got Event with name: " <> unTopic name
         forM_ (matchLight name) $ \light -> do
           atomically . writeTQueue queue $ LogMessage "matched light"
@@ -175,11 +189,11 @@ handleMessage mqttState queue client reasonTopic m _ = do
       Just ev -> atomically . writeTQueue queue . LogMessage $ "Ignoring event: " <> T.pack (show ev)
   when (match "zigbee2mqtt/lights/#" reasonTopic) $
     case decode m of
-      Nothing -> 
+      Nothing ->
         atomically
-        . writeTQueue queue
-        . LogMessage
-        $ "Parsing of light failed: " <> T.decodeUtf8 (BS.toStrict m)
+          . writeTQueue queue
+          . LogMessage
+          $ "Parsing of light failed: " <> T.decodeUtf8 (BS.toStrict m)
       Just changeLight -> setState mqttState queue reasonTopic changeLight
 
 -- | Handles which light one switch handles
@@ -189,11 +203,9 @@ handleSwitch mqttState queue light client m = do
   when (m == "on_press_release" || m == "on") $ do
     publishLightStepsToggle mqttState queue client time light
   when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
-    publishLight queue client (topic light  <> setT) (changeLight { brightnessStep = Just 30, transition = Just 2 })
+    publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just 30, transition = Just 2})
   when (m == "down_hold" || m == "down_press" || m == "brightness_move_down") $
-    publishLight queue client (topic light  <> setT) (changeLight { brightnessStep = Just (-30), transition = Just 2 })
-
-
+    publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just (-30), transition = Just 2})
 
 -- | Sets the state of lights
 setState :: TVar MqttState -> TQueue Logger -> Topic -> ChangeLight -> IO ()
@@ -203,22 +215,23 @@ setState stateVar queue topic changeLight = do
     writeTVar stateVar (Map.alter updateState topic mqttState)
     writeTQueue queue
       . LogMessage
-      $ "Changed state of topic " <> unTopic topic <> " to: " <> T.pack (show changeLight) 
+      $ "Changed state of topic " <> unTopic topic <> " to: " <> T.pack (show changeLight)
   where
     updateState v =
       case v of
         Nothing -> Just changeLight
-        Just old -> let
-             updateField fieldAccessor = fieldAccessor changeLight <|> fieldAccessor old
-          in Just $ ChangeLight {
-          state = updateField state,
-          brightness = updateField brightness,
-          colorTemp = updateField colorTemp,
-          colorTempStartup = updateField colorTempStartup,
-          color = updateField color,
-          transition = updateField transition,
-          brightnessMove = updateField brightnessMove,
-          brightnessStep = updateField brightnessStep,
-          colorTempMove = updateField colorTempMove,
-          colorTempStep = updateField colorTempStep
-        }
+        Just old ->
+          let updateField fieldAccessor = fieldAccessor changeLight <|> fieldAccessor old
+           in Just $
+                ChangeLight
+                  { state = updateField state,
+                    brightness = updateField brightness,
+                    colorTemp = updateField colorTemp,
+                    colorTempStartup = updateField colorTempStartup,
+                    color = updateField color,
+                    transition = updateField transition,
+                    brightnessMove = updateField brightnessMove,
+                    brightnessStep = updateField brightnessStep,
+                    colorTempMove = updateField colorTempMove,
+                    colorTempStep = updateField colorTempStep
+                  }
