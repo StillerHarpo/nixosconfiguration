@@ -22,7 +22,16 @@ data ColorTemp = Exact Int | Coolest | Cool | Neutral | Warm | Warmest
 data ColorTempStartup = ColorTemp ColorTemp | Previous
   deriving (Generic, Show, Eq)
 
-data Color = ColorXY {x :: Int, y :: Int} | ColorRGB {red :: Int, green :: Int, blue :: Int}
+data Color
+  = ColorXY
+      { x :: Float,
+        y :: Float,
+        h :: Maybe Int,
+        hue :: Maybe Int,
+        s :: Maybe Int,
+        saturation :: Maybe Int
+      }
+  | ColorRGB {red :: Int, green :: Int, blue :: Int}
   deriving (Generic, Show, Eq)
 
 data Move = Step Int | Stop
