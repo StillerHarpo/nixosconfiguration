@@ -41,7 +41,14 @@ isLightOn mqttState light = fromMaybe False $ do
   curState <- state changeLight
   pure (curState == ON)
 
-publishLightSteps :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO () -> IO ()
+publishLightSteps ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  TimeOfDay ->
+  Light ->
+  IO () ->
+  IO ()
 publishLightSteps stateVar queue client tod light offAction = do
   mqttState <- readTVarIO stateVar
   atomically
@@ -51,7 +58,13 @@ publishLightSteps stateVar queue client tod light offAction = do
   if isLightOn mqttState light
   then offAction
   else publishLightStepsON stateVar queue client tod light
-publishLightStepsToggle :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> [Light] -> IO ()
+publishLightStepsToggle ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  TimeOfDay ->
+  [Light] ->
+  IO ()
 publishLightStepsToggle stateVar queue client tod lights = do
   mqttState <- readTVarIO stateVar
   atomically
@@ -59,32 +72,66 @@ publishLightStepsToggle stateVar queue client tod lights = do
     . LogMessage
     $ "Current state is: " <> T.pack (show mqttState)
   if any (isLightOn mqttState) lights
-    then forM_ lights $ \light -> publishLight queue client (topic light <> setT) changeLight {state = Just OFF}
-    else forM_ lights $ \light -> withAsync (publishLightStepsON stateVar queue client tod light) (\_ -> pure ())
+    then forM_ lights $ \light ->
+      publishLight
+        queue
+        client
+        (topic light <> setT)
+        changeLight {state = Just OFF}
+    else forM_ lights $ \light ->
+      withAsync
+        (publishLightStepsON stateVar queue client tod light)
+        (\_ -> pure ())
 
-publishLightStepsIfOn :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO ()
+publishLightStepsIfOn ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  TimeOfDay ->
+  Light ->
+  IO ()
 publishLightStepsIfOn stateVar queue client tod light = do
   publishLightSteps stateVar queue client tod light (pure ())
 
 -- send multiple signals to bulb according to step duration. This is
 -- necessary because some bulbs have an upper transition time
-publishLightStepsON :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO ()
+publishLightStepsON ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  TimeOfDay ->
+  Light ->
+  IO ()
 publishLightStepsON stateVar queue client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
-  publishLight queue client (topic light <> setT) startTemp {state = Just ON}
+  publishLight
+    queue
+    client
+    (topic light <> setT)
+    startTemp
+      { state = Just ON
+      }
   forM_ steps $ \changeLight -> do
     publishLight queue client (topic light <> setT) changeLight
     -- ich glaub das wird nie ausgeführt
-    -- setState stateVar queue (topic light) changeLight { state = Just ON }
+    setState stateVar queue (topic light) changeLight {state = Just ON}
     threadDelay (maybe 0 (* (1000 * 1000)) $ transition changeLight)
 
 -- publish a mqtt message to a light
-publishLight :: TQueue Logger -> MQTTClient -> Topic -> ChangeLight -> IO ()
+publishLight ::
+  TQueue Logger ->
+  MQTTClient ->
+  Topic ->
+  ChangeLight ->
+  IO ()
 publishLight queue client topic light = do
   atomically
     . writeTQueue queue
     . LogMessage
-    $ "Changing light for " <> unTopic topic <> ": " <> T.decodeUtf8 (BS.toStrict (encode light))
+    $ "Changing light for "
+      <> unTopic topic
+      <> ": "
+      <> T.decodeUtf8 (BS.toStrict (encode light))
   publish client topic (encode light) False
 
 getCurrentTimeOfDay :: IO TimeOfDay
@@ -93,23 +140,48 @@ getCurrentTimeOfDay = do
   timeZone <- getTimeZone time
   pure $ localTimeOfDay $ utcToLocalTime timeZone time
 
-colorTempRunner :: TVar MqttState -> TQueue Logger -> MQTTClient -> [Light] -> IO ()
+colorTempRunner ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  [Light] ->
+  IO ()
 colorTempRunner stateVar queue client lights = do
   forever $ do
     timeBeforeSleep <- getCurrentTimeOfDay
-    let seconds = minimum $ map (timeUntil timeBeforeSleep) [dayTimeStart, nightTimeStart]
+    let seconds =
+          minimum $
+            map
+              (timeUntil timeBeforeSleep)
+              [dayTimeStart, nightTimeStart]
     atomically
       . writeTQueue queue
       . LogMessage
-      $ "It is " <> T.pack (show timeBeforeSleep) <> ". Sleeping for" <> T.pack (show seconds) <> " seconds."
+      $ "It is "
+        <> T.pack (show timeBeforeSleep)
+        <> ". Sleeping for"
+        <> T.pack (show seconds)
+        <> " seconds."
     threadDelay (fromIntegral $ diffTimeToMicroseconds seconds)
     lightChangeTime <- getCurrentTimeOfDay
     atomically
       . writeTQueue queue
       . LogMessage
-      $ "It is " <> T.pack (show lightChangeTime) <> ". Starting color transition"
+      $ "It is "
+        <> T.pack (show lightChangeTime)
+        <> ". Starting color transition for lights: "
+        <> T.pack (show lights)
     forM_ lights $
-      \light -> withAsync (publishLightStepsIfOn stateVar queue client lightChangeTime light) (\_ -> pure ())
+      \light ->
+        withAsync
+          ( publishLightStepsIfOn
+              stateVar
+              queue
+              client
+              lightChangeTime
+              light
+          )
+          (\_ -> pure ())
 
 mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
@@ -117,7 +189,14 @@ mosquittoURI = $$(staticURI "mqtt://localhost")
 runMqtt :: TVar MqttState -> TQueue Logger -> IO ()
 runMqtt stateVar queue =
   bracket
-    (connectURI mqttConfig {_msgCB = SimpleCallback (handleMessage stateVar queue)} mosquittoURI)
+    ( connectURI
+        mqttConfig
+          { _msgCB =
+              SimpleCallback
+                (handleMessage stateVar queue)
+          }
+        mosquittoURI
+    )
     ( \mc -> do
         stopClient mc
         atomically $ writeTQueue queue StopLogging
@@ -142,7 +221,18 @@ runMqtt stateVar queue =
               ]
           )
           []
-        colorTempRunner stateVar queue mc [livingRoom, kitchen, hallway, dinerRoom, bedroom]
+        colorTempRunner
+          stateVar
+          queue
+          mc
+          [ livingRoom,
+            kitchenOne,
+            kitchenTwo,
+            kitchenThree,
+            hallway,
+            dinerRoom,
+            bedroom
+          ]
         waitForClient mc
     )
 
@@ -167,12 +257,25 @@ logger queue =
       logger queue
     StopLogging -> pure ()
 
-handleMessage :: TVar MqttState -> TQueue Logger -> MQTTClient -> Topic -> ByteString -> [Property] -> IO ()
+handleMessage ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  Topic ->
+  ByteString ->
+  [Property] ->
+  IO ()
 handleMessage mqttState queue client reasonTopic m _ = do
-  atomically . writeTQueue queue . LogMessage $ "Handle message of topic: " <> unTopic reasonTopic
+  atomically . writeTQueue queue . LogMessage $
+    "Handle message of topic: " <> unTopic reasonTopic
   time <- getCurrentTimeOfDay
   when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $
-    handleSwitch mqttState queue [dinerRoom, kitchenOne, kitchenTwo, kitchenThree] client m
+    handleSwitch
+      mqttState
+      queue
+      [dinerRoom, kitchenOne, kitchenTwo, kitchenThree]
+      client
+      m
   when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $
     handleSwitch mqttState queue [livingRoom] client m
   when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $
@@ -185,13 +288,22 @@ handleMessage mqttState queue client reasonTopic m _ = do
         atomically
           . writeTQueue queue
           . LogMessage
-          $ "Parsing of bridge event failed: " <> T.decodeUtf8 (BS.toStrict m)
-      Just BridgeEvent {eventKind = BridgeEventDeviceAnnounce, friendlyName = Just (mkTopic -> Just name)} -> do
-        atomically . writeTQueue queue . LogMessage $ "got Event with name: " <> unTopic name
-        forM_ (matchLight name) $ \light -> do
-          atomically . writeTQueue queue $ LogMessage "matched light"
-          publishLightStepsON mqttState queue client time light
-      Just ev -> atomically . writeTQueue queue . LogMessage $ "Ignoring event: " <> T.pack (show ev)
+          $ "Parsing of bridge event failed: "
+            <> T.decodeUtf8 (BS.toStrict m)
+      Just
+        BridgeEvent
+          { eventKind =
+              BridgeEventDeviceAnnounce,
+            friendlyName = Just (mkTopic -> Just name)
+          } -> do
+          atomically . writeTQueue queue . LogMessage $
+            "got Event with name: " <> unTopic name
+          forM_ (matchLight name) $ \light -> do
+            atomically . writeTQueue queue $ LogMessage "matched light"
+            publishLightStepsON mqttState queue client time light
+      Just ev ->
+        atomically . writeTQueue queue . LogMessage $
+          "Ignoring event: " <> T.pack (show ev)
   when (match "zigbee2mqtt/lights/#" reasonTopic) $
     case decode m of
       Nothing ->
@@ -199,36 +311,66 @@ handleMessage mqttState queue client reasonTopic m _ = do
           . writeTQueue queue
           . LogMessage
           $ "Parsing of light failed: " <> T.decodeUtf8 (BS.toStrict m)
-      Just changeLight -> setState mqttState queue reasonTopic changeLight
+      Just changeLight ->
+        setState mqttState queue reasonTopic changeLight
 
 -- | Handles which light one switch handles
-handleSwitch :: TVar MqttState -> TQueue Logger -> [Light] -> MQTTClient -> ByteString -> IO ()
+handleSwitch ::
+  TVar MqttState ->
+  TQueue Logger ->
+  [Light] ->
+  MQTTClient ->
+  ByteString ->
+  IO ()
 handleSwitch mqttState queue lights client m = do
   time <- getCurrentTimeOfDay
   when (m == "on_press_release" || m == "on") $ do
     publishLightStepsToggle mqttState queue client time lights
   when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
     forM_ lights $
-      \light -> publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just 30, transition = Just 2})
-  when (m == "down_hold" || m == "down_press" || m == "brightness_move_down") $
-    forM_ lights $
-      \light -> publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just (-30), transition = Just 2})
+      \light ->
+        publishLight
+          queue
+          client
+          (topic light <> setT)
+          (changeLight {brightnessStep = Just 30, transition = Just 2})
+  when
+    ( m == "down_hold"
+        || m == "down_press"
+        || m == "brightness_move_down"
+    )
+    $ forM_ lights
+    $ \light ->
+      publishLight
+        queue
+        client
+        (topic light <> setT)
+        (changeLight {brightnessStep = Just (-30), transition = Just 2})
 
 -- | Sets the state of lights
-setState :: TVar MqttState -> TQueue Logger -> Topic -> ChangeLight -> IO ()
+setState ::
+  TVar MqttState ->
+  TQueue Logger ->
+  Topic ->
+  ChangeLight ->
+  IO ()
 setState stateVar queue topic changeLight = do
   atomically $ do
     mqttState <- readTVar stateVar
     writeTVar stateVar (Map.alter updateState topic mqttState)
     writeTQueue queue
       . LogMessage
-      $ "Changed state of topic " <> unTopic topic <> " to: " <> T.pack (show changeLight)
+      $ "Changed state of topic "
+        <> unTopic topic
+        <> " to: "
+        <> T.pack (show changeLight)
   where
     updateState v =
       case v of
         Nothing -> Just changeLight
         Just old ->
-          let updateField fieldAccessor = fieldAccessor changeLight <|> fieldAccessor old
+          let updateField fieldAccessor =
+                fieldAccessor changeLight <|> fieldAccessor old
            in Just $
                 ChangeLight
                   { state = updateField state,
