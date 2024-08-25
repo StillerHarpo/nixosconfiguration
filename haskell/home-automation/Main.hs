@@ -56,8 +56,9 @@ publishLightSteps stateVar queue client tod light offAction = do
     . LogMessage
     $ "Current state is: " <> T.pack (show mqttState)
   if isLightOn mqttState light
-  then offAction
-  else publishLightStepsON stateVar queue client tod light
+    then publishLightStepsON stateVar queue client tod light
+    else offAction
+
 publishLightStepsToggle ::
   TVar MqttState ->
   TQueue Logger ->
