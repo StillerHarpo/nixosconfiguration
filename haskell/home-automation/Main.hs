@@ -92,7 +92,19 @@ publishLightStepsIfOn ::
   Light ->
   IO ()
 publishLightStepsIfOn stateVar queue client tod light = do
-  publishLightSteps stateVar queue client tod light (pure ())
+  publishLightSteps
+    stateVar
+    queue
+    client
+    tod
+    light
+    ( atomically
+        . writeTQueue queue
+        . LogMessage
+        $ "Won't publish light, "
+          <> unTopic (topic light)
+          <> " because it is off"
+    )
 
 -- send multiple signals to bulb according to step duration. This is
 -- necessary because some bulbs have an upper transition time
