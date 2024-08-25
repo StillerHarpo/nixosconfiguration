@@ -56,7 +56,9 @@ data Light = Light
   { topic :: Topic,
     maxStep :: Maybe Int,
     lowestColorTemp :: Int,
-    highestColorTemp :: Int
+    highestColorTemp :: Int,
+    lowestBrightness :: Int,
+    highestBrightness :: Int
   }
   deriving (Show)
 
@@ -351,7 +353,9 @@ livingRoom =
     { topic = livingRoomT,
       maxStep = Nothing,
       lowestColorTemp = 150,
-      highestColorTemp = 500
+      highestColorTemp = 500,
+      lowestBrightness = 0,
+      highestBrightness = 254
     }
 
 mkIkeaLight :: Topic -> Light
@@ -360,7 +364,9 @@ mkIkeaLight light =
     { topic = light,
       maxStep = Nothing,
       lowestColorTemp = 153,
-      highestColorTemp = 500
+      highestColorTemp = 500,
+      lowestBrightness = 0,
+      highestBrightness = 254
     }
 
 kitchenOne :: Light

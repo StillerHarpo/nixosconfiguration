@@ -110,7 +110,8 @@ publishLightStepsON stateVar queue client tod light = do
     client
     (topic light <> setT)
     startTemp
-      { state = Just ON
+      { state = Just ON,
+        brightness = Just (highestBrightness light)
       }
   forM_ steps $ \changeLight -> do
     publishLight queue client (topic light <> setT) changeLight
