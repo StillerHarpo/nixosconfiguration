@@ -100,6 +100,7 @@
       environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
 
       security.rtkit.enable = true;
+      environment.systemPackages  = [pkgs.sshfs];
       apparmor = {
         enable = true;
         systemPackages =
@@ -150,7 +151,6 @@
                 openarena
                 xonotic
                 #############
-                sshfs
                 chromium
                 passff-host
                 neomutt
@@ -284,13 +284,14 @@
       };
 
       users = {
+        groups.fuse = {};
         users = {
           florian = {
             isNormalUser = true;
             hashedPasswordFile = config.age.secrets.florian.path;
             description = "Florian Engel";
             extraGroups =
-              [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" ];
+              [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" "fuse" ];
           };
           playground = { isNormalUser = true; };
         };
@@ -521,6 +522,21 @@
 
       # The NixOS release to be compatible with for stateful data such as databases.
       system.stateVersion = "21.05";
+
+      fileSystems."/home/florian/server" = {
+        device = "tim@${private.serverIP}:/var/www/files.haering.dev";
+        fsType = "fuse.sshfs";
+        options = [
+          "identityfile=/home/florian/.ssh/id_ed25519"
+          "idmap=user"
+          "x-systemd.automount"
+          "allow_other"
+          "user"
+          "uid=1000"
+          "gid=1000"
+        ];
+      };
+      boot.supportedFilesystems."fuse.sshfs" = true;
     }
   ];
 }
