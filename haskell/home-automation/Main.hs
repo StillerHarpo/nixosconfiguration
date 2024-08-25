@@ -51,12 +51,17 @@ publishLightSteps stateVar queue client tod light offAction = do
   if isLightOn mqttState light
   then offAction
   else publishLightStepsON stateVar queue client tod light
+publishLightStepsToggle :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> [Light] -> IO ()
+publishLightStepsToggle stateVar queue client tod lights = do
+  mqttState <- readTVarIO stateVar
+  atomically
+    . writeTQueue queue
+    . LogMessage
+    $ "Current state is: " <> T.pack (show mqttState)
+  if any (isLightOn mqttState) lights
+    then forM_ lights $ \light -> publishLight queue client (topic light <> setT) changeLight {state = Just OFF}
+    else forM_ lights $ \light -> withAsync (publishLightStepsON stateVar queue client tod light) (\_ -> pure ())
 
-publishLightStepsToggle :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO ()
-publishLightStepsToggle stateVar queue client tod light = do
-  publishLightSteps stateVar queue client tod light $
-   publishLight queue client (topic light <> setT) changeLight { state = Just OFF } 
-  
 publishLightStepsIfOn :: TVar MqttState -> TQueue Logger -> MQTTClient -> TimeOfDay -> Light -> IO ()
 publishLightStepsIfOn stateVar queue client tod light = do
   publishLightSteps stateVar queue client tod light (pure ())
@@ -167,13 +172,13 @@ handleMessage mqttState queue client reasonTopic m _ = do
   atomically . writeTQueue queue . LogMessage $ "Handle message of topic: " <> unTopic reasonTopic
   time <- getCurrentTimeOfDay
   when (reasonTopic == "zigbee2mqtt/switch/kitchen/action") $
-    handleSwitch mqttState queue kitchenAndDinerRoom client m
+    handleSwitch mqttState queue [dinerRoom, kitchenOne, kitchenTwo, kitchenThree] client m
   when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $
-    handleSwitch mqttState queue livingRoom client m
+    handleSwitch mqttState queue [livingRoom] client m
   when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $
-    handleSwitch mqttState queue hallway client m
+    handleSwitch mqttState queue [hallway] client m
   when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $
-    handleSwitch mqttState queue bedroom client m
+    handleSwitch mqttState queue [bedroom] client m
   when (reasonTopic == "zigbee2mqtt/bridge/event") $
     case decode m of
       Nothing ->
@@ -197,15 +202,17 @@ handleMessage mqttState queue client reasonTopic m _ = do
       Just changeLight -> setState mqttState queue reasonTopic changeLight
 
 -- | Handles which light one switch handles
-handleSwitch :: TVar MqttState -> TQueue Logger -> Light -> MQTTClient -> ByteString -> IO ()
-handleSwitch mqttState queue light client m = do
+handleSwitch :: TVar MqttState -> TQueue Logger -> [Light] -> MQTTClient -> ByteString -> IO ()
+handleSwitch mqttState queue lights client m = do
   time <- getCurrentTimeOfDay
   when (m == "on_press_release" || m == "on") $ do
-    publishLightStepsToggle mqttState queue client time light
+    publishLightStepsToggle mqttState queue client time lights
   when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
-    publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just 30, transition = Just 2})
+    forM_ lights $
+      \light -> publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just 30, transition = Just 2})
   when (m == "down_hold" || m == "down_press" || m == "brightness_move_down") $
-    publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just (-30), transition = Just 2})
+    forM_ lights $
+      \light -> publishLight queue client (topic light <> setT) (changeLight {brightnessStep = Just (-30), transition = Just 2})
 
 -- | Sets the state of lights
 setState :: TVar MqttState -> TQueue Logger -> Topic -> ChangeLight -> IO ()

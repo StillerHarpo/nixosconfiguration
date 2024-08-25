@@ -363,6 +363,15 @@ mkIkeaLight light =
       highestColorTemp = 500
     }
 
+kitchenOne :: Light
+kitchenOne = mkIkeaLight kitchenOneT
+
+kitchenTwo :: Light
+kitchenTwo = mkIkeaLight kitchenTwoT
+
+kitchenThree :: Light
+kitchenThree = mkIkeaLight kitchenThreeT
+
 kitchen :: Light
 kitchen = mkIkeaLight (kitchenT <> allT)
 
