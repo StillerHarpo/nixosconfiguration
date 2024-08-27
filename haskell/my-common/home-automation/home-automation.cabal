@@ -8,3 +8,4 @@ maintainer:         engelflorian@posteo.de
 library
   build-depends:    base, text, net-mqtt, time, aeson
   exposed-modules:  HomeAutomation
+  ghc-options:      -Wall -Werror

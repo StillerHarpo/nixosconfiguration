@@ -9,6 +9,7 @@ executable monitor-changer
   main-is:          haskell/monitor-changer/MonitorChanger.hs
   build-depends:    base, haskell,
   default-language: Haskell2010
+  ghc-options:      -Wall -Werror
 
 executable scans
   main-is:          haskell/scans/Scan.hs
@@ -19,18 +20,20 @@ executable home-automation
   main-is:          haskell/home-automation/Main.hs
   build-depends:    base, net-mqtt, network-uri, bytestring, text, time, aeson, haskell, async, stm, containers
   default-language: Haskell2010
+  ghc-options:      -Wall -Werror
 
 test-suite tests
   default-language: Haskell2010
   type: exitcode-stdio-1.0
   main-is: haskell/tests/Tests.hs
-  ghc-options:  -main-is Tests
+  ghc-options:  -main-is Tests -Wall -Werror
   build-depends: base, tasty, tasty-hunit, time, haskell
 
 executable xmonad-desktop
   main-is:          haskell/xmonad-desktop/xmonad.hs
   build-depends:    base, xmonad, xmonad-contrib
   default-language: Haskell2010
+  ghc-options:      -Wall -Werror
 
 executable xmonad-thinkpad
   main-is:          haskell/xmonad-thinkpad/xmonad.hs
@@ -47,8 +50,10 @@ executable xmonad-thinkpad
                     aeson,
                     haskell
   default-language: Haskell2010
+  ghc-options:      -Wall -Werror
 
 library
   hs-source-dirs:   haskell/my-common, haskell/my-common/home-automation
   build-depends:    base, protolude, text, xmonad-contrib, net-mqtt, time, aeson
   exposed-modules:  Xrandr, Utils, HomeAutomation
+  ghc-options:      -Wall -Werror

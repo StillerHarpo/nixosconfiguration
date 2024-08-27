@@ -9,14 +9,12 @@ import Control.Applicative ((<|>))
 import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Concurrent.STM
-import Control.Concurrent.STM.TQueue
 import Control.Exception (bracket)
 import Control.Monad
 import Data.Aeson
 import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BS
 import Data.ByteString.Lazy (ByteString)
-import Data.Char
+import Data.Either (lefts)
 import Data.Map.Strict (Map)
 import qualified Data.Map.Strict as Map
 import Data.Maybe (fromMaybe)
@@ -30,6 +28,7 @@ import Network.MQTT.Client
 import Network.MQTT.Topic
 import Network.URI (URI)
 import Network.URI.Static (staticURI)
+import System.Exit (exitFailure)
 import System.IO
 
 type MqttState = Map Topic ChangeLight
@@ -37,8 +36,8 @@ type MqttState = Map Topic ChangeLight
 -- | checks whether the light is on
 isLightOn :: MqttState -> Light -> Bool
 isLightOn mqttState light = fromMaybe False $ do
-  changeLight <- Map.lookup (topic light) mqttState
-  curState <- state changeLight
+  curChangeLight <- Map.lookup (topic light) mqttState
+  curState <- state curChangeLight
   pure (curState == ON)
 
 publishLightSteps ::
@@ -125,11 +124,11 @@ publishLightStepsON stateVar queue client tod light = do
       { state = Just ON,
         brightness = Just (highestBrightness light)
       }
-  forM_ steps $ \changeLight -> do
-    publishLight queue client (topic light <> setT) changeLight
+  forM_ steps $ \step -> do
+    publishLight queue client (topic light <> setT) step
     -- ich glaub das wird nie ausgeführt
     setState stateVar queue (topic light) changeLight {state = Just ON}
-    threadDelay (maybe 0 (* (1000 * 1000)) $ transition changeLight)
+    threadDelay (maybe 0 (* (1000 * 1000)) $ transition step)
 
 -- publish a mqtt message to a light
 publishLight ::
@@ -216,25 +215,29 @@ runMqtt stateVar queue =
         atomically $ writeTQueue queue StopLogging
     )
     ( \mc -> do
-        subscribe
-          mc
-          ( map
-              ((,subOptions) . toFilter)
-              [ "zigbee2mqtt/switch/kitchen/action",
-                "zigbee2mqtt/switch/livingRoom/action",
-                "zigbee2mqtt/switch/hallway/action",
-                "zigbee2mqtt/switch/bedroom/action",
-                "zigbee2mqtt/bridge/event",
-                kitchenOneT,
-                kitchenTwoT,
-                kitchenThreeT,
-                livingRoomT,
-                bedroomT,
-                hallwayT,
-                dinerRoomT
-              ]
-          )
-          []
+        (lefts -> errs, _) <-
+          subscribe
+            mc
+            ( map
+                ((,subOptions) . toFilter)
+                [ "zigbee2mqtt/switch/kitchen/action",
+                  "zigbee2mqtt/switch/livingRoom/action",
+                  "zigbee2mqtt/switch/hallway/action",
+                  "zigbee2mqtt/switch/bedroom/action",
+                  "zigbee2mqtt/bridge/event",
+                  kitchenOneT,
+                  kitchenTwoT,
+                  kitchenThreeT,
+                  livingRoomT,
+                  bedroomT,
+                  hallwayT,
+                  dinerRoomT
+                ]
+            )
+            []
+        unless (null errs) $
+          atomically . writeTQueue queue . StopLoggingWithFailure $
+            "Got errors wile subscribing: " <> T.intercalate ", " (map (T.pack . show) errs)
         colorTempRunner
           stateVar
           queue
@@ -262,6 +265,7 @@ main = do
 data Logger
   = LogMessage T.Text
   | StopLogging
+  | StopLoggingWithFailure T.Text
 
 logger :: TQueue Logger -> IO ()
 logger queue =
@@ -270,6 +274,9 @@ logger queue =
       T.putStrLn msg
       logger queue
     StopLogging -> pure ()
+    StopLoggingWithFailure msg -> do
+      T.putStrLn msg
+      exitFailure
 
 handleMessage ::
   TVar MqttState ->
@@ -325,8 +332,8 @@ handleMessage mqttState queue client reasonTopic m _ = do
           . writeTQueue queue
           . LogMessage
           $ "Parsing of light failed: " <> T.decodeUtf8 (BS.toStrict m)
-      Just changeLight ->
-        setState mqttState queue reasonTopic changeLight
+      Just changedLight ->
+        setState mqttState queue reasonTopic changedLight
 
 -- | Handles which light one switch handles
 handleSwitch ::
@@ -368,7 +375,7 @@ setState ::
   Topic ->
   ChangeLight ->
   IO ()
-setState stateVar queue topic changeLight = do
+setState stateVar queue topic newChangeLight = do
   atomically $ do
     mqttState <- readTVar stateVar
     writeTVar stateVar (Map.alter updateState topic mqttState)
@@ -377,14 +384,14 @@ setState stateVar queue topic changeLight = do
       $ "Changed state of topic "
         <> unTopic topic
         <> " to: "
-        <> T.pack (show changeLight)
+        <> T.pack (show newChangeLight)
   where
     updateState v =
       case v of
-        Nothing -> Just changeLight
+        Nothing -> Just newChangeLight
         Just old ->
           let updateField fieldAccessor =
-                fieldAccessor changeLight <|> fieldAccessor old
+                fieldAccessor newChangeLight <|> fieldAccessor old
            in Just $
                 ChangeLight
                   { state = updateField state,

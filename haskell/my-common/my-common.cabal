@@ -8,3 +8,4 @@ maintainer:         engelflorian@posteo.de
 library
   build-depends:    base, protolude, text, xmonad-contrib
   exposed-modules:  Xrandr, Utils
+  ghc-options:      -Wall -Werror

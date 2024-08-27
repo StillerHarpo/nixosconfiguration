@@ -3,12 +3,14 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE TypeApplications #-}
 
 module HomeAutomation where
 
 import Data.Aeson
-import Data.Aeson.Types (Parser)
+import Data.Aeson.Types (Parser, parseFail)
 import Data.Text (Text)
+import qualified Data.Text as T
 import Data.Time.Clock
 import Data.Time.LocalTime
 import GHC.Generics
@@ -104,6 +106,7 @@ instance ToJSON State
 
 instance FromJSON State
 
+myJSONOptions :: Options
 myJSONOptions =
   defaultOptions
     { sumEncoding = UntaggedValue,
@@ -205,6 +208,7 @@ instance FromJSON BridgeEvent where
           pure BridgeEventDeviceInterview {..}
         "device_leave" -> pure BridgeEventDeviceLeave
         "device_announce" -> pure BridgeEventDeviceAnnounce
+        other -> parseFail $ "unexpected: " <> T.unpack other
     pure BridgeEvent {..}
 
 changeLight :: ChangeLight
@@ -233,26 +237,26 @@ getLightStepper td lc =
     steps = maybe 1 (diffTimeToSeconds dt `div`) (maxStep lc)
     (dt, colorTempStart, colorTempChange) =
       case td of
-        Up dt ->
+        Up dTime ->
           let startTemp =
-                round $
+                round @Double $
                   transformPointToOtherRange
                     0
                     (fromIntegral $ diffTimeToPicoseconds duration)
                     (fromIntegral . diffTimeToPicoseconds $ duration - dt)
                     (fromIntegral $ lowestColorTemp lc)
                     (fromIntegral $ highestColorTemp lc)
-           in (dt, startTemp, (highestColorTemp lc - startTemp) `div` steps)
-        Down dt ->
+           in (dTime, startTemp, (highestColorTemp lc - startTemp) `div` steps)
+        Down dTime ->
           let startTemp =
-                round $
+                round @Double $
                   transformPointToOtherRange
                     0
                     (fromIntegral $ diffTimeToPicoseconds duration)
                     (fromIntegral $ diffTimeToPicoseconds dt)
                     (fromIntegral $ lowestColorTemp lc)
                     (fromIntegral $ highestColorTemp lc)
-           in (dt, startTemp, (-1) * ((startTemp - lowestColorTemp lc) `div` steps))
+           in (dTime, startTemp, (-1) * ((startTemp - lowestColorTemp lc) `div` steps))
 
 changeLightSteps :: LightStepper -> (ChangeLight, [ChangeLight])
 changeLightSteps stepper =
@@ -310,9 +314,9 @@ getNextTimeColorShift t
   | otherwise = dayTimeStart
 
 timeUntil :: TimeOfDay -> TimeOfDay -> DiffTime
-timeUntil from to = if t > 0 then t else timeOfDayToTime (TimeOfDay 24 0 0) + t
+timeUntil tFrom tTo = if t > 0 then t else timeOfDayToTime (TimeOfDay 24 0 0) + t
   where
-    t = timeOfDayToTime to - timeOfDayToTime from
+    t = timeOfDayToTime tTo - timeOfDayToTime tFrom
 
 hour :: Int -> TimeOfDay
 hour h = TimeOfDay h 0 0
@@ -323,28 +327,34 @@ diffTimeToMicroseconds = (`div` 1000) . (`div` 1000) . diffTimeToPicoseconds
 diffTimeToSeconds :: DiffTime -> Int
 diffTimeToSeconds = (`div` 1000) . (`div` 1000) . fromInteger . diffTimeToMicroseconds
 
-zigbee2mqttT, lightsT, kitchenT, livingRoomT, kitchenOneT, kitchenTwoT, kitchenThreeT, allT, setT, availabilityT :: Topic
+zigbee2mqttT,
+  lightsT,
+  kitchenT,
+  livingRoomT,
+  kitchenOneT,
+  kitchenTwoT,
+  kitchenThreeT,
+  dinerRoomT,
+  kitchenAndDinerRoomT,
+  hallwayT,
+  bedroomT,
+  allT,
+  setT,
+  availabilityT ::
+    Topic
 zigbee2mqttT = "zigbee2mqtt"
 lightsT = zigbee2mqttT <> "lights"
 kitchenT = lightsT <> "kitchen"
 kitchenOneT = kitchenT <> "one"
 kitchenTwoT = kitchenT <> "two"
 kitchenThreeT = kitchenT <> "three"
-
 dinerRoomT = lightsT <> "dinerRoom"
-
 kitchenAndDinerRoomT = lightsT <> "kitchenAndDinerRoom"
-
 livingRoomT = lightsT <> "livingRoom"
-
 hallwayT = lightsT <> "hallway"
-
 bedroomT = lightsT <> "bedroom"
-
 allT = "all"
-
 setT = "set"
-
 availabilityT = "availability"
 
 livingRoom :: Light

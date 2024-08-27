@@ -9,12 +9,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 
 import Data.Aeson
+import Data.Aeson.Types (typeMismatch)
 import qualified Data.ByteString.Lazy as BSL
 import Data.List (last)
 import qualified Data.Map as M
 import qualified Data.Text as T
 import qualified Data.Text.Lazy as T (toStrict)
-import Data.Word (Word32)
 import Protolude
 import Text.Pretty.Simple
 import Utils
@@ -22,22 +22,21 @@ import XMonad hiding (ifM)
 import XMonad.Actions.CycleWS (nextScreen, swapNextScreen)
 import XMonad.Actions.FindEmptyWorkspace (viewEmptyWorkspace)
 import XMonad.Actions.MessageFeedback (sendMessageB)
-import qualified XMonad.Actions.Search as T
 import XMonad.Actions.SpawnOn (manageSpawn, spawnOn)
 import XMonad.Actions.UpdatePointer (updatePointer)
-import XMonad.Hooks.EwmhDesktops (ewmh, ewmhFullscreen, fullscreenEventHook)
+import XMonad.Hooks.EwmhDesktops (ewmhFullscreen)
 import XMonad.Hooks.SetWMName (setWMName)
 import XMonad.Hooks.UrgencyHook
   ( UrgencyHook (..),
     withUrgencyHook,
   )
 import XMonad.Layout.Column (Column (Column))
-import XMonad.Layout.Gaps (Direction2D (L, R), gaps)
+import XMonad.Layout.Gaps (Direction2D (L, R), Gaps, gaps)
 import qualified XMonad.Layout.Groups as G
 import qualified XMonad.Layout.Groups.Helpers as GH
+import XMonad.Layout.LayoutModifier (ModifiedLayout)
 import XMonad.Layout.NoBorders (noBorders, smartBorders)
 import qualified XMonad.StackSet as W
-import XMonad.Util.DebugWindow (debugWindow)
 import XMonad.Util.Dmenu (menuArgs)
 import XMonad.Util.Dzen
   ( addArgs,
@@ -76,6 +75,7 @@ instance FromJSON Bookmarks where
     private <- v .: "private"
     work <- v .: "work"
     pure Bookmarks {..}
+  parseJSON other = typeMismatch "object" other
 
 main :: IO ()
 main = do
@@ -96,7 +96,7 @@ main = do
         def
           { terminal = termCommand,
             modMask = mod4Mask,
-            workspaces = map show [1 .. 20],
+            workspaces = map show [1 :: Integer .. 20],
             layoutHook = smartBorders $ noBorders myLayout,
             logHook = updatePointer (0.5, 0.5) (0, 0),
             manageHook = myManageHooks,
@@ -167,7 +167,7 @@ main = do
                              )
                            ]
                              ++ [ ((mod4Mask, k), saveView i)
-                                  | (i, k) <- zip [1 .. 9] [xK_1 .. xK_9]
+                                  | (i, k) <- zip [1 :: Integer .. 9] [xK_1 .. xK_9]
                                 ]
                          )
         `additionalKeysP` [ ("<XF86MonBrightnessUp>", backlight Plus),
@@ -271,6 +271,7 @@ shrinkMasterGroups = sendMessage $ G.ToEnclosing $ SomeMessage Shrink
 expandMasterGroups :: X ()
 expandMasterGroups = sendMessage $ G.ToEnclosing $ SomeMessage Expand
 
+myManageHooks :: ManageHook
 myManageHooks =
   composeAll
     [ manageSpawn <+> manageHook def,
@@ -280,6 +281,11 @@ myManageHooks =
 doSink :: ManageHook
 doSink = ask >>= \w -> liftX (reveal w) >> doF (W.sink w)
 
+myLayout ::
+  Choose
+    Full
+    (Choose (ModifiedLayout Gaps Full) (G.Groups Full (Mirror Column)))
+    Window
 myLayout = Full ||| shrinked ||| tabbed
   where
     shrinked = gaps [(L, 300), (R, 300)] Full
@@ -317,13 +323,6 @@ programms bookmarks =
     ++ map (second vpnBrowser) (private bookmarks)
     ++ map (second (browserWithProfile "work")) (work bookmarks)
   where
-    startTerm s =
-      termCommand
-        <> " -t \""
-        <> s
-        <> "\" -e \""
-        <> s
-        <> "\""
     emacs s =
       "emacsclient -c -e \"("
         <> s
@@ -384,7 +383,7 @@ addCont w l@(ListStorage ws)
 
 -- | open url with specified browser
 mkBrowser :: Text -> Text -> Text
-mkBrowser browser url = browser <> " \"" <> urlWithSearch <> "\""
+mkBrowser myBrowser url = myBrowser <> " \"" <> urlWithSearch <> "\""
   where
     urlWithSearch =
       if (T.any (== '.') url || T.isInfixOf "localhost" url) && not (T.any (== ' ') url)
@@ -422,13 +421,13 @@ actionMenu ::
   X ()
 actionMenu bookmarks action viewEmpty = do
   time <- clockText
-  font <- getFontFromScreenWidth
+  rofiFont <- getFontFromScreenWidth
   let menuMapFunction =
         menuMapArgsDefault
           "rofi"
           [ "-dmenu",
             "-font",
-            font,
+            rofiFont,
             "-i",
             "-p",
             "window",
@@ -467,8 +466,8 @@ actionMenu bookmarks action viewEmpty = do
 
 passMenu :: X ()
 passMenu = do
-  font <- T.unpack <$> getFontFromScreenWidth
-  safeSpawn "passmenu" ["-font", font, "-i", "-p", "pass"]
+  passmenuFont <- T.unpack <$> getFontFromScreenWidth
+  safeSpawn "passmenu" ["-font", passmenuFont, "-i", "-p", "pass"]
 
 runOrRaise :: Bookmarks -> X ()
 runOrRaise bookmarks = actionMenu bookmarks (windows . greedyFocusWindow) True
@@ -491,11 +490,11 @@ getScreenWidth = rect_width . screenRect . W.screenDetail . W.current . windowse
 decorateName :: WindowSpace -> Window -> X Text
 decorateName ws w = do
   name <- resClass <$> withDisplay (\d -> io $ getClassHint d w)
-  displayName <- show <$> getName w
+  windowName <- show <$> getName w
   return $
     T.pack name
       <> " - "
-      <> displayName
+      <> windowName
       <> " ["
       <> T.pack (W.tag ws)
       <> "]"
@@ -503,10 +502,10 @@ decorateName ws w = do
 -- | temporally deletes a window on a workspace
 delWin :: (Ord a, Eq s, Eq i) => i -> a -> W.StackSet i l a s sd -> W.StackSet i l a s sd
 delWin n w s = case W.findTag w s of
-  Just from | n `W.tagMember` s -> go from s
+  Just tag | n `W.tagMember` s -> go tag s
   _ -> s
   where
-    go from = onWorkspace from (W.delete' w)
+    go tag = onWorkspace tag (W.delete' w)
 
 -- | Like 'menuMapArgs' but also takes a default command
 menuMapArgsDefault ::
@@ -516,9 +515,9 @@ menuMapArgsDefault ::
   (Text -> a) ->
   M.Map Text a ->
   m a
-menuMapArgsDefault menuCmd args def selectionMap = do
+menuMapArgsDefault menuCmd args getDefault selectionMap = do
   selection <- menuFunction . map T.unpack $ M.keys selectionMap
-  return $ fromMaybe (def selection) $ M.lookup selection selectionMap
+  return $ fromMaybe (getDefault selection) $ M.lookup selection selectionMap
   where
     menuFunction = fmap T.pack . menuArgs (T.unpack menuCmd) (map T.unpack args)
 
@@ -531,6 +530,7 @@ onWorkspace ::
 onWorkspace n f s = W.view (W.currentTag s) . f . W.view n $ s
 
 -- | inserts a window over the currently focused one
+insertUp :: Window -> X ()
 insertUp w = alt (onFocused $ insertUpZ w) (W.insertUp w)
 
 -- | Group helpers
