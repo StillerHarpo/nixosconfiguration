@@ -524,10 +524,11 @@
       system.stateVersion = "21.05";
 
       fileSystems."/home/florian/server" = {
-        device = "tim@${private.serverIP}:/var/www/files.haering.dev";
+        device = "tim@server:/var/www/files.haering.dev";
         fsType = "fuse.sshfs";
         options = [
           "identityfile=/home/florian/.ssh/id_ed25519"
+          "KexAlgorithms=curve25519-sha256"
           "idmap=user"
           "x-systemd.automount"
           "allow_other"
@@ -536,6 +537,7 @@
           "gid=1000"
         ];
       };
+      programs.ssh.kexAlgorithms = [ "curve25519-sha256" ];
       boot.supportedFilesystems."fuse.sshfs" = true;
     }
   ];
