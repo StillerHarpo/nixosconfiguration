@@ -246,6 +246,7 @@
            "|"
            "DONE(d)"  ; Task successfully completed
            "KILL(k)"))) ; Task was cancelled, aborted or is no longer applicable
+  (org-startup-folded 'fold)
   :config
   ;; https://github.com/doomemacs/doomemacs/issues/2672
   ;; Prevent temporarily opened agenda buffers from polluting recentf.
