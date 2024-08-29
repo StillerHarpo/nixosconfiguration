@@ -126,8 +126,14 @@ publishLightStepsON stateVar queue client tod light = do
       }
   forM_ steps $ \step -> do
     publishLight queue client (topic light <> setT) step
-    -- ich glaub das wird nie ausgeführt
-    setState stateVar queue (topic light) changeLight {state = Just ON}
+    setState
+      stateVar
+      queue
+      (topic light)
+      changeLight
+        { state = Just ON,
+          brightness = Just (highestBrightness light)
+        }
     threadDelay (maybe 0 (* (1000 * 1000)) $ transition step)
 
 -- publish a mqtt message to a light
