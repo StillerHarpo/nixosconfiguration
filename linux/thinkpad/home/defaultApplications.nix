@@ -39,7 +39,6 @@
       linkopen = {
         name = "linkopen";
         exec = "${pkgs.my-linkopen}/bin/linkopen";
-        terminal = true;
         mimeType = [ "text/html" "text/xml" ];
       };
     };
