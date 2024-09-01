@@ -444,7 +444,7 @@
 (use-package org-roam
   :ensure
   :commands
-  (org-roam-node-list org-roam-node-file org-roam-filter-by-regex)
+  (org-roam-node-list org-roam-node-file)
   :init
   (defun my/org-roam-filter-by-regex (regex)
     (lambda (file)
