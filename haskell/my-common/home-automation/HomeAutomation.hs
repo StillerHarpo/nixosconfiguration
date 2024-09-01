@@ -50,7 +50,7 @@ data ChangeLight = ChangeLight
     colorTemp :: Maybe ColorTemp,
     colorTempStartup :: Maybe ColorTempStartup,
     color :: Maybe Color,
-    transition :: Maybe Int,
+    transition :: Maybe Integer,
     brightnessMove :: Maybe Move,
     brightnessStep :: Maybe Int,
     colorTempMove :: Maybe Move,
@@ -260,7 +260,7 @@ getLightStepper td lc =
       ..
     }
   where
-    steps = maybe 1 (diffTimeToSeconds dt `div`) (maxStep lc)
+    steps = maybe 1 ((fromInteger $ diffTimeToSeconds dt) `div`) (maxStep lc)
     (dt, colorTempStart, colorTempChange) =
       case td of
         Up dTime ->
@@ -350,7 +350,7 @@ hour h = TimeOfDay h 0 0
 diffTimeToMicroseconds :: DiffTime -> Integer
 diffTimeToMicroseconds = (`div` 1000) . (`div` 1000) . diffTimeToPicoseconds
 
-diffTimeToSeconds :: DiffTime -> Int
+diffTimeToSeconds :: DiffTime -> Integer
 diffTimeToSeconds = (`div` 1000) . (`div` 1000) . fromInteger . diffTimeToMicroseconds
 
 zigbee2mqttT,

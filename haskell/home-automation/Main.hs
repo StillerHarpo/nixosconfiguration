@@ -6,7 +6,6 @@
 {-# LANGUAGE ViewPatterns #-}
 
 import Control.Applicative ((<|>))
-import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Concurrent.STM
 import Control.Concurrent.Thread.Delay
@@ -133,7 +132,7 @@ publishLightStepsON stateVar queue client tod light = do
         { state = Just ON,
           brightness = Just (highestBrightness light)
         }
-    delay (maybe 0 (* (1000 * 1000)) $ transition step)
+    delay (maybe 0 ((* (1000 * 1000)) . fromIntegral) $ transition step)
 
 -- publish a mqtt message to a light
 publishLight ::
