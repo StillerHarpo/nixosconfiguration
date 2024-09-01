@@ -401,11 +401,15 @@ setState stateVar queue topic newChangeLight = do
                   { state = updateField state,
                     brightness = updateField brightness,
                     colorTemp = updateField colorTemp,
+                    colorTempMove = updateField colorTempMove,
+                    colorTempStep = updateField colorTempStep,
                     colorTempStartup = updateField colorTempStartup,
                     color = updateField color,
                     transition = updateField transition,
                     brightnessMove = updateField brightnessMove,
                     brightnessStep = updateField brightnessStep,
-                    colorTempMove = updateField colorTempMove,
-                    colorTempStep = updateField colorTempStep
+                    huePowerOnBehavior = updateField huePowerOnBehavior,
+                    huePowerOnBrightness = updateField huePowerOnBrightness,
+                    huePowerOnColorTemperature = updateField huePowerOnColorTemperature,
+                    huePowerOnColor = updateField huePowerOnColor
                   }

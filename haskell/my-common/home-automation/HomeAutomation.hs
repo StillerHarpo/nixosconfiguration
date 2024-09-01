@@ -9,6 +9,7 @@ module HomeAutomation where
 
 import Data.Aeson
 import Data.Aeson.Types (Parser, parseFail)
+import qualified Data.Char as C
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Time.Clock
@@ -17,6 +18,9 @@ import GHC.Generics
 import Network.MQTT.Topic
 
 data State = ON | OFF | TOGGLE
+  deriving (Generic, Show, Eq)
+
+data PowerOnState = Revover | On | Off
   deriving (Generic, Show, Eq)
 
 data ColorTemp = Exact Int | Coolest | Cool | Neutral | Warm | Warmest
@@ -50,7 +54,11 @@ data ChangeLight = ChangeLight
     brightnessMove :: Maybe Move,
     brightnessStep :: Maybe Int,
     colorTempMove :: Maybe Move,
-    colorTempStep :: Maybe Int
+    colorTempStep :: Maybe Int,
+    huePowerOnBehavior :: Maybe PowerOnState,
+    huePowerOnBrightness :: Maybe Int,
+    huePowerOnColorTemperature :: Maybe ColorTemp,
+    huePowerOnColor :: Maybe Color
   }
   deriving (Generic, Show, Eq)
 
@@ -105,6 +113,20 @@ data BridgeEventKind
 instance ToJSON State
 
 instance FromJSON State
+
+instance ToJSON PowerOnState where
+  toJSON =
+    genericToJSON
+      defaultOptions
+        { constructorTagModifier = map C.toLower
+        }
+
+instance FromJSON PowerOnState where
+  parseJSON =
+    genericParseJSON
+      defaultOptions
+        { constructorTagModifier = map C.toLower
+        }
 
 myJSONOptions :: Options
 myJSONOptions =
@@ -223,7 +245,11 @@ changeLight =
       brightnessMove = Nothing,
       brightnessStep = Nothing,
       colorTempMove = Nothing,
-      colorTempStep = Nothing
+      colorTempStep = Nothing,
+      huePowerOnBehavior = Nothing,
+      huePowerOnBrightness = Nothing,
+      huePowerOnColorTemperature = Nothing,
+      huePowerOnColor = Nothing
     }
 
 -- | Get LightStepper to get from lowest color temp to highest (or vice versa)
