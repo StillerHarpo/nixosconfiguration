@@ -80,9 +80,7 @@ publishLightStepsToggle stateVar queue client tod lights = do
         (topic light <> setT)
         changeLight {state = Just OFF}
     else forM_ lights $ \light ->
-      withAsync
-        (publishLightStepsON stateVar queue client tod light)
-        (\_ -> pure ())
+      async (publishLightStepsON stateVar queue client tod light)
 
 publishLightStepsIfOn ::
   TVar MqttState ->
@@ -193,7 +191,7 @@ colorTempRunner stateVar queue client lights = do
         <> T.pack (show lights)
     forM_ lights $
       \light ->
-        withAsync
+        async
           ( publishLightStepsIfOn
               stateVar
               queue
@@ -201,7 +199,6 @@ colorTempRunner stateVar queue client lights = do
               lightChangeTime
               light
           )
-          (\_ -> pure ())
 
 mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
