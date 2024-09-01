@@ -878,6 +878,7 @@
   (tide-server-max-response-length 204800)
   (typescript-ts-mode-indent-offset 4)
   (tide-node-executable "node")
+  (tide-disable-suggestions t)
   :init
   (defun my/set-tide-from-direnv ()
     "sets the right node executable"
