@@ -114,6 +114,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       ))
       libcec
       v4l-utils
+      jupiter-dock-updater-bin
     ];
   };
 
