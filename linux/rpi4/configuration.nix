@@ -215,7 +215,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           "light-automation"
           {
             libraries = with pkgs.haskellPackages;
-              [ aeson net-mqtt network-uri home-automation];
+              [ aeson net-mqtt network-uri home-automation unbounded-delays];
           }
           ../../haskell/home-automation/Main.hs;
         CapabilityBoundingSet = "";

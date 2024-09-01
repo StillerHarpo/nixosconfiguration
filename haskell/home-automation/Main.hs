@@ -9,6 +9,7 @@ import Control.Applicative ((<|>))
 import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Concurrent.STM
+import Control.Concurrent.Thread.Delay
 import Control.Exception (bracket)
 import Control.Monad
 import Data.Aeson
@@ -134,7 +135,7 @@ publishLightStepsON stateVar queue client tod light = do
         { state = Just ON,
           brightness = Just (highestBrightness light)
         }
-    threadDelay (maybe 0 (* (1000 * 1000)) $ transition step)
+    delay (maybe 0 (* (1000 * 1000)) $ transition step)
 
 -- publish a mqtt message to a light
 publishLight ::
@@ -181,7 +182,7 @@ colorTempRunner stateVar queue client lights = do
         <> ". Sleeping for"
         <> T.pack (show seconds)
         <> " seconds."
-    threadDelay (fromIntegral $ diffTimeToMicroseconds seconds)
+    delay (fromIntegral $ diffTimeToMicroseconds seconds)
     lightChangeTime <- getCurrentTimeOfDay
     atomically
       . writeTQueue queue
