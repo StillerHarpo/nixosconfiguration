@@ -55,7 +55,7 @@ publishLightSteps stateVar queue client tod light offAction = do
     . LogMessage
     $ "Current state is: " <> T.pack (show mqttState)
   if isLightOn mqttState light
-    then publishLightStepsON stateVar queue client tod light
+    then publishLightStepsON queue client tod light
     else offAction
 
 publishLightStepsToggle ::
@@ -79,7 +79,7 @@ publishLightStepsToggle stateVar queue client tod lights = do
         (topic light <> setT)
         changeLight {state = Just OFF}
     else forM_ lights $ \light ->
-      async (publishLightStepsON stateVar queue client tod light)
+      async (publishLightStepsON queue client tod light)
 
 publishLightStepsIfOn ::
   TVar MqttState ->
@@ -106,13 +106,12 @@ publishLightStepsIfOn stateVar queue client tod light = do
 -- send multiple signals to bulb according to step duration. This is
 -- necessary because some bulbs have an upper transition time
 publishLightStepsON ::
-  TVar MqttState ->
   TQueue Logger ->
   MQTTClient ->
   TimeOfDay ->
   Light ->
   IO ()
-publishLightStepsON stateVar queue client tod light = do
+publishLightStepsON queue client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
   publishLight
     queue
@@ -120,18 +119,20 @@ publishLightStepsON stateVar queue client tod light = do
     (topic light <> setT)
     startTemp
       { state = Just ON,
-        brightness = Just (highestBrightness light)
+        brightness = Just (lowestBrightness light)
       }
+  publishLight
+    queue
+    client
+    (topic light <> setT)
+    startTemp
+      { state = Just ON,
+        brightness = Just (highestBrightness light),
+        transition = Just 3
+      }
+  -- TODO Maybe sleep here
   forM_ steps $ \step -> do
     publishLight queue client (topic light <> setT) step
-    setState
-      stateVar
-      queue
-      (topic light)
-      changeLight
-        { state = Just ON,
-          brightness = Just (highestBrightness light)
-        }
     delay (maybe 0 ((* (1000 * 1000)) . fromIntegral) $ transition step)
 
 -- publish a mqtt message to a light
@@ -324,7 +325,7 @@ handleMessage mqttState queue client reasonTopic m _ = do
             "got Event with name: " <> unTopic name
           forM_ (matchLight name) $ \light -> do
             atomically . writeTQueue queue $ LogMessage "matched light"
-            publishLightStepsON mqttState queue client time light
+            publishLightStepsON queue client time light
       Just ev ->
         atomically . writeTQueue queue . LogMessage $
           "Ignoring event: " <> T.pack (show ev)
@@ -335,8 +336,11 @@ handleMessage mqttState queue client reasonTopic m _ = do
           . writeTQueue queue
           . LogMessage
           $ "Parsing of light failed: " <> T.decodeUtf8 (BS.toStrict m)
-      Just changedLight ->
-        setState mqttState queue reasonTopic changedLight
+      Just changedLight -> do
+        newLight <- atomically (setState mqttState queue reasonTopic changedLight)
+        case (newLight, matchLight reasonTopic) of
+          (True, Just light) -> publishLightStepsON queue client time light
+          _ -> pure ()
 
 -- | Handles which light one switch handles
 handleSwitch ::
@@ -377,38 +381,41 @@ setState ::
   TQueue Logger ->
   Topic ->
   ChangeLight ->
-  IO ()
+  STM Bool
 setState stateVar queue topic newChangeLight = do
-  atomically $ do
-    mqttState <- readTVar stateVar
-    writeTVar stateVar (Map.alter updateState topic mqttState)
-    writeTQueue queue
-      . LogMessage
-      $ "Changed state of topic "
-        <> unTopic topic
-        <> " to: "
-        <> T.pack (show newChangeLight)
+  mqttState <- readTVar stateVar
+  let (res, newState) = Map.alterF updateState topic mqttState
+  writeTVar stateVar newState
+  writeTQueue queue
+    . LogMessage
+    $ "Changed state of topic "
+      <> unTopic topic
+      <> " to: "
+      <> T.pack (show newChangeLight)
+  pure res
   where
     updateState v =
       case v of
-        Nothing -> Just newChangeLight
+        Nothing -> (True, Just newChangeLight)
         Just old ->
           let updateField fieldAccessor =
                 fieldAccessor newChangeLight <|> fieldAccessor old
-           in Just $
-                ChangeLight
-                  { state = updateField state,
-                    brightness = updateField brightness,
-                    colorTemp = updateField colorTemp,
-                    colorTempMove = updateField colorTempMove,
-                    colorTempStep = updateField colorTempStep,
-                    colorTempStartup = updateField colorTempStartup,
-                    color = updateField color,
-                    transition = updateField transition,
-                    brightnessMove = updateField brightnessMove,
-                    brightnessStep = updateField brightnessStep,
-                    huePowerOnBehavior = updateField huePowerOnBehavior,
-                    huePowerOnBrightness = updateField huePowerOnBrightness,
-                    huePowerOnColorTemperature = updateField huePowerOnColorTemperature,
-                    huePowerOnColor = updateField huePowerOnColor
-                  }
+           in ( False,
+                Just $
+                  ChangeLight
+                    { state = updateField state,
+                      brightness = updateField brightness,
+                      colorTemp = updateField colorTemp,
+                      colorTempMove = updateField colorTempMove,
+                      colorTempStep = updateField colorTempStep,
+                      colorTempStartup = updateField colorTempStartup,
+                      color = updateField color,
+                      transition = updateField transition,
+                      brightnessMove = updateField brightnessMove,
+                      brightnessStep = updateField brightnessStep,
+                      huePowerOnBehavior = updateField huePowerOnBehavior,
+                      huePowerOnBrightness = updateField huePowerOnBrightness,
+                      huePowerOnColorTemperature = updateField huePowerOnColorTemperature,
+                      huePowerOnColor = updateField huePowerOnColor
+                    }
+              )

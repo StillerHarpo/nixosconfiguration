@@ -429,9 +429,15 @@ hallway = mkIkeaLight hallwayT
 bedroom :: Light
 bedroom = mkIkeaLight bedroomT
 
--- TODO
+-- | Give back the light which corresponds to a topic
 matchLight :: Topic -> Maybe Light
 matchLight t
   | t == topic kitchen = Just kitchen
+  | t == topic kitchenOne = Just kitchenOne
+  | t == topic kitchenTwo = Just kitchenTwo
+  | t == topic kitchenThree = Just kitchenThree
   | t == topic livingRoom = Just livingRoom
+  | t == topic hallway = Just hallway
+  | t == topic bedroom = Just bedroom
+  | t == topic dinerRoom = Just dinerRoom
   | otherwise = Nothing
