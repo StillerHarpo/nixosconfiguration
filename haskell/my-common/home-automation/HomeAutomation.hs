@@ -364,7 +364,7 @@ livingRoom =
       maxStep = Nothing,
       lowestColorTemp = 150,
       highestColorTemp = 500,
-      lowestBrightness = 0,
+      lowestBrightness = 1,
       highestBrightness = 254
     }
 
@@ -375,7 +375,7 @@ mkIkeaLight light =
       maxStep = Nothing,
       lowestColorTemp = 153,
       highestColorTemp = 500,
-      lowestBrightness = 0,
+      lowestBrightness = 10,
       highestBrightness = 254
     }
 
