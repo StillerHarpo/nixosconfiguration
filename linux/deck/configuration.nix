@@ -114,8 +114,16 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       ))
       libcec
       v4l-utils
-      jupiter-dock-updater-bin
-    ];
+      (jupiter-dock-updater-bin.overrideAttrs (_: {
+        version = "20231121.01";
+        src = pkgs.fetchFromGitHub {
+          owner = "Jovian-Experiments";
+          repo = "jupiter-dock-updater-bin";
+          rev = "jupiter-20231121.01";
+          hash = "sha256-0ynous5tUVF+0IJIPR+DKMkQKwtMCkzYHCu4VzzuYyQ=";
+        };
+      }))
+      ];
   };
 
   networking = {
