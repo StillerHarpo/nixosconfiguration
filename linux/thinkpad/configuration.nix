@@ -45,6 +45,8 @@
             group = "users";
             mode = "400";
           };
+          syncthingKey.file = ./secrets/syncthingKey.age;
+          syncthingCert.file = ./secrets/syncthingCert.age;
         };
       };
       myHardware.enable = true;
@@ -331,6 +333,8 @@
         hoogle.enable = true;
         syncthing = {
           enable = true;
+          key = config.age.secrets.syncthingKey.path;
+          cert = config.age.secrets.syncthingCert.path;
           user = "florian";
           dataDir = "/home/florian/.syncthing";
           settings = {
@@ -339,6 +343,7 @@
                 "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
               "macos".id =
                 "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
+              "pi".id = "D5UJHLR-NVAXNBN-7HD6XXP-7IOAKHA-6VT4B2Y-IBYPHKU-2KFFDPW-PUSX4QV";
             };
             folders = {
               "android-photos" = {
@@ -355,11 +360,11 @@
               };
               "android-backups" = {
                 path = "/home/florian/android/backups";
-                devices = [ "android" ];
+                devices = [ "android" "pi" ];
               };
               "org-roam" = {
                 path = "/home/florian/Dokumente/org-roam";
-                devices = [ "android" ];
+                devices = [ "android" "pi" ];
                 versioning = {
                   type = "simple";
                   params.keep = "5";

@@ -13,6 +13,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     secrets = {
       rpi4WireguardPrivate.file = ./secrets/rpi4WireguardPrivate.age;
       flake-update.file = ./secrets/flake-update.age;
+      syncthingKey.file = ./secrets/syncthingKey.age;
+      syncthingCert.file = ./secrets/syncthingCert.age;
     };
   };
 
@@ -156,6 +158,33 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         } // private.cords;
       };
     };
+    syncthing = {
+      enable = true;
+      key = config.age.secrets.syncthingKey.path;
+      cert = config.age.secrets.syncthingCert.path;
+      settings = {
+        devices = {
+          "android".id =
+            "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+          "thinkpad".id =
+            "GS7BXPV-7IXKM6U-MF2SCHO-XSBUAKM-WMQ7XQT-2P6NW3C-H6Y2VW4-X7XP6AI";
+        };
+        folders = {
+          "android-backups" = {
+            path = "/root/android/backups";
+            devices = [ "android" "thinkpad" ];
+          };
+          "org-roam" = {
+            path = "/root/org-roam";
+            devices = [ "android" "thinkpad" ];
+            versioning = {
+              type = "simple";
+              params.keep = "5";
+            };
+          };
+        };
+      };
+    };
   };
   
   users.users.root.openssh.authorizedKeys.keys = sshKeys;
@@ -251,6 +280,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         UMask = "0077";
       };
   };
+
 
   flake-remote-update = {
     enable = true;
