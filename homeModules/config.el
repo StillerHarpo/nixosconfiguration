@@ -136,6 +136,9 @@
     (org-show-context)) ;; Show context around point
   )
 
+(use-package lean4-mode
+  ;; to defer loading the package until required
+  :commands (lean4-mode))
 
 (use-package company
   :config
@@ -832,6 +835,11 @@
   :ensure t
   :config
   (global-flycheck-eglot-mode 1))
+
+(use-package lsp-mode
+  :hook (;; if you want which-key integration
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp)
 
 (use-package nix-mode
   :mode "\\.nix\\'")

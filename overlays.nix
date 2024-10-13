@@ -77,6 +77,8 @@
     emacsPackagesFor = emacs: (
       (prev.emacsPackagesFor emacs).overrideScope (_: eprev: {
         ghcid = final.callPackage ./packages/emacs/ghcid { inherit (eprev) trivialBuild; };
+        lean4-mode = final.callPackage ./packages/emacs/lean4-mode { inherit (eprev) trivialBuild dash flycheck lsp-mode magit-section
+       ; };
         my-nix-paths = final.callPackage ./packages/emacs/my-nix-paths { inherit (eprev) trivialBuild; };
       })
     );
