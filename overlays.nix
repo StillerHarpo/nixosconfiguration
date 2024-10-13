@@ -74,6 +74,7 @@
       };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware {};
     wofi-pass = final.callPackage "${inputs.nixpkgs-unstable.outPath}/pkgs/tools/security/pass/wofi-pass.nix" {};
+    mediathekview = final.callPackage "${inputs.nixpkgs-mediathekview.outPath}/pkgs/applications/video/mediathekview/default.nix" {jdk = final.jdk20.override { enableJavaFX = true; };};
     emacsPackagesFor = emacs: (
       (prev.emacsPackagesFor emacs).overrideScope (_: eprev: {
         ghcid = final.callPackage ./packages/emacs/ghcid { inherit (eprev) trivialBuild; };

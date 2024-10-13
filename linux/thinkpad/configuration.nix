@@ -119,6 +119,7 @@
             }
             {
               pkgs = with pkgs; [
+                mediathekview
                 librespeed-cli
                 mqttx
                 nil
