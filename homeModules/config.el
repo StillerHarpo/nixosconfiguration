@@ -1081,6 +1081,8 @@ Returns nil if not and (sec min hour) if it has."
   (org-caldav-inbox "~/Dokumente/calendar.org")
   (org-caldav-calendar-id "any/d02d9914-eb09-4210-b1d1-1b330b274af9/")
   (org-caldav-resume-aborted 'never)
+  (org-caldav-delete-calendar-entries 'always)
+  (org-caldav-skip-conditions '(nottimestamp))
   )
 
 (use-package jinx
@@ -1546,6 +1548,8 @@ If I let Windows handle DPI everything looks blurry."
 	  "org-caldav-inbox"
 	  "org-caldav-calendar-id"
 	  "org-caldav-resume-aborted"
+          "org-caldav-delete-calendar-entries"
+          "org-caldav-skip-conditions"
 	  "org-caldav-files")))
       ;; Make sure url is reachable
       (if (not (= (call-process "curl" nil nil nil "--connect-timeout" "10" org-caldav-url) 0))
