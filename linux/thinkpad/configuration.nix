@@ -119,6 +119,7 @@
             }
             {
               pkgs = with pkgs; [
+                elan
                 mediathekview
                 librespeed-cli
                 mqttx
