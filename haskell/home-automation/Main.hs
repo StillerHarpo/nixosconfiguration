@@ -390,7 +390,7 @@ handleSwitch mqttState queue lights client m = do
         mqttState
         queue
         client
-        (topic light <> setT)
+        (topic light)
         (changeLight {brightnessStep = Just (-30), transition = Just 2})
 
 -- | Sets the state of lights
