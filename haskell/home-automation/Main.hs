@@ -127,15 +127,14 @@ publishLightStepsON stateVar queue client tod light = do
       { state = Just ON,
         brightness = Just (lowestBrightness light)
       }
-  delay 1000
+  delay (1000 * 1000)
   publishLight
     stateVar
     queue
     client
     (topic light)
-    startTemp
-      { state = Just ON,
-        brightness = Just (highestBrightness light),
+    changeLight
+      { brightness = Just (highestBrightness light),
         transition = Just 3
       }
   delay (3 * 1000 * 1000)
