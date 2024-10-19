@@ -22,6 +22,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Data.Text.IO as T
 import Data.Time.Clock
+import Data.Time.Clock.System
 import Data.Time.LocalTime
 import HomeAutomation
 import Network.MQTT.Client
@@ -31,32 +32,26 @@ import Network.URI.Static (staticURI)
 import System.Exit (exitFailure)
 import System.IO
 
-type MqttState = Map Topic ChangeLight
+type MqttState = Map Topic (ChangeLight, SystemTime)
 
 -- | checks whether the light is on
 isLightOn :: MqttState -> Light -> Bool
 isLightOn mqttState light = fromMaybe False $ do
   curChangeLight <- Map.lookup (topic light) mqttState
-  curState <- state curChangeLight
+  curState <- state (fst curChangeLight)
   pure (curState == ON)
 
 publishLightSteps ::
   TVar MqttState ->
   TQueue Logger ->
   MQTTClient ->
-  TimeOfDay ->
+  [ChangeLight] ->
   Light ->
-  IO () ->
   IO ()
-publishLightSteps stateVar queue client tod light offAction = do
-  mqttState <- readTVarIO stateVar
-  atomically
-    . writeTQueue queue
-    . LogMessage
-    $ "Current state is: " <> T.pack (show mqttState)
-  if isLightOn mqttState light
-    then publishLightStepsON queue client tod light
-    else offAction
+publishLightSteps stateVar queue client steps light = do
+  forM_ steps $ \step -> do
+    publishLight stateVar queue client (topic light) step
+    delay (maybe 0 ((* (1000 * 1000)) . fromIntegral) $ transition step)
 
 publishLightStepsToggle ::
   TVar MqttState ->
@@ -74,12 +69,13 @@ publishLightStepsToggle stateVar queue client tod lights = do
   if any (isLightOn mqttState) lights
     then forM_ lights $ \light ->
       publishLight
+        stateVar
         queue
         client
-        (topic light <> setT)
+        (topic light)
         changeLight {state = Just OFF}
     else forM_ lights $ \light ->
-      async (publishLightStepsON queue client tod light)
+      async (publishLightStepsON stateVar queue client tod light)
 
 publishLightStepsIfOn ::
   TVar MqttState ->
@@ -89,60 +85,71 @@ publishLightStepsIfOn ::
   Light ->
   IO ()
 publishLightStepsIfOn stateVar queue client tod light = do
-  publishLightSteps
-    stateVar
-    queue
-    client
-    tod
-    light
-    ( atomically
+  let (_, steps) = timeToColorTemp tod light
+  mqttState <- readTVarIO stateVar
+  atomically
+    . writeTQueue queue
+    . LogMessage
+    $ "Current state is: " <> T.pack (show mqttState)
+  if isLightOn mqttState light
+    then
+      publishLightSteps
+        stateVar
+        queue
+        client
+        steps
+        light
+    else
+      atomically
         . writeTQueue queue
         . LogMessage
         $ "Won't publish light, "
           <> unTopic (topic light)
           <> " because it is off"
-    )
 
 -- send multiple signals to bulb according to step duration. This is
 -- necessary because some bulbs have an upper transition time
 publishLightStepsON ::
+  TVar MqttState ->
   TQueue Logger ->
   MQTTClient ->
   TimeOfDay ->
   Light ->
   IO ()
-publishLightStepsON queue client tod light = do
+publishLightStepsON stateVar queue client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
   publishLight
+    stateVar
     queue
     client
-    (topic light <> setT)
+    (topic light)
     startTemp
       { state = Just ON,
         brightness = Just (lowestBrightness light)
       }
+  delay 1000
   publishLight
+    stateVar
     queue
     client
-    (topic light <> setT)
+    (topic light)
     startTemp
       { state = Just ON,
         brightness = Just (highestBrightness light),
         transition = Just 3
       }
-  -- TODO Maybe sleep here
-  forM_ steps $ \step -> do
-    publishLight queue client (topic light <> setT) step
-    delay (maybe 0 ((* (1000 * 1000)) . fromIntegral) $ transition step)
+  delay (3 * 1000 * 1000)
+  publishLightSteps stateVar queue client steps light
 
 -- publish a mqtt message to a light
 publishLight ::
+  TVar MqttState ->
   TQueue Logger ->
   MQTTClient ->
   Topic ->
   ChangeLight ->
   IO ()
-publishLight queue client topic light = do
+publishLight stateVar queue client topic light = do
   atomically
     . writeTQueue queue
     . LogMessage
@@ -150,7 +157,15 @@ publishLight queue client topic light = do
       <> unTopic topic
       <> ": "
       <> T.decodeUtf8 (BS.toStrict (encode light))
-  publish client topic (encode light) False
+  publish client (topic <> setT) (encode light) False
+  void . async $ do
+    before <- getSystemTime
+    delay (2 * 1000 * 1000)
+    atomically $ do
+      state <- readTVar stateVar
+      when (maybe False ((<= before) . snd) $ Map.lookup topic state) $ do
+        let newState = Map.delete topic state
+        writeTVar stateVar newState
 
 getCurrentTimeOfDay :: IO TimeOfDay
 getCurrentTimeOfDay = do
@@ -325,7 +340,7 @@ handleMessage mqttState queue client reasonTopic m _ = do
             "got Event with name: " <> unTopic name
           forM_ (matchLight name) $ \light -> do
             atomically . writeTQueue queue $ LogMessage "matched light"
-            publishLightStepsON queue client time light
+            publishLightStepsON mqttState queue client time light
       Just ev ->
         atomically . writeTQueue queue . LogMessage $
           "Ignoring event: " <> T.pack (show ev)
@@ -337,9 +352,10 @@ handleMessage mqttState queue client reasonTopic m _ = do
           . LogMessage
           $ "Parsing of light failed: " <> T.decodeUtf8 (BS.toStrict m)
       Just changedLight -> do
-        newLight <- atomically (setState mqttState queue reasonTopic changedLight)
+        sysTime <- getSystemTime
+        newLight <- atomically (setState sysTime mqttState queue reasonTopic changedLight)
         case (newLight, matchLight reasonTopic) of
-          (True, Just light) -> publishLightStepsON queue client time light
+          (True, Just light) -> publishLightStepsON mqttState queue client time light
           _ -> pure ()
 
 -- | Handles which light one switch handles
@@ -358,9 +374,10 @@ handleSwitch mqttState queue lights client m = do
     forM_ lights $
       \light ->
         publishLight
+          mqttState
           queue
           client
-          (topic light <> setT)
+          (topic light)
           (changeLight {brightnessStep = Just 30, transition = Just 2})
   when
     ( m == "down_hold"
@@ -370,6 +387,7 @@ handleSwitch mqttState queue lights client m = do
     $ forM_ lights
     $ \light ->
       publishLight
+        mqttState
         queue
         client
         (topic light <> setT)
@@ -377,12 +395,13 @@ handleSwitch mqttState queue lights client m = do
 
 -- | Sets the state of lights
 setState ::
+  SystemTime ->
   TVar MqttState ->
   TQueue Logger ->
   Topic ->
   ChangeLight ->
   STM Bool
-setState stateVar queue topic newChangeLight = do
+setState sysTime stateVar queue topic newChangeLight = do
   mqttState <- readTVar stateVar
   let (res, newState) = Map.alterF updateState topic mqttState
   writeTVar stateVar newState
@@ -396,26 +415,28 @@ setState stateVar queue topic newChangeLight = do
   where
     updateState v =
       case v of
-        Nothing -> (True, Just newChangeLight)
-        Just old ->
+        Nothing -> (True, Just (newChangeLight, sysTime))
+        Just (old, _) ->
           let updateField fieldAccessor =
                 fieldAccessor newChangeLight <|> fieldAccessor old
            in ( False,
-                Just $
-                  ChangeLight
-                    { state = updateField state,
-                      brightness = updateField brightness,
-                      colorTemp = updateField colorTemp,
-                      colorTempMove = updateField colorTempMove,
-                      colorTempStep = updateField colorTempStep,
-                      colorTempStartup = updateField colorTempStartup,
-                      color = updateField color,
-                      transition = updateField transition,
-                      brightnessMove = updateField brightnessMove,
-                      brightnessStep = updateField brightnessStep,
-                      huePowerOnBehavior = updateField huePowerOnBehavior,
-                      huePowerOnBrightness = updateField huePowerOnBrightness,
-                      huePowerOnColorTemperature = updateField huePowerOnColorTemperature,
-                      huePowerOnColor = updateField huePowerOnColor
-                    }
+                Just
+                  ( ChangeLight
+                      { state = updateField state,
+                        brightness = updateField brightness,
+                        colorTemp = updateField colorTemp,
+                        colorTempMove = updateField colorTempMove,
+                        colorTempStep = updateField colorTempStep,
+                        colorTempStartup = updateField colorTempStartup,
+                        color = updateField color,
+                        transition = updateField transition,
+                        brightnessMove = updateField brightnessMove,
+                        brightnessStep = updateField brightnessStep,
+                        huePowerOnBehavior = updateField huePowerOnBehavior,
+                        huePowerOnBrightness = updateField huePowerOnBrightness,
+                        huePowerOnColorTemperature = updateField huePowerOnColorTemperature,
+                        huePowerOnColor = updateField huePowerOnColor
+                      },
+                    sysTime
+                  )
               )
