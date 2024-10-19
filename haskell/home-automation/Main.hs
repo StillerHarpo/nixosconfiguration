@@ -217,14 +217,27 @@ colorTempRunner stateVar queue client lights = do
 mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
 
-runMqtt :: TVar MqttState -> TQueue Logger -> IO ()
-runMqtt stateVar queue =
+runMqtt :: TQueue Logger -> IO ()
+runMqtt queue = do
+  stateVar <- newTVarIO Map.empty
+  let lightTopics =
+        [ kitchenOneT,
+          kitchenTwoT,
+          kitchenThreeT,
+          livingRoomT,
+          bedroomT,
+          hallwayT,
+          dinerRoomT
+        ]
+  topicToBrightnessMove <- atomically $ forM lightTopics $ \topic -> do
+    var <- newTVar (BrightnessMoveStop, 0)
+    pure (topic, var)
   bracket
     ( connectURI
         mqttConfig
           { _msgCB =
               SimpleCallback
-                (handleMessage stateVar queue)
+                (handleMessage stateVar queue (Map.fromList topicToBrightnessMove))
           }
         mosquittoURI
     )
@@ -238,24 +251,20 @@ runMqtt stateVar queue =
             mc
             ( map
                 ((,subOptions) . toFilter)
-                [ "zigbee2mqtt/switch/kitchen/action",
-                  "zigbee2mqtt/switch/livingRoom/action",
-                  "zigbee2mqtt/switch/hallway/action",
-                  "zigbee2mqtt/switch/bedroom/action",
-                  "zigbee2mqtt/bridge/event",
-                  kitchenOneT,
-                  kitchenTwoT,
-                  kitchenThreeT,
-                  livingRoomT,
-                  bedroomT,
-                  hallwayT,
-                  dinerRoomT
-                ]
+                ( [ "zigbee2mqtt/switch/kitchen/action",
+                    "zigbee2mqtt/switch/livingRoom/action",
+                    "zigbee2mqtt/switch/hallway/action",
+                    "zigbee2mqtt/switch/bedroom/action",
+                    "zigbee2mqtt/bridge/event"
+                  ]
+                    ++ lightTopics
+                )
             )
             []
         unless (null errs) $
           atomically . writeTQueue queue . StopLoggingWithFailure $
             "Got errors wile subscribing: " <> T.intercalate ", " (map (T.pack . show) errs)
+        mapM_ (async . uncurry (brightnessMoveRunner stateVar queue mc)) topicToBrightnessMove
         colorTempRunner
           stateVar
           queue
@@ -275,8 +284,7 @@ main :: IO ()
 main = do
   hSetBuffering stdout LineBuffering
   queue <- atomically newTQueue
-  stateVar <- newTVarIO Map.empty
-  withAsync (runMqtt stateVar queue) $ \_ -> do
+  withAsync (runMqtt queue) $ \_ -> do
     logger queue
     putStrLn "Terminating program"
 
@@ -299,12 +307,14 @@ logger queue =
 handleMessage ::
   TVar MqttState ->
   TQueue Logger ->
+  -- | maps topics for lights to variables which are handled with brightness moves
+  Map Topic (TVar (BrightnessMove, Int)) ->
   MQTTClient ->
   Topic ->
   ByteString ->
   [Property] ->
   IO ()
-handleMessage mqttState queue client reasonTopic m _ = do
+handleMessage mqttState queue topicToBrightnessMove client reasonTopic m _ = do
   atomically . writeTQueue queue . LogMessage $
     "Handle message of topic: " <> unTopic reasonTopic
   time <- getCurrentTimeOfDay
@@ -312,15 +322,16 @@ handleMessage mqttState queue client reasonTopic m _ = do
     handleSwitch
       mqttState
       queue
+      topicToBrightnessMove
       [dinerRoom, kitchenOne, kitchenTwo, kitchenThree]
       client
       m
   when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $
-    handleSwitch mqttState queue [livingRoom] client m
+    handleSwitch mqttState queue topicToBrightnessMove [livingRoom] client m
   when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $
-    handleSwitch mqttState queue [hallway] client m
+    handleSwitch mqttState queue topicToBrightnessMove [hallway] client m
   when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $
-    handleSwitch mqttState queue [bedroom] client m
+    handleSwitch mqttState queue topicToBrightnessMove [bedroom] client m
   when (reasonTopic == "zigbee2mqtt/bridge/event") $
     case decode m of
       Nothing ->
@@ -357,19 +368,59 @@ handleMessage mqttState queue client reasonTopic m _ = do
           (True, Just light) -> publishLightStepsON mqttState queue client time light
           _ -> pure ()
 
+data BrightnessMove
+  = BrightnessMoveDown
+  | BrightnessMoveUp
+  | BrightnessMoveStop
+
+-- | sends brightness move messages until a stop message is send or the
+-- fuel is running out
+brightnessMoveRunner ::
+  TVar MqttState ->
+  TQueue Logger ->
+  MQTTClient ->
+  Topic ->
+  TVar (BrightnessMove, Int) ->
+  IO ()
+brightnessMoveRunner mqttState queue client topic moveT =
+  forever $ do
+    (move, fuel) <- readTVarIO moveT
+    let mBrightnessStep =
+          case move of
+            BrightnessMoveUp -> Just 30
+            BrightnessMoveDown -> Just (-30)
+            BrightnessMoveStop -> Nothing
+    case mBrightnessStep of
+      Just _ -> do
+        publishLight
+          mqttState
+          queue
+          client
+          topic
+          (changeLight {brightnessStep = mBrightnessStep, transition = Just 2})
+        atomically
+          ( if fuel == 0
+              then writeTVar moveT (BrightnessMoveStop, 0)
+              else writeTVar moveT (move, fuel - 1)
+          )
+        delay (2 * 1000 * 1000)
+      Nothing -> pure ()
+
 -- | Handles which light one switch handles
 handleSwitch ::
   TVar MqttState ->
   TQueue Logger ->
+  -- | maps topics for lights to variables which are handled with brightness moves
+  Map Topic (TVar (BrightnessMove, Int)) ->
   [Light] ->
   MQTTClient ->
   ByteString ->
   IO ()
-handleSwitch mqttState queue lights client m = do
+handleSwitch mqttState queue topicToBrightnessMove lights client m = do
   time <- getCurrentTimeOfDay
   when (m == "on_press_release" || m == "on") $ do
     publishLightStepsToggle mqttState queue client time lights
-  when (m == "up_hold" || m == "up_press" || m == "brightness_move_up") $
+  when (m == "up_hold" || m == "up_press") $
     forM_ lights $
       \light ->
         publishLight
@@ -378,19 +429,39 @@ handleSwitch mqttState queue lights client m = do
           client
           (topic light)
           (changeLight {brightnessStep = Just 30, transition = Just 2})
-  when
-    ( m == "down_hold"
-        || m == "down_press"
-        || m == "brightness_move_down"
-    )
-    $ forM_ lights
-    $ \light ->
-      publishLight
-        mqttState
-        queue
-        client
-        (topic light)
-        (changeLight {brightnessStep = Just (-30), transition = Just 2})
+  when (m == "down_hold" || m == "down_press") $
+    forM_ lights $
+      \light ->
+        publishLight
+          mqttState
+          queue
+          client
+          (topic light)
+          (changeLight {brightnessStep = Just (-30), transition = Just 2})
+  when (m == "brightness_move_up") $
+    forM_ lights $ \light ->
+      case Map.lookup (topic light) topicToBrightnessMove of
+        Just var -> atomically $ writeTVar var (BrightnessMoveUp, 10)
+        Nothing -> pure ()
+  when (m == "brightness_move_down") $
+    forM_ lights $ \light ->
+      case Map.lookup (topic light) topicToBrightnessMove of
+        Just var -> atomically $ writeTVar var (BrightnessMoveDown, 10)
+        Nothing -> warnUnknownLight light
+  when (m == "brightness_stop") $
+    forM_ lights $ \light ->
+      case Map.lookup (topic light) topicToBrightnessMove of
+        Just var -> atomically $ writeTVar var (BrightnessMoveStop, 0)
+        Nothing -> warnUnknownLight light
+  where
+    warnUnknownLight light =
+      atomically
+        . writeTQueue queue
+        . LogMessage
+        $ "Can't send Message to unknown light"
+          <> unTopic (topic light)
+          <> ". The following are known: "
+          <> T.intercalate ", " (unTopic <$> Map.keys topicToBrightnessMove)
 
 -- | Sets the state of lights
 setState ::
