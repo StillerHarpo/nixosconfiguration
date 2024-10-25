@@ -847,7 +847,7 @@
 (defun my/checkpad-server-respository? ()
   (and (project-current)
        (string-match
-	(rx (and "/checkpad/" (zero-or-more anychar) "server/" line-end))
+	(rx (and "/checkpad/" (zero-or-more anychar) (zero-or-one "server/") line-end))
 	(project-root (project-current)))))
 
 (use-package haskell-mode :ensure t)
@@ -1206,10 +1206,15 @@ if one already exists."
    (project-vterm "terminal" "t")))
 
 (defun my/consult-ripgrep ()
+  "Changes consult-ripgrep so that we grep for evil selection and ignore .ignore in checkpad respository"
   (interactive)
-  (if evil-visual-region-expanded
-    (consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
-    (consult-ripgrep)))
+  (let ((consult-ripgrep-args
+	 (if (my/checkpad-server-respository?)
+	     (string-join `(,consult-ripgrep-args " --no-ignore-dot")
+			  consult-ripgrep-args))))
+    (if evil-visual-region-expanded
+	(consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
+      (consult-ripgrep))))
 
 (defun my/consult-ripgrep-from-kill-ring ()
   (interactive)
@@ -1443,10 +1448,17 @@ If I let Windows handle DPI everything looks blurry."
 (add-hook 'js-json-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (add-hook 'nxml-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
+(defun my/checkpad-server-directory ()
+  "Gets the server direcotory of checkpad."
+  (let ((root (project-root (project-current))))
+    (if (s-suffix? "server" root)
+	root
+      (string-join `(,root "server/")))))
+
 (defun my/checkpad-format ()
-  "formats the current buffer with the checkpad script"
+  "Formats the current buffer with the checkpad script."
   (interactive)
-  (let ((default-directory (project-root (project-current))))
+  (let ((default-directory (my/checkpad-server-directory)))
     (envrc-propagate-environment
      'shell-command
      (string-join
@@ -1462,8 +1474,8 @@ If I let Windows handle DPI everything looks blurry."
     (my/checkpad-format)))
 
 (defun my/checkpad-shake-targets ()
-  "selects a target from shake"
-  (let* ((default-directory (project-root (project-current)))
+  "Selects a target from shake."
+  (let* ((default-directory (my/checkpad-server-directory))
 	 (shake (format "%sshake" default-directory))
 	 (programs
 	  (-filter
@@ -1473,9 +1485,9 @@ If I let Windows handle DPI everything looks blurry."
     (car (s-split " " what))))
 
 (defun my/checkpad-compile ()
-  "Uses shake in checkpad to compile"
+  "Uses shake in checkpad to compile."
   (interactive)
-  (let* ((default-directory (project-root (project-current)))
+  (let* ((default-directory (my/checkpad-server-directory))
 	 (shake (format "%sshake" default-directory))
 	 (target (my/checkpad-shake-targets)))
     (envrc-propagate-environment 'compile (format "way=f %s %s" shake target))))
