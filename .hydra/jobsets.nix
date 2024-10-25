@@ -4,7 +4,7 @@ let
   prs = builtins.fromJSON (builtins.readFile pulls);
   prJobsets = pkgs.lib.mapAttrs'
     (num: info: {
-      name = "PR #${num}";
+      name = "PR${num}";
       value = {
         checkinterval = 600;
         description = "${info.title}";
