@@ -850,28 +850,7 @@
 	(rx (and "/checkpad/" (zero-or-more anychar) "server/" line-end))
 	(project-root (project-current)))))
 
-(use-package haskell-mode
-  :ensure t
-  :init
-  (defun my/init-haskell ()
-    "init haskell-mode with etags or eglot depending on the project"
-    (interactive)
-    (if (my/checkpad-server-respository?)
-	(progn
-	  (custom-set-variables '(haskell-tags-on-save t))
-          (set (make-local-variable 'company-backends)
-               (append '(company-etags) company-backends))
-          (general-define-key
-	     :keymaps 'local
-	     :states '(normal visual motion)
-             "g d" 'haskell-mode-tag-find))
-      (eglot-ensure)))
-  :hook (haskell-mode . my/init-haskell)
-  :config
-  (evil-add-command-properties #'haskell-mode-tag-find :jump t))
-
-(use-package ghcid
-  :ensure t)
+(use-package haskell-mode :ensure t)
 
 (use-package rustic :ensure
   :init
@@ -1226,7 +1205,6 @@ if one already exists."
    (project-eshell "Eshell")
    (project-vterm "terminal" "t")))
 
-
 (defun my/consult-ripgrep ()
   (interactive)
   (if evil-visual-region-expanded
@@ -1502,18 +1480,6 @@ If I let Windows handle DPI everything looks blurry."
 	 (target (my/checkpad-shake-targets)))
     (envrc-propagate-environment 'compile (format "way=f %s %s" shake target))))
 
-(defun my/checkpad-ghcid ()
-  "Run ghcid script from checkpad"
-  (interactive)
-  (cl-letf* ((default-directory (project-root (project-current)))
-	     (progs (mapconcat 'file-name-as-directory `(,default-directory "src" "progs")))
-	     (files (directory-files progs nil (rx (seq (one-or-more anychar) ".hs" eol))))
-	     (what (completing-read "progs: " (mapcar (lambda (f) (car (s-split (rx ".") f))) files)))
-	     ((symbol-function 'ghcid-command)
-	      (lambda (h)
-		(format "%sscripts/ghcid %s -- -h %s\n" default-directory what h))))
-    (ghcid)))
-
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
 
 (defun my/org-roam-commit-on-save ()
@@ -1573,7 +1539,8 @@ If I let Windows handle DPI everything looks blurry."
   :config
   (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
   :hook
-  (nix-mode . eglot-ensure))
+  (nix-mode . eglot-ensure)
+  (haskell-mode . eglot-ensure))
 
 ;; compilation-scroll-output 'first-error
 ;; rename buffer
