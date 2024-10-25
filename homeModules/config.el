@@ -1229,24 +1229,23 @@ if one already exists."
     (consult-line)))
 
 (defun my/consult-line-from-kill-ring ()
+  "Select consult line search term from kill ring."
   (interactive)
-  (consult-line (read-from-kill-ring "ripgrep")))
+  (consult-line (read-from-kill-ring "Consult line")))
 
 (defun my/switch-pdf-txt ()
+  "Open corresponding pdf to txt file or vice versa if it exist."
   (interactive)
-  "open corresponding pdf to txt file or vice versa if it exist"
   (if (string-equal (file-name-extension buffer-file-name) "pdf")
       (find-file (concat (file-name-base (buffer-name)) ".txt"))
     (find-file (concat (file-name-base (buffer-name)) ".pdf"))))
 
 (defun my/rename-pdf-txt (new-base &optional force-p)
-
-  "Move current pdf/txt pair to new base name new-base.
-
-If FORCE-P, overwrite the destination file if it exists, without confirmation."
   (interactive
    (list (read-string "Move scan to: ")
          current-prefix-arg))
+  "Move current pdf/txt pair to new base name NEW-BASE.
+   If FORCE-P, overwrite the destination file if it exists, without confirmation."
   (unless (and buffer-file-name (file-exists-p buffer-file-name))
     (user-error "Buffer is not visiting any file"))
   (let ((old-base (file-name-base buffer-file-name))
@@ -1466,7 +1465,7 @@ If I let Windows handle DPI everything looks blurry."
     (revert-buffer :NOCONFIRM t)))
 
 (defun my/checkpad-format-on-save ()
-  "formats the current buffer with the checkpad script if the project is checkpad"
+  "Formats the current buffer with the checkpad script if the project is checkpad."
   (when (and (project-current)
 	     (my/checkpad-server-respository?)
 	     (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
