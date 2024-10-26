@@ -3,6 +3,9 @@
 {
   imports = [ ../configuration.nix ];
 
+  age.secrets = {
+    github-token.file = ./secrets/github-token.age;
+  };
   # Select internationalisation properties.
   i18n = {
     defaultLocale = "en_US.UTF-8";
@@ -31,6 +34,7 @@
     extraOptions = ''
       keep-outputs = true
       keep-derivations = true
+      !include ${config.age.secrets.github-token.path}
     '';
     gc = {
       persistent = true;
