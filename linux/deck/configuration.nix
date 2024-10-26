@@ -123,7 +123,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           hash = "sha256-0ynous5tUVF+0IJIPR+DKMkQKwtMCkzYHCu4VzzuYyQ=";
         };
       }))
-      ];
+    ];
   };
 
   networking = {
@@ -185,4 +185,31 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   system.stateVersion = "23.05";
 
+  # TODO How to just remove "fbcon=rotate:1" without getting infitite recursion
+  # boot.kernelParams = lib.mkForce [ "fbcon=rotate:1" ] "${inputs.jovian}/config.boot.kernelParams";
+  boot.kernelParams = lib.mkForce [ "spi_amd.speed_dev=1" "log_buf_len=4M" "amd_iommu=off" "amdgpu.lockup_timeout=5000,10000,10000,5000" "amdgpu.gttsize=8128" "amdgpu.sched_hw_submission=4" "audit=0" "fbcon=rotate:1" "loglevel=4" ];
+
+  specialisation.kodi.configuration =
+    let myKodi =
+          (pkgs.kodi-gbm.withPackages (kodiPkgs:
+            with kodiPkgs; [mediathekview invidious]
+          ));
+    in {
+      jovian.steam.enable = lib.mkForce false;
+      services.greetd = {
+        enable = true;
+        settings = {
+          default_session= {
+            command = "${pkgs.greetd.greetd}/bin/agreety";
+            user = "florian";
+          };
+          initial_session = {
+            command = "${myKodi}/bin/kodi --windowing=gbm";
+            user = "florian";
+          };
+        };
+      };
+      users.users.florian.extraGroups = [ "input" ];
+      services.xserver.enable = lib.mkForce false;
+    };
 }
