@@ -185,10 +185,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   system.stateVersion = "23.05";
 
-  # TODO How to just remove "fbcon=rotate:1" without getting infitite recursion
-  # boot.kernelParams = lib.mkForce [ "fbcon=rotate:1" ] "${inputs.jovian}/config.boot.kernelParams";
-  boot.kernelParams = lib.mkForce [ "spi_amd.speed_dev=1" "log_buf_len=4M" "amd_iommu=off" "amdgpu.lockup_timeout=5000,10000,10000,5000" "amdgpu.gttsize=8128" "amdgpu.sched_hw_submission=4" "audit=0" "fbcon=rotate:1" "loglevel=4" ];
-
   specialisation.kodi.configuration =
     let myKodi =
           (pkgs.kodi-gbm.withPackages (kodiPkgs:
