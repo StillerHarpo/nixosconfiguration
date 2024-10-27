@@ -105,7 +105,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       steamdeck-firmware
       ryujinx
       steam-rom-manager
-      nvtop-amd
+      nvtopPackages.amd
       lutris
       wine-staging
       lolcat
