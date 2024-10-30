@@ -1215,8 +1215,8 @@ if one already exists."
   (interactive)
   (let ((consult-ripgrep-args
 	 (if (my/checkpad-server-respository?)
-	     (string-join `(,consult-ripgrep-args " --no-ignore-dot")
-			  consult-ripgrep-args))))
+	     (string-join `(,consult-ripgrep-args " --no-ignore-dot"))
+			  consult-ripgrep-args)))
     (if evil-visual-region-expanded
 	(consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
       (consult-ripgrep))))
