@@ -283,6 +283,8 @@
     (my/org-insert-auto-schedule "journals aufräumen"))
   (unless (string-equal (org-file-contents "~/Dokumente/calendar.org") "")
     (my/org-insert-auto-schedule "calendar aufräumen"))
+  (unless (string-equal (org-file-contents "~/Dokumente/notes.org") "")
+    (my/org-insert-auto-schedule "notes aufräumen"))
   (unless (directory-empty-p emacsAutoSaveDir)
     (my/org-insert-auto-schedule "auto saves aufräumen"))
 
