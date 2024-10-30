@@ -250,6 +250,8 @@
            "DONE(d)"  ; Task successfully completed
            "KILL(k)"))) ; Task was cancelled, aborted or is no longer applicable
   (org-startup-folded 'fold)
+  (org-capture-templates
+      '(("c" "capture to notes.org" entry (file "~/Dokumente/notes.org") "* %i %?\n%U\n- %a")))
   :config
   ;; https://github.com/doomemacs/doomemacs/issues/2672
   ;; Prevent temporarily opened agenda buffers from polluting recentf.
