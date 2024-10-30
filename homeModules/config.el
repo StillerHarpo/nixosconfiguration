@@ -490,7 +490,12 @@
     (lambda () (not (org-get-heading))))
   :config
   (org-roam-db-autosync-mode)
-  (advice-add 'org-roam-refile :after 'org-save-all-org-buffers)
+  (defun my/org-roam-refile ()
+    "Do an org roam refile and save files."
+    (interactive)
+    (org-roam-refile (org-roam-node-read nil nil nil 'require-match))
+    ;; TODO save only affected buffers
+    (org-save-all-org-buffers))
   :general
   (:states '(normal visual motion emacs)
    :keymaps '(my-keys-minor-mode-map)
@@ -498,7 +503,7 @@
            "n" '(:ignore t :which-key "org")
 	   "n f" 'org-roam-node-find
 	   "n i" 'org-roam-node-insert
-           "n r" 'org-roam-refile
+           "n r" 'my/org-roam-refile
 	   "n d" 'org-roam-dailies-capture-today))
 
 (use-package vterm
