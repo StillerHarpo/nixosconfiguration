@@ -1209,7 +1209,7 @@ if one already exists."
 
 (setq project-switch-commands
   '((project-find-file "Find file")
-   (consult-ripgrep "Find regexp" "r")
+   (my/consult-ripgrep "Find regexp" "r")
    (project-magit "git" "g")
    (project-eshell "Eshell")
    (project-vterm "terminal" "t")))
