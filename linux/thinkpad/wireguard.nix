@@ -59,7 +59,7 @@ in {
                 peers = [{
                   publicKey = "PyLCXAQT8KkM4T+dUsOQfn+Ub3pGxfGlxkIApuig+hk=";
                   presharedKeyFile = config.age.secrets.vpnPresharedKey.path;
-                  endpoint = "146.70.115.221:1637";
+                  endpoint = "213.152.187.217:1637";
                   allowedIPs = [ "0.0.0.0/0" "::0/0" ];
                   persistentKeepalive = 15;
                 }];
