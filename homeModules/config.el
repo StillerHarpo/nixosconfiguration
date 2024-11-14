@@ -543,6 +543,8 @@
 	   :prefix "SPC"
 	   "g" '(:ignore t :which-key "magit")
 	   "g g" 'magit-status
+	   "g r" 'magit-reflog-head
+	   "g f" 'magit-find-file
 	   "g c" 'magit-clone
 	   "g b" 'magit-blame-addition
 	   "g i" 'magit-init)
