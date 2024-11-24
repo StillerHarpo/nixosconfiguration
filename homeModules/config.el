@@ -1486,11 +1486,10 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/checkpad-shake-targets ()
   "Selects a target from shake."
   (let* ((default-directory (my/checkpad-server-directory))
-	 (shake (format "%sshake" default-directory))
 	 (programs
 	  (-filter
 	   (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
-	   (envrc-propagate-environment 'process-lines shake "-l")))
+	   (s-split "\n" (envrc-propagate-environment 'shell-command-to-string "./shake -l"))))
 	 (what (completing-read "programm: " programs)))
     (car (s-split " " what))))
 
@@ -1498,9 +1497,8 @@ If I let Windows handle DPI everything looks blurry."
   "Uses shake in checkpad to compile."
   (interactive)
   (let* ((default-directory (my/checkpad-server-directory))
-	 (shake (format "%sshake" default-directory))
 	 (target (my/checkpad-shake-targets)))
-    (envrc-propagate-environment 'compile (format "way=f %s %s" shake target))))
+    (envrc-propagate-environment 'compile (format "cd %s && way=f ./shake %s" default-directory target))))
 
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
 
