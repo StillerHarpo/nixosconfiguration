@@ -7,8 +7,8 @@ let
   alacrittyCommon = {
     env.TERM = "xterm-256color";
     window.dynamic_title = true;
-    shell.program = pkgs.myshell;
-    live_config_reload = true;
+    terminal.shell.program = pkgs.myshell;
+    general.live_config_reload = true;
     font = {
       normal = {
         family = "Iosevka Nerd Font Mono";

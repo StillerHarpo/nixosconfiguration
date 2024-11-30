@@ -8,7 +8,7 @@ let
 in {
   imports = [ ../home.nix ./zsh.nix ];
   config.home = {
-    stateVersion = "22.05";
+    stateVersion = "24.11";
     file."Applications/Home Manager Apps".source = "${appEnv}/Applications";
   };
 }

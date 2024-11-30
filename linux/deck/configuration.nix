@@ -166,7 +166,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     users.florian = {
       imports = [  outputs.homeModules ];
       firefox.enable = true;
-      home.stateVersion = "23.05";
+      home.stateVersion = "24.11";
       home.file.".kodi/userdata/addon_data/plugin.video.invidious/settings.xml".source = ./invidious.xml;
     };
   };
@@ -183,7 +183,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   dnscrypt.enable = true;
 
-  system.stateVersion = "23.05";
+  system.stateVersion = "24.11";
 
   specialisation.kodi.configuration =
     let myKodi =

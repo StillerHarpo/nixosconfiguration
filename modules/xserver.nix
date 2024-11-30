@@ -18,7 +18,6 @@ in
     apparmor.systemPackages =
       [ { pkgs = with pkgs; [
             scrot
-            slack
             arandr
             xsel
             xsecurelock

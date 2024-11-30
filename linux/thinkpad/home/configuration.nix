@@ -97,6 +97,11 @@ in {
       address = "florianengel39@gmail.com";
       passName = "gmailMu4e";
       host = "gmail.com";
+      # Entw&APw-rfe can't be synced, but it shouldn't get any new mails
+      # anyway
+      # Either Gmail removed Entw&APw-rfe this or its a bug. It is
+      # probably a bug because it happens after a major update of nixos
+      patterns = ["*" "![Gmail]/Entw&APw-rfe"];
     };
     accounts.cpMed = import ./mail.nix {
       inherit realName key;
@@ -119,7 +124,7 @@ in {
     enable = true;
     iconTheme = {
       name = "Adwaita";
-      package = pkgs.gnome3.adwaita-icon-theme;
+      package = pkgs.adwaita-icon-theme;
       size = "16x16";
     };
     settings = {

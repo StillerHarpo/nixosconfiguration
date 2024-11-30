@@ -151,12 +151,12 @@ in {
               XDG_RUNTIME_DIR = "/run/user/${toString cfg.uid}";
               XAUTHORITY = cfg.xauth;
             };
-            home.stateVersion = "22.05";
+            home.stateVersion = "24.11";
             nixpkgs.overlays = outerPkgs.overlays;
           };
         };
 
-        system.stateVersion = "22.05";
+        system.stateVersion = "24.11";
         nixpkgs.overlays = outerPkgs.overlays;
       };
     };

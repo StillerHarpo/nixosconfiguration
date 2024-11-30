@@ -120,14 +120,14 @@
             {
               pkgs = with pkgs; [
                 elan
-                mediathekview
+                inputs.nixpkgs-mediathekview.legacyPackages."x86_64-linux".mediathekview
                 librespeed-cli
                 mqttx
                 nil
                 difftastic
                 nixpkgs-review
                 nixpkgs-hammering
-                gnome3.adwaita-icon-theme
+                adwaita-icon-theme
                 ical2orgpy
                 nixfmt-classic
                 libreoffice
@@ -179,6 +179,7 @@
                 ### chat ###
                 signal-desktop
                 mumble
+                slack
                 ### chat ###
                 fzf
                 ## better rust tools ###
@@ -528,7 +529,7 @@
       };
 
       # The NixOS release to be compatible with for stateful data such as databases.
-      system.stateVersion = "21.05";
+      system.stateVersion = "24.11";
 
       fileSystems."/home/florian/server" = {
         device = "tim@server:/var/www/files.haering.dev";

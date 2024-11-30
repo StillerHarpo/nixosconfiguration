@@ -25,7 +25,6 @@ in
                 adwaita-qt
                 adwaita-qt6
                 wdisplays
-                slack-wayland
               ];
               rules = lib.apparmor.defaultRules;
             }

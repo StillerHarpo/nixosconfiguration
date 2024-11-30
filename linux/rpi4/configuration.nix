@@ -294,6 +294,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     dates = "Monday 01:00";
   };
 
-  system.stateVersion = "23.11";
+  system.stateVersion = "24.11";
 
 }
