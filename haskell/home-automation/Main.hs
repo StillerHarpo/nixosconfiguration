@@ -50,8 +50,9 @@ publishLightSteps ::
   IO ()
 publishLightSteps stateVar queue client steps light = do
   forM_ steps $ \step -> do
-    publishLight stateVar queue client (topic light) step
-    delay (maybe 0 ((* (1000 * 1000)) . fromIntegral) $ transition step)
+    concurrently_
+      (publishLight stateVar queue client (topic light) step)
+      (delay (maybe 0 ((* (1000 * 1000)) . fromIntegral) $ transition step))
 
 publishLightStepsToggle ::
   TVar MqttState ->
@@ -67,15 +68,15 @@ publishLightStepsToggle stateVar queue client tod lights = do
     . LogMessage
     $ "Current state is: " <> T.pack (show mqttState)
   if any (isLightOn mqttState) lights
-    then forM_ lights $ \light ->
+    then forConcurrently_ lights $ \light ->
       publishLight
         stateVar
         queue
         client
         (topic light)
         changeLight {state = Just OFF}
-    else forM_ lights $ \light ->
-      async (publishLightStepsON stateVar queue client tod light)
+    else forConcurrently_ lights $ \light ->
+      publishLightStepsON stateVar queue client tod light
 
 publishLightStepsIfOn ::
   TVar MqttState ->
@@ -118,27 +119,33 @@ publishLightStepsON ::
   IO ()
 publishLightStepsON stateVar queue client tod light = do
   let (startTemp, steps) = timeToColorTemp tod light
-  publishLight
-    stateVar
-    queue
-    client
-    (topic light)
-    startTemp
-      { state = Just ON,
-        brightness = Just (lowestBrightness light)
-      }
-  delay (1000 * 1000)
-  publishLight
-    stateVar
-    queue
-    client
-    (topic light)
-    changeLight
-      { brightness = Just (highestBrightness light),
-        transition = Just 3
-      }
-  delay (3 * 1000 * 1000)
-  publishLightSteps stateVar queue client steps light
+  concurrently_
+    ( publishLight
+        stateVar
+        queue
+        client
+        (topic light)
+        startTemp
+          { state = Just ON,
+            brightness = Just (lowestBrightness light)
+          }
+    )
+    $ do
+      delay (1000 * 1000)
+      concurrently_
+        ( publishLight
+            stateVar
+            queue
+            client
+            (topic light)
+            changeLight
+              { brightness = Just (highestBrightness light),
+                transition = Just 3
+              }
+        )
+        $ do
+          delay (3 * 1000 * 1000)
+          publishLightSteps stateVar queue client steps light
 
 -- publish a mqtt message to a light
 publishLight ::
@@ -157,14 +164,13 @@ publishLight stateVar queue client topic light = do
       <> ": "
       <> T.decodeUtf8 (BS.toStrict (encode light))
   publish client (topic <> setT) (encode light) False
-  void . async $ do
-    before <- getSystemTime
-    delay (2 * 1000 * 1000)
-    atomically $ do
-      state <- readTVar stateVar
-      when (maybe False ((<= before) . snd) $ Map.lookup topic state) $ do
-        let newState = Map.delete topic state
-        writeTVar stateVar newState
+  before <- getSystemTime
+  delay (2 * 1000 * 1000)
+  atomically $ do
+    state <- readTVar stateVar
+    when (maybe False ((<= before) . snd) $ Map.lookup topic state) $ do
+      let newState = Map.delete topic state
+      writeTVar stateVar newState
 
 getCurrentTimeOfDay :: IO TimeOfDay
 getCurrentTimeOfDay = do
@@ -203,16 +209,14 @@ colorTempRunner stateVar queue client lights = do
         <> T.pack (show lightChangeTime)
         <> ". Starting color transition for lights: "
         <> T.pack (show lights)
-    forM_ lights $
+    forConcurrently_ lights $
       \light ->
-        async
-          ( publishLightStepsIfOn
-              stateVar
-              queue
-              client
-              lightChangeTime
-              light
-          )
+        publishLightStepsIfOn
+          stateVar
+          queue
+          client
+          lightChangeTime
+          light
 
 mosquittoURI :: URI
 mosquittoURI = $$(staticURI "mqtt://localhost")
@@ -264,20 +268,23 @@ runMqtt queue = do
         unless (null errs) $
           atomically . writeTQueue queue . StopLoggingWithFailure $
             "Got errors wile subscribing: " <> T.intercalate ", " (map (T.pack . show) errs)
-        mapM_ (async . uncurry (brightnessMoveRunner stateVar queue mc)) topicToBrightnessMove
-        colorTempRunner
-          stateVar
-          queue
-          mc
-          [ livingRoom,
-            kitchenOne,
-            kitchenTwo,
-            kitchenThree,
-            hallway,
-            dinerRoom,
-            bedroom
-          ]
-        waitForClient mc
+        concurrently_
+          (mapConcurrently_ (uncurry (brightnessMoveRunner stateVar queue mc)) topicToBrightnessMove)
+          ( do
+              colorTempRunner
+                stateVar
+                queue
+                mc
+                [ livingRoom,
+                  kitchenOne,
+                  kitchenTwo,
+                  kitchenThree,
+                  hallway,
+                  dinerRoom,
+                  bedroom
+                ]
+              waitForClient mc
+          )
     )
 
 main :: IO ()
