@@ -43,8 +43,10 @@ in {
       description = "battery level notifier";
       serviceConfig.PassEnvironment = "DISPLAY";
       script = ''
-        export battery_capacity=$(${pkgs.coreutils}/bin/cat /sys/class/power_supply/${cfg.device}/capacity)
-        export battery_status=$(${pkgs.coreutils}/bin/cat /sys/class/power_supply/${cfg.device}/status)
+        battery_capacity=$(${pkgs.coreutils}/bin/cat /sys/class/power_supply/${cfg.device}/capacity)
+        export battery_capacity
+        battery_status=$(${pkgs.coreutils}/bin/cat /sys/class/power_supply/${cfg.device}/status)
+        export battery_status
         if [[ $battery_capacity -le ${
           builtins.toString cfg.notifyCapacity
         } && $battery_status = "Discharging" ]]; then
