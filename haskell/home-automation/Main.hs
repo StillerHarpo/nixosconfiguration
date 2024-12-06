@@ -234,7 +234,7 @@ runMqtt queue = do
           dinerRoomT
         ]
   topicToBrightnessMove <- atomically $ forM lightTopics $ \topic -> do
-    var <- newTVar (BrightnessMoveStop, 0)
+    var <- newTVar BrightnessMoveStop
     pure (topic, var)
   bracket
     ( connectURI
@@ -315,7 +315,7 @@ handleMessage ::
   TVar MqttState ->
   TQueue Logger ->
   -- | maps topics for lights to variables which are handled with brightness moves
-  Map Topic (TVar (BrightnessMove, Int)) ->
+  Map Topic (TVar BrightnessMove) ->
   MQTTClient ->
   Topic ->
   ByteString ->
@@ -387,38 +387,42 @@ brightnessMoveRunner ::
   TQueue Logger ->
   MQTTClient ->
   Topic ->
-  TVar (BrightnessMove, Int) ->
+  TVar BrightnessMove ->
   IO ()
 brightnessMoveRunner mqttState queue client topic moveT =
   forever $ do
-    (move, fuel) <- readTVarIO moveT
-    let mBrightnessStep =
-          case move of
-            BrightnessMoveUp -> Just 30
-            BrightnessMoveDown -> Just (-30)
-            BrightnessMoveStop -> Nothing
-    case mBrightnessStep of
-      Just _ -> do
-        publishLight
-          mqttState
-          queue
-          client
-          topic
-          (changeLight {brightnessStep = mBrightnessStep, transition = Just 2})
-        atomically
-          ( if fuel == 0
-              then writeTVar moveT (BrightnessMoveStop, 0)
-              else writeTVar moveT (move, fuel - 1)
-          )
-        delay (2 * 1000 * 1000)
-      Nothing -> pure ()
+    let worker :: Int -> BrightnessMove -> Int -> IO ()
+        worker fuel move brightnessStep = do
+          curMove <- readTVarIO moveT
+          case (move, curMove) of
+            (BrightnessMoveDown, BrightnessMoveUp) -> worker 20 BrightnessMoveUp 30
+            (BrightnessMoveUp, BrightnessMoveDown) -> worker 20 BrightnessMoveDown (-30)
+            (_, BrightnessMoveStop) -> pure ()
+            _ -> do
+              publishLight
+                mqttState
+                queue
+                client
+                topic
+                (changeLight {brightnessStep = Just brightnessStep, transition = Just 2})
+              atomically
+                ( when (fuel == 0) $
+                    writeTVar moveT BrightnessMoveStop
+                )
+              delay (2 * 1000 * 1000)
+              worker (fuel - 1) move brightnessStep
+    move <- readTVarIO moveT
+    case move of
+      BrightnessMoveStop -> pure ()
+      BrightnessMoveUp -> worker 10 move 30
+      BrightnessMoveDown -> worker 10 move (-30)
 
 -- | Handles which light one switch handles
 handleSwitch ::
   TVar MqttState ->
   TQueue Logger ->
   -- | maps topics for lights to variables which are handled with brightness moves
-  Map Topic (TVar (BrightnessMove, Int)) ->
+  Map Topic (TVar BrightnessMove) ->
   [Light] ->
   MQTTClient ->
   ByteString ->
@@ -448,17 +452,17 @@ handleSwitch mqttState queue topicToBrightnessMove lights client m = do
   when (m == "brightness_move_up") $
     forM_ lights $ \light ->
       case Map.lookup (topic light) topicToBrightnessMove of
-        Just var -> atomically $ writeTVar var (BrightnessMoveUp, 10)
+        Just var -> atomically $ writeTVar var BrightnessMoveUp
         Nothing -> pure ()
   when (m == "brightness_move_down") $
     forM_ lights $ \light ->
       case Map.lookup (topic light) topicToBrightnessMove of
-        Just var -> atomically $ writeTVar var (BrightnessMoveDown, 10)
+        Just var -> atomically $ writeTVar var BrightnessMoveDown
         Nothing -> warnUnknownLight light
   when (m == "brightness_stop") $
     forM_ lights $ \light ->
       case Map.lookup (topic light) topicToBrightnessMove of
-        Just var -> atomically $ writeTVar var (BrightnessMoveStop, 0)
+        Just var -> atomically $ writeTVar var BrightnessMoveStop
         Nothing -> warnUnknownLight light
   where
     warnUnknownLight light =
