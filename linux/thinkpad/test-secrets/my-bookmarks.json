@@ -1,0 +1,14 @@
+{
+    "normal": {
+        "normal1": "https://normal1.com/",
+        "normal2": "https://normal2.com/"
+    },
+    "work": {
+        "work1": "https://work1.com/",
+        "work2": "https://work2.com/"
+    },
+    "private": {
+        "private1": "https://private1.com/",
+        "private2": "https://private2.com/"
+    }
+}

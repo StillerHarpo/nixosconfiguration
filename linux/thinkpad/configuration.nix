@@ -1,7 +1,12 @@
 # here are every configs that are used on my laptop but not on my workstation
 
 { config, pkgs, lib, inputs, private, ... }:
-{
+let
+  key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzyDziAfoNLt5Y6ZX/cVUtOFst8pZkeQOlCB9QNPkAJDreQwPGpoTpxSL3U8Z03a7WcWrlcYNMzNOfDQp15P1TwGDb49PVwnXHgmOafthDyIZMJ3Vvr4clMHYGOt2bz/tYuNtUF7X5+i6O2VVhRcn5jEmGBmOubxSwaHo+3LVpZN+95iSyiN9Pt2rsP4BvL9ZXcfUT/DrUt8YglX78BanoKPCyQ2E7HdEc/NoRdTgOhws1AAVOB4sQjEjD07oGY2WSHRyoMzu1ErVfgloB8AG0E74A7bln7Eets8R5022BktyBofD2v2v7NuAAorzlb6JqyesyNnFIreKXQ/I+jN1emCTBBcR3i7yoXQ00Zeaa55dOGKtQ9+RTN/Pmd3iRw/Wi3By+XYFPKm8OydV9cMdjGqkVwA3iR5yjcqI0dF7n8jOlw/RkjWkce9nzKCR4KCHz8AnWk/NFCUIKwHtVAeWVc+sG+jfrIrDKOFEYxdkDZP2zoSsgC1RtM92YoIIQW8s="; 
+  mkFakeAgeSecret = path: pkgs.runCommand "secret.age" {} ''
+      ${lib.getExe pkgs.rage} --recipient "${key}" -o $out < ${path}
+    '';
+in {
   imports = [
     ./wireguard.nix
     ./work-container.nix
@@ -32,19 +37,8 @@
           vpnPrivateKey.file = ./secrets/vpnPrivateKey.age;
           vpnPresharedKey.file = ./secrets/vpnPresharedKey.age;
           officeOvpn.file = ./secrets/office.ovpn.age;
-          bookmarks = {
-            file = ./secrets/my-bookmarks.json.age;
-            path = "/home/florian/.my-bookmarks.json";
-            owner = "florian";
-            group = "users";
-            mode = "400";
-          };
-          notmuchTags = {
-            file = ./secrets/notmuchTags.age;
-            owner = "florian";
-            group = "users";
-            mode = "400";
-          };
+          bookmarks.file = ./secrets/my-bookmarks.json.age;
+          notmuchTags.file = ./secrets/notmuchTags.age;
           syncthingKey.file = ./secrets/syncthingKey.age;
           syncthingCert.file = ./secrets/syncthingCert.age;
         };
@@ -66,29 +60,90 @@
           autoStart = false;
         };
         batteryNotifier.enable = true;
-      };
 
-    })
-    (lib.mkIf (!config.isRealSystem) {
-      age = {
-        identityPaths =
-          [ "${./test-secrets/id_rsa}" ];
-
-        secrets = {
-          florian.file =
-            ./test-secrets/passwordHash.age;
+        syncthing = {
+          enable = true;
+          key = config.age.secrets.syncthingKey.path;
+          cert = config.age.secrets.syncthingCert.path;
+          user = "florian";
+          dataDir = "/home/florian/.syncthing";
+          settings = {
+            devices = {
+              "android".id =
+                "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+              "macos".id =
+                "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
+              "pi".id = "D5UJHLR-NVAXNBN-7HD6XXP-7IOAKHA-6VT4B2Y-IBYPHKU-2KFFDPW-PUSX4QV";
+            };
+            folders = {
+              "android-photos" = {
+                path = "/home/florian/android/photos";
+                devices = [ "android" ];
+              };
+              "android-pictures" = {
+                path = "/home/florian/android/pictures";
+                devices = [ "android" ];
+              };
+              "android-org" = {
+                path = "/home/florian/android/org";
+                devices = [ "android" ];
+              };
+              "android-backups" = {
+                path = "/home/florian/android/backups";
+                devices = [ "android" "pi" ];
+              };
+              "org-roam" = {
+                path = "/home/florian/Dokumente/org-roam";
+                devices = [ "android" "pi" ];
+                versioning = {
+                  type = "simple";
+                  params.keep = "5";
+                };
+              };
+              "music" = {
+                path = "/home/florian/Music";
+                devices = [ "android" ];
+              };
+              "macos" = {
+                path = "/home/florian/syncthing-macos";
+                devices = [ "macos" ];
+              };
+            };
+          };
         };
       };
-
+    })
+    (lib.mkIf (!config.isRealSystem) {
       location = {
         latitude = 20.0;
         longitude = 20.0;
       };
+
+      age = {
+        identityPaths = [ "${./test-secrets/id_rsa}" ];
+        secrets = {
+          florian.file = (mkFakeAgeSecret "${./test-secrets/florian}").outPath;
+          bookmarks.file = (mkFakeAgeSecret "${./test-secrets/my-bookmarks.json}").outPath;
+          notmuchTags.file = (mkFakeAgeSecret "${./test-secrets/notmuchTags}").outPath;
+        };
+      };
     })
     {
+      age.secrets = {
+        bookmarks = {
+          path = "/home/florian/.my-bookmarks.json";
+          owner = "florian";
+          group = "users";
+          mode = "400";
+        };
+        notmuchTags = {
+          owner = "florian";
+          group = "users";
+          mode = "400";
+        };
+      };
 
       zramSwap.enable = true;
-
 
       fonts.packages = with pkgs; [ terminus_font nerdfonts ];
 
@@ -334,57 +389,6 @@
         blueman.enable = true;
 
         hoogle.enable = true;
-        syncthing = {
-          enable = true;
-          key = config.age.secrets.syncthingKey.path;
-          cert = config.age.secrets.syncthingCert.path;
-          user = "florian";
-          dataDir = "/home/florian/.syncthing";
-          settings = {
-            devices = {
-              "android".id =
-                "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
-              "macos".id =
-                "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
-              "pi".id = "D5UJHLR-NVAXNBN-7HD6XXP-7IOAKHA-6VT4B2Y-IBYPHKU-2KFFDPW-PUSX4QV";
-            };
-            folders = {
-              "android-photos" = {
-                path = "/home/florian/android/photos";
-                devices = [ "android" ];
-              };
-              "android-pictures" = {
-                path = "/home/florian/android/pictures";
-                devices = [ "android" ];
-              };
-              "android-org" = {
-                path = "/home/florian/android/org";
-                devices = [ "android" ];
-              };
-              "android-backups" = {
-                path = "/home/florian/android/backups";
-                devices = [ "android" "pi" ];
-              };
-              "org-roam" = {
-                path = "/home/florian/Dokumente/org-roam";
-                devices = [ "android" "pi" ];
-                versioning = {
-                  type = "simple";
-                  params.keep = "5";
-                };
-              };
-              "music" = {
-                path = "/home/florian/Music";
-                devices = [ "android" ];
-              };
-              "macos" = {
-                path = "/home/florian/syncthing-macos";
-                devices = [ "macos" ];
-              };
-            };
-          };
-
-        };
       };
 
       # Bluetooth sound
