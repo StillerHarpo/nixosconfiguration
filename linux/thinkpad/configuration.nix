@@ -465,7 +465,10 @@ in {
           enable = true;
           package = pkgs.wireshark;
         };
-        steam.enable = true;
+        steam = {
+          enable = true;
+          remotePlay.openFirewall = true;
+        };
         gamemode.enable = true;
       };
 
