@@ -88,7 +88,8 @@
   (evil-collection-init))
 
 (use-package evil-embrace
-  :ensure
+  :after evil
+  :ensure t
   :config
   (evil-embrace-enable-evil-surround-integration))
 
