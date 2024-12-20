@@ -305,6 +305,7 @@ logger queue =
   atomically (readTQueue queue) >>= \case
     LogMessage msg -> do
       T.putStrLn msg
+      delay (100 * 1000)
       logger queue
     StopLogging -> pure ()
     StopLoggingWithFailure msg -> do
@@ -394,6 +395,7 @@ brightnessMoveRunner mqttState queue client topic moveT =
     let worker :: Int -> BrightnessMove -> Int -> IO ()
         worker fuel move brightnessStep = do
           curMove <- readTVarIO moveT
+          delay (100 * 1000)
           case (move, curMove) of
             (BrightnessMoveDown, BrightnessMoveUp) -> worker 20 BrightnessMoveUp 30
             (BrightnessMoveUp, BrightnessMoveDown) -> worker 20 BrightnessMoveDown (-30)
@@ -412,6 +414,7 @@ brightnessMoveRunner mqttState queue client topic moveT =
               delay (2 * 1000 * 1000)
               worker (fuel - 1) move brightnessStep
     move <- readTVarIO moveT
+    delay (100 * 1000)
     case move of
       BrightnessMoveStop -> pure ()
       BrightnessMoveUp -> worker 10 move 30
