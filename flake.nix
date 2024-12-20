@@ -294,6 +294,7 @@
             flosDeck = mkFlosDeck fakePrivate;
             nixosThinkpad = mkNixosThinkpad fakePrivate;
           };
+        deploy-rs = inputs.deploy-rs.defaultPackage."aarch64-linux";
       };
 
 
