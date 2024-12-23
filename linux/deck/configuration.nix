@@ -187,22 +187,27 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   specialisation.kodi.configuration =
     let myKodi =
-          (pkgs.kodi-gbm.withPackages (kodiPkgs:
+          (pkgs.kodi.withPackages (kodiPkgs:
             with kodiPkgs; [mediathekview invidious]
           ));
     in {
       jovian.steam.enable = lib.mkForce false;
-      services.greetd = {
+
+      services.getty.autologinUser = "florian";
+      environment.loginShellInit = ''
+        [[ "$(tty)" == /dev/tty1 ]] && sway
+      '';
+      home-manager.users.florian.wayland.windowManager.sway = {
         enable = true;
-        settings = {
-          default_session= {
-            command = "${pkgs.greetd.greetd}/bin/agreety";
-            user = "florian";
+        config = {
+          extraConfigEarly = ''
+          ''; 
+          input."type:touch" = {
+            calibration_matrix = ''0 1 0 "-1" 0 1'';
           };
-          initial_session = {
-            command = "${myKodi}/bin/kodi --windowing=gbm";
-            user = "florian";
-          };
+          startup = [
+            { command = "${lib.getExe' myKodi "kodi"}"; }
+          ];
         };
       };
       users.users.florian.extraGroups = [ "input" ];
