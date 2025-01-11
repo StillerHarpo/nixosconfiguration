@@ -214,8 +214,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       home-manager.users.florian.wayland.windowManager.sway = {
         enable = true;
         config = {
-          extraConfigEarly = ''
-          ''; 
           input."type:touch" = {
             calibration_matrix = ''0 1 0 "-1" 0 1'';
           };
