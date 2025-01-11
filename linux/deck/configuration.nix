@@ -188,7 +188,22 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   specialisation.kodi.configuration =
     let myKodi =
           (pkgs.kodi.withPackages (kodiPkgs:
-            with kodiPkgs; [mediathekview invidious]
+            with kodiPkgs; [
+              mediathekview
+              invidious
+              jellyfin
+              (buildKodiAddon rec {
+                pname = "BluetoothManager";
+                namespace = pname;
+                version = "1.0.4";
+                src = pkgs.fetchFromGitHub {
+                  owner = "wastis";
+                  repo = pname;
+                  tag = "v${version}";
+                  hash = "sha256-KKaR7rIkflMYU6EDBEcorHQ3t7jsB4Qe6Ikg+eBblkA=";
+                };
+              })
+            ]
           ));
     in {
       jovian.steam.enable = lib.mkForce false;
