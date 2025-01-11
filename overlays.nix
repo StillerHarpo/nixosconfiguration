@@ -46,5 +46,5 @@
     );
   };
   emacs = inputs.emacs-overlay.overlay;
-  nur = inputs.nur.overlay;
+  nur = inputs.nur.overlays.default;
 }

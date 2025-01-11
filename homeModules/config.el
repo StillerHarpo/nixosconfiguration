@@ -864,6 +864,54 @@
 
 (use-package haskell-mode :ensure t)
 
+(add-hook
+ 'find-file-hook
+ (lambda ()
+   (when (s-ends-with? ".agda" (buffer-file-name))
+     (load-file (let ((coding-system-for-read 'utf-8))
+		  (shell-command-to-string "agda-mode locate")))
+     (envrc-propagate-environment 'agda2-mode)
+     (defun my/agda2-restart-envrc ()
+       "Tries to start or restart the Agda process in envrc."
+       (interactive)
+       (envrc-propagate-environment 'agda2-restart))
+     (general-define-key
+      :states '(normal visual motion)
+      :keymaps '(agda2-mode-map)
+      :prefix "SPC"
+      "m l" '(agda2-load :which-key "Load")
+      "m x l" 'agda2-load
+      "m x c" '(agda2-compile :which-key "Compile")
+      "m x q" '(agda2-quit :which-key "Quit")
+      "m x r" '(my/agda2-restart-envrc :which-key "Kill and restart Agda")
+      "m x a" '(agda2-abort :which-key "Abort a command")
+      "m x d" '(agda2-remove-annotations :which-key "Remove goals and highlighting (\"deactivate\")")
+      "m x h" '(agda2-display-implicit-arguments :which-key "Toggle display of hidden arguments")
+      "m x i" '(agda2-display-irrelevant-arguments :which-key "Toggle display of irrelevant arguments")
+      "m =" '(agda2-show-constraints :which-key "Show constraints")
+      "m s" '(agda2-solve-maybe-all :which-key "Solve constraints")
+      "m ?" '(agda2-show-goals :which-key "Show goals")
+      "m f" '(agda2-next-goal :which-key "Next goal") ; Forward.
+      "m b" '(agda2-previous-goal :which-key "Previous goal") ; Back.
+      "m SPC" '(agda2-give :which-key "Give")
+      "m m" '(agda2-elaborate-give :which-key "Elaborate and Give")
+      "m r" '(agda2-refine :which-key "Refine")
+      "m a" '(agda2-mimer-maybe-all :which-key "Auto")
+      "m c" '(agda2-make-case :which-key "Case")
+      "m t" '(agda2-goal-type :which-key "Goal type")
+      "m e" '(agda2-show-context :which-key "Context (environment)")
+      "m h" '(agda2-helper-function-type :which-key "Helper function type")
+      "m d" '(agda2-infer-type-maybe-toplevel :which-key "Infer (deduce) type")
+      "m w" '(agda2-why-in-scope-maybe-toplevel :which-key "Explain why a particular name is in scope")
+      "m ," '(agda2-goal-and-context :which-key "Goal type and context")
+      "m ." '(agda2-goal-and-context-and-inferred :which-key "Goal type, context and inferred type")
+      "m ;" '(agda2-goal-and-context-and-checked :which-key "Goal type, context and checked type")
+      "m z" '(agda2-search-about-toplevel :which-key "Search About")
+      "m o" '(agda2-module-contents-maybe-toplevel :which-key "Module contents")
+      "m n" '(agda2-compute-normalised-maybe-toplevel :which-key "Evaluate term to normal form")
+      "m x ;" '(agda2-comment-dwim-rest-of-buffer :which-key "Comment/uncomment the rest of the buffer")
+      "m x s" '(agda2-set-program-version :which-key "Switch to another version of Agda")))))
+
 (use-package rustic :ensure
   :init
   (setq rustic-lsp-client 'eglot))

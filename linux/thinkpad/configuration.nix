@@ -174,7 +174,6 @@ in {
             }
             {
               pkgs = with pkgs; [
-                elan
                 inputs.nixpkgs-mediathekview.legacyPackages."x86_64-linux".mediathekview
                 librespeed-cli
                 mqttx
@@ -186,7 +185,6 @@ in {
                 ical2orgpy
                 nixfmt-classic
                 libreoffice
-                minetest
                 textcleaner
                 file
                 element-desktop
@@ -205,16 +203,14 @@ in {
                 vim
                 shellcheck
                 ######## Games ###############
-                airshipper
-                superTuxKart
-                openarena
-                xonotic
+                # airshipper
+                # superTuxKart
+                # openarena
+                # xonotic
+                # minetest
                 #############
                 chromium
-                passff-host
-                neomutt
-                mu
-                poppler
+                # passff-host
                 tuir
                 (mpv.override { scripts = [ mpvScripts.mpris ]; })
                 rlwrap
@@ -228,7 +224,6 @@ in {
                 yt-dlp
                 libnotify
                 unzip
-                rofi
                 cabal2nix
                 git-crypt
                 ### chat ###
@@ -244,7 +239,6 @@ in {
                 grex
                 ## better rust tools ###
                 tor-browser-bundle-bin
-                docker-compose
               ];
               rules = lib.apparmor.defaultRules;
             }
@@ -519,8 +513,6 @@ in {
         }];
         distributedBuilds = false;
       };
-
-      virtualisation.docker.enable = true;
 
       nixpkgs.hostPlatform = "x86_64-linux";
 

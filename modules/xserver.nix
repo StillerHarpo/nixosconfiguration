@@ -23,6 +23,7 @@ in
             xsecurelock
             dzen2
             xclip
+            rofi
           ];
           rules = lib.apparmor.defaultRules;
         }
