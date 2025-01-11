@@ -88,7 +88,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     systemPackages = with pkgs; [
       librespeed-cli
       xonotic
-      openarena
       airshipper
       superTuxKart
       prismlauncher
