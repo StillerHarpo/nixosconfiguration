@@ -17,7 +17,7 @@
     };
     initExtra = ''
       precmd() { . ~/.env }
-      export PATH=~/checkpad/checkpad-ssh:$PATH
+      export PATH=~/meqo/checkpad-ssh:$PATH
       vterm_printf(){
           if [ -n "$TMUX" ] && ([ "''${TERM%%-*}" = "tmux" ] || [ "''${TERM%%-*}" = "screen" ] ); then
               # Tell tmux to pass the escape sequences through
