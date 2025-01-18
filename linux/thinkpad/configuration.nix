@@ -174,6 +174,7 @@ in {
             }
             {
               pkgs = with pkgs; [
+                inetutils
                 inputs.nixpkgs-mediathekview.legacyPackages."x86_64-linux".mediathekview
                 librespeed-cli
                 mqttx
