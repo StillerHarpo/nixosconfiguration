@@ -233,7 +233,7 @@
   (org-agenda-start-on-weekday nil)
   (org-src-window-setup 'current-window)
   (org-refile-targets '((nil :maxlevel . 9)
-                        (org-agenda-files :maxlevel . 9)))
+			(org-agenda-files :maxlevel . 9)))
   (org-highlight-latex-and-related '(latex script entities))
   (org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org")
   (org-ref-default-bibliography reftex-default-bibliography)
@@ -245,22 +245,23 @@
   (org-agenda-window-setup 'current-window)
   (org-agenda-todo-ignore-scheduled 'future)
   (org-todo-keywords
-        '((sequence
-           "TODO(t)"  ; A task that needs doing & is ready to do
-           "|"
-           "DONE(d)"  ; Task successfully completed
-           "KILL(k)"))) ; Task was cancelled, aborted or is no longer applicable
+   '((sequence
+      "TODO(t)"  ; A task that needs doing & is ready to do
+      "|"
+      "DONE(d)"  ; Task successfully completed
+      "KILL(k)"))) ; Task was cancelled, aborted or is no longer applicable
   (org-startup-folded 'fold)
   (org-capture-templates
-      '(("c" "capture to notes.org" entry (file "~/Dokumente/notes.org") "* %i %?\n%U\n- %a")))
+   '(("c" "capture to notes.org" entry (file "~/Dokumente/notes.org") "* %i %?\n%U\n- %a")))
   :config
   ;; https://github.com/doomemacs/doomemacs/issues/2672
   ;; Prevent temporarily opened agenda buffers from polluting recentf.
-  (advice-add #'org-get-agenda-file-buffer :around (lambda (orig-fn file)
-      (let ((recentf-exclude (list (lambda (_file) t)))
-            find-file-hook
-            org-mode-hook)
-        (funcall orig-fn file))))
+  (advice-add #'org-get-agenda-file-buffer
+	      :around (lambda (orig-fn file)
+			(let ((recentf-exclude (list (lambda (_file) t)))
+			      find-file-hook
+			      org-mode-hook)
+			  (funcall orig-fn file))))
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
@@ -293,14 +294,16 @@
     (my/org-insert-auto-schedule "sync conflict files entfernen"))
 
   :general
-  (:states '(normal visual motion emacs)
+  (:states
+   '(normal visual motion emacs)
    :keymaps '(my-keys-minor-mode-map)
    :prefix "SPC"
    "n a" 'org-agenda
    "n c" 'org-capture
    "n l" 'org-store-link)
   :general
-  (:states '(normal visual motion)
+  (:states
+   '(normal visual motion)
    :keymaps '(org-mode-map)
    :prefix "SPC"
    "m #" 'org-update-statistics-cookies
@@ -430,10 +433,10 @@
    "m p p" 'org-priority
    "m p u" 'org-priority-up)
   :general
-  (:states '(normal visual emacs motion)
+  (:states
+   '(normal visual emacs motion)
    :keymaps '(org-agenda-mode-map)
-   "q" 'org-agenda-exit
-   ))
+   "q" 'org-agenda-exit))
 
 (use-package ol-notmuch
   :ensure t)
