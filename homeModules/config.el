@@ -667,6 +667,8 @@
 
   (define-key magit-status-mode-map (kbd "#") #'th/magit-aux-commands))
 
+(use-package orgit
+  :ensure t)
 
 (use-package git-timemachine
   :ensure t
