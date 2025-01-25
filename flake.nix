@@ -2,10 +2,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-mediathekview.url = "github:jensbin/nixpkgs/fix_mediathekview";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs?rev=22c3f2cf41a0e70184334a958e6b124fb0ce3e01";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     jovian = {
-      url = "github:Jovian-Experiments/Jovian-NixOS";
+      url = "github:Jovian-Experiments/Jovian-NixOS?rev=0f415721ee427270bc078ef3a5ba2a308d47461f";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nix-alien = {
@@ -33,7 +33,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake-deck = {
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager?rev=d00c6f6d0ad16d598bf7e2956f52c1d9d5de3c3a";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     nur.url = "github:nix-community/NUR";
