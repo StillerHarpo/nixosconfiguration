@@ -3,9 +3,13 @@
 let sshKeys = import ../thinkpad/sshKeys.nix; in
 
 {
+
+  disabledModules = [ "system/boot/unl0kr.nix" ];
+
   imports = [
     ./disko.nix
     ../configuration.nix
+    "${inputs.nixpkgs-unl0kr}/nixos/modules/system/boot/unl0kr.nix"
   ];
 
   age.secrets = {
@@ -174,7 +178,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
-    overlays = builtins.attrValues outputs.overlays;
+    overlays = builtins.attrValues outputs.overlays ++
+               [(_: _: {
+                 unl0kr = inputs.nixpkgs-unl0kr.legacyPackages."x86_64-linux".unl0kr;
+               })];
     config.allowUnfree = true;
   };
 
