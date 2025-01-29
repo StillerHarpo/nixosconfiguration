@@ -1733,3 +1733,10 @@ If I let Windows handle DPI everything looks blurry."
              #'joaot/eglot-project-find-function)
 
 (add-hook 'before-save-hook 'eglot-format-buffer)
+
+(defun my/save-no-hooks ()
+  "Save buffer without any hooks. Sometimes formating does the wrong thing"
+  (interactive)
+  (let ((before-save-hook nil)
+	(after-save-hook nil))
+  (save-buffer)))
