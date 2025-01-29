@@ -278,27 +278,93 @@
         (org-schedule 1 (calendar-date-string (calendar-current-date)))
         (save-buffer))))
 
-  (unless (process-lines "journalctl" "-u" "restic-backups-florian.service" "JOB_RESULT=done" "--since=-7d" "--output=cat")
-    (my/org-insert-auto-schedule "restic fixen"))
+  (defun my/org-find-headline-in-buffer (regex &optional buffer pos-only)
+    "Find node wihtch matches regexHEADING in BUFFER.
+Return a marker to the heading if it was found, or nil if not.
+If POS-ONLY is set, return just the position instead of a marker.
 
-  (unless (directory-empty-p "~/Dokumente/org-roam/journals")
-    (my/org-insert-auto-schedule "journals aufräumen"))
-  (unless (string-equal (org-file-contents "~/Dokumente/calendar.org") "")
-    (my/org-insert-auto-schedule "calendar aufräumen"))
-  (unless (string-equal (org-file-contents "~/Dokumente/notes.org") "")
-    (my/org-insert-auto-schedule "notes aufräumen"))
-  (unless (directory-empty-p emacsAutoSaveDir)
-    (my/org-insert-auto-schedule "auto saves aufräumen"))
+The heading text must match exact, but it may have a TODO keyword,
+a priority cookie and tags in the standard locations."
+    (with-current-buffer (or buffer (current-buffer))
+      (org-with-wide-buffer
+       (goto-char (point-min))
+       (let (case-fold-search)
+	 (when (re-search-forward
+		(rx (seq line-start "* " (zero-or-more not-newline) (regexp regex))) nil t)
+	   (if pos-only
+	       (match-beginning 0)
+	     (move-marker (make-marker) (match-beginning 0))))))))
 
-  (when (directory-files "~/Dokumente/org-roam/" nil (rx ".sync-conflict-"))
-    (my/org-insert-auto-schedule "sync conflict files entfernen"))
+  (defun my/org-set-auto-schedule-done-rx (heading)
+    "Mark every heading as done which matches heading regex"
+    (with-current-buffer (find-file-noselect "~/Dokumente/auto.org")
+      (let ((heading-name heading))
+        (if-let ((pos (my/org-find-headline-in-buffer heading-name nil t)))
+  	  (goto-char pos)
+  	  (org-todo "DONE")
+  	  (save-buffer)))))
+
+  (defun my/org-set-auto-schedule-done (heading)
+    "Mark every HEADING as done which matches heading regex"
+    (with-current-buffer (find-file-noselect "~/Dokumente/auto.org")
+      (let ((heading-name heading))
+	(if-let ((pos (org-find-exact-headline-in-buffer heading-name nil t)))
+	    (progn (goto-char pos)
+		   (org-todo "DONE")
+		   (save-buffer))))))
+
+  (defun my/auto-update-agenda-if (p msg)
+    "sets org entry with msg to done if p is true existing and schedules otherwise"
+    (if p
+	(my/org-set-auto-schedule-done msg)
+      (my/org-insert-auto-schedule msg)))
+
+  (my/org-set-auto-schedule-done "auto saves aufräumen")
+  (defun my/auto-update-agenda-if-file-empty (file msg)
+    "sets org entry with msg to done if file is empty/not existing
+     and schedules otherwise"
+    (my/auto-update-agenda-if
+     (or
+      (not (file-exists-p file))
+      (string-equal (org-file-contents file) ""))
+     msg))
+
+  (my/auto-update-agenda-if
+   (directory-empty-p emacsAutoSaveDir)
+   "auto saves aufräumen")
+
+  (defun my/org-agenda ()
+    "org-agenda with auto todos"
+    (interactive)
+    (my/auto-update-agenda-if
+     (process-lines
+      "journalctl"
+      "-u"
+      "restic-backups-florian.service"
+      "JOB_RESULT=done"
+      "--since=-7d"
+      "--output=cat")
+     "restic fixen")
+    (my/auto-update-agenda-if
+     (directory-empty-p "~/Dokumente/org-roam/journals")
+     "journals aufräumen")
+    (my/auto-update-agenda-if-file-empty
+     "~/Dokumente/calendar.org"
+     "calendar aufräumen")
+    (my/auto-update-agenda-if-file-empty
+     "~/Dokumente/notes.org"
+     "notes aufräumen")
+    (my/auto-update-agenda-if
+     (not (directory-files "~/Dokumente/org-roam/" nil (rx ".sync-conflict-")))
+     "sync conflict files entfernen")
+    (org-agenda))
 
   :general
   (:states
    '(normal visual motion emacs)
    :keymaps '(my-keys-minor-mode-map)
    :prefix "SPC"
-   "n a" 'org-agenda
+   "n a" 'my/org-agenda
    "n c" 'org-capture
    "n l" 'org-store-link)
   :general
@@ -1607,6 +1673,7 @@ If I let Windows handle DPI everything looks blurry."
 	(let ((error-msg (format "Syncing calendar failed: %s" errors)))
 	  (my/org-insert-auto-schedule error-msg)
 	  (message error-msg))
+      (my/org-set-auto-schedule-done-rx "Syncing calendar failed: ")
       (message "calendar synced"))))
 
 (use-package eglot
