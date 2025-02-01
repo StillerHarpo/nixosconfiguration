@@ -347,7 +347,7 @@ in {
             hashedPasswordFile = config.age.secrets.florian.path;
             description = "Florian Engel";
             extraGroups =
-              [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "docker" "scan" "lp" "fuse" ];
+              [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "scan" "lp" "fuse" ];
           };
           playground = { isNormalUser = true; };
         };
@@ -518,9 +518,11 @@ in {
 
       nixpkgs.hostPlatform = "x86_64-linux";
 
+      docker.enable = true;
+
       specialisation.normalInternet.configuration = {
         dnscrypt.enable = lib.mkForce false;
-        virtualisation.docker.enable = lib.mkForce false;
+        docker.enable = lib.mkForce false;
       };
 
       nix = {
