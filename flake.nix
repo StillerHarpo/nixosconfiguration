@@ -3,7 +3,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-mediathekview.url = "github:jensbin/nixpkgs/fix_mediathekview";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-unl0kr.url = "github:NixOS/nixpkgs?rev=22c3f2cf41a0e70184334a958e6b124fb0ce3e01";
+    nixpkgs-unl0kr.url = "github:NixOS/nixpkgs?rev=afbc937b97f79d493ec2403e2710d61d60e72cec";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
