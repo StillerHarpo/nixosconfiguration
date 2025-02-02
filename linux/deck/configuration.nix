@@ -16,8 +16,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     florian.file = ./secrets/florian.age;
     mediasourcesXml = {
       file = ./secrets/mediasources.xml.age;
-      path = "/home/florian/.kodi/userdata/mediasources.xml";
-      owner = "florian";
+      path = "/home/kodi/.kodi/userdata/mediasources.xml";
+      owner = "kodi";
       group = "users";
       mode = "400";
     };
@@ -27,7 +27,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     steam = {
       enable = true;
       autoStart = true;
-      user = "florian";
+      user = "steam";
       desktopSession = "plasmawayland";
     };
     decky-loader.enable = true;
@@ -159,6 +159,16 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       isNormalUser = true;
       openssh.authorizedKeys.keys = sshKeys;
     };
+    steam = {
+      isNormalUser = true;
+      extraGroups =
+        [  "networkmanager" "dialout" "video" ];
+    };
+    kodi = {
+      isNormalUser = true;
+      extraGroups =
+        [  "networkmanager" "dialout" "video" ];
+    };
     root.openssh.authorizedKeys.keys = sshKeys;
   };
 
@@ -213,23 +223,32 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           ));
     in {
       jovian.steam.enable = lib.mkForce false;
-
-      services.getty.autologinUser = "florian";
+      users.users = {
+        kodi = {
+          isNormalUser = true;
+          extraGroups =
+            [ "input"  "networkmanager" "dialout" "video" ];
+        };
+      };
+      services.getty.autologinUser = "kodi";
       environment.loginShellInit = ''
         [[ "$(tty)" == /dev/tty1 ]] && sway
       '';
-      home-manager.users.florian.wayland.windowManager.sway = {
-        enable = true;
-        config = {
-          input."type:touch" = {
-            calibration_matrix = ''0 1 0 "-1" 0 1'';
+      home-manager.users.kodi = {
+        home.stateVersion = "24.11";
+        wayland.windowManager.sway = {
+          enable = true;
+          config = {
+            input."type:touch" = {
+              calibration_matrix = ''0 1 0 "-1" 0 1'';
+            };
+            startup = [
+              { command = "${lib.getExe pkgs.pamixer} --set-volume 100"; }
+              { command = "${lib.getExe' myKodi "kodi"}"; }
+            ];
           };
-          startup = [
-            { command = "${lib.getExe' myKodi "kodi"}"; }
-          ];
         };
       };
-      users.users.florian.extraGroups = [ "input" ];
       services.xserver.enable = lib.mkForce false;
     };
 }
