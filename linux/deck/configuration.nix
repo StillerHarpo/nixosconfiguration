@@ -200,7 +200,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   system.stateVersion = "24.11";
 
-  specialisation.kodi.configuration =
+  specialisation =
+    { kodi.configuration =
     let myKodi =
           (pkgs.kodi.withPackages (kodiPkgs:
             with kodiPkgs; [
@@ -249,5 +250,17 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         };
       };
       services.xserver.enable = lib.mkForce false;
+    };
+      buffy.configuration = {
+        jovian.steam.enable = lib.mkForce false;
+        services = {
+          getty.autologinUser = "florian";
+          buffyboard = {
+            enable = true;
+            extraFlags = ["--rotate=1"];
+          };
+          xserver.enable = lib.mkForce false;
+        };
+      };
     };
 }
