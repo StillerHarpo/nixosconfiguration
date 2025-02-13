@@ -134,7 +134,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   boot = {
     initrd = {
       availableKernelModules = ["evdev" "hid-generic" "i2c_hid_api" "hid_multitouch"];
-      unl0kr.enable = true;
+      unl0kr = {
+        enable = true;
+        package = pkgs.buffybox;
+      };
       systemd.enable = true;
     };
     loader = {
@@ -188,10 +191,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
-    overlays = builtins.attrValues outputs.overlays ++
-               [(_: _: {
-                 unl0kr = inputs.nixpkgs-unl0kr.legacyPackages."x86_64-linux".unl0kr;
-               })];
     config.allowUnfree = true;
   };
 
