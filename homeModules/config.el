@@ -1545,7 +1545,8 @@ If I let Windows handle DPI everything looks blurry."
 	(cond ((eq width-px 2560) (set-frame-font "monospace 20"))  ;; laptop screen
 	      ((eq width-px 1920) (set-frame-font "monospace 18")) ;; External monitor at home
 	      (t (set-frame-font "monospace 18"))))
-    (set-frame-font "monospace 14")))
+    (set-frame-font "monospace 12")))
+
 (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
 
 (add-to-list 'display-buffer-alist
