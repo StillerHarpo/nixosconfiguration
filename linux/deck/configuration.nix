@@ -129,10 +129,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     ];
   };
 
-  networking = {
-    hostName = "flosDeck";
-    interfaces.wlo1.useDHCP = true;
-  };
+  networking.hostName = "flosDeck";
 
   boot = {
     initrd = {
@@ -184,7 +181,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     };
   };
 
-  networking.networkmanager.enable = true;
+  networking.networkmanager = {
+    enable = true;
+    wifi.backend = "iwd";
+  };
 
   nixpkgs = {
     hostPlatform.system = "x86_64-linux";
