@@ -193,7 +193,7 @@ in {
                 ### screenshots ###
                 pinta
                 ### screenshots ###
-                inputs.nix-alien.packages."x86_64-linux".nix-alien
+                nix-alien
                 languagetool
                 remmina
                 sqlite
