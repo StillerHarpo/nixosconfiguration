@@ -95,7 +95,7 @@ in rec {
   ]);
   live-streams =
     let database = pkgs.fetchurl {
-           url = https://iptv-org.github.io/api/streams.json;
+           url = "https://iptv-org.github.io/api/streams.json";
            hash = pkgs.lib.fakeHash;
         };
   in pkgs.writeScriptBin "live-streams" ''
