@@ -3,14 +3,6 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
-    python3 = prev.python3.override {
-      packageOverrides = pFinal: pPrev: {
-        deal = pPrev.deal.overridePythonAttrs (old: {
-          disabledTests = old.disabledTests ++ ["test_unknown_command"];
-        });
-      };
-    };
-    python3Packages = final.python3.pkgs;
     steam = prev.steam.override {
       extraPkgs = pkgs: [
         pkgs.libpng
@@ -55,5 +47,4 @@
   };
   emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlays.default;
-  nix-alien = inputs.nix-alien.overlays.default;
 }

@@ -193,7 +193,6 @@ in {
                 ### screenshots ###
                 pinta
                 ### screenshots ###
-                nix-alien
                 languagetool
                 remmina
                 sqlite

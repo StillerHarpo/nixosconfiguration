@@ -9,14 +9,6 @@
       url = "github:Jovian-Experiments/Jovian-NixOS";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
-    nix-alien = {
-      url = "github:thiagokokada/nix-alien";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
     flake-utils.url = "github:numtide/flake-utils";
     agenix = {
       url = "github:ryantm/agenix";
@@ -39,7 +31,6 @@
       url = "github:serokell/deploy-rs";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
         utils.follows = "flake-utils";
       };
     };
