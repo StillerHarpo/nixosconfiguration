@@ -23,7 +23,7 @@
       };
   };
   additions = final: prev: {
-    inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install;
+    inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install my-mediamenu;
     myAspellWithDicts =
       (final.aspellWithDicts (dicts: [
         dicts.de

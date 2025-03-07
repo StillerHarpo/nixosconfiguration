@@ -261,6 +261,49 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           };
           xserver.enable = lib.mkForce false;
         };
+        environment = {
+          loginShellInit = ''
+        [[ "$(tty)" == /dev/tty1 ]] && ${pkgs.my-mediamenu}/bin/mediamenu
+      '';
+          systemPackages = with pkgs; [
+            inputs.jellytui.defaultPackage.x86_64-linux
+            my-mediamenu
+          ];
+        };
+        age.secrets.jelltuiConfig = {
+          file = ./secrets/jellyfin_config.toml.age;
+          path = "/home/florian/.config/jellytui/config.toml";
+          owner = "florian";
+          group = "users";
+          mode = "400";
+        };
+        home-manager.users.florian.programs.mpv = {
+          enable = true;
+          config = {
+            screen = 1;
+            input-gamepad = true;
+          };
+          profiles = {
+            "screen.internal" = {
+               video-rotate = 90;
+               profile-cond = "display_names[1] == 'eDP-1'";
+            };
+          };
+          package = pkgs.mpv-unwrapped.wrapper { mpv = pkgs.mpv-unwrapped.override { sdl2Support = true; }; };
+          bindings = {
+            "INSERT" = "add volume 2";
+            "HOME" = "add volume -2";
+            "GAMEPAD_DPAD_RIGHT" = "seek +30";
+            "GAMEPAD_DPAD_LEFT" = "seek -30";
+            "GAMEPAD_ACTION_UP" = "cycle audio";
+            "GAMEPAD_ACTION_DOWN" = "cycle pause";
+            "GAMEPAD_ACTION_RIGHT" = "quit";
+            "GAMEPAD_ACTION_LEFT" = "show-text \${display-names}";
+          };
+          profiles.external-monitor = {
+            video-rotate = 0;
+          };
+        };
       };
     };
 }

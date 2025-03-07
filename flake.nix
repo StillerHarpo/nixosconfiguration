@@ -68,6 +68,13 @@
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    jellytui = {
+      url = "github:StillerHarpo/jellytui/main";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-unstable";
+        utils.follows = "flake-utils";
+      };
+    };
   };
   outputs = inputs@{ self, ... }:
 

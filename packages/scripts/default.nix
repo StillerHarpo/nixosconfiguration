@@ -20,6 +20,10 @@ let
       pattern = "display";
       replacement = "${pkgs.imagemagick}/bin/display";
     };
+    jellytui = {
+      pattern = "jellytui";
+      replacement = "${inputs.jellytui.defaultPackage.x86_64-linux}/bin/jellytui";
+    };
   } // pkgs.lib.listToAttrs (map (pkgName: {
     name = "${pkgName}";
     value = mkSubstitute "${pkgName}";
@@ -35,6 +39,7 @@ let
     "w3m"
     "pass"
     "jq"
+    "fzf"
   ]);
   my-linkopenwithoutx =
     makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
@@ -60,6 +65,11 @@ in rec {
       replacement = "${my-linkopenwithoutx}/bin/linkopenwithoutx";
     }
   ];
+  my-mediamenu = makeScript "mediamenu" (with substitutes; [
+    mpv
+    fzf
+    jellytui
+  ]);
   rpi4-install = makeScript "rpi4-install" ([substitutes.pass] ++ [
     {
       pattern = "nixos-anywhere";
