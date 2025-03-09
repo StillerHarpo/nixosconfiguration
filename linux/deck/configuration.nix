@@ -268,6 +268,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           systemPackages = with pkgs; [
             inputs.jellytui.defaultPackage.x86_64-linux
             my-mediamenu
+            pamixer
           ];
         };
         age.secrets.jelltuiConfig = {
@@ -289,16 +290,15 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
                profile-cond = "display_names[1] == 'eDP-1'";
             };
           };
-          package = pkgs.mpv-unwrapped.wrapper { mpv = pkgs.mpv-unwrapped.override { sdl2Support = true; }; };
           bindings = {
-            "INSERT" = "add volume 2";
-            "HOME" = "add volume -2";
+            "GAMEPAD_DPAD_UP" = "add volume 2";
+            "GAMEPAD_DPAD_DOWN" = "add volume -2";
             "GAMEPAD_DPAD_RIGHT" = "seek +30";
             "GAMEPAD_DPAD_LEFT" = "seek -30";
             "GAMEPAD_ACTION_UP" = "cycle audio";
             "GAMEPAD_ACTION_DOWN" = "cycle pause";
             "GAMEPAD_ACTION_RIGHT" = "quit";
-            "GAMEPAD_ACTION_LEFT" = "show-text \${display-names}";
+            "GAMEPAD_ACTION_LEFT" = "run ${lib.getExe pkgs.pamixer} --set-volume 100";
           };
           profiles.external-monitor = {
             video-rotate = 0;

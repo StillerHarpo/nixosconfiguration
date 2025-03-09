@@ -13,6 +13,7 @@
       texlive.combine {
         inherit (texlive) scheme-full pygmentex pgf collection-basic;
       };
+    mpv = prev.mpv-unwrapped.wrapper { mpv = prev.mpv-unwrapped.override { sdl2Support = true; }; };
   };
   additions = final: prev: {
     inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install my-mediamenu;
