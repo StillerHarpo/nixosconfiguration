@@ -7,7 +7,6 @@ my_find() {
 }
 my_find_show() {
     selected=$(fd -E '*.torrent' -E '*.aria2' -d 1 | sort | fzf --layout=reverse)
-    echo "Debug: " "$selected"
     if [ -d "$selected" ]; then
 	cd "$selected" || exit
 	my_find_show
@@ -23,12 +22,18 @@ my_find_show() {
     my_find_show
 }
 while true; do
-    res=$(printf "movies\nshows\nmusic\njellyfin\nexit" | fzf --layout=reverse)
+    res=$(printf "movies\nshows\nmovies (remote)\nshows (remote)\nmusic\njellyfin\nexit" | fzf --layout=reverse)
     case $res in
 	"movies")
-	    cd /home/florian/server/movies || exit 1
+	    cd /home/florian/movies || exit 1
 	    my_find;;
 	"shows")
+	    cd /home/florian/shows || exit 1
+	    my_find_show;;
+	"movies (remote)")
+	    cd /home/florian/server/movies || exit 1
+	    my_find;;
+	"shows (remote")
 	    cd /home/florian/server/shows || exit 1
 	    my_find_show;;
 	"music")

@@ -40,6 +40,7 @@ let
     "pass"
     "jq"
     "fzf"
+    "fd"
   ]);
   my-linkopenwithoutx =
     makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
@@ -69,6 +70,7 @@ in rec {
     mpv
     fzf
     jellytui
+    fd
   ]);
   rpi4-install = makeScript "rpi4-install" ([substitutes.pass] ++ [
     {
