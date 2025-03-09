@@ -549,6 +549,7 @@ in {
       };
       programs.ssh.kexAlgorithms = [ "curve25519-sha256" ];
       boot.supportedFilesystems."fuse.sshfs" = true;
+      youtube-tui.enable = true;
     }
   ];
 }
