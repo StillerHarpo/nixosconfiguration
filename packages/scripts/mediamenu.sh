@@ -22,7 +22,7 @@ my_find_show() {
     my_find_show
 }
 while true; do
-    res=$(printf "movies\nshows\nmovies (remote)\nshows (remote)\nmusic\njellyfin\nexit" | fzf --layout=reverse)
+    res=$(printf "movies\nshows\njellyfin\nexit" | fzf --layout=reverse)
     case $res in
 	"movies")
 	    cd /home/florian/movies || exit 1
@@ -30,15 +30,6 @@ while true; do
 	"shows")
 	    cd /home/florian/shows || exit 1
 	    my_find_show;;
-	"movies (remote)")
-	    cd /home/florian/server/movies || exit 1
-	    my_find;;
-	"shows (remote")
-	    cd /home/florian/server/shows || exit 1
-	    my_find_show;;
-	"music")
-	    cd /home/florian/server/music || exit 1
-	    my_find;;
 	"jellyfin") jellytui;;
 	"exit") exit;;
     esac
