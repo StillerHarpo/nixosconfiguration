@@ -263,8 +263,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         };
         environment = {
           loginShellInit = ''
-        [[ "$(tty)" == /dev/tty1 ]] && ${pkgs.my-mediamenu}/bin/mediamenu
-      '';
+             [[ "$(tty)" == /dev/tty1 ]] && bash -e ${pkgs.my-mediamenu}/bin/mediamenu
+          '';
           systemPackages = with pkgs; [
             inputs.jellytui.defaultPackage.x86_64-linux
             my-mediamenu
