@@ -139,25 +139,117 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           };
         };
     };
-    home-assistant = {
-      enable = true;
-      extraComponents = [
-        "default_config"
-        "esphome"
-        "met"
-        "radio_browser"
-        "mqtt"
-      ];
-      openFirewall = true;
-      config = {
-        default_config = {};
+    home-assistant =
+      let bedroomAlarmClockTime = "bedroom_alarm_clock_time";
+          eveningTimeButton = "evening_time_button";
+      in {
+        enable = true;
+        extraComponents = [
+          "default_config"
+          "esphome"
+          "met"
+          "radio_browser"
+          "mqtt"
+        ];
+        openFirewall = true;
+        config = {
+          default_config = {};
+          input_datetime = {
+            "${bedroomAlarmClockTime}" = {
+              name =  "Wecker";
+              has_date = true;
+              has_time = true;
+            };
+          };
+          input_button = {
+            "${eveningTimeButton}" = {
+              name = "Evening time";
+              icon =  "mdi:bell";
+            };
+          };
+          automation = [
+            { alias = "Evening Time";
+              triggers = [
+                { trigger = "state";
+                  entity_id = "input_button.${eveningTimeButton}";
+                }
+              ];
+              actions = [
+                { action = "mqtt.publish";
+                  data = {
+                    topic = "home_assistant/evening_time";
+                  };
+                }
+              ];
+            }
+            { alias = "Alarm Clock";
+              triggers = [
+                { trigger = "time";
+                  at = "input_datetime.${bedroomAlarmClockTime}";
+                }
+              ];
+              actions = [
+                { action = "mqtt.publish";
+                  data = {
+                    topic = "home_assistant/bedroom/alarm";
+                  };
+                }
+              ];
+            }
+          ];
 
-        homeassistant = {
-          name = "Home";
-          unit_system = "metric";
-        } // private.cords;
+          homeassistant = {
+            name = "Home";
+            unit_system = "metric";
+          } // private.cords;
+        };
+        lovelaceConfig = {
+          title = "Home";
+          views = [
+            { title = "Home";
+              cards = [
+                { type = "entities";
+                  entities = [
+                    "input_datetime.${bedroomAlarmClockTime}"
+                  ];
+                }
+                { type = "entities";
+                  entities = [
+                    "input_button.${eveningTimeButton}"
+                  ];
+                }
+                { type = "light";
+                  entity = "light.kichen";
+                }
+                { type = "light";
+                  entity = "light.livingroom";
+                }
+                { type = "light";
+                  entity = "light.lights_bedroom";
+                }
+                { type = "light";
+                  entity = "light.lights_dinerroom";
+                }
+                { type = "light";
+                  entity = "light.lights_kitchen_all";
+                }
+                { type = "light";
+                  entity = "light.kitchen_two";
+                }
+                { type = "light";
+                  entity = "light.kitchen_three";
+                }
+                { type = "light";
+                  entity = "light.kitchen_one";
+                }
+                { type = "light";
+                  entity = "light.lights_hallway";
+                }
+              ];
+            }
+          ];
+        };
       };
-    };
     syncthing = {
       enable = true;
       key = config.age.secrets.syncthingKey.path;
