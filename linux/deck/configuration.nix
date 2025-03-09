@@ -283,6 +283,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           config = {
             screen = 1;
             input-gamepad = true;
+            video-rotate = 90;
           };
           profiles = {
             "screen.internal" = {
