@@ -36,5 +36,15 @@
         RandomizedDelaySec = "3h";
       };
     };
+    environment.systemPackages = map (name:
+      let envVars =
+            lib.concatStringsSep
+              " "
+              (lib.mapAttrsToList
+                (key: value: "${key}=${if value == null then "" else value}")
+                config.systemd.services."restic-backups-${name}".environment);
+      in pkgs.writers.writeBashBin "restic-${name}" ''
+        ${envVars} ${lib.getExe pkgs.restic} $@
+      '') (lib.attrNames config.services.restic.backups);
   };
 }
