@@ -21,7 +21,7 @@ let
       replacement = "${pkgs.imagemagick}/bin/display";
     };
     jellytui = {
-      pattern = "jellytui";
+      pattern = "@jellytui@";
       replacement = "${inputs.jellytui.defaultPackage.x86_64-linux}/bin/jellytui";
     };
   } // pkgs.lib.listToAttrs (map (pkgName: {

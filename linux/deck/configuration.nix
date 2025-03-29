@@ -278,6 +278,13 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           group = "users";
           mode = "400";
         };
+        age.secrets.jelltuiConfigT = {
+          file = ./secrets/jellyfin_config_t.toml.age;
+          path = "/home/florian/.config/jellytui-t/config.toml";
+          owner = "florian";
+          group = "users";
+          mode = "400";
+        };
         home-manager.users.florian.programs.mpv = {
           enable = true;
           config = {
