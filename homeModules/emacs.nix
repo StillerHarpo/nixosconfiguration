@@ -32,8 +32,12 @@ in {
       defaultInitFile = true;
       alwaysEnsure = true;
       package = base;
-      extraEmacsPackages = epkgs:
-        [epkgs.treesit-grammars.with-all-grammars epkgs.pdf-tools];
+      extraEmacsPackages = epkgs: [epkgs.treesit-grammars.with-all-grammars epkgs.pdf-tools];
+      override = (final: prev: {
+        empv = prev.empv.overrideAttrs {
+          buildInputs = prev.empv.buildInputs ++ [final.hydra];
+        };
+      });
     };
     in lib.mkIf config.emacs.enable {
     services.emacs = {
