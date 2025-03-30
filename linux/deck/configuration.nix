@@ -308,6 +308,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
             "GAMEPAD_ACTION_DOWN" = "cycle pause";
             "GAMEPAD_ACTION_RIGHT" = "quit";
             "GAMEPAD_ACTION_LEFT" = "run ${lib.getExe pkgs.pamixer} --set-volume 100";
+            "GAMEPAD_LEFT_TRIGGER" = "cycle sid";
           };
           profiles.external-monitor = {
             video-rotate = 0;
