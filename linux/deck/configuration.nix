@@ -288,14 +288,15 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         home-manager.users.florian.programs.mpv = {
           enable = true;
           config = {
-            screen = 1;
             input-gamepad = true;
+            vf-add = "sub";
             video-rotate = 90;
           };
           profiles = {
-            "screen.internal" = {
-               video-rotate = 90;
-               profile-cond = "display_names[1] == 'eDP-1'";
+            "screen.external" = {
+              profile-cond = ''os.execute('mpv --drm-connector=help | grep " DP-1 (connected)"')'';
+              video-rotate = 0;
+              drm-connector = "DP-1";
             };
           };
           bindings = {
