@@ -72,7 +72,7 @@ tifNumMatch = fileNumMatch ".tif"
 pdfNumMatch :: Pattern Int
 pdfNumMatch = fileNumMatch ".pdf"
 
-delFile :: MonadIO io => FilePath -> io ()
+delFile :: (MonadIO io) => FilePath -> io ()
 delFile file = do
   printf ("deleting " % fp % "\n") file
   rm file
@@ -81,29 +81,28 @@ runTesseract :: FilePath -> MyShell (Text, Text)
 runTesseract inputFile =
   let inputFileT = T.pack inputFile
       outputBaseT = T.pack (basename inputFile)
-   in
-    do
-      Env {..} <- ask
-      printf ("running tesseract on " % fp % "to generate pdf \n") inputFile
-      procs "tesseract" [inputFileT, outputBaseT, "-l", "deu", tesseractConf] mempty
-      procs "tesseract" [inputFileT, outputBaseT, "-l", "deu"] mempty
-      liftIO $
-        whenM
-          (not <$> doesFileExist (T.unpack $ outputBaseT <> ".pdf"))
-          (procs "tiff2pdf" [inputFileT] mempty)
-      printf ("running textcleaner on " % fp % "\n") inputFile
-      liftIO $
-        withTempFile $ \((<> ".tif") -> cleanedPicture) -> do
-          procs
-            "textcleaner"
-            ["-g", "-e", "normalize", "-f", "30", "-o", "12", "-s", "2", inputFileT, T.pack cleanedPicture]
-            mempty
-          printf ("running tesseract on " % fp % "to generate textfile \n") cleanedPicture
-          procs "tesseract" [T.pack cleanedPicture, outputBaseT, "-l", "deu"] mempty
-      delFile inputFile
-      pure (outputBaseT <> ".pdf", outputBaseT <> ".txt")
+   in do
+        Env {..} <- ask
+        printf ("running tesseract on " % fp % "to generate pdf \n") inputFile
+        procs "tesseract" [inputFileT, outputBaseT, "--psm", "1", "-l", "deu", tesseractConf] mempty
+        procs "tesseract" [inputFileT, outputBaseT, "--psm", "1", "-l", "deu"] mempty
+        liftIO $
+          whenM
+            (not <$> doesFileExist (T.unpack $ outputBaseT <> ".pdf"))
+            (procs "tiff2pdf" [inputFileT] mempty)
+        printf ("running textcleaner on " % fp % "\n") inputFile
+        liftIO $
+          withTempFile $ \((<> ".tif") -> cleanedPicture) -> do
+            procs
+              "textcleaner"
+              ["-g", "-e", "normalize", "-f", "30", "-o", "12", "-s", "2", inputFileT, T.pack cleanedPicture]
+              mempty
+            printf ("running tesseract on " % fp % "to generate textfile \n") cleanedPicture
+            procs "tesseract" [T.pack cleanedPicture, outputBaseT, "-l", "deu"] mempty
+        delFile inputFile
+        pure (outputBaseT <> ".pdf", outputBaseT <> ".txt")
 
-liftFunReader :: Monad m => (m a -> m b) -> ReaderT s m a -> ReaderT s m b
+liftFunReader :: (Monad m) => (m a -> m b) -> ReaderT s m a -> ReaderT s m b
 liftFunReader fun r = ask >>= lift . fun . runReaderT r
 
 getPdfsAndTxtsSorted :: MyShell [(Text, Text)]
@@ -116,7 +115,7 @@ fileExistsError file = do
   printf ("counter was: " % d % "\n") curCount
   lift $ exit (ExitFailure 1)
 
-today :: MonadIO m => m Text
+today :: (MonadIO m) => m Text
 today = T.pack . formatTime defaultTimeLocale "%d_%m_%Y" <$> date
 
 getFileNamePdf :: MyShell Text
@@ -216,7 +215,7 @@ isExitKeyStr = \case
   [] -> False
   (c : cs) -> null cs && isExitKey c
 
-mainMenuKeysHint :: MonadIO io => io ()
+mainMenuKeysHint :: (MonadIO io) => io ()
 mainMenuKeysHint = echo "press q,Q,X,x to enter main menu"
 
 scanimage :: ScanSource -> Int -> MyShell ()
@@ -281,7 +280,7 @@ mainMenu = do
     _ -> invalid
   mainMenu
 
-getMaxFile :: MonadIO m => FilePath -> Pattern Int -> m Int
+getMaxFile :: (MonadIO m) => FilePath -> Pattern Int -> m Int
 getMaxFile filePath fileParser =
   fold
     ( match (many dot *> fileParser) . T.pack
@@ -295,10 +294,10 @@ getMaxFile filePath fileParser =
         getMax
     )
 
-getMaxPdfFile :: MonadIO m => Pattern Int -> m Int
+getMaxPdfFile :: (MonadIO m) => Pattern Int -> m Int
 getMaxPdfFile = getMaxFile _PDFS_DIR
 
-getMaxTifFile :: MonadIO m => Pattern Int -> m Int
+getMaxTifFile :: (MonadIO m) => Pattern Int -> m Int
 getMaxTifFile = getMaxFile "."
 
 main :: IO ()
