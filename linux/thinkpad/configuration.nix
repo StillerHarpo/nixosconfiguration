@@ -92,6 +92,10 @@ in {
                 path = "/home/florian/android/backups";
                 devices = [ "android" "pi" ];
               };
+              "android-share" = {
+                path = "/home/florian/android/share";
+                devices = [ "android" ];
+              };
               "org-roam" = {
                 path = "/home/florian/Dokumente/org-roam";
                 devices = [ "android" "pi" ];
