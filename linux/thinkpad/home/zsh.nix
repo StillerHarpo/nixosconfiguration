@@ -12,6 +12,7 @@
     oh-my-zsh.theme = "agnoster";
     initExtra = ''
       export BROWSER='${pkgs.my-linkopen}/bin/linkopen'
+      export CPM_ENABLE_TMUX=y
       eval "$(direnv hook zsh)"
       precmd_in_nix_shell() {
         if echo "$PATH" | grep -qc '/nix/store'; then
