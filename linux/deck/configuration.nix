@@ -28,7 +28,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       enable = true;
       autoStart = true;
       user = "steam";
-      desktopSession = "plasmawayland";
+      desktopSession = "plasma";
     };
     decky-loader.enable = true;
     devices.steamdeck = {
@@ -57,10 +57,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     };
     libinput.enable = true;
     xserver = {
-      desktopManager.plasma5 = {
-        enable = true;
-        runUsingSystemd = true;
-      };
       autoRepeatDelay = 250;
       autoRepeatInterval = 100;
       enable = true;
@@ -75,6 +71,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         Option  "SuspendTime" "0"
       '';
     };
+    desktopManager.plasma6.enable = true;
   };
 
   programs = {
@@ -83,7 +80,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   };
 
   environment = {
-    plasma5.excludePackages = with pkgs.plasma5Packages; [
+    plasma6.excludePackages = with pkgs.kdePackages; [
       elisa
       khelpcenter
       oxygen
