@@ -3,7 +3,6 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-unl0kr.url = "github:NixOS/nixpkgs?rev=afbc937b97f79d493ec2403e2710d61d60e72cec";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";

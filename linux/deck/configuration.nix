@@ -4,12 +4,9 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
 {
 
-  disabledModules = [ "system/boot/unl0kr.nix" ];
-
   imports = [
     ./disko.nix
     ../configuration.nix
-    "${inputs.nixpkgs-unl0kr}/nixos/modules/system/boot/unl0kr.nix"
   ];
 
   age.secrets = {
@@ -131,10 +128,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   boot = {
     initrd = {
       availableKernelModules = ["evdev" "hid-generic" "i2c_hid_api" "hid_multitouch"];
-      unl0kr = {
-        enable = true;
-        package = pkgs.buffybox;
-      };
+      unl0kr.enable = true;
       systemd.enable = true;
     };
     loader = {
