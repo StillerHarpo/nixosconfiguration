@@ -23,7 +23,7 @@ in {
     else if osConfig.xserver.enable then
       pkgs.emacs-unstable
     else if osConfig.wayland.enable then
-      pkgs.emacs-pgtk
+      pkgs.emacs-git-pgtk
     else
       pkgs.emacs-unstable-nox;
   package =
