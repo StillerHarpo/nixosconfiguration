@@ -35,9 +35,6 @@ in {
       extraEmacsPackages = epkgs: [epkgs.treesit-grammars.with-all-grammars epkgs.pdf-tools];
       # TODO remove this, after it is fixed upstream
       override = (final: prev: {
-        empv = prev.empv.overrideAttrs {
-          buildInputs = prev.empv.buildInputs ++ [final.hydra];
-        };
         rustic = prev.rustic.overrideAttrs {
           buildInputs = prev.empv.buildInputs ++ [final.flycheck];
         };
