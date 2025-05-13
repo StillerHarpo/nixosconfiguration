@@ -103,10 +103,11 @@ in {
       # probably a bug because it happens after a major update of nixos
       patterns = ["*" "![Gmail]/Entw&APw-rfe"];
     };
-    accounts.cpMed = import ./mail.nix {
+    accounts.cpMedOld = import ./mail.nix {
       inherit realName key;
-      address = "engel@medilyse.org";
-      passName = "mbsync/engel@medilyse.org";
+      address = private.workMailOld;
+      aliases = [ private.workMail ];
+      passName = "mbsync/${private.workMailOld}";
       host = "gmail.com";
       patterns = [ "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" ];
     };
