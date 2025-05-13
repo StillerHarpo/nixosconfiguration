@@ -1586,6 +1586,10 @@ If I let Windows handle DPI everything looks blurry."
 	root
       (string-join `(,root "server/")))))
 
+(defun my/checkpad-demo-directory ()
+  "Gets the demo directory of checkpad."
+  (string-join `(,(my/checkpad-server-directory) "demo/")))
+
 (defun my/checkpad-format ()
   "Formats the current buffer with the checkpad script."
   (interactive)
@@ -1605,6 +1609,26 @@ If I let Windows handle DPI everything looks blurry."
     (my/checkpad-format)))
 
 (add-hook 'after-save-hook 'my/checkpad-format-on-save)
+
+(defun my/checkpad-demo-format ()
+  "Formats the current buffer with the checkpad demo script."
+  (interactive)
+  (let ((default-directory (my/checkpad-demo-directory)))
+    (envrc-propagate-environment
+     'shell-command
+     (string-join
+      `("npm run format -- --write" " " ,(buffer-file-name (current-buffer)))))
+    (revert-buffer :NOCONFIRM t)))
+
+(defun my/checkpad-demo-format-on-save ()
+  "Formats the current buffer with the checkpad script if the project is checkpad."
+  (when (and (project-current)
+	     (my/checkpad-server-respository?)
+	     (string-match (rx (or (seq ".ts" eol) (seq ".js" eol) (seq ".xml" eol) (seq ".json" eol) (seq ".json5" eol)))
+			   (buffer-file-name (current-buffer))))
+    (my/checkpad-demo-format)))
+
+(add-hook 'after-save-hook 'my/checkpad-demo-format-on-save)
 
 (defun my/checkpad-shake-targets ()
   "Selects a target from shake."
