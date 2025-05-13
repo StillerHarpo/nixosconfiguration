@@ -1604,6 +1604,8 @@ If I let Windows handle DPI everything looks blurry."
 			   (buffer-file-name (current-buffer))))
     (my/checkpad-format)))
 
+(add-hook 'after-save-hook 'my/checkpad-format-on-save)
+
 (defun my/checkpad-shake-targets ()
   "Selects a target from shake."
   (let* ((default-directory (my/checkpad-server-directory))
@@ -1621,7 +1623,6 @@ If I let Windows handle DPI everything looks blurry."
 	 (target (my/checkpad-shake-targets)))
     (envrc-propagate-environment 'compile (format "cd %s && way=f ./shake %s" default-directory target))))
 
-(add-hook 'after-save-hook 'my/checkpad-format-on-save)
 
 (defun my/org-roam-commit-on-save ()
   "Auto commits in org-roam"
