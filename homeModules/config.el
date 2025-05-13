@@ -1580,7 +1580,7 @@ If I let Windows handle DPI everything looks blurry."
 (add-hook 'nxml-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
 (defun my/checkpad-server-directory ()
-  "Gets the server direcotory of checkpad."
+  "Gets the server directory of checkpad."
   (let ((root (project-root (project-current))))
     (if (s-suffix? "server" root)
 	root
