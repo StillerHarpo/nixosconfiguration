@@ -1766,3 +1766,19 @@ If I let Windows handle DPI everything looks blurry."
   (let ((before-save-hook nil)
 	(after-save-hook nil))
   (save-buffer)))
+
+
+(defun my/open-github-action-logs-in-buffer ()
+  "Opens the first github action link in buffer if it exists."
+  (interactive)
+  (if-let* ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
+	   (_ (string-match (rx (
+				 seq "https://github.com/"
+				     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
+				     "/actions/runs/"
+				     (group (one-or-more num))))
+			    txt))
+	   (project (match-string 1 txt))
+	   (id (match-string 2 txt)))
+      (shell-command (concat "gh run -R " project " view " id " --log-failed")
+		     (concat project " github action run: " id))))
