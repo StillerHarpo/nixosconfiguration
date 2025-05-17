@@ -1782,3 +1782,24 @@ If I let Windows handle DPI everything looks blurry."
 	   (id (match-string 2 txt)))
       (shell-command (concat "gh run -R " project " view " id " --log-failed")
 		     (concat project " github action run: " id))))
+
+(find-file "~/Dokumente/scans")
+
+(consult-ripgrep "~/Dokumente/scans/" "Kontoauszug")
+(find-dired "~/Dokumente/scans/" "-regex \".*Kontoauszug.*\"")
+
+;; functions for org links into documnets
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(use-package fd-dired
+  :ensure t)
+
+(defun my/find-in-scans (what)
+  (interactive)
+  "find regex in scan"
+  (fd-dired "~/Dokumente/scans/" what))
+
+(defun my/grep-in-scans (what)
+  (interactive)
+  "grep regex in scan"
+  (fd-grep-dired "~/Dokumente/scans/" what))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
