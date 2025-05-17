@@ -257,7 +257,10 @@ runMqtt queue = do
                 ((,subOptions) . toFilter)
                 ( [ "zigbee2mqtt/switch/kitchen/action",
                     "zigbee2mqtt/switch/livingRoom/action",
-                    "zigbee2mqtt/switch/hallway/action",
+                    "zigbee2mqtt/switch/dinerRoom/action",
+                    "zigbee2mqtt/switch/hallway/one/action",
+                    "zigbee2mqtt/switch/hallway/two/action",
+                    "zigbee2mqtt/switch/hallway/three/action",
                     "zigbee2mqtt/switch/bedroom/action",
                     "zigbee2mqtt/bridge/event"
                   ]
@@ -331,12 +334,14 @@ handleMessage mqttState queue topicToBrightnessMove client reasonTopic m _ = do
       mqttState
       queue
       topicToBrightnessMove
-      [dinerRoom, kitchenOne, kitchenTwo, kitchenThree]
+      [kitchenOne, kitchenTwo, kitchenThree]
       client
       m
+  when (reasonTopic == "zigbee2mqtt/switch/dinerRoom/action") $
+    handleSwitch mqttState queue topicToBrightnessMove [dinerRoom] client m
   when (reasonTopic == "zigbee2mqtt/switch/livingRoom/action") $
     handleSwitch mqttState queue topicToBrightnessMove [livingRoom] client m
-  when (reasonTopic == "zigbee2mqtt/switch/hallway/action") $
+  when (maybe False (`match` reasonTopic) (mkFilter "zigbee2mqtt/switch/hallway/+/action")) $
     handleSwitch mqttState queue topicToBrightnessMove [hallway] client m
   when (reasonTopic == "zigbee2mqtt/switch/bedroom/action") $
     handleSwitch mqttState queue topicToBrightnessMove [bedroom] client m

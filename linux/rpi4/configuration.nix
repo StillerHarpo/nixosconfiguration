@@ -105,8 +105,11 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
             lights_dinerRoom = "0x881a14fffe8eb8f9";
             lights_hallway = "0x881a14fffea09b0f";
             lights_bedroom = "0x881a14fffe8ed90c";
-            switch_hallway = "0x0017880109abe4d3";
+            switch_hallway_one = "0x0017880109abe4d3";
+            switch_hallway_two = "0xe406bffffe347b2d";
+            switch_hallway_three = "0xe406bffffe349b1a";
             switch_kitchen = "0x980c33fffefae5f3";
+            switch_dinerRoom = "0xe406bffffe34e0fb";
             switch_livingRoom = "0x980c33fffefa99a2";
             switch_bedroom = "0x60b647fffecf33dd";
           };
