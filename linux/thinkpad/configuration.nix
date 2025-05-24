@@ -149,7 +149,9 @@ in {
 
       zramSwap.enable = true;
 
-      fonts.packages = with pkgs; [ terminus_font nerdfonts ];
+      fonts.packages = [
+        pkgs.terminus_font
+      ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
       systemd.packages = [ pkgs.dconf ];
 
@@ -306,7 +308,7 @@ in {
                 eza
                 tesseract5
                 zathura
-                xournal
+                xournalpp
                 feh
                 litecli
                 csvs-to-sqlite

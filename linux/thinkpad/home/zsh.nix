@@ -10,7 +10,7 @@
       firejail-nix = "firejail --private=~/.private-home nix";
     };
     oh-my-zsh.theme = "agnoster";
-    initExtra = ''
+    initContent = ''
       export BROWSER='${pkgs.my-linkopen}/bin/linkopen'
       export CPM_ENABLE_TMUX=y
       eval "$(direnv hook zsh)"

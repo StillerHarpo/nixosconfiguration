@@ -36,7 +36,7 @@ in {
               apparmor = {
                 enable = true;
                 policies.allRules.profile =
-                  let newlineSepMap = f: xs: lib.strings.concatStringsSep "\n" (map f xs); 
+                  let newlineSepMap = lib.strings.concatMapStringsSep "\n"; 
                   in newlineSepMap (
                     rulePkgs: newlineSepMap (
                       pkg: ''

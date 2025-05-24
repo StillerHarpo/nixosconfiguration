@@ -15,7 +15,7 @@
       "..." = "cd ../../..";
       "...." = "cd ../../../..";
     };
-    initExtra = ''
+    initContent = ''
       precmd() { . ~/.env }
       export PATH=~/meqo/checkpad-ssh:$PATH
       vterm_printf(){

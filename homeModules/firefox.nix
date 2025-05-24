@@ -115,14 +115,14 @@ in {
         {
           default = {
             settings = commonSettings;
-            inherit extensions;
+            extensions.packages = extensions;
           };
         }
       (lib.flip lib.mapAttrs cfg.additionalProfiles (_: v:
         {
           id = v.id;
           settings = commonSettings;
-          inherit extensions;
+          extensions.packages = extensions;
         })
       )
       ];

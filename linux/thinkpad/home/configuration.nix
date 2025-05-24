@@ -116,7 +116,7 @@ in {
     enable = true;
     defaultCacheTtl = 1800;
     enableSshSupport = true;
-    pinentryPackage =  pkgs.pinentry-gnome3;
+    pinentry.package =  pkgs.pinentry-gnome3;
   };
   emacs.enable = true;
 
