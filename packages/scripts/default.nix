@@ -35,7 +35,6 @@ let
     "zathura"
     "you-get"
     "tuir"
-    "fbv"
     "w3m"
     "pass"
     "jq"
@@ -43,7 +42,7 @@ let
     "fd"
   ]);
   my-linkopenwithoutx =
-    makeScript "linkopenwithoutx" (with substitutes; [ mpv wget fbv ]);
+    makeScript "linkopenwithoutx" (with substitutes; [ mpv wget ]);
 in rec {
   my-linkopenwithx = makeScript "linkopenwithx" (with substitutes; [
     mpv

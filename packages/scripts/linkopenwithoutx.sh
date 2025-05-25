@@ -24,7 +24,7 @@ then
     DOWN="$1 -P $DIR"
     wget "$DOWN"
     BILD="${1##*/}"
-    fbv "$DIR"/"$BILD"
+    mpv --paused --vo=drm "$DIR"/"$BILD"
 elif echo "$1"| grep -e \.gif$
 then
     DIR="/tmp/newgifs"
