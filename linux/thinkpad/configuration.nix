@@ -398,7 +398,8 @@ in {
         bluetooth.enable = true;
         sane = {
           enable = true;
-          extraBackends = with pkgs; [ epkowa sane-airscan hplipWithPlugin ];
+          # 2025-05-25: epkowa build was failing. epkowa is only necessary for epson scanner.
+          extraBackends = with pkgs; [ sane-airscan hplipWithPlugin ];
           drivers.scanSnap = { enable = true; };
         };
       };
