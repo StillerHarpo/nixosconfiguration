@@ -68,7 +68,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     tailscale.enable = true;
     radicale = {
       enable = true;
-      settings.server.hosts = [ "0.0.0.0:5232" ];
+      settings = {
+        server.hosts = [ "0.0.0.0:5232" ];
+        auth.type = "none";
+      };
     };
     snowflake-proxy.enable = true;
     openssh = {
