@@ -927,10 +927,10 @@ a priority cookie and tags in the standard locations."
 (use-package nix-mode
   :mode "\\.nix\\'")
 
-(defun my/checkpad-server-respository? ()
+(defun my/meqo-server-respository? ()
   (and (project-current)
        (string-match
-	(rx (and "/checkpad/" (zero-or-more anychar) (zero-or-one "server/") line-end))
+	(rx (and "/meqo/" (zero-or-more anychar) (zero-or-one "server/") line-end))
 	(project-root (project-current)))))
 
 (use-package haskell-mode :ensure t)
@@ -1337,10 +1337,10 @@ if one already exists."
    (project-vterm "terminal" "t")))
 
 (defun my/consult-ripgrep ()
-  "Changes consult-ripgrep so that we grep for evil selection and ignore .ignore in checkpad respository"
+  "Changes consult-ripgrep so that we grep for evil selection and ignore .ignore in meqo respository"
   (interactive)
   (let ((consult-ripgrep-args
-	 (if (my/checkpad-server-respository?)
+	 (if (my/meqo-server-respository?)
 	     (string-join `(,consult-ripgrep-args " --no-ignore-dot"))
 			  consult-ripgrep-args)))
     (if evil-visual-region-expanded
@@ -1579,60 +1579,60 @@ If I let Windows handle DPI everything looks blurry."
 (add-hook 'js-json-mode-hook (lambda () (setq indent-tabs-mode nil)))
 (add-hook 'nxml-mode-hook (lambda () (setq indent-tabs-mode nil)))
 
-(defun my/checkpad-server-directory ()
-  "Gets the server directory of checkpad."
+(defun my/meqo-server-directory ()
+  "Gets the server directory of meqo."
   (let ((root (project-root (project-current))))
     (if (s-suffix? "server" root)
 	root
       (string-join `(,root "server/")))))
 
-(defun my/checkpad-demo-directory ()
-  "Gets the demo directory of checkpad."
-  (string-join `(,(my/checkpad-server-directory) "demo/")))
+(defun my/meqo-demo-directory ()
+  "Gets the demo directory of meqo."
+  (string-join `(,(my/meqo-server-directory) "demo/")))
 
-(defun my/checkpad-format ()
-  "Formats the current buffer with the checkpad script."
+(defun my/meqo-format ()
+  "Formats the current buffer with the meqo script."
   (interactive)
-  (let ((default-directory (my/checkpad-server-directory)))
+  (let ((default-directory (my/meqo-server-directory)))
     (envrc-propagate-environment
      'shell-command
      (string-join
       `("direnv exec scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
     (revert-buffer :NOCONFIRM t)))
 
-(defun my/checkpad-format-on-save ()
-  "Formats the current buffer with the checkpad script if the project is checkpad."
+(defun my/meqo-format-on-save ()
+  "Formats the current buffer with the meqo script if the project is meqo."
   (when (and (project-current)
-	     (my/checkpad-server-respository?)
+	     (my/meqo-server-respository?)
 	     (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
 			   (buffer-file-name (current-buffer))))
-    (my/checkpad-format)))
+    (my/meqo-format)))
 
-(add-hook 'after-save-hook 'my/checkpad-format-on-save)
+(add-hook 'after-save-hook 'my/meqo-format-on-save)
 
-(defun my/checkpad-demo-format ()
-  "Formats the current buffer with the checkpad demo script."
+(defun my/meqo-demo-format ()
+  "Formats the current buffer with the meqo demo script."
   (interactive)
-  (let ((default-directory (my/checkpad-demo-directory)))
+  (let ((default-directory (my/meqo-demo-directory)))
     (envrc-propagate-environment
      'shell-command
      (string-join
       `("npm run format -- --write" " " ,(buffer-file-name (current-buffer)))))
     (revert-buffer :NOCONFIRM t)))
 
-(defun my/checkpad-demo-format-on-save ()
-  "Formats the current buffer with the checkpad script if the project is checkpad."
+(defun my/meqo-demo-format-on-save ()
+  "Formats the current buffer with the meqo script if the project is meqo."
   (when (and (project-current)
-	     (my/checkpad-server-respository?)
+	     (my/meqo-server-respository?)
 	     (string-match (rx (or (seq ".ts" eol) (seq ".js" eol) (seq ".xml" eol) (seq ".json" eol) (seq ".json5" eol)))
 			   (buffer-file-name (current-buffer))))
-    (my/checkpad-demo-format)))
+    (my/meqo-demo-format)))
 
-(add-hook 'after-save-hook 'my/checkpad-demo-format-on-save)
+(add-hook 'after-save-hook 'my/meqo-demo-format-on-save)
 
-(defun my/checkpad-shake-targets ()
+(defun my/meqo-shake-targets ()
   "Selects a target from shake."
-  (let* ((default-directory (my/checkpad-server-directory))
+  (let* ((default-directory (my/meqo-server-directory))
 	 (programs
 	  (-filter
 	   (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
@@ -1640,11 +1640,11 @@ If I let Windows handle DPI everything looks blurry."
 	 (what (completing-read "programm: " programs)))
     (car (s-split " " what))))
 
-(defun my/checkpad-compile ()
-  "Uses shake in checkpad to compile."
+(defun my/meqo-compile ()
+  "Uses shake in meqo to compile."
   (interactive)
-  (let* ((default-directory (my/checkpad-server-directory))
-	 (target (my/checkpad-shake-targets)))
+  (let* ((default-directory (my/meqo-server-directory))
+	 (target (my/meqo-shake-targets)))
     (envrc-propagate-environment 'compile (format "cd %s && way=f ./shake %s" default-directory target))))
 
 
@@ -1711,8 +1711,8 @@ If I let Windows handle DPI everything looks blurry."
 
 ;; compilation-scroll-output 'first-error
 ;; rename buffer
-(defun my/checkpad-webpack ()
-  "Compile typescript with checkpad wepack."
+(defun my/meqo-webpack ()
+  "Compile typescript with meqo wepack."
   (interactive)
   (let* ((default-directory (project-root (project-current)))
 	 (ts-root (format "%sjs/%%s" default-directory))
