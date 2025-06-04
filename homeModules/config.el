@@ -1783,11 +1783,6 @@ If I let Windows handle DPI everything looks blurry."
       (shell-command (concat "gh run -R " project " view " id " --log-failed")
 		     (concat project " github action run: " id))))
 
-(find-file "~/Dokumente/scans")
-
-(consult-ripgrep "~/Dokumente/scans/" "Kontoauszug")
-(find-dired "~/Dokumente/scans/" "-regex \".*Kontoauszug.*\"")
-
 ;; functions for org links into documnets
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package fd-dired
