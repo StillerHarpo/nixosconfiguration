@@ -293,7 +293,7 @@ in {
             }
             {
               pkgs = [
-                inputs.deploy-rs.defaultPackage."x86_64-linux"
+                inputs.deploy-rs.packages.x86_64-linux.deploy-rs
                 pkgs.tmux
                 pkgs.tmux-xpanes
               ];
