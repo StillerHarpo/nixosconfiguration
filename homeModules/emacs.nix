@@ -38,6 +38,7 @@ in {
         rustic = prev.rustic.overrideAttrs {
           buildInputs = prev.empv.buildInputs ++ [final.flycheck];
         };
+        linkopen = pkgs.linkopen.override { isWayland = !osConfig.xserver.enable; };
       });
     };
     in lib.mkIf config.emacs.enable {

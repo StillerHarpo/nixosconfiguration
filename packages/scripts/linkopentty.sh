@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# a script to handle different links, when open from terminal without X
+# a script to handle different links, when open from tty
 if echo "$1" | grep -e \.mp3$ -e \.mp4$ -e \.m4v$
 then
     mpv --save-position-on-quit --vo=drm --no-osc -no-audio-display "$1"

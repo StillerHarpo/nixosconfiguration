@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, osConfig, lib, pkgs, ... }:
 
 {
   # FIXME doesn't work if firefox is closed (directly executing $BROWSER works)
@@ -36,11 +36,14 @@
       };
     };
     desktopEntries = {
-      linkopen = {
-        name = "linkopen";
-        exec = "${pkgs.my-linkopen}/bin/linkopen";
-        mimeType = [ "text/html" "text/xml" ];
-      };
+      linkopen =
+        let
+          linkopen = if osConfig.wayland.enable then pkgs.my-linkopen-wayland-or-tty else pkgs.my-linkopen-x-or-tty;
+        in {
+          name = "linkopen";
+          exec = lib.getExe linkopen;
+          mimeType = [ "text/html" "text/xml" ];
+        };
     };
   };
 }

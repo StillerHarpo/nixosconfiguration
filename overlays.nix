@@ -16,7 +16,9 @@
     mpv = prev.mpv-unwrapped.wrapper { mpv = prev.mpv-unwrapped.override { sdl2Support = true; }; };
   };
   additions = final: prev: {
-    inherit (import ./packages/scripts final inputs) my-linkopen my-linkopenwithx rpi4-install deck-install my-mediamenu;
+    inherit
+      (import ./packages/scripts final inputs)
+      my-linkopen-wayland-or-tty my-linkopen-x-or-tty rpi4-install deck-install my-mediamenu;
     myAspellWithDicts =
       (final.aspellWithDicts (dicts: [
         dicts.de

@@ -51,7 +51,7 @@
   :config
   (defun browse-url-mpv (url &rest args) (browse `(,nix-mpv-path "--save-position-on-quit") url))
   (defun browse-url-mpv-audio (url &rest args) (browse `(,nix-mpv-path "--no-video --save-position-on-quit") url))
-  (defun browse-url-linkopenwithx (url &rest args) (browse `(,nix-linkopenwithx-path) url))
+  (defun browse-url-linkopen (url &rest args) (browse `(,nix-linkopen-path) url))
   (setq vterm-shell nix-zsh-path)
   (setq org-latex-pdf-process (list (concat nix-latexmk-path " -shell-escape -bibtex -f -pdfxe %f")))
   (setq langtool-java-classpath (concat nix-languagetool-path "/share/")
@@ -1220,7 +1220,7 @@ Returns nil if not and (sec min hour) if it has."
                          (and (or ".mp3" ".mp4" ".m4v" ".svg" ".gif" ".gifv")
                               line-end))))
 
-(setq browse-url-handlers `((,no-eww-reg . browse-url-linkopenwithx)
+(setq browse-url-handlers `((,no-eww-reg . browse-url-linkopen)
                             ("." . eww-browse-url)))
 
 (defun browse (prog url)

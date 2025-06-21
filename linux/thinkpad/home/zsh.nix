@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }: {
+{ config, osConfig, pkgs, lib, ... }: {
   imports = [ ../../../zsh.nix ];
   programs.zsh = {
     shellAliases = let
@@ -10,8 +10,11 @@
       firejail-nix = "firejail --private=~/.private-home nix";
     };
     oh-my-zsh.theme = "agnoster";
-    initContent = ''
-      export BROWSER='${pkgs.my-linkopen}/bin/linkopen'
+    initContent =
+      let
+        linkopen = if osConfig.wayland.enable then pkgs.my-linkopen-wayland-or-tty else pkgs.my-linkopen-x-or-tty;
+      in ''
+      export BROWSER='${lib.getExe linkopen}'
       export CPM_ENABLE_TMUX=y
       eval "$(direnv hook zsh)"
       precmd_in_nix_shell() {

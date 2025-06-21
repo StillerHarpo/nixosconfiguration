@@ -41,30 +41,64 @@ let
     "fzf"
     "fd"
   ]);
-  my-linkopenwithoutx =
-    makeScript "linkopenwithoutx" (with substitutes; [ mpv wget ]);
-in rec {
-  my-linkopenwithx = makeScript "linkopenwithx" (with substitutes; [
-    mpv
-    curl
-    feh
-    display
-    wget
-    zathura
-    you-get
-    tuir
-    jq
-  ]);
-  my-linkopen = makeScript "linkopen" [
-    {
-      pattern = "./linkopenwithx.sh";
-      replacement = "${my-linkopenwithx}/bin/linkopenwithx";
-    }
-    {
-      pattern = "./linkopenwithoutx.sh";
-      replacement = "${my-linkopenwithoutx}/bin/linkopenwithoutx";
-    }
-  ];
+  my-linkopen-tty = pkgs.resholve.writeScriptBin "linkopentty.sh" {
+    interpreter = "${pkgs.bash}/bin/bash";
+    inputs = with pkgs; [ coreutils mpv wget gnugrep curl gnused w3m ];
+    execer = [
+      "cannot:${pkgs.lib.getExe pkgs.wget}"
+      "cannot:${pkgs.lib.getExe pkgs.mpv}"
+      "cannot:${pkgs.lib.getExe pkgs.feh}"
+      "cannot:${pkgs.lib.getExe pkgs.wget}"
+      "cannot:${pkgs.lib.getExe pkgs.w3m}"
+    ];
+  } (builtins.readFile ./linkopentty.sh);
+  my-linkopen-desktop = inputs: fakes: excers:
+  pkgs.resholve.writeScriptBin "linkopendesktop.sh" {
+    interpreter = "${pkgs.bash}/bin/bash";
+    inputs = with pkgs; [
+      coreutils
+      gnugrep
+      mpv
+      curl
+      feh
+      imagemagick
+      wget
+      zathura
+      you-get
+      tuir
+      jq
+      w3m
+      firefox
+    ] ++ inputs;
+    fake.external = [ "sudo" ] ++ fakes;
+    execer = [
+      "cannot:${pkgs.lib.getExe pkgs.you-get}"
+      "cannot:${pkgs.lib.getExe pkgs.tuir}"
+      "cannot:${pkgs.lib.getExe pkgs.mpv}"
+      "cannot:${pkgs.lib.getExe pkgs.feh}"
+      "cannot:${pkgs.lib.getExe pkgs.wget}"
+      "cannot:${pkgs.lib.getExe pkgs.w3m}"
+      "cannot:${pkgs.lib.getExe pkgs.zathura}"
+      "cannot:${pkgs.lib.getExe pkgs.firefox}"
+    ] ++ excers;
+  } (builtins.readFile ./linkopendesktop.sh);
+  my-linkopen-x = my-linkopen-desktop [pkgs.xsel pkgs.xorg.xrandr] [ "wl-copy" "swaymsg"] [];
+  my-linkopen-wayland =
+    my-linkopen-desktop
+      [pkgs.wl-clipboard pkgs.sway]
+      [ "xsel" "xrandr" ]
+      ["cannot:${pkgs.lib.getExe' pkgs.sway "swaymsg"}"];
+  my-linkopen-desktop-or-tty = linkopendesktop: pkgs.resholve.writeScriptBin "linkopen" {
+    interpreter = "${pkgs.bash}/bin/bash";
+    inputs = [ pkgs.coreutils pkgs.gnugrep linkopendesktop my-linkopen-tty ];
+    execer = [
+      "cannot:${pkgs.lib.getExe linkopendesktop}"
+      "cannot:${pkgs.lib.getExe my-linkopen-tty}"
+    ];
+  } (builtins.readFile ./linkopen.sh);
+in {
+  my-linkopen-wayland-or-tty = my-linkopen-desktop-or-tty my-linkopen-wayland;
+  my-linkopen-x-or-tty = my-linkopen-desktop-or-tty my-linkopen-x;
   my-mediamenu = makeScript "mediamenu" (with substitutes; [
     mpv
     fzf
