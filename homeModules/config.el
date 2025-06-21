@@ -1814,3 +1814,5 @@ If I let Windows handle DPI everything looks blurry."
   "grep regex in scan"
   (fd-grep-dired "~/Dokumente/scans/" what))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package elpher)
