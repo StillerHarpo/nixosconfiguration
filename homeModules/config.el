@@ -1783,6 +1783,22 @@ If I let Windows handle DPI everything looks blurry."
       (shell-command (concat "gh run -R " project " view " id " --log-failed")
 		     (concat project " github action run: " id))))
 
+
+(defun my/open-github-action-rerun ()
+  "Opens the first github action link in buffer if it exists."
+  (interactive)
+  (if-let* ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
+	   (_ (string-match (rx (
+				 seq "https://github.com/"
+				     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
+				     "/actions/runs/"
+				     (group (one-or-more num))))
+			    txt))
+	   (project (match-string 1 txt))
+	   (id (match-string 2 txt)))
+      (shell-command (concat "gh run -R " project " rerun " id " --failed")
+		     (concat project " github action run: " id))))
+
 ;; functions for org links into documnets
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (use-package fd-dired
