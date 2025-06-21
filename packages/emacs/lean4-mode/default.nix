@@ -11,10 +11,10 @@ trivialBuild {
   pname = "lean4-mode";
   version = "master";
   src = pkgs.fetchFromGitHub {
-    owner = "leanprover";
+    owner = "leanprover-community";
     repo = "lean4-mode";
-    rev = "da7b63d";
-    hash = "sha256-U6MJIcBZf1XrUnssipgEy0BhF4/zhKVWblUvNqKNQe0=";
+    rev = "1388f9d1429e38a39ab913c6daae55f6ce799479";
+    hash = "sha256-6XFcyqSTx1CwNWqQvIc25cuQMwh3YXnbgr5cDiOCxBk=";
   };
   packageRequires = [
     dash 
