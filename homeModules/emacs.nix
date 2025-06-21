@@ -1,4 +1,4 @@
-{ config, lib, pkgs, private, osConfig, ... }:
+{ config, lib, pkgs, osConfig, ... }:
 let
   cfg = config.emacs;
 in {

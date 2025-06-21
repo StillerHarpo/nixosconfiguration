@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, private, ... }:
+{ config, pkgs, lib, private, ... }:
 let
   cfg = config.wireguard;
 in {

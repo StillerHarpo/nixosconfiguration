@@ -1,4 +1,4 @@
-{ config, lib, pkgs, home-manager, ... }:
+{ config, pkgs, ... }:
 let
   appEnv = pkgs.buildEnv {
     name = "home-manager-applications";

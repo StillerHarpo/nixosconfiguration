@@ -1,4 +1,4 @@
-{ config, lib, pkgs, outputs, inputs, ... }:
+{ lib, pkgs, outputs, ... }:
 
 {
   environment.systemPackages = [

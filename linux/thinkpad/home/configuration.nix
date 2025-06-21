@@ -1,4 +1,4 @@
-{ config, lib, pkgs, private, osConfig, ... }:
+{ lib, pkgs, private, osConfig, ... }:
 
 let
   realName = "Florian Engel";
@@ -166,7 +166,7 @@ in {
     };
 
   home.file.".aspell.conf".source = pkgs.runCommand "aspell.conf" {} ''
-        ${pkgs.lib.getExe' pkgs.myAspellWithDicts "aspell"} dump config > $out
+        ${lib.getExe' pkgs.myAspellWithDicts "aspell"} dump config > $out
       '';
 
   home.file.".authinfo.gpg".source = ./authinfo.gpg;

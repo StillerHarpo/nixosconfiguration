@@ -1,4 +1,4 @@
-{ config, lib, home-manager, pkgs, private, ... }:
+{ config, lib, ... }:
 
 {
   imports = [ ../configuration.nix ];

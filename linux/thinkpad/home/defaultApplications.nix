@@ -1,4 +1,4 @@
-{ config, osConfig, lib, pkgs, ... }:
+{ osConfig, lib, pkgs, ... }:
 
 {
   # FIXME doesn't work if firefox is closed (directly executing $BROWSER works)

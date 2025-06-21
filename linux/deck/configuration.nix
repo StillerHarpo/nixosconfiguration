@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, outputs, private, ... }:
+{ config, lib, pkgs, inputs, outputs, ... }:
 
 let sshKeys = import ../thinkpad/sshKeys.nix; in
 

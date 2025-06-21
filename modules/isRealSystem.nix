@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, private, ... }:
+{ lib, ... }:
 {
   options.isRealSystem = lib.mkOption {
     type = lib.types.bool;

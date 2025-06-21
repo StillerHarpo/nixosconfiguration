@@ -161,7 +161,7 @@ in
                   xkb_variant = "altgr-intl";
                 };
                 startup = [
-                  { command = "${pkgs.lib.getExe pkgs.sway-contrib.inactive-windows-transparency}"; }
+                  { command = "${lib.getExe pkgs.sway-contrib.inactive-windows-transparency}"; }
                 ];
                 window = {
                   titlebar = false;
