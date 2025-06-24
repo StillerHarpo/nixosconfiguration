@@ -18,7 +18,6 @@
         "application/x-extension-xhtml" = "linkopen.desktop";
         "application/x-extension-xht" = "linkopen.desktop";
         "x-scheme-handler/sgnl" = "signal-desktop.desktop";
-        "x-scheme-handler/mattermost" = "Mattermost.desktop";
       };
       associations.added = {
         "x-scheme-handler/http" = "linkopen.desktop";
