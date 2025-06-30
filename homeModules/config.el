@@ -278,7 +278,7 @@
         (org-schedule 1 (calendar-date-string (calendar-current-date)))
         (save-buffer))))
 
-  (defun my/org-find-headline-in-buffer (regex &optional buffer pos-only)
+  (defun my/org-find-headline-in-buffer (regex &optional todo-keyword buffer pos-only)
     "Find node wihtch matches regexHEADING in BUFFER.
 Return a marker to the heading if it was found, or nil if not.
 If POS-ONLY is set, return just the position instead of a marker.
@@ -290,7 +290,7 @@ a priority cookie and tags in the standard locations."
        (goto-char (point-min))
        (let (case-fold-search)
 	 (when (re-search-forward
-		(rx (seq line-start "* " (zero-or-more not-newline) (regexp regex))) nil t)
+		(rx (seq line-start "* " (literal (if todo-keyword todo-keyword "")) (zero-or-more not-newline) (regexp regex))) nil t)
 	   (if pos-only
 	       (match-beginning 0)
 	     (move-marker (make-marker) (match-beginning 0))))))))
@@ -299,7 +299,7 @@ a priority cookie and tags in the standard locations."
     "Mark every heading as done which matches heading regex"
     (with-current-buffer (find-file-noselect "~/Dokumente/auto.org")
       (let ((heading-name heading))
-        (if-let ((pos (my/org-find-headline-in-buffer heading-name nil t)))
+        (while-let ((pos (my/org-find-headline-in-buffer heading-name "TODO" nil t)))
   	  (goto-char pos)
   	  (org-todo "DONE")
   	  (save-buffer)))))
