@@ -1624,14 +1624,14 @@ If I let Windows handle DPI everything looks blurry."
     (envrc-propagate-environment
      'shell-command
      (string-join
-      `("npm run format -- --write" " " ,(buffer-file-name (current-buffer)))))
+      `("direnv exec . npm run format -- --write" " " ,(buffer-file-name (current-buffer)))))
     (revert-buffer :NOCONFIRM t)))
 
 (defun my/meqo-demo-format-on-save ()
-  "Formats the current buffer with the meqo script if the project is meqo."
+  "Formats the current buffer with the meqo script if the project is meqo demo."
   (when (and (project-current)
 	     (my/meqo-server-respository?)
-	     (string-match (rx (or (seq ".ts" eol) (seq ".js" eol) (seq ".xml" eol) (seq ".json" eol) (seq ".json5" eol)))
+	     (string-match (rx (seq "/demo/" (one-or-more (not "/")) (or (seq ".ts" eol) (seq ".js" eol) (seq ".xml" eol) (seq ".json" eol) (seq ".json5" eol))))
 			   (buffer-file-name (current-buffer))))
     (my/meqo-demo-format)))
 
