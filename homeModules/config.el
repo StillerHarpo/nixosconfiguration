@@ -1220,8 +1220,15 @@ Returns nil if not and (sec min hour) if it has."
                          (and (or ".mp3" ".mp4" ".m4v" ".svg" ".gif" ".gifv")
                               line-end))))
 
-(setq browse-url-handlers `((,no-eww-reg . browse-url-linkopen)
-                            ("." . eww-browse-url)))
+(setq browse-url-handlers
+      `((,(rx (and line-start "mailto:")) .
+	 ,(lambda (url &rest args)
+	    (notmuch-mua-mail
+	     (string-remove-prefix "mailto:" url)
+	     nil
+	     `((From  . ,(completing-read "From: " (notmuch-user-emails)))))))
+	(,no-eww-reg . browse-url-linkopen)
+	("." . eww-browse-url)))
 
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
