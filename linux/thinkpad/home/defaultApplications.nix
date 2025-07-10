@@ -40,7 +40,7 @@
           linkopen = if osConfig.wayland.enable then pkgs.my-linkopen-wayland-or-tty else pkgs.my-linkopen-x-or-tty;
         in {
           name = "linkopen";
-          exec = lib.getExe linkopen;
+          exec = "${lib.getExe linkopen} %u";
           mimeType = [ "text/html" "text/xml" ];
         };
     };
