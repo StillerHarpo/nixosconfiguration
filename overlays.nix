@@ -18,7 +18,7 @@
   additions = final: prev: {
     inherit
       (import ./packages/scripts final inputs)
-      my-linkopen-wayland-or-tty my-linkopen-x-or-tty rpi4-install deck-install my-mediamenu;
+      my-linkopen-wayland-or-tty my-linkopen-x-or-tty rpi4-install deck-install;
     myAspellWithDicts =
       (final.aspellWithDicts (dicts: [
         dicts.de

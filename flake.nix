@@ -386,7 +386,8 @@
             previousAttrs.buildInputs ++
             (with pkgs; [
               cargo rustc rustfmt pre-commit rustPackages.clippy
-              rust-analyzer pkg-config libxkbcommon
+              rust-analyzer pkg-config libxkbcommon openssl.dev
+              systemd.dev
             ]);
           RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
         });

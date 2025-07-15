@@ -99,12 +99,6 @@ let
 in {
   my-linkopen-wayland-or-tty = my-linkopen-desktop-or-tty my-linkopen-wayland;
   my-linkopen-x-or-tty = my-linkopen-desktop-or-tty my-linkopen-x;
-  my-mediamenu = makeScript "mediamenu" (with substitutes; [
-    mpv
-    fzf
-    jellytui
-    fd
-  ]);
   rpi4-install = makeScript "rpi4-install" ([substitutes.pass] ++ [
     {
       pattern = "nixos-anywhere";

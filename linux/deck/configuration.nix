@@ -252,13 +252,33 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           };
           xserver.enable = lib.mkForce false;
         };
-        environment = {
-          loginShellInit = ''
-             [[ "$(tty)" == /dev/tty1 ]] && bash -e ${pkgs.my-mediamenu}/bin/mediamenu
+        environment =
+          let mediamenu = pkgs.rustPlatform.buildRustPackage {
+                name = "mediamenu";
+                src = lib.fileset.toSource {
+                  root = ../../.;
+                  fileset = lib.fileset.unions [
+                    ../../Cargo.lock
+                    ../../Cargo.toml
+                    ../../rust
+                  ];
+                };
+                buildInputs = [pkgs.openssl.dev pkgs.systemd.dev];
+                nativeBuildInputs = [pkgs.pkg-config];
+                cargoLock = {
+                  lockFile = ../../Cargo.lock;
+                  outputHashes = {
+                    "mediathekviewtui-0.1.0" = "sha256-wOJQjtPp5elrZE5zb/T2d6Xvwz9VEUEJmOMW+rRfLic=";
+                  };
+                };
+              };
+          in {
+            loginShellInit = ''
+             [[ "$(tty)" == /dev/tty1 ]] && ${mediamenu}/bin/mediamenu
           '';
           systemPackages = with pkgs; [
             inputs.jellytui.defaultPackage.x86_64-linux
-            my-mediamenu
+            mediamenu
             pamixer
           ];
         };
