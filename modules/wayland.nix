@@ -94,15 +94,15 @@ in
                     outputs = [
                       {
                         criteria = "AU Optronics 0x2336 Unknown";
-                        position = "456,1040";
+                        position = "1309,1440";
                         mode = "2560x1440@60.01Hz";
                         scale = 1.5;
                       }
                       {
-                        criteria = "Dell Inc. DELL U2713HM 7JNY53CB723S";
+                        criteria = "Dell Inc. DELL U2721DE FJD1C23";
                         position = "456,0";
                         mode = "2560x1440@59.951Hz";
-                        scale = 1.5;
+                        scale = 1.0;
                       }
                     ];
                   };
