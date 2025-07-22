@@ -2,3 +2,4 @@ result
 .direnv/**
 **/dist-newstyle/**
 **/target/**
+Cargo.lock

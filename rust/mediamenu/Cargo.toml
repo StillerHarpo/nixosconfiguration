@@ -1,0 +1,18 @@
+[package]
+name = "mediamenu"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "mediamenu"
+path = "src/main.rs"
+
+[dependencies]
+crossterm = "0.29.0"
+ratatui = "0.29"
+crokey = "1.2.0"
+color-eyre = "0.6.3"
+strum = "0.27"
+strum_macros = "0.27"
+tokio = { version = "1", features = ["full"]}
+mediathekviewtui = { git = "https://codeberg.org/fengel/mediathekviewtui.git" }

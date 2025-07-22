@@ -118,15 +118,8 @@ in
                 org = "/org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
                 openorraise = pkgs.rustPlatform.buildRustPackage {
                   name = "openorraise";
-                  src = lib.fileset.toSource {
-                    root = ../.;
-                    fileset = lib.fileset.unions [
-                      ../Cargo.lock
-                      ../Cargo.toml
-                      ../rust
-                    ];
-                  };
-                  cargoLock.lockFile = ../Cargo.lock;
+                  src = ../rust/openorraise;
+                  cargoLock.lockFile = ../rust/openorraise/Cargo.lock;
                 };
             in {
               enable = true;
