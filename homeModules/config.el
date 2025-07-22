@@ -1601,8 +1601,7 @@ If I let Windows handle DPI everything looks blurry."
   "Formats the current buffer with the meqo script."
   (interactive)
   (let ((default-directory (my/meqo-server-directory)))
-    (envrc-propagate-environment
-     'shell-command
+    (shell-command
      (string-join
       `("direnv exec scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
     (revert-buffer :NOCONFIRM t)))
@@ -1621,8 +1620,7 @@ If I let Windows handle DPI everything looks blurry."
   "Formats the current buffer with the meqo demo script."
   (interactive)
   (let ((default-directory (my/meqo-demo-directory)))
-    (envrc-propagate-environment
-     'shell-command
+    (shell-command
      (string-join
       `("direnv exec . npm run format -- --write" " " ,(buffer-file-name (current-buffer)))))
     (revert-buffer :NOCONFIRM t)))
@@ -1643,7 +1641,7 @@ If I let Windows handle DPI everything looks blurry."
 	 (programs
 	  (-filter
 	   (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
-	   (s-split "\n" (envrc-propagate-environment 'shell-command-to-string "./shake -l"))))
+	   (s-split "\n" (shell-command-to-string (format "direnv exec %s ./shake -l" default-directory)))))
 	 (what (completing-read "programm: " programs)))
     (car (s-split " " what))))
 
@@ -1652,7 +1650,7 @@ If I let Windows handle DPI everything looks blurry."
   (interactive)
   (let* ((default-directory (my/meqo-server-directory))
 	 (target (my/meqo-shake-targets)))
-    (envrc-propagate-environment 'compile (format "cd %s && way=f ./shake %s" default-directory target))))
+    (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target))))
 
 
 (defun my/org-roam-commit-on-save ()
