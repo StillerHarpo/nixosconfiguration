@@ -47,7 +47,7 @@
 
 (require 'use-package)
 
-(use-package my-nix-paths
+(use-package my-nix-variables
   :config
   (defun browse-url-mpv (url &rest args) (browse `(,nix-mpv-path "--save-position-on-quit") url))
   (defun browse-url-mpv-audio (url &rest args) (browse `(,nix-mpv-path "--no-video --save-position-on-quit") url))
@@ -1087,17 +1087,33 @@ a priority cookie and tags in the standard locations."
     (interactive)
      (notmuch-search "tag:inbox and date:3M..today"))
    ;;;###autoload
-   (defun +notmuch/compose ()
-     "Compose new mail"
-     (interactive)
-     (notmuch-mua-mail
-      nil
-      nil
-      (list (cons 'From  (completing-read "From: " (notmuch-user-emails))))))
+  (defun +notmuch/compose ()
+    "Compose new mail"
+    (interactive)
+    (let* ((from (completing-read "From: " (notmuch-user-emails)))
+	  (mail-signature (if (string= from nix-workmail) nix-workmail-signature "")))
+      (notmuch-mua-mail
+       nil
+       nil
+       (list (cons 'From from)))
+      (mail-signature)))
    (defun my/notmuch-trash ()
      "Add trash label to mail"
      (interactive)
      (notmuch-search-add-tag '("+trash" "-inbox" "-flagged" "-unread")))
+   (advice-mapc (lambda (a r) (advice-remove 'notmuch-show-reply-sender a)) 'notmuch-show-reply-sender)
+   (advice-mapc (lambda (a r) (advice-remove 'notmuch-show-reply a)) 'notmuch-show-reply)
+   (advice-add
+    'notmuch-show-reply-sender
+    :after
+    (lambda
+     (&rest args)
+     (let* ((from (message-sendmail-envelope-from))
+	   (mail-signature (if (-any (lambda (address) (string=  from address)) `(,nix-workmail "engel@medilyse.org")) nix-workmail-signature "")))
+       (mail-signature))))
+   (defun my/test ()
+     (interactive)
+     (message (message-sendmail-envelope-from)))
   :general
   (:states '(normal visual)
    :prefix "SPC"
@@ -1821,3 +1837,5 @@ If I let Windows handle DPI everything looks blurry."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package elpher)
+
+(setq mail-signature "test")

@@ -9,19 +9,23 @@
   isWayland ? true,
   my-linkopen-wayland-or-tty,
   my-linkopen-x-or-tty,
+  private,
+  lib,
   ...
 }:
 trivialBuild {
-  pname = "my-nix-paths";
+  pname = "my-nix-variables";
   version = "local";
-  src = writeText "my-nix-paths.el" ''
+  src = writeText "my-nix-variables.el" ''
     (setq nix-zsh-path "${myshell}"
           nix-latexmk-path "${mytexlive}/bin/latexmk"
           nix-mpv-path "${mpv}/bin/mpv"
           nix-linkopen-path "${if isWayland then my-linkopen-wayland-or-tty else my-linkopen-x-or-tty}/bin/linkopen"
           nix-jdk-path "${jdk}/bin/java"
-          nix-languagetool-path "${languagetool}")
+          nix-languagetool-path "${languagetool}"
+          nix-workmail "${private.workMail}"
+          nix-workmail-signature "${lib.replaceStrings ["\n"] ["\\n"] private.workSignature}")
 
-    (provide 'my-nix-paths)
+    (provide 'my-nix-variables)
   '';
 }
