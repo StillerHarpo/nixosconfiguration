@@ -261,7 +261,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
                 cargoLock = {
                   lockFile = ../../rust/mediamenu/Cargo.lock;
                   outputHashes = {
-                    "mediathekviewtui-0.1.0" = "sha256-wOJQjtPp5elrZE5zb/T2d6Xvwz9VEUEJmOMW+rRfLic=";
+                    "mediathekviewtui-0.1.0" = "sha256-5RIwGjCldyaBJw+gAaA2QRaXcjrQdhgSCzVMv20BrRo=";
                   };
                 };
               };
