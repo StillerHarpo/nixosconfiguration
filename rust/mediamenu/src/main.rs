@@ -34,17 +34,17 @@ enum SelectionItem {
     Exit,
 }
 
-fn mkText(content: &str) -> Text {
+fn mk_text(content: &str) -> Text {
     Text::raw(content).centered()
 }
 
 impl<'a> Into<ListItem<'a>> for SelectionItem {
     fn into(self) -> ListItem<'a> {
         let content = match self {
-            Self::MediathekViewTui => mkText("mediathekviewtui"),
-            Self::JellyTui => mkText("jellytui"),
-            Self::JellyTuiT => mkText("jellytui(t)"),
-            Self::Exit => mkText("exit"),
+            Self::MediathekViewTui => mk_text("mediathekviewtui"),
+            Self::JellyTui => mk_text("jellytui"),
+            Self::JellyTuiT => mk_text("jellytui(t)"),
+            Self::Exit => mk_text("exit"),
         };
         ListItem::new(content)
     }
