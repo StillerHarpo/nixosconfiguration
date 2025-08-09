@@ -1,4 +1,4 @@
-{ lib, pkgs, outputs, ... }:
+{ lib, pkgs, outputs, private, ... }:
 
 {
   environment.systemPackages = [
@@ -26,7 +26,9 @@
   };
 
   nixpkgs = {
-    overlays = builtins.attrValues outputs.overlays;
+    overlays = [
+      (final: prev: {inherit private;} )
+    ] ++ builtins.attrValues outputs.overlays;
     config.allowUnfree = true;
   };
 

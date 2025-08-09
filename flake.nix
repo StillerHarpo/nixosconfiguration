@@ -106,16 +106,7 @@
         inherit inputs outputs;
         home-manager-flake = inputs.home-manager-flake.nixosModule;
       };
-      fakePrivate = {
-        workMail = "mail@mail.org";
-        workMailOld = "mail@mail.org";
-        dyndns = "xxxxxxxxxxx.ddnss.ch";
-        serverIP = "46.158.147.47";
-        cords = {
-          latitude = 0.0;
-          longitude = 0.0;
-        };
-      };
+      fakePrivate = import ./fakePrivate.nix;
 
       mkNixosRpi4 = private: inputs.nixpkgs.lib.nixosSystem {
           specialArgs = {

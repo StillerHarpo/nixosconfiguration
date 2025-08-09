@@ -46,7 +46,7 @@
        ; };
         my-nix-variables = final.callPackage ./packages/emacs/my-nix-variables {
           inherit (eprev) trivialBuild;
-          private = import ./private.nix;
+          private = prev.private or (import ./fakePrivate.nix);
         };
       })
     );
