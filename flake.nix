@@ -131,9 +131,9 @@
           ];
         };
 
-      mkFlosDeck = private: inputs.nixpkgs-unstable.lib.nixosSystem {
+      mkFlosDeck = private: inHydra: inputs.nixpkgs-unstable.lib.nixosSystem {
           specialArgs = {
-            inherit inputs outputs private;
+            inherit inputs outputs private inHydra;
           };
           modules = [
             inputs.jovian.nixosModules.jovian
@@ -238,7 +238,7 @@
 
         nixosRpi4 = mkNixosRpi4 (import ./private.nix);
         
-        flosDeck = mkFlosDeck (import ./private.nix);
+        flosDeck = mkFlosDeck (import ./private.nix) false;
 
         rpi2 = inputs.nixpkgs.lib.nixosSystem {
           system = "armv7l-linux";
@@ -287,7 +287,7 @@
       hydraJobs = {
         nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel)
           { nixosRpi4 = mkNixosRpi4 fakePrivate;
-            flosDeck = mkFlosDeck fakePrivate;
+            flosDeck = mkFlosDeck fakePrivate true;
             nixosThinkpad = mkNixosThinkpad fakePrivate;
           };
         deploy-rs = inputs.deploy-rs.packages.x86_64-linux.deploy-rs;

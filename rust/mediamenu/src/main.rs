@@ -1,3 +1,4 @@
+#[cfg(feature = "real")]
 mod searches;
 
 use crokey::key;
@@ -13,6 +14,7 @@ use ratatui::{
     widgets::{List, ListItem, ListState},
     Frame,
 };
+#[cfg(feature = "real")]
 use searches::mk_searches;
 use std::collections::HashMap;
 use std::io::stdout;
@@ -55,7 +57,10 @@ async fn main() {
     let config = Config {
         player: "mpv",
         player_args: None,
+        #[cfg(feature = "real")]
         searches: mk_searches(),
+        #[cfg(not(feature = "real"))]
+        searches: vec![],
         keybindings: HashMap::from([
             (Binding::KeyboardKey(key!(down)), KeyAction::Down),
             (Binding::KeyboardKey(key!(up)), KeyAction::Up),

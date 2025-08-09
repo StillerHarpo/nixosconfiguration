@@ -1,4 +1,4 @@
-{ config, lib, pkgs, inputs, outputs, ... }:
+{ config, lib, pkgs, inputs, outputs, inHydra ? false, ... }:
 
 let sshKeys = import ../thinkpad/sshKeys.nix; in
 
@@ -264,6 +264,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
                     "mediathekviewtui-0.1.0" = "sha256-5RIwGjCldyaBJw+gAaA2QRaXcjrQdhgSCzVMv20BrRo=";
                   };
                 };
+                buildFeatures = if inHydra then [] else ["real"];
               };
           in {
             loginShellInit = ''
