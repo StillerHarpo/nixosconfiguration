@@ -100,12 +100,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       arc-theme # theme
       tailscale
       steamdeck-firmware
-      ryujinx
       steam-rom-manager
       nvtopPackages.amd
       lutris
       wine-staging
-      lolcat
       (kodi.withPackages (kodiPkgs:
         with kodiPkgs; [mediathekview invidious]
       ))
