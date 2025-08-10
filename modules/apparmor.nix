@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let cfg = config.apparmor;
 
@@ -35,17 +35,83 @@ in {
             security = {
               apparmor = {
                 enable = true;
-                policies.allRules.profile =
-                  let newlineSepMap = lib.strings.concatMapStringsSep "\n"; 
-                  in newlineSepMap (
-                    rulePkgs: newlineSepMap (
-                      pkg: ''
-                        ${pkg}/bin/* {
-                           ${rulePkgs.rules}
-                         }
-                       ''
-                    ) rulePkgs.pkgs
-                  ) cfg.systemPackages;
+                policies = {
+                  scripts.profile = ''
+                    /home/** {
+                       ${lib.apparmor.generateFileRules []}
+                    }
+                    /home/florian/meqo/checkpad-ssh/* {
+                       ${lib.getExe pkgs.openssh} Px,
+                       ${lib.getExe' pkgs.openssh "scp"} Px,
+                       ${lib.getExe' pkgs.openssh "ssh-copy-id"} Px,
+                       ${lib.getExe' pkgs.openssh "sshfs"} Px,
+                       ${lib.apparmor.generateFileRules []}
+                    }
+                    /home/florian/meqo/meqo/server/prepare {
+                       network,
+                       ${lib.apparmor.generateFileRules []}
+                    }
+                    /home/florian/meqo/meqo/server/scripts/make-release {
+                       ${lib.getExe pkgs.git} Px -> gitnodocs,
+                       ${lib.apparmor.generateFileRules []}
+                    }
+                    /home/florian/Dokumente/scans/generateTxts.sh {
+                       ${lib.apparmor.generateFileRules [ "docs" ]}
+                    }
+                  '';
+                  specialRules.profile = ''
+                       ${lib.getExe pkgs.git} {
+                         ${lib.getExe pkgs.gnupg} Px -> gnupgnonet,
+                         ${lib.getExe pkgs.openssh} Px,
+                         network,
+                         ${lib.apparmor.generateFileRules [ "docs"]}
+                       } 
+                       profile gitnodocs {
+                         ${lib.getExe pkgs.gnupg} Px -> gnupgnonet,
+                         ${lib.getExe pkgs.openssh} Px,
+                         network,
+                         ${lib.apparmor.generateFileRules [ ]}
+                       } 
+                       ${lib.getExe pkgs.gnupg} {
+                          ${lib.apparmor.generateFileRules [ "gnupg" ]}
+                          network,
+                       }
+                       profile gnupgnonet {
+                          ${lib.apparmor.generateFileRules [ "gnupg" ]}
+                       }
+                       ${lib.getExe pkgs.openssh} {
+                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         network,
+                         capability,
+                       }
+                       ${lib.getExe' pkgs.openssh "scp"} {
+                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         network,
+                         capability,
+                       }
+                       ${lib.getExe' pkgs.openssh "ssh-copy-id"} {
+                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         network,
+                         capability,
+                       }
+                       ${lib.getExe' pkgs.openssh "sshfs"} {
+                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         network,
+                         capability,
+                       }
+                   '';
+                  allRules.profile =
+                    let newlineSepMap = lib.strings.concatMapStringsSep "\n";
+                    in newlineSepMap (
+                      rulePkgs: newlineSepMap (
+                        pkg: ''
+                          ${pkg}/bin/* {
+                             ${rulePkgs.rules}
+                          }
+                        ''
+                      ) rulePkgs.pkgs
+                    ) cfg.systemPackages;
+                };
               };
               auditd.enable = true;
             };
