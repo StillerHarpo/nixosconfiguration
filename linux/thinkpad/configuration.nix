@@ -259,21 +259,22 @@ in {
               '';
             }
             {
-              # FIXME only allow usage of program. Not access.
-              pkgs = with pkgs; [
-                (pass.override {
-                  dmenu = writeScriptBin "dmenu" ''${rofi}/bin/rofi -dmenu "$@"'';
-                })
-              ];
-
-              rules = ''
-                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ]}
-              '';
+              pkgs = [ pkgs.pass ];
+              rules =
+                ''
+                 ${lib.getExe pkgs.gnupg} Cx -> gnupg,
+                 profile gnupg {
+                   ${lib.apparmor.generateFileRules [ "gnupg" "pass"]}
+                 }
+                 ${lib.apparmor.generateFileRules [ "pass"] }
+                '';
             }
             {
               pkgs = [ pkgs.rpi4-install ];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "pass" "gnupg" "ssh" ]}
+                ${lib.getExe pkgs.pass} Px,
+                ${lib.getExe pkgs.openssh} Px,
+                ${lib.apparmor.generateFileRules []}
               '';
             }
             {
@@ -288,17 +289,37 @@ in {
               rules = ''
                 mount,
                 capability,
-                ${lib.apparmor.generateFileRules [ "ssh" ]}
+                ${lib.getExe pkgs.openssh} Px,
+                ${lib.apparmor.generateFileRules []}
+              '';
+            }
+            {
+              pkgs = [
+                # Aug 10 10:31:46 nixosThinkpad audit[58390]: AVC apparmor="DENIED" operation="signal" class="signal" profile="/nix/store/08rwmwxz8z3kwalxiwigwnxys0x5arr5-deploy-rs-0.1.0/bin/*//openssh" pid=58390 comm="nix" requested_mask="receive" denied_mask="receive" signal=kill peer="/nix/store/08rwmwxz8z3kwalxiwigwnxys0x5arr5-deploy-rs-0.1.0/bin/*"
+                pkgs.tmux
+                pkgs.tmux-xpanes
+              ];
+              rules = ''
+                # Allow unconfined processes to send us signals by default
+                signal (receive) peer=unconfined,
+                ${lib.getExe pkgs.openssh} Px,
+                ${lib.apparmor.generateFileRules []}
               '';
             }
             {
               pkgs = [
                 inputs.deploy-rs.packages.x86_64-linux.deploy-rs
-                pkgs.tmux
-                pkgs.tmux-xpanes
               ];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "ssh" ]}
+                ${lib.getExe pkgs.openssh} Cx -> sshRecive,
+                ${lib.apparmor.generateFileRules []}
+                signal (send) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**//sshRecive,
+                profile sshRecive {
+                  ${lib.apparmor.generateFileRules [ "ssh" ]}
+                  signal (receive) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**,
+                  network,
+                  capability,
+                }
               '';
             }
             {
