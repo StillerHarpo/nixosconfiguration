@@ -242,6 +242,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     };
       buffy.configuration = {
         jovian.steam.enable = lib.mkForce false;
+        # Don't know why this was enabled
+        # Autologin was not working with out this
+        # Don't know why
+        systemd.services.display-manager.enable = lib.mkForce false;
         services = {
           getty.autologinUser = "florian";
           buffyboard = {
