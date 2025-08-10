@@ -1,6 +1,8 @@
 #[cfg(feature = "real")]
 mod searches;
 
+use battery::{Error, Manager};
+use chrono::Local;
 use crokey::key;
 use crossterm::event::{self, Event};
 use crossterm::terminal::{disable_raw_mode, enable_raw_mode, ClearType};
@@ -9,6 +11,7 @@ use mediathekviewtui::types::{Binding, KeyAction};
 use mediathekviewtui::{run_app, types::Config};
 use ratatui::layout::Rect;
 use ratatui::text::Text;
+use ratatui::widgets::Paragraph;
 use ratatui::{
     style::{Modifier, Style, Stylize},
     widgets::{List, ListItem, ListState},
@@ -80,17 +83,24 @@ async fn main() {
     stdout()
         .execute(crossterm::terminal::Clear(ClearType::All))
         .unwrap();
-    terminal.draw(|frame| render(&mut state, frame)).unwrap();
+    let manager = battery::Manager::new();
+    terminal
+        .draw(|frame| render(&mut state, frame, &manager))
+        .unwrap();
     loop {
         match event::read() {
             Ok(Event::Key(key_event)) if key_event.is_press() => match key_event.code {
                 event::KeyCode::Up => {
                     state.selection.select_previous();
-                    terminal.draw(|frame| render(&mut state, frame)).unwrap();
+                    terminal
+                        .draw(|frame| render(&mut state, frame, &manager))
+                        .unwrap();
                 }
                 event::KeyCode::Down => {
                     state.selection.select_next();
-                    terminal.draw(|frame| render(&mut state, frame)).unwrap();
+                    terminal
+                        .draw(|frame| render(&mut state, frame, &manager))
+                        .unwrap();
                 }
                 event::KeyCode::Enter => {
                     let Some(s) = state.selection.selected() else {
@@ -100,18 +110,24 @@ async fn main() {
                         Some(SelectionItem::MediathekViewTui) => {
                             run_app(&mut terminal, &config).await;
                             terminal.clear().unwrap();
-                            terminal.draw(|frame| render(&mut state, frame)).unwrap();
+                            terminal
+                                .draw(|frame| render(&mut state, frame, &manager))
+                                .unwrap();
                         }
                         Some(SelectionItem::JellyTui) => {
                             run_external_tui("jellytui", vec![]);
-                            terminal.draw(|frame| render(&mut state, frame)).unwrap();
+                            terminal
+                                .draw(|frame| render(&mut state, frame, &manager))
+                                .unwrap();
                         }
                         Some(SelectionItem::JellyTuiT) => {
                             run_external_tui(
                                 "jellytui",
                                 vec!["-b", "/home/florian/.config/jellytui-t/"],
                             );
-                            terminal.draw(|frame| render(&mut state, frame)).unwrap();
+                            terminal
+                                .draw(|frame| render(&mut state, frame, &manager))
+                                .unwrap();
                         }
                         Some(SelectionItem::Exit) => {
                             break;
@@ -127,7 +143,7 @@ async fn main() {
     ratatui::restore()
 }
 
-fn render(state: &mut State, frame: &mut Frame) {
+fn render(state: &mut State, frame: &mut Frame, manager: &Result<Manager, Error>) {
     let items = state
         .items
         .iter()
@@ -144,6 +160,32 @@ fn render(state: &mut State, frame: &mut Frame) {
         List::new(items).highlight_style(Style::new().red().add_modifier(Modifier::BOLD)),
         area,
         &mut state.selection,
+    );
+    let battery_str = match manager {
+        Ok(manager) => match manager.batteries() {
+            Ok(batteries) => {
+                let battery_strs = batteries.map(|b| match b {
+                    Ok(mut battery) => match manager.refresh(&mut battery) {
+                        Ok(_) => battery.state_of_charge().value.to_string(),
+                        Err(e) => e.to_string(),
+                    },
+                    Err(e) => e.to_string(),
+                });
+                battery_strs.collect::<Vec<_>>().join("/")
+            }
+            Err(e) => e.to_string(),
+        },
+        Err(e) => e.to_string(),
+    };
+    // TODO bottom of screen
+    frame.render_widget(
+        Paragraph::new(format!("battery: {}%", battery_str)).right_aligned(),
+        frame.area(),
+    );
+    let now = Local::now();
+    frame.render_widget(
+        Paragraph::new(format!("{}%", now.to_rfc2822())).left_aligned(),
+        frame.area(),
     )
 }
 
