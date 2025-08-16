@@ -204,20 +204,11 @@ in {
                 sqlite
                 pamixer
                 pavucontrol
-                networkmanagerapplet
                 mtpfs
                 wget
                 vim
                 shellcheck
-                ######## Games ###############
-                # airshipper
-                # superTuxKart
-                # openarena
-                # xonotic
-                # minetest
-                #############
                 chromium
-                # passff-host
                 tuir
                 (mpv.override { scripts = [ mpvScripts.mpris ]; })
                 rlwrap
@@ -348,10 +339,6 @@ in {
                 ${lib.apparmor.generateFileRules [ "docs" "notmuch" ]}
               '';
             }
-            {
-              pkgs = [ pkgs.steam ];
-              rules = lib.apparmor.defaultRules;
-            }
           ];
       };
 
@@ -480,19 +467,10 @@ in {
         fuse.userAllowOther = true;
         gnupg.dirmngr.enable = true;
         nix-ld.enable = true;
-        captive-browser = {
-          enable = true;
-          interface = "wlp61s0";
-        };
         wireshark = {
           enable = true;
           package = pkgs.wireshark;
         };
-        steam = {
-          enable = true;
-          remotePlay.openFirewall = true;
-        };
-        gamemode.enable = true;
       };
 
       nix.envVars.SSH_AUTH_SOCK = "/run/user/1000/gnupg/S.gpg-agent.ssh";
@@ -544,8 +522,6 @@ in {
       };
 
       nixpkgs.hostPlatform = "x86_64-linux";
-
-      docker.enable = true;
 
       specialisation.normalInternet.configuration = {
         dnscrypt.enable = lib.mkForce false;

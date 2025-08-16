@@ -35,6 +35,7 @@ in
             }
           ];
 
+        hardware.graphics.enable = true;
 
         home-manager.users.florian = { config, osConfig, ... }: {
 
