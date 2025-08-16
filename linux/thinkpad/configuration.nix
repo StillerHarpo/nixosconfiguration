@@ -354,15 +354,12 @@ in {
 
       users = {
         groups.fuse = {};
-        users = {
-          florian = {
-            isNormalUser = true;
-            hashedPasswordFile = config.age.secrets.florian.path;
-            description = "Florian Engel";
-            extraGroups =
-              [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "scan" "lp" "fuse" ];
-          };
-          playground = { isNormalUser = true; };
+        users.florian = {
+          isNormalUser = true;
+          hashedPasswordFile = config.age.secrets.florian.path;
+          description = "Florian Engel";
+          extraGroups =
+            [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "scan" "lp" "fuse" ];
         };
       };
 
