@@ -19,8 +19,8 @@ with lib; rec {
 
     file,
     ${concatMapStrings (x: ''
-      audit deny rw ${x},
-      audit deny rw ${x}/**,
+      audit deny ${x} mrwlkx,
+      audit deny ${x}/{,**} mrwlkx,
     '') (protectFiles allows config)}
   '';
   defaultRules = config: ''
