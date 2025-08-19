@@ -283,8 +283,8 @@ in {
               rules = ''
                 mount,
                 capability,
-                ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules [] config}
+                # ${lib.getExe pkgs.openssh} Px,
+                ${lib.apparmor.generateFileRules ["ssh"] config}
               '';
             }
             {
