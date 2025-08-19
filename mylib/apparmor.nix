@@ -1,7 +1,7 @@
 # TODO wirte rules which get used if it is environment.systemPackages or in home.packages
 { lib }:
 with lib; rec {
-  generateFileRules = allows: ''
+  generateFileRules = allows: config: ''
     # Allow other processes to read our /proc entries, futexes, perf tracing and
     # kcmp for now (they will need 'read' in the first place). Administrators can
     # override with:
@@ -21,10 +21,10 @@ with lib; rec {
     ${concatMapStrings (x: ''
       audit deny rw ${x},
       audit deny rw ${x}/**,
-    '') (protectFiles allows)}
+    '') (protectFiles allows config)}
   '';
-  defaultRules = ''
-    ${generateFileRules [ ]}
+  defaultRules = config: ''
+    ${generateFileRules [ ] config}
     network,
     capability,
   '';

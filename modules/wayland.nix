@@ -26,11 +26,11 @@ in
                 adwaita-qt6
                 wdisplays
               ];
-              rules = lib.apparmor.defaultRules;
+              rules = lib.apparmor.defaultRules config;
             }
             { pkgs = [pkgs.wofi-pass];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ]}
+                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ] config}
               '';
             }
           ];

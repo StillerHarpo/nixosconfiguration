@@ -1,6 +1,6 @@
 { lib }:
 with lib; {
-  protectFiles = allows:
+  protectFiles = allows: config:
     flatten
     ((optional (!elem "ssh" allows) [ "/home/florian/.ssh" "/root/.ssh" ])
       ++ (optional (!elem "gnupg" allows) [
@@ -16,5 +16,6 @@ with lib; {
       ++ (optional (!elem "authinfo" allows) [
         "/home/florian/authinfo"
         "/home/florian/authinfo.gpg"
-      ]));
+      ]))
+    ++ concatMap (file: optional (!elem file allows) file) (mapAttrsToList (_: v: v.path) config.age.secrets);
 }

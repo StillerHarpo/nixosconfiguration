@@ -13,7 +13,7 @@ in
       apparmor = {
         systemPackages = [
           { pkgs = [ inputs.nixpkgs-master.legacyPackages."${config.nixpkgs.hostPlatform.system}".youtube-tui ];
-            rules = lib.apparmor.defaultRules;
+            rules = lib.apparmor.defaultRules config;
           }];
       };
       home-manager.users.florian.xdg.configFile."youtube-tui/main.yml".text =

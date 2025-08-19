@@ -38,25 +38,25 @@ in {
                 policies = {
                   scripts.profile = ''
                     /home/** {
-                       ${lib.apparmor.generateFileRules []}
+                       ${lib.apparmor.generateFileRules [] config}
                     }
                     /home/florian/meqo/checkpad-ssh/* {
                        ${lib.getExe pkgs.openssh} Px,
                        ${lib.getExe' pkgs.openssh "scp"} Px,
                        ${lib.getExe' pkgs.openssh "ssh-copy-id"} Px,
                        ${lib.getExe' pkgs.openssh "sshfs"} Px,
-                       ${lib.apparmor.generateFileRules []}
+                       ${lib.apparmor.generateFileRules [] config}
                     }
                     /home/florian/meqo/meqo/server/prepare {
                        network,
-                       ${lib.apparmor.generateFileRules []}
+                       ${lib.apparmor.generateFileRules [] config}
                     }
                     /home/florian/meqo/meqo/server/scripts/make-release {
                        ${lib.getExe pkgs.git} Px -> gitnodocs,
-                       ${lib.apparmor.generateFileRules []}
+                       ${lib.apparmor.generateFileRules [] config}
                     }
                     /home/florian/Dokumente/scans/generateTxts.sh {
-                       ${lib.apparmor.generateFileRules [ "docs" ]}
+                       ${lib.apparmor.generateFileRules [ "docs" ] config}
                     }
                   '';
                   specialRules.profile = ''
@@ -64,38 +64,38 @@ in {
                          ${lib.getExe pkgs.gnupg} Px -> gnupgnonet,
                          ${lib.getExe pkgs.openssh} Px,
                          network,
-                         ${lib.apparmor.generateFileRules [ "docs"]}
+                         ${lib.apparmor.generateFileRules [ "docs"] config}
                        } 
                        profile gitnodocs {
                          ${lib.getExe pkgs.gnupg} Px -> gnupgnonet,
                          ${lib.getExe pkgs.openssh} Px,
                          network,
-                         ${lib.apparmor.generateFileRules [ ]}
+                         ${lib.apparmor.generateFileRules [ ] config}
                        } 
                        ${lib.getExe pkgs.gnupg} {
-                          ${lib.apparmor.generateFileRules [ "gnupg" ]}
+                          ${lib.apparmor.generateFileRules [ "gnupg" ] config}
                           network,
                        }
                        profile gnupgnonet {
-                          ${lib.apparmor.generateFileRules [ "gnupg" ]}
+                          ${lib.apparmor.generateFileRules [ "gnupg" ] config}
                        }
                        ${lib.getExe pkgs.openssh} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
                          network,
                          capability,
                        }
                        ${lib.getExe' pkgs.openssh "scp"} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
                          network,
                          capability,
                        }
                        ${lib.getExe' pkgs.openssh "ssh-copy-id"} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
                          network,
                          capability,
                        }
                        ${lib.getExe' pkgs.openssh "sshfs"} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ]}
+                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
                          network,
                          capability,
                        }

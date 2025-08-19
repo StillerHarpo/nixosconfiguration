@@ -4,7 +4,7 @@
     shellAliases = let
       firejailWithBlacklist = "firejail "
         + (lib.concatMapStrings (x: " --blacklist=" + x))
-        (lib.protectFiles [ ]);
+        (lib.protectFiles [ ] osConfig);
     in {
       ls = "ls -lh --color=auto";
       firejail-nix = "firejail --private=~/.private-home nix";

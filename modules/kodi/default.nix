@@ -23,7 +23,7 @@ in
               arteplussept
             ]))
         ];
-        rules = lib.apparmor.defaultRules;
+        rules = lib.apparmor.defaultRules config;
       }
     ];
 

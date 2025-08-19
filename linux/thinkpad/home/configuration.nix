@@ -78,40 +78,6 @@ in {
     };
   };
 
-  accounts.email = {
-    accounts.posteo = import ./mail.nix {
-      inherit realName key;
-      addressPrefix = "engelflorian";
-      host = "posteo.de";
-      imapHost = "posteo.de";
-      smtpHost = "posteo.de";
-      primary = true;
-    };
-    accounts.librem = import ./mail.nix {
-      inherit realName key;
-      addressPrefix = "florianengel";
-      host = "librem.one";
-    };
-    accounts.gmail = import ./mail.nix {
-      inherit realName key;
-      address = "florianengel39@gmail.com";
-      passName = "gmailMu4e";
-      host = "gmail.com";
-      # Entw&APw-rfe can't be synced, but it shouldn't get any new mails
-      # anyway
-      # Either Gmail removed Entw&APw-rfe this or its a bug. It is
-      # probably a bug because it happens after a major update of nixos
-      patterns = ["*" "![Gmail]/Entw&APw-rfe"];
-    };
-    accounts.cpMedOld = import ./mail.nix {
-      inherit realName key;
-      address = private.workMailOld;
-      aliases = [ private.workMail ];
-      passName = "mbsync/${private.workMailOld}";
-      host = "gmail.com";
-      patterns = [ "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" ];
-    };
-  };
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 1800;

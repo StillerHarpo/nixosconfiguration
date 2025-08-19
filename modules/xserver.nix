@@ -25,7 +25,7 @@ in
             xclip
             rofi
           ];
-          rules = lib.apparmor.defaultRules;
+          rules = lib.apparmor.defaultRules config;
         }
       ];
 

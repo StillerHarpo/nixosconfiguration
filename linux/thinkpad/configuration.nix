@@ -147,6 +147,9 @@ in {
         };
       };
 
+
+      mail.enable = true;
+
       zramSwap.enable = true;
 
       fonts.packages = [
@@ -176,7 +179,7 @@ in {
                 } ../../haskell/scans/Scan.hs)
                 csvkit
               ];
-              rules = lib.apparmor.generateFileRules [ "docs" ];
+              rules = lib.apparmor.generateFileRules [ "docs" ] config;
             }
             {
               pkgs = with pkgs; [
@@ -238,7 +241,7 @@ in {
                 ## better rust tools ###
                 tor-browser-bundle-bin
               ];
-              rules = lib.apparmor.defaultRules;
+              rules = lib.apparmor.defaultRules config;
             }
             {
               pkgs = with pkgs; [ psmisc bandwhich bottom ];
@@ -246,7 +249,7 @@ in {
                 ptrace,
                 unix (getattr),
                 signal,
-                ${lib.apparmor.defaultRules}
+                ${lib.apparmor.defaultRules config}
               '';
             }
             {
@@ -255,9 +258,9 @@ in {
                 ''
                  ${lib.getExe pkgs.gnupg} Cx -> gnupg,
                  profile gnupg {
-                   ${lib.apparmor.generateFileRules [ "gnupg" "pass"]}
+                   ${lib.apparmor.generateFileRules [ "gnupg" "pass"] config}
                  }
-                 ${lib.apparmor.generateFileRules [ "pass"] }
+                 ${lib.apparmor.generateFileRules [ "pass"] config }
                 '';
             }
             {
@@ -265,14 +268,14 @@ in {
               rules = ''
                 ${lib.getExe pkgs.pass} Px,
                 ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules []}
+                ${lib.apparmor.generateFileRules [] config}
               '';
             }
             {
               pkgs = [ pkgs.firefox ];
               rules = ''
                 network,
-                ${lib.apparmor.generateFileRules [ "firefox" ]}
+                ${lib.apparmor.generateFileRules [ "firefox" ] config}
               '';
             }
             {
@@ -281,7 +284,7 @@ in {
                 mount,
                 capability,
                 ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules []}
+                ${lib.apparmor.generateFileRules [] config}
               '';
             }
             {
@@ -294,7 +297,7 @@ in {
                 # Allow unconfined processes to send us signals by default
                 signal (receive) peer=unconfined,
                 ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules []}
+                ${lib.apparmor.generateFileRules [] config}
               '';
             }
             {
@@ -303,10 +306,10 @@ in {
               ];
               rules = ''
                 ${lib.getExe pkgs.openssh} Cx -> sshRecive,
-                ${lib.apparmor.generateFileRules []}
+                ${lib.apparmor.generateFileRules [] config}
                 signal (send) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**//sshRecive,
                 profile sshRecive {
-                  ${lib.apparmor.generateFileRules [ "ssh" ]}
+                  ${lib.apparmor.generateFileRules [ "ssh" ] config}
                   signal (receive) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**,
                   network,
                   capability,
@@ -326,7 +329,7 @@ in {
                 csvs-to-sqlite
               ];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "docs" ]}
+                ${lib.apparmor.generateFileRules [ "docs" ] config}
               '';
             }
             {
@@ -336,7 +339,7 @@ in {
                 fd
               ];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "docs" "notmuch" ]}
+                ${lib.apparmor.generateFileRules [ "docs" "notmuch" ] config}
               '';
             }
           ];

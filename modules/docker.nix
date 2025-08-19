@@ -18,7 +18,7 @@ in
               pkgs = with pkgs; [
                 docker-compose
               ];
-              rules = lib.apparmor.defaultRules;
+              rules = lib.apparmor.defaultRules config;
             }
             {
               pkgs = with pkgs; [
@@ -26,7 +26,7 @@ in
               ];
 
               rules = ''
-                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ]}
+                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ] config}
               '';
             }
           ];
