@@ -14,8 +14,8 @@ with lib; {
       ++ (optional (!elem "firefox" allows) [ "/home/florian/.mozilla" ])
       ++ (optional (!elem "notmuch" allows) [ "/home/florian/Maildir" ])
       ++ (optional (!elem "authinfo" allows) [
-        "/home/florian/authinfo"
-        "/home/florian/authinfo.gpg"
+        "/home/florian/.authinfo"
+        "/home/florian/.authinfo.gpg"
       ]))
     ++ concatMap (file: optional (!elem file allows) file) (mapAttrsToList (_: v: v.path) config.age.secrets);
 }
