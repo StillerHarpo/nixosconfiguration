@@ -26,6 +26,5 @@ with lib; rec {
   defaultRules = config: ''
     ${generateFileRules [ ] config}
     network,
-    capability,
   '';
 }
