@@ -198,7 +198,6 @@ in {
                 libreoffice
                 textcleaner
                 file
-                element-desktop
                 ### screenshots ###
                 pinta
                 ### screenshots ###
@@ -228,9 +227,7 @@ in {
                 cabal2nix
                 git-crypt
                 ### chat ###
-                signal-desktop
                 mumble
-                slack
                 ### chat ###
                 fzf
                 ## better rust tools ###
@@ -242,6 +239,20 @@ in {
                 tor-browser-bundle-bin
               ];
               rules = lib.apparmor.defaultRules config;
+            }
+            # electron apps
+            {
+              pkgs = with pkgs; [
+                signal-desktop
+                slack
+                element-desktop
+              ];
+              rules = ''
+                capability sys_admin,
+                capability sys_chroot,
+                capability sys_ptrace,
+                ${lib.apparmor.defaultRules config}
+              '';
             }
             {
               pkgs = with pkgs; [ psmisc bandwhich bottom ];
