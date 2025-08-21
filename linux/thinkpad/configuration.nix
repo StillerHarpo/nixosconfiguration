@@ -286,6 +286,9 @@ in {
               pkgs = [ pkgs.firefox ];
               rules = ''
                 network,
+                capability sys_admin,
+                capability sys_chroot,
+                capability sys_ptrace,
                 ${lib.apparmor.generateFileRules [ "firefox" ] config}
               '';
             }
