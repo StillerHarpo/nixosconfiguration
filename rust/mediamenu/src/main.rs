@@ -10,7 +10,7 @@ use crossterm::ExecutableCommand;
 use mediathekviewtui::types::{Binding, KeyAction};
 use mediathekviewtui::{run_app, types::Config};
 use ratatui::layout::Constraint::{Length, Min};
-use ratatui::layout::{Layout, Rect};
+use ratatui::layout::{Constraint, Flex, Layout, Rect};
 use ratatui::text::Text;
 use ratatui::widgets::Paragraph;
 use ratatui::{
@@ -23,14 +23,9 @@ use searches::mk_searches;
 use std::collections::HashMap;
 use std::io::stdout;
 use std::path::Path;
-use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
-#[derive(Debug, Clone)]
-struct State {
-    selection: ListState,
-    items: Vec<SelectionItem>,
-}
+const SELECTION_ITEM_COUNT: u16 = 4;
 
 #[derive(Debug, Clone, EnumIter)]
 enum SelectionItem {
@@ -38,6 +33,19 @@ enum SelectionItem {
     JellyTui,
     JellyTuiT,
     Exit,
+}
+
+const ALL_SELECTION_ITEMS: [SelectionItem; 4] = [
+    SelectionItem::MediathekViewTui,
+    SelectionItem::JellyTui,
+    SelectionItem::JellyTuiT,
+    SelectionItem::Exit,
+];
+
+#[derive(Debug, Clone)]
+struct State {
+    selection: ListState,
+    items: [SelectionItem; 4],
 }
 
 fn mk_text(content: &str) -> Text {
@@ -79,7 +87,7 @@ async fn main() {
 
     let mut state = State {
         selection: ListState::default(),
-        items: SelectionItem::iter().collect(),
+        items: ALL_SELECTION_ITEMS,
     };
     stdout()
         .execute(crossterm::terminal::Clear(ClearType::All))
@@ -166,14 +174,13 @@ async fn main() {
 
 fn render(state: &mut State, frame: &mut Frame, manager: &Result<Manager, Error>) {
     let main_area = render_header(frame, manager);
-    let items = state
-        .items
-        .iter()
-        .map(|x| <SelectionItem as Into<ListItem>>::into(x.clone()))
-        .collect::<Vec<_>>();
+    let [center_area] = Layout::vertical([Constraint::Length(SELECTION_ITEM_COUNT)])
+        .flex(Flex::Center)
+        .areas(main_area);
     frame.render_stateful_widget(
-        List::new(items).highlight_style(Style::new().red().add_modifier(Modifier::BOLD)),
-        main_area,
+        List::new(ALL_SELECTION_ITEMS)
+            .highlight_style(Style::new().red().add_modifier(Modifier::BOLD)),
+        center_area,
         &mut state.selection,
     );
 }
