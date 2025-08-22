@@ -5,11 +5,12 @@ use battery::{Error, Manager};
 use chrono::Local;
 use crokey::key;
 use crossterm::event::{self, Event};
-use crossterm::terminal::{disable_raw_mode, enable_raw_mode, ClearType};
+use crossterm::terminal::ClearType;
 use crossterm::ExecutableCommand;
 use mediathekviewtui::types::{Binding, KeyAction};
 use mediathekviewtui::{run_app, types::Config};
-use ratatui::layout::Rect;
+use ratatui::layout::Constraint::{Length, Min};
+use ratatui::layout::{Layout, Rect};
 use ratatui::text::Text;
 use ratatui::widgets::Paragraph;
 use ratatui::{
@@ -21,7 +22,7 @@ use ratatui::{
 use searches::mk_searches;
 use std::collections::HashMap;
 use std::io::stdout;
-use std::process::Command;
+use std::path::Path;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 
@@ -108,23 +109,43 @@ async fn main() {
                     };
                     match state.items.get(s) {
                         Some(SelectionItem::MediathekViewTui) => {
-                            run_app(&mut terminal, &config).await;
+                            run_app(&mut terminal, &config, |frame| {
+                                render_header(frame, &manager)
+                            })
+                            .await;
                             terminal.clear().unwrap();
                             terminal
                                 .draw(|frame| render(&mut state, frame, &manager))
                                 .unwrap();
                         }
                         Some(SelectionItem::JellyTui) => {
-                            run_external_tui("jellytui", vec![]);
+                            let path = Path::new("/home/florian/.config/jellytui/");
+                            let config = jellytui::config::Config::load(Some(path)).unwrap();
+                            jellytui::run_app(
+                                Some(&mut terminal),
+                                Some(path),
+                                config,
+                                |frame: &mut Frame| render_header(frame, &manager),
+                            )
+                            .await
+                            .unwrap();
+                            terminal.clear().unwrap();
                             terminal
                                 .draw(|frame| render(&mut state, frame, &manager))
                                 .unwrap();
                         }
                         Some(SelectionItem::JellyTuiT) => {
-                            run_external_tui(
-                                "jellytui",
-                                vec!["-b", "/home/florian/.config/jellytui-t/"],
-                            );
+                            let path = Path::new("/home/florian/.config/jellytui-t/");
+                            let config = jellytui::config::Config::load(Some(path)).unwrap();
+                            jellytui::run_app(
+                                Some(&mut terminal),
+                                Some(path),
+                                config,
+                                |frame: &mut Frame| render_header(frame, &manager),
+                            )
+                            .await
+                            .unwrap();
+                            terminal.clear().unwrap();
                             terminal
                                 .draw(|frame| render(&mut state, frame, &manager))
                                 .unwrap();
@@ -144,29 +165,28 @@ async fn main() {
 }
 
 fn render(state: &mut State, frame: &mut Frame, manager: &Result<Manager, Error>) {
+    let main_area = render_header(frame, manager);
     let items = state
         .items
         .iter()
         .map(|x| <SelectionItem as Into<ListItem>>::into(x.clone()))
         .collect::<Vec<_>>();
-    let list_height: usize = items.iter().map(|x| x.height()).sum();
-    let area = Rect::new(
-        frame.area().x,
-        (frame.area().height - list_height as u16) / 2,
-        frame.area().width,
-        frame.area().height,
-    );
     frame.render_stateful_widget(
         List::new(items).highlight_style(Style::new().red().add_modifier(Modifier::BOLD)),
-        area,
+        main_area,
         &mut state.selection,
     );
+}
+
+fn render_header(frame: &mut Frame, manager: &Result<Manager, Error>) -> Rect {
+    let vertical = Layout::vertical([Length(1), Min(0)]);
+    let [header_area, main_area] = vertical.areas(frame.area());
     let battery_str = match manager {
         Ok(manager) => match manager.batteries() {
             Ok(batteries) => {
                 let battery_strs = batteries.map(|b| match b {
                     Ok(mut battery) => match manager.refresh(&mut battery) {
-                        Ok(_) => battery.state_of_charge().value.to_string(),
+                        Ok(_) => (battery.state_of_charge().value.abs() * 100.0).to_string(),
                         Err(e) => e.to_string(),
                     },
                     Err(e) => e.to_string(),
@@ -177,27 +197,14 @@ fn render(state: &mut State, frame: &mut Frame, manager: &Result<Manager, Error>
         },
         Err(e) => e.to_string(),
     };
-    // TODO bottom of screen
     frame.render_widget(
         Paragraph::new(format!("battery: {}%", battery_str)).right_aligned(),
-        frame.area(),
+        header_area,
     );
     let now = Local::now();
     frame.render_widget(
         Paragraph::new(format!("{}%", now.to_rfc2822())).left_aligned(),
-        frame.area(),
-    )
-}
-
-fn run_external_tui(prog: &str, args: Vec<&str>) {
-    disable_raw_mode().unwrap();
-    // Clears entire screen and moves cursor to (0,0)
-    stdout()
-        .execute(crossterm::terminal::Clear(ClearType::All))
-        .unwrap();
-    Command::new(prog).args(args).status().unwrap();
-    stdout()
-        .execute(crossterm::terminal::Clear(ClearType::All))
-        .unwrap();
-    enable_raw_mode().unwrap()
+        header_area,
+    );
+    main_area
 }
