@@ -263,7 +263,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
                 cargoLock = {
                   lockFile = ../../rust/mediamenu/Cargo.lock;
                   outputHashes = {
-                    "mediathekviewtui-0.1.0" = "sha256-5RIwGjCldyaBJw+gAaA2QRaXcjrQdhgSCzVMv20BrRo=";
+                    "mediathekviewtui-0.1.0" = "sha256-6aox5XNoK9ITsVliApMomZBz/8f9dUPjukmSfZZ1v8M=";
+                    "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
                   };
                 };
                 buildFeatures = if inHydra then [] else ["real"];
