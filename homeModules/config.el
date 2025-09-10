@@ -1788,37 +1788,69 @@ If I let Windows handle DPI everything looks blurry."
 	(after-save-hook nil))
   (save-buffer)))
 
+(defun my/get-run-for-github-url (txt)
+  "Gets the run for the github url"
+  (string-match (rx (
+		     seq "https://github.com/"
+		     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
+		     "/actions/runs/"
+		     (group (one-or-more num))))
+		txt)
+  `((:project . ,(match-string 1 txt))
+    (:id . ,(match-string 2 txt))))
+
+(defun my/open--github-action-logs-in-buffer (txt)
+  "Opens the first github action link in buffer if it exists."
+  (if-let* ((run (my/get-run-for-github-url txt))
+	   (project (alist-get :project run))
+	   (id (alist-get :id run)))
+      (shell-command (concat "gh run -R " project " view " id " --log-failed")
+		     (concat project " github action run: " id))))
 
 (defun my/open-github-action-logs-in-buffer ()
   "Opens the first github action link in buffer if it exists."
   (interactive)
-  (if-let* ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
-	   (_ (string-match (rx (
-				 seq "https://github.com/"
-				     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
-				     "/actions/runs/"
-				     (group (one-or-more num))))
-			    txt))
-	   (project (match-string 1 txt))
-	   (id (match-string 2 txt)))
-      (shell-command (concat "gh run -R " project " view " id " --log-failed")
-		     (concat project " github action run: " id))))
+  (let ((txt (buffer-substring-no-properties 1 (buffer-end 1))))
+    (my/open--github-action-logs-in-buffer txt)))
 
-
-(defun my/open-github-action-rerun ()
-  "Opens the first github action link in buffer if it exists."
-  (interactive)
-  (if-let* ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
-	   (_ (string-match (rx (
-				 seq "https://github.com/"
-				     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
-				     "/actions/runs/"
-				     (group (one-or-more num))))
-			    txt))
-	   (project (match-string 1 txt))
-	   (id (match-string 2 txt)))
+(defun my/open--github-action-rerun (txt)
+  "Rerun the first github action link in buffer if it exists."
+  (if-let* ((run (my/get-run-for-github-url txt))
+	   (project (alist-get :project run))
+	   (id (alist-get :id run)))
       (shell-command (concat "gh run -R " project " rerun " id " --failed")
 		     (concat project " github action run: " id))))
+
+(defun my/open-github-action-rerun ()
+  "Rerun the first github action link in buffer if it exists."
+  (interactive)
+  (let ((txt (buffer-substring-no-properties 1 (buffer-end 1))))
+    (my/open--github-action-rerun txt)))
+
+
+(defun my/github-pr-runs ()
+  "get all runs for the current pull request"
+  (if-let* ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
+	    (_ (string-match (rx (
+				  seq "https://github.com/"
+				  (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
+				  "/pull/"
+				  (group (one-or-more num))))
+			     txt))
+	    (project (match-string 1 txt))
+	    (id (match-string 2 txt))
+	    (matches (s-split "\n" (shell-command-to-string (concat "gh pr -R " project " checks " id)))))
+      (completing-read "run: " matches)))
+
+(defun my/select-github-action-run-and-open-in-buffer ()
+  "Select run from runs of pr and open the log in buffer"
+  (interactive)
+  (my/open--github-action-logs-in-buffer (my/github-pr-runs)))
+
+(defun my/select-github-action-run-and-rerun ()
+  "Select run from runs of pr and rerun it"
+  (interactive)
+  (my/open--github-action-rerun (my/github-pr-runs)))
 
 ;; functions for org links into documnets
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
