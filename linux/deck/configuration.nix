@@ -246,6 +246,13 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         # Autologin was not working with out this
         # Don't know why
         systemd.services.display-manager.enable = lib.mkForce false;
+        i18n.defaultLocale = "en_US.UTF-8";
+        console = {
+          earlySetup = true;
+          font = "${pkgs.terminus_font}/share/consolefonts/ter-132n.psf.gz";
+          packages = with pkgs; [ terminus_font ];
+          keyMap = "us";
+        };
         services = {
           getty.autologinUser = "florian";
           buffyboard = {
