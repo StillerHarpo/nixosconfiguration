@@ -1668,6 +1668,26 @@ If I let Windows handle DPI everything looks blurry."
 	 (target (my/meqo-shake-targets)))
     (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target))))
 
+(define-compilation-mode meqo-ts-test-compilation-mode "Meqo-Test"
+  "Meqo ts tests compilation mode."
+  (let ((prefix "(build/webpack/dev/tests/webpack:/checkpad-workflow"))
+    (set
+     (make-local-variable 'compilation-error-regexp-alist)
+     `((,(rx (group (literal prefix) (one-or-more (not ":"))) ":" (group (one-or-more digit)) ":" (group (one-or-more digit)) (not digit)) 1 2 3 nil 1)))
+    (set
+     (make-local-variable 'compilation-transform-file-match-alist)
+     `((,(rx (or ":/checkpad-workflow/src/checkpad/testInfrastructure" ":/checkpad-workflow/src/checkpad/util" "helpers.ts")) nil)
+       (,(rx (literal prefix)) ,(string-join `(,(my/meqo-server-directory) "/js")))))))
+
+
+(defun my/meqo-run-ts-tests ()
+  "Run meqo ts tests"
+  (interactive)
+  (let* ((default-directory (my/meqo-server-directory))
+         (filter (read-from-minibuffer "Filter: ")))
+    (compile
+     (format "cd %s && direnv exec %s ./js/scripts/runTests %s" default-directory default-directory filter)
+     'meqo-ts-test-compilation-mode)))
 
 (defun my/org-roam-commit-on-save ()
   "Auto commits in org-roam"
