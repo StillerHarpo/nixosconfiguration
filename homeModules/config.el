@@ -1661,12 +1661,24 @@ If I let Windows handle DPI everything looks blurry."
 	 (what (completing-read "programm: " programs)))
     (car (s-split " " what))))
 
+(define-compilation-mode meqo-compilation-mode "Meqo-Compile"
+  "Meqo compilation mode."
+  (let ((prefix "ERROR in ."))
+    (set
+     (make-local-variable 'compilation-error-regexp-alist)
+     (cons
+     `(,(rx (group (literal prefix) (one-or-more (not ":"))) ":" (group (one-or-more digit)) ":" (group (one-or-more digit)) (not digit)) 1 2 3 nil 1) compilation-error-regexp-alist))
+    (set
+     (make-local-variable 'compilation-transform-file-match-alist)
+     `((,(rx "server/protos") ,(string-join `(,(my/meqo-server-directory) "/protos")))
+       (,(rx (literal prefix)) "/js")))))
+
 (defun my/meqo-compile ()
   "Uses shake in meqo to compile."
   (interactive)
   (let* ((default-directory (my/meqo-server-directory))
 	 (target (my/meqo-shake-targets)))
-    (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target))))
+    (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target) 'meqo-compilation-mode)))
 
 (define-compilation-mode meqo-ts-test-compilation-mode "Meqo-Test"
   "Meqo ts tests compilation mode."
