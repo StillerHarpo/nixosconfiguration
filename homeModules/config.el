@@ -1680,6 +1680,31 @@ If I let Windows handle DPI everything looks blurry."
 	 (target (my/meqo-shake-targets)))
     (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target) 'meqo-compilation-mode)))
 
+(defun my/meqo-webpack-entry-points ()
+  "Selects a entry points from webpack."
+  (let* ((default-directory (my/meqo-server-directory))
+	 (programs
+	   (s-split "\n" (shell-command-to-string (format "direnv exec %s ./js/scripts/webpack --list" default-directory))))
+	 (what (completing-read "entry point: " programs)))
+    (car (s-split " " what))))
+
+(define-compilation-mode meqo-webpack-compilation-mode "Meqo-Webpack"
+  "Meqo ts webpack compilation mode."
+  (let ((prefix "ERROR in ."))
+    (set
+     (make-local-variable 'compilation-error-regexp-alist)
+     `((,(rx (group (literal prefix) (one-or-more (not ":"))) ":" (group (one-or-more digit)) ":" (group (one-or-more digit)) (not digit)) 1 2 3 nil 1)))
+    (set
+     (make-local-variable 'compilation-transform-file-match-alist)
+       `((,(rx (literal prefix)) ,(string-join `(,(my/meqo-server-directory) "/js")))))))
+
+(defun my/meqo-webpack ()
+  "Run wepack"
+  (interactive)
+  (let* ((default-directory (my/meqo-server-directory))
+	 (entry-point (my/meqo-webpack-entry-points)))
+    (compile (format "way=f cd %s && direnv exec %s ./js/scripts/webpack --watch %s" default-directory default-directory entry-point) 'meqo-webpack-compilation-mode)))
+
 (define-compilation-mode meqo-ts-test-compilation-mode "Meqo-Test"
   "Meqo ts tests compilation mode."
   (let ((prefix "(build/webpack/dev/tests/webpack:/checkpad-workflow"))
