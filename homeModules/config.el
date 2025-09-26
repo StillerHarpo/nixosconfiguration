@@ -1890,4 +1890,3 @@ If I let Windows handle DPI everything looks blurry."
 
 (use-package elpher)
 
-(setq mail-signature "test")
