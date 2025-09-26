@@ -47,11 +47,11 @@ in {
                        ${lib.getExe' pkgs.openssh "sshfs"} Px,
                        ${lib.apparmor.generateFileRules [] config}
                     }
-                    /home/florian/meqo/meqo/server/prepare {
+                    /home/florian/meqo/**/server/prepare {
                        network,
                        ${lib.apparmor.generateFileRules [] config}
                     }
-                    /home/florian/meqo/meqo/server/scripts/make-release {
+                    /home/florian/meqo/**/server/scripts/make-release {
                        ${lib.getExe pkgs.git} Px -> gitnodocs,
                        ${lib.apparmor.generateFileRules [] config}
                     }
