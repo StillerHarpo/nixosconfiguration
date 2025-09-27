@@ -264,7 +264,7 @@ in {
               '';
             }
             {
-              pkgs = [ pkgs.pass ];
+              pkgs = [ pkgs.pass-wayland ];
               rules =
                 ''
                  ${lib.getExe pkgs.gnupg} Cx -> gnupg,
@@ -277,7 +277,7 @@ in {
             {
               pkgs = [ pkgs.rpi4-install ];
               rules = ''
-                ${lib.getExe pkgs.pass} Px,
+                ${lib.getExe pkgs.pass-wayland} Px,
                 ${lib.getExe pkgs.openssh} Px,
                 ${lib.apparmor.generateFileRules [] config}
               '';
