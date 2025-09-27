@@ -30,7 +30,8 @@ in
             }
             { pkgs = [pkgs.wofi-pass];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ] config}
+                ${lib.getExe pkgs.pass-wayland} Px,
+                ${lib.apparmor.generateFileRules [ "pass" ] config}
               '';
             }
           ];
