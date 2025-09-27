@@ -137,7 +137,7 @@ in
          network,
        }
        ${lib.getExe pkgs.notmuch} {
-         ${lib.apparmor.generateFileRules [ "notmuch"] config}
+         ${lib.apparmor.generateFileRules [ "notmuch" "gnupg"] config}
        }
     '';
   };
