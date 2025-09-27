@@ -107,7 +107,7 @@ in
           ExecStart =
             pkgs.writeShellScript "update-mail" ''
               ${lib.getExe config.home-manager.users.florian.programs.mbsync.package} -a
-              ${lib.getExe pkgs.notmuch} new
+              ${lib.getExe pkgs.notmuch} new --decrypt=false
               MAIL_NUM=$(${lib.getExe pkgs.notmuch} search tag:unread | wc -l)
               if [[ $MAIL_NUM > 0 ]]; then
                 ${lib.getExe pkgs.libnotify} "You got $MAIL_NUM new mails"
