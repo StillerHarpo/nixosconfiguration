@@ -297,7 +297,7 @@ in {
               rules = ''
                 mount,
                 capability,
-                # ${lib.getExe pkgs.openssh} Px,
+                # age reads ssh directly
                 ${lib.apparmor.generateFileRules ["ssh"] config}
               '';
             }
