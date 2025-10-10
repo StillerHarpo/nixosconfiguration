@@ -237,6 +237,7 @@ in {
                 grex
                 ## better rust tools ###
                 tor-browser-bundle-bin
+                emacs-lsp-booster
               ];
               rules = lib.apparmor.defaultRules config;
             }

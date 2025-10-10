@@ -919,6 +919,11 @@ a priority cookie and tags in the standard locations."
   :config
   (global-flycheck-eglot-mode 1))
 
+(use-package eglot-booster
+	:after eglot
+	:config	(eglot-booster-mode))
+;; Maybe https://github.com/manateelazycat/lsp-bridge
+
 (use-package lsp-mode
   :hook (;; if you want which-key integration
          (lsp-mode . lsp-enable-which-key-integration))
