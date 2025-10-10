@@ -1687,7 +1687,7 @@ If I let Windows handle DPI everything looks blurry."
      `(,(rx (group (literal prefix) (one-or-more (not ":"))) ":" (group (one-or-more digit)) ":" (group (one-or-more digit)) (not digit)) 1 2 3 nil 1) compilation-error-regexp-alist))
     (set
      (make-local-variable 'compilation-transform-file-match-alist)
-     `((,(rx "server/protos") ,(string-join `(,(my/meqo-server-directory) "/protos")))
+     `((,(rx "server/protos") "/protos")
        (,(rx (literal prefix)) "/js")))))
 
 (defun my/meqo-compile ()
