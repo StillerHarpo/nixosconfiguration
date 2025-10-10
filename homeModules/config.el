@@ -1816,23 +1816,7 @@ If I let Windows handle DPI everything looks blurry."
   (nix-mode . eglot-ensure)
   (haskell-mode . eglot-ensure))
 
-;; compilation-scroll-output 'first-error
-;; rename buffer
-(defun my/meqo-webpack ()
-  "Compile typescript with meqo wepack."
-  (interactive)
-  (let* ((default-directory (project-root (project-current)))
-	 (ts-root (format "%sjs/%%s" default-directory))
-	 (webpack
-	  (format "direnv exec %sjs/scripts/webpack --watch" default-directory))
-	 (compilation-start-hook
-	  (lambda (&rest _)
-	    (progn
-	      (make-local-variable 'compilation-error-regexp-alist)
-	      (setq compilation-error-regexp-alist
-		    `(("  ERROR in ./\\([^:]+\\):\\([0-9]+\\):\\([0-9]+\\)"
-		       (1 ,ts-root) 2 3 nil nil)))))))
-    (compile webpack)))
+
 (defun joaot/eglot-project-find-function (dir)
   (when eglot-lsp-context
     (let* ((marker nil)
