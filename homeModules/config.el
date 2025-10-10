@@ -1206,6 +1206,18 @@ a priority cookie and tags in the standard locations."
 Returns nil if not and (sec min hour) if it has."
   (let ((ti (org-parse-time-string timestamp)))
     (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
+  (defun org-caldav-skip-function (backend)
+    (org-caldav-debug-print 2 "Skipping over excluded entries")
+    (when (eq backend 'icalendar)
+      (org-map-entries
+       (lambda ()
+	 (let ((pt (save-excursion (apply 'org-agenda-skip-entry-if org-caldav-skip-conditions)))
+	       (ts (when org-caldav-days-in-past (* (abs org-caldav-days-in-past) -1)))
+	       (stamp (or (org-entry-get nil "TIMESTAMP" t) (org-entry-get nil "CLOSED" t))))
+	   (when (or pt (and stamp ts (> ts (org-time-stamp-to-now stamp))))
+	     (delete-region (point) (progn (org-next-visible-heading 1) (point)))
+	     (setq org-map-continue-from (point)))))))
+    (org-caldav-debug-print 2 "Finished skipping"))
   :custom
   (org-export-with-broken-links t)
   (org-caldav-url "http://flospi:5232")
@@ -1213,7 +1225,7 @@ Returns nil if not and (sec min hour) if it has."
   (org-caldav-calendar-id "any/d02d9914-eb09-4210-b1d1-1b330b274af9/")
   (org-caldav-resume-aborted 'never)
   (org-caldav-delete-calendar-entries 'always)
-  (org-caldav-skip-conditions '(nottimestamp))
+  (org-caldav-skip-conditions '(nottimestamp scheduled deadline))
   )
 
 (use-package jinx
@@ -1755,6 +1767,18 @@ If I let Windows handle DPI everything looks blurry."
 	Returns nil if not and (sec min hour) if it has."
 	(let ((ti (org-parse-time-string timestamp)))
 	  (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
+      (defun org-caldav-skip-function (backend)
+	(org-caldav-debug-print 2 "Skipping over excluded entries")
+	(when (eq backend 'icalendar)
+	  (org-map-entries
+	   (lambda ()
+	     (let ((pt (save-excursion (apply 'org-agenda-skip-entry-if org-caldav-skip-conditions)))
+		   (ts (when org-caldav-days-in-past (* (abs org-caldav-days-in-past) -1)))
+		   (stamp (or (org-entry-get nil "TIMESTAMP" t) (org-entry-get nil "CLOSED" t))))
+	       (when (or pt (and stamp ts (> ts (org-time-stamp-to-now stamp))))
+		 (delete-region (point) (progn (org-next-visible-heading 1) (point)))
+		 (setq org-map-continue-from (point)))))))
+	(org-caldav-debug-print 2 "Finished skipping"))
       ,(async-inject-variables
 	(rx
 	 (or
