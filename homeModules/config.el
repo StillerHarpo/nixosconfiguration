@@ -26,24 +26,24 @@
    (-map
     (lambda (auto-save-file)
       `(,(concat emacsAutoSaveDir auto-save-file)
-	,(replace-regexp-in-string "!" "/" (replace-regexp-in-string "#" "" auto-save-file))))
+        ,(replace-regexp-in-string "!" "/" (replace-regexp-in-string "#" "" auto-save-file))))
     (directory-files emacsAutoSaveDir nil (rx (seq "#" (one-or-more anychar) "#"))))
    nil
    `((?d ,(lambda (recover-and-file)
-	    (require 'diff)            ;for diff-no-select.
-	    (let ((diffbuf (diff-no-select (cadr recover-and-file) (car recover-and-file)
-					   nil 'noasync)))
-	      (if (not enable-recursive-minibuffers)
-		  (progn (display-buffer diffbuf)
-			 (setq other-window-scroll-buffer diffbuf))
-		(view-buffer diffbuf (lambda (_) (exit-recursive-edit)))
-		(recursive-edit)))
-	    ;; Return nil to ask about BUF again.
-	    nil)
-	 ,(purecopy "view changes of auto-save"))
+            (require 'diff)            ;for diff-no-select.
+            (let ((diffbuf (diff-no-select (cadr recover-and-file) (car recover-and-file)
+                                           nil 'noasync)))
+              (if (not enable-recursive-minibuffers)
+                  (progn (display-buffer diffbuf)
+                         (setq other-window-scroll-buffer diffbuf))
+                (view-buffer diffbuf (lambda (_) (exit-recursive-edit)))
+                (recursive-edit)))
+            ;; Return nil to ask about BUF again.
+            nil)
+         ,(purecopy "view changes of auto-save"))
      (?D ,(lambda (recover-and-file)
-	    (delete-file (car recover-and-file)))
-	 ,(purecopy "view changes of auto-save")))))
+            (delete-file (car recover-and-file)))
+         ,(purecopy "view changes of auto-save")))))
 
 (require 'use-package)
 
@@ -233,7 +233,7 @@
   (org-agenda-start-on-weekday nil)
   (org-src-window-setup 'current-window)
   (org-refile-targets '((nil :maxlevel . 9)
-			(org-agenda-files :maxlevel . 9)))
+                        (org-agenda-files :maxlevel . 9)))
   (org-highlight-latex-and-related '(latex script entities))
   (org-ref-bibliography-notes "~/Dokumente/bibliography/notes.org")
   (org-ref-default-bibliography reftex-default-bibliography)
@@ -257,11 +257,11 @@
   ;; https://github.com/doomemacs/doomemacs/issues/2672
   ;; Prevent temporarily opened agenda buffers from polluting recentf.
   (advice-add #'org-get-agenda-file-buffer
-	      :around (lambda (orig-fn file)
-			(let ((recentf-exclude (list (lambda (_file) t)))
-			      find-file-hook
-			      org-mode-hook)
-			  (funcall orig-fn file))))
+              :around (lambda (orig-fn file)
+                        (let ((recentf-exclude (list (lambda (_file) t)))
+                              find-file-hook
+                              org-mode-hook)
+                          (funcall orig-fn file))))
   (advice-add 'org-refile :after 'org-save-all-org-buffers)
   (advice-add 'org-agenda-todo :after 'org-save-all-org-buffers)
   (add-hook 'org-mode-hook 'turn-on-auto-fill)
@@ -289,34 +289,34 @@ a priority cookie and tags in the standard locations."
       (org-with-wide-buffer
        (goto-char (point-min))
        (let (case-fold-search)
-	 (when (re-search-forward
-		(rx (seq line-start "* " (literal (if todo-keyword todo-keyword "")) (zero-or-more not-newline) (regexp regex))) nil t)
-	   (if pos-only
-	       (match-beginning 0)
-	     (move-marker (make-marker) (match-beginning 0))))))))
+         (when (re-search-forward
+                (rx (seq line-start "* " (literal (if todo-keyword todo-keyword "")) (zero-or-more not-newline) (regexp regex))) nil t)
+           (if pos-only
+               (match-beginning 0)
+             (move-marker (make-marker) (match-beginning 0))))))))
 
   (defun my/org-set-auto-schedule-done-rx (heading)
     "Mark every heading as done which matches heading regex"
     (with-current-buffer (find-file-noselect "~/Dokumente/auto.org")
       (let ((heading-name heading))
         (while-let ((pos (my/org-find-headline-in-buffer heading-name "TODO" nil t)))
-  	  (goto-char pos)
-  	  (org-todo "DONE")
-  	  (save-buffer)))))
+          (goto-char pos)
+          (org-todo "DONE")
+          (save-buffer)))))
 
   (defun my/org-set-auto-schedule-done (heading)
     "Mark every HEADING as done which matches heading regex"
     (with-current-buffer (find-file-noselect "~/Dokumente/auto.org")
       (let ((heading-name heading))
-	(if-let ((pos (org-find-exact-headline-in-buffer heading-name nil t)))
-	    (progn (goto-char pos)
-		   (org-todo "DONE")
-		   (save-buffer))))))
+        (if-let ((pos (org-find-exact-headline-in-buffer heading-name nil t)))
+            (progn (goto-char pos)
+                   (org-todo "DONE")
+                   (save-buffer))))))
 
   (defun my/auto-update-agenda-if (p msg)
     "sets org entry with msg to done if p is true existing and schedules otherwise"
     (if p
-	(my/org-set-auto-schedule-done msg)
+        (my/org-set-auto-schedule-done msg)
       (my/org-insert-auto-schedule msg)))
 
   (my/org-set-auto-schedule-done "auto saves aufräumen")
@@ -534,12 +534,12 @@ a priority cookie and tags in the standard locations."
   (defun my/org-roam-refresh-agenda-list ()
     (interactive)
     (setopt org-agenda-files
-	    (delete-dups
-	     (cons "~/Dokumente/auto.org"
-		   (cons "~/Dokumente/notes.org"
-			 (my/org-roam-list-notes-by-regex
-			  "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO"))))
-	    org-caldav-files org-agenda-files))
+            (delete-dups
+             (cons "~/Dokumente/auto.org"
+                   (cons "~/Dokumente/notes.org"
+                         (my/org-roam-list-notes-by-regex
+                          "<[0-9]\\{4\\}\\-[0-9]\\{2\\}\\-[0-9]\\{2\\}\\|<%%(diary-float\\|^\\*+ TODO"))))
+            org-caldav-files org-agenda-files))
   (my/org-roam-refresh-agenda-list)
   :custom
   (org-roam-file-exclude-regexp '("data/" ".stversions/"))
@@ -573,12 +573,12 @@ a priority cookie and tags in the standard locations."
   :general
   (:states '(normal visual motion emacs)
    :keymaps '(my-keys-minor-mode-map)
-	   :prefix "SPC"
+           :prefix "SPC"
            "n" '(:ignore t :which-key "org")
-	   "n f" 'org-roam-node-find
-	   "n i" 'org-roam-node-insert
+           "n f" 'org-roam-node-find
+           "n i" 'org-roam-node-insert
            "n r" 'my/org-roam-refile
-	   "n d" 'org-roam-dailies-capture-today))
+           "n d" 'org-roam-dailies-capture-today))
 
 (use-package vterm
   :ensure
@@ -605,19 +605,19 @@ a priority cookie and tags in the standard locations."
   :hook (magit-status-mode-hook . so-long-minor-mode)
   :general
   (:states '(normal visual)
-	   :keymaps 'magit-status-mode-map
-	   "S-SPC" 'magit-diff-show-or-scroll-up)
+           :keymaps 'magit-status-mode-map
+           "S-SPC" 'magit-diff-show-or-scroll-up)
   :general
   (:states '(normal visual motion emacs)
-	   :keymaps '(my-keys-minor-mode-map)
-	   :prefix "SPC"
-	   "g" '(:ignore t :which-key "magit")
-	   "g g" 'magit-status
-	   "g r" 'magit-reflog-head
-	   "g f" 'magit-find-file
-	   "g c" 'magit-clone
-	   "g b" 'magit-blame-addition
-	   "g i" 'magit-init)
+           :keymaps '(my-keys-minor-mode-map)
+           :prefix "SPC"
+           "g" '(:ignore t :which-key "magit")
+           "g g" 'magit-status
+           "g r" 'magit-reflog-head
+           "g f" 'magit-find-file
+           "g c" 'magit-clone
+           "g b" 'magit-blame-addition
+           "g i" 'magit-init)
   :config
   (with-eval-after-load 'magit-log
     (define-key magit-log-mode-map (kbd "SPC") nil))
@@ -634,13 +634,13 @@ a priority cookie and tags in the standard locations."
     "Run COMMAND with GIT_EXTERNAL_DIFF=difft then show result in BUFFER."
     (let ((process-environment
            (cons (concat "GIT_EXTERNAL_DIFF=difft --width="
-			 (number-to-string (frame-width)))
-		 process-environment)))
+                         (number-to-string (frame-width)))
+                 process-environment)))
       ;; Clear the result buffer (we might regenerate a diff, e.g., for
       ;; the current changes in our working directory).
       (with-current-buffer buffer
-	(setq buffer-read-only nil)
-	(erase-buffer))
+        (setq buffer-read-only nil)
+        (erase-buffer))
       ;; Now spawn a process calling the git COMMAND.
       (make-process
        :name (buffer-name buffer)
@@ -660,15 +660,15 @@ a priority cookie and tags in the standard locations."
                        ;; difftastic diffs are usually 2-column side-by-side,
                        ;; so ensure our window is wide enough.
                        (let ((width (current-column)))
-			 (while (zerop (forward-line 1))
+                         (while (zerop (forward-line 1))
                            (end-of-line)
                            (setq width (max (current-column) width)))
-			 ;; Add column size of fringes
-			 (setq width (+ width
-					(fringe-columns 'left)
-					(fringe-columns 'right)))
-			 (goto-char (point-min))
-			 (pop-to-buffer
+                         ;; Add column size of fringes
+                         (setq width (+ width
+                                        (fringe-columns 'left)
+                                        (fringe-columns 'right)))
+                         (goto-char (point-min))
+                         (pop-to-buffer
                           (current-buffer)
                           `(;; If the buffer is that wide that splitting the frame in
                             ;; two side-by-side windows would result in less than
@@ -687,12 +687,12 @@ a priority cookie and tags in the standard locations."
             ;; If not invoked with prefix arg, try to guess the REV from
             ;; point's position.
             (and (not current-prefix-arg)
-		 (or (magit-thing-at-point 'git-revision t)
+                 (or (magit-thing-at-point 'git-revision t)
                      (magit-branch-or-commit-at-point)))
             ;; Otherwise, query the user.
             (magit-read-branch-or-commit "Revision"))))
     (if (not rev)
-	(error "No revision specified")
+        (error "No revision specified")
       (th/magit--with-difftastic
        (get-buffer-create (concat "*git show difftastic " rev "*"))
        (list "git" "--no-pager" "show" "--ext-diff" rev))))
@@ -701,24 +701,24 @@ a priority cookie and tags in the standard locations."
     "Show the result of \"git diff ARG\" with GIT_EXTERNAL_DIFF=difft."
     (interactive
      (list (or
-	    ;; If RANGE is given, just use it.
-	    (when (boundp 'range) range)
-	    ;; If prefix arg is given, query the user.
-	    (and current-prefix-arg
-		 (magit-diff-read-range-or-commit "Range"))
-	    ;; Otherwise, auto-guess based on position of point, e.g., based on
-	    ;; if we are in the Staged or Unstaged section.
-	    (pcase (magit-diff--dwim)
-	      ('unmerged (error "unmerged is not yet implemented"))
-	      ('unstaged nil)
-	      ('staged "--cached")
-	      (`(stash . ,value) (error "stash is not yet implemented"))
-	      (`(commit . ,value) (format "%s^..%s" value value))
-	      ((and range (pred stringp)) range)
-	      (_ (magit-diff-read-range-or-commit "Range/Commit"))))))
+            ;; If RANGE is given, just use it.
+            (when (boundp 'range) range)
+            ;; If prefix arg is given, query the user.
+            (and current-prefix-arg
+                 (magit-diff-read-range-or-commit "Range"))
+            ;; Otherwise, auto-guess based on position of point, e.g., based on
+            ;; if we are in the Staged or Unstaged section.
+            (pcase (magit-diff--dwim)
+              ('unmerged (error "unmerged is not yet implemented"))
+              ('unstaged nil)
+              ('staged "--cached")
+              (`(stash . ,value) (error "stash is not yet implemented"))
+              (`(commit . ,value) (format "%s^..%s" value value))
+              ((and range (pred stringp)) range)
+              (_ (magit-diff-read-range-or-commit "Range/Commit"))))))
     (let ((name (concat "*git diff difftastic"
-			(if arg (concat " " arg) "")
-			"*")))
+                        (if arg (concat " " arg) "")
+                        "*")))
       (th/magit--with-difftastic
        (get-buffer-create name)
        `("git" "--no-pager" "diff" "--ext-diff" ,@(when arg (list arg))))))
@@ -877,17 +877,17 @@ a priority cookie and tags in the standard locations."
     "opens the pull request at point in pr-review"
     (interactive)
     (if-let ((url (forge-get-url (or (forge-post-at-point)
-				     (forge-current-topic)))))
-	(pr-review url)
+                                     (forge-current-topic)))))
+        (pr-review url)
       (user-error "Nothing at point with a URL")))
   (defun my/pr-review-in-buffer ()
     "opens the pull request which is nearest point"
     (interactive)
 
     (if-let ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
-	     (_ (string-match (rx (seq "https://github.com" (repeat 2 2 (seq "/" (one-or-more (not "/")))) "/pull/"  (one-or-more num))) txt))
-	     (url (match-string 0 txt)))
-	(pr-review url)))
+             (_ (string-match (rx (seq "https://github.com" (repeat 2 2 (seq "/" (one-or-more (not "/")))) "/pull/"  (one-or-more num))) txt))
+             (url (match-string 0 txt)))
+        (pr-review url)))
 
   :general
   (:states
@@ -920,8 +920,8 @@ a priority cookie and tags in the standard locations."
   (global-flycheck-eglot-mode 1))
 
 (use-package eglot-booster
-	:after eglot
-	:config	(eglot-booster-mode))
+        :after eglot
+        :config (eglot-booster-mode))
 ;; Maybe https://github.com/manateelazycat/lsp-bridge
 
 (use-package lsp-mode
@@ -935,8 +935,8 @@ a priority cookie and tags in the standard locations."
 (defun my/meqo-server-respository? ()
   (and (project-current)
        (string-match
-	(rx (and "/meqo/" (zero-or-more anychar) (zero-or-one "server/") line-end))
-	(project-root (project-current)))))
+        (rx (and "/meqo/" (zero-or-more anychar) (zero-or-one "server/") line-end))
+        (project-root (project-current)))))
 
 (use-package haskell-mode :ensure t)
 
@@ -945,7 +945,7 @@ a priority cookie and tags in the standard locations."
  (lambda ()
    (when (s-ends-with? ".agda" (buffer-file-name))
      (load-file (let ((coding-system-for-read 'utf-8))
-		  (shell-command-to-string "agda-mode locate")))
+                  (shell-command-to-string "agda-mode locate")))
      (envrc-propagate-environment 'agda2-mode)
      (defun my/agda2-restart-envrc ()
        "Tries to start or restart the Agda process in envrc."
@@ -1096,7 +1096,7 @@ a priority cookie and tags in the standard locations."
     "Compose new mail"
     (interactive)
     (let* ((from (completing-read "From: " (notmuch-user-emails)))
-	  (mail-signature (if (string= from nix-workmail) nix-workmail-signature "")))
+          (mail-signature (if (string= from nix-workmail) nix-workmail-signature "")))
       (notmuch-mua-mail
        nil
        nil
@@ -1114,7 +1114,7 @@ a priority cookie and tags in the standard locations."
     (lambda
      (&rest args)
      (let* ((from (message-sendmail-envelope-from))
-	   (mail-signature (if (-any (lambda (address) (string=  from address)) `(,nix-workmail "engel@medilyse.org")) nix-workmail-signature "")))
+           (mail-signature (if (-any (lambda (address) (string=  from address)) `(,nix-workmail "engel@medilyse.org")) nix-workmail-signature "")))
        (mail-signature))))
    (defun my/test ()
      (interactive)
@@ -1211,12 +1211,12 @@ Returns nil if not and (sec min hour) if it has."
     (when (eq backend 'icalendar)
       (org-map-entries
        (lambda ()
-	 (let ((pt (save-excursion (apply 'org-agenda-skip-entry-if org-caldav-skip-conditions)))
-	       (ts (when org-caldav-days-in-past (* (abs org-caldav-days-in-past) -1)))
-	       (stamp (or (org-entry-get nil "TIMESTAMP" t) (org-entry-get nil "CLOSED" t))))
-	   (when (or pt (and stamp ts (> ts (org-time-stamp-to-now stamp))))
-	     (delete-region (point) (progn (org-next-visible-heading 1) (point)))
-	     (setq org-map-continue-from (point)))))))
+         (let ((pt (save-excursion (apply 'org-agenda-skip-entry-if org-caldav-skip-conditions)))
+               (ts (when org-caldav-days-in-past (* (abs org-caldav-days-in-past) -1)))
+               (stamp (or (org-entry-get nil "TIMESTAMP" t) (org-entry-get nil "CLOSED" t))))
+           (when (or pt (and stamp ts (> ts (org-time-stamp-to-now stamp))))
+             (delete-region (point) (progn (org-next-visible-heading 1) (point)))
+             (setq org-map-continue-from (point)))))))
     (org-caldav-debug-print 2 "Finished skipping"))
   :custom
   (org-export-with-broken-links t)
@@ -1255,13 +1255,13 @@ Returns nil if not and (sec min hour) if it has."
 
 (setq browse-url-handlers
       `((,(rx (and line-start "mailto:")) .
-	 ,(lambda (url &rest args)
-	    (notmuch-mua-mail
-	     (string-remove-prefix "mailto:" url)
-	     nil
-	     `((From  . ,(completing-read "From: " (notmuch-user-emails)))))))
-	(,no-eww-reg . browse-url-linkopen)
-	("." . eww-browse-url)))
+         ,(lambda (url &rest args)
+            (notmuch-mua-mail
+             (string-remove-prefix "mailto:" url)
+             nil
+             `((From  . ,(completing-read "From: " (notmuch-user-emails)))))))
+        (,no-eww-reg . browse-url-linkopen)
+        ("." . eww-browse-url)))
 
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
@@ -1288,7 +1288,7 @@ Returns nil if not and (sec min hour) if it has."
   (interactive)
   (if (yes-or-no-p (format "Really delete file: %s " (buffer-file-name)))
       (progn (delete-file (buffer-file-name))
-	     (kill-current-buffer))))
+             (kill-current-buffer))))
 
 ;; mostly copied from doom emacs
 (defun my/copy-this-file (new-path &optional force-p)
@@ -1380,11 +1380,11 @@ if one already exists."
   "Changes consult-ripgrep so that we grep for evil selection and ignore .ignore in meqo respository"
   (interactive)
   (let ((consult-ripgrep-args
-	 (if (my/meqo-server-respository?)
-	     (string-join `(,consult-ripgrep-args " --no-ignore-dot"))
-			  consult-ripgrep-args)))
+         (if (my/meqo-server-respository?)
+             (string-join `(,consult-ripgrep-args " --no-ignore-dot"))
+                          consult-ripgrep-args)))
     (if evil-visual-region-expanded
-	(consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
+        (consult-ripgrep nil (regexp-quote (buffer-substring-no-properties (mark) (point))))
       (consult-ripgrep))))
 
 (defun my/consult-ripgrep-from-kill-ring ()
@@ -1581,10 +1581,10 @@ Called via the `after-load-functions' special hook."
 If I let Windows handle DPI everything looks blurry."
   (if (equal (getenv "XDG_SESSION_TYPE") "x11")
       (let* ((attrs (frame-monitor-attributes)) ;; gets attribs for current frame
-	     (width-px (-fourth-item (-second-item attrs))))
-	(cond ((eq width-px 2560) (set-frame-font "monospace 20"))  ;; laptop screen
-	      ((eq width-px 1920) (set-frame-font "monospace 18")) ;; External monitor at home
-	      (t (set-frame-font "monospace 18"))))
+             (width-px (-fourth-item (-second-item attrs))))
+        (cond ((eq width-px 2560) (set-frame-font "monospace 20"))  ;; laptop screen
+              ((eq width-px 1920) (set-frame-font "monospace 18")) ;; External monitor at home
+              (t (set-frame-font "monospace 18"))))
     (set-frame-font "monospace 12")))
 
 (add-hook 'window-size-change-functions #'hoagie-adjust-font-size)
@@ -1623,7 +1623,7 @@ If I let Windows handle DPI everything looks blurry."
   "Gets the server directory of meqo."
   (let ((root (project-root (project-current))))
     (if (s-suffix? "server" root)
-	root
+        root
       (string-join `(,root "server/")))))
 
 (defun my/meqo-demo-directory ()
@@ -1642,9 +1642,9 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/meqo-format-on-save ()
   "Formats the current buffer with the meqo script if the project is meqo."
   (when (and (project-current)
-	     (my/meqo-server-respository?)
-	     (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
-			   (buffer-file-name (current-buffer))))
+             (my/meqo-server-respository?)
+             (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
+                           (buffer-file-name (current-buffer))))
     (my/meqo-format)))
 
 (add-hook 'after-save-hook 'my/meqo-format-on-save)
@@ -1661,9 +1661,9 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/meqo-demo-format-on-save ()
   "Formats the current buffer with the meqo script if the project is meqo demo."
   (when (and (project-current)
-	     (my/meqo-server-respository?)
-	     (string-match (rx (seq "/demo/" (one-or-more (not "/")) (or (seq ".ts" eol) (seq ".js" eol) (seq ".xml" eol) (seq ".json" eol) (seq ".json5" eol))))
-			   (buffer-file-name (current-buffer))))
+             (my/meqo-server-respository?)
+             (string-match (rx (seq "/demo/" (one-or-more (not "/")) (or (seq ".ts" eol) (seq ".js" eol) (seq ".xml" eol) (seq ".json" eol) (seq ".json5" eol))))
+                           (buffer-file-name (current-buffer))))
     (my/meqo-demo-format)))
 
 (add-hook 'after-save-hook 'my/meqo-demo-format-on-save)
@@ -1671,11 +1671,11 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/meqo-shake-targets ()
   "Selects a target from shake."
   (let* ((default-directory (my/meqo-server-directory))
-	 (programs
-	  (-filter
-	   (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
-	   (s-split "\n" (shell-command-to-string (format "direnv exec %s ./shake -l" default-directory)))))
-	 (what (completing-read "programm: " programs)))
+         (programs
+          (-filter
+           (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
+           (s-split "\n" (shell-command-to-string (format "direnv exec %s ./shake -l" default-directory)))))
+         (what (completing-read "programm: " programs)))
     (car (s-split " " what))))
 
 (define-compilation-mode meqo-compilation-mode "Meqo-Compile"
@@ -1694,15 +1694,15 @@ If I let Windows handle DPI everything looks blurry."
   "Uses shake in meqo to compile."
   (interactive)
   (let* ((default-directory (my/meqo-server-directory))
-	 (target (my/meqo-shake-targets)))
+         (target (my/meqo-shake-targets)))
     (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target) 'meqo-compilation-mode)))
 
 (defun my/meqo-webpack-entry-points ()
   "Selects a entry points from webpack."
   (let* ((default-directory (my/meqo-server-directory))
-	 (programs
-	   (s-split "\n" (shell-command-to-string (format "direnv exec %s ./js/scripts/webpack --list" default-directory))))
-	 (what (completing-read "entry point: " programs)))
+         (programs
+           (s-split "\n" (shell-command-to-string (format "direnv exec %s ./js/scripts/webpack --list" default-directory))))
+         (what (completing-read "entry point: " programs)))
     (car (s-split " " what))))
 
 (define-compilation-mode meqo-webpack-compilation-mode "Meqo-Webpack"
@@ -1719,7 +1719,7 @@ If I let Windows handle DPI everything looks blurry."
   "Run wepack"
   (interactive)
   (let* ((default-directory (my/meqo-server-directory))
-	 (entry-point (my/meqo-webpack-entry-points)))
+         (entry-point (my/meqo-webpack-entry-points)))
     (compile (format "way=f cd %s && direnv exec %s ./js/scripts/webpack --watch %s" default-directory default-directory entry-point) 'meqo-webpack-compilation-mode)))
 
 (define-compilation-mode meqo-ts-test-compilation-mode "Meqo-Test"
@@ -1746,7 +1746,7 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/org-roam-commit-on-save ()
   "Auto commits in org-roam"
   (when (and (project-current)
-	     (string-match "/org-roam/" (project-root (project-current))))
+             (string-match "/org-roam/" (project-root (project-current))))
     (let ((name "org-roam-auto-commit"))
       (call-process "git" nil nil nil "add" ".")
       (call-process "git" nil nil nil "commit" (format "--message=%s" name)))))
@@ -1763,49 +1763,49 @@ If I let Windows handle DPI everything looks blurry."
       ,(async-inject-variables (rx "load-path"))
       (require 'org-caldav)
       (defun org-caldav-timestamp-has-time-p (timestamp)
-	"Checks whether a timestamp has a time.
-	Returns nil if not and (sec min hour) if it has."
-	(let ((ti (org-parse-time-string timestamp)))
-	  (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
+        "Checks whether a timestamp has a time.
+        Returns nil if not and (sec min hour) if it has."
+        (let ((ti (org-parse-time-string timestamp)))
+          (or (nth 0 ti) (nth 1 ti) (nth 2 ti))))
       (defun org-caldav-skip-function (backend)
-	(org-caldav-debug-print 2 "Skipping over excluded entries")
-	(when (eq backend 'icalendar)
-	  (org-map-entries
-	   (lambda ()
-	     (let ((pt (save-excursion (apply 'org-agenda-skip-entry-if org-caldav-skip-conditions)))
-		   (ts (when org-caldav-days-in-past (* (abs org-caldav-days-in-past) -1)))
-		   (stamp (or (org-entry-get nil "TIMESTAMP" t) (org-entry-get nil "CLOSED" t))))
-	       (when (or pt (and stamp ts (> ts (org-time-stamp-to-now stamp))))
-		 (delete-region (point) (progn (org-next-visible-heading 1) (point)))
-		 (setq org-map-continue-from (point)))))))
-	(org-caldav-debug-print 2 "Finished skipping"))
+        (org-caldav-debug-print 2 "Skipping over excluded entries")
+        (when (eq backend 'icalendar)
+          (org-map-entries
+           (lambda ()
+             (let ((pt (save-excursion (apply 'org-agenda-skip-entry-if org-caldav-skip-conditions)))
+                   (ts (when org-caldav-days-in-past (* (abs org-caldav-days-in-past) -1)))
+                   (stamp (or (org-entry-get nil "TIMESTAMP" t) (org-entry-get nil "CLOSED" t))))
+               (when (or pt (and stamp ts (> ts (org-time-stamp-to-now stamp))))
+                 (delete-region (point) (progn (org-next-visible-heading 1) (point)))
+                 (setq org-map-continue-from (point)))))))
+        (org-caldav-debug-print 2 "Finished skipping"))
       ,(async-inject-variables
-	(rx
-	 (or
-	  "org-export-with-broken-links"
-	  "org-caldav-url"
-	  "org-caldav-inbox"
-	  "org-caldav-calendar-id"
-	  "org-caldav-resume-aborted"
+        (rx
+         (or
+          "org-export-with-broken-links"
+          "org-caldav-url"
+          "org-caldav-inbox"
+          "org-caldav-calendar-id"
+          "org-caldav-resume-aborted"
           "org-caldav-delete-calendar-entries"
           "org-caldav-skip-conditions"
-	  "org-caldav-files")))
+          "org-caldav-files")))
       ;; Make sure url is reachable
       (if (not (= (call-process "curl" nil nil nil "--connect-timeout" "10" org-caldav-url) 0))
-	  "can't connect to url"
-	;; Make sure calendar.org does exist
-	(unless (file-exists-p org-caldav-inbox)
-	  (make-empty-file org-caldav-inbox))
-	;; Make sure we don't get stuck in a yes no prompt
-	(setq org-caldav-delete-org-entries 'always
-	      org-caldav-delete-calendar-entries 'always)
-	(org-caldav-sync)
-	(org-caldav-sync-result-filter-errors))))
+          "can't connect to url"
+        ;; Make sure calendar.org does exist
+        (unless (file-exists-p org-caldav-inbox)
+          (make-empty-file org-caldav-inbox))
+        ;; Make sure we don't get stuck in a yes no prompt
+        (setq org-caldav-delete-org-entries 'always
+              org-caldav-delete-calendar-entries 'always)
+        (org-caldav-sync)
+        (org-caldav-sync-result-filter-errors))))
  '(lambda (errors)
     (if errors
-	(let ((error-msg (format "Syncing calendar failed: %s" errors)))
-	  (my/org-insert-auto-schedule error-msg)
-	  (message error-msg))
+        (let ((error-msg (format "Syncing calendar failed: %s" errors)))
+          (my/org-insert-auto-schedule error-msg)
+          (message error-msg))
       (my/org-set-auto-schedule-done-rx "Syncing calendar failed: ")
       (message "calendar synced"))))
 
@@ -1832,9 +1832,9 @@ If I let Windows handle DPI everything looks blurry."
                     ;; fix that easily, but that's out of scope for this small example.
                     (let ((files (directory-files d nil (rx (or "pyrightconfig.json" "pyproject.toml" (sequence (one-or-more any) ".cabal"))))))
                              (if files
-			        (progn (setq marker (car files))
+                                (progn (setq marker (car files))
                                        t)
-			        nil))))))
+                                nil))))))
       (message root)
       (message marker)
       (when root
@@ -1855,27 +1855,27 @@ If I let Windows handle DPI everything looks blurry."
   "Save buffer without any hooks. Sometimes formating does the wrong thing"
   (interactive)
   (let ((before-save-hook nil)
-	(after-save-hook nil))
+        (after-save-hook nil))
   (save-buffer)))
 
 (defun my/get-run-for-github-url (txt)
   "Gets the run for the github url"
   (string-match (rx (
-		     seq "https://github.com/"
-		     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
-		     "/actions/runs/"
-		     (group (one-or-more num))))
-		txt)
+                     seq "https://github.com/"
+                     (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
+                     "/actions/runs/"
+                     (group (one-or-more num))))
+                txt)
   `((:project . ,(match-string 1 txt))
     (:id . ,(match-string 2 txt))))
 
 (defun my/open--github-action-logs-in-buffer (txt)
   "Opens the first github action link in buffer if it exists."
   (if-let* ((run (my/get-run-for-github-url txt))
-	   (project (alist-get :project run))
-	   (id (alist-get :id run)))
+           (project (alist-get :project run))
+           (id (alist-get :id run)))
       (shell-command (concat "gh run -R " project " view " id " --log-failed")
-		     (concat project " github action run: " id))))
+                     (concat project " github action run: " id))))
 
 (defun my/open-github-action-logs-in-buffer ()
   "Opens the first github action link in buffer if it exists."
@@ -1886,10 +1886,10 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/open--github-action-rerun (txt)
   "Rerun the first github action link in buffer if it exists."
   (if-let* ((run (my/get-run-for-github-url txt))
-	   (project (alist-get :project run))
-	   (id (alist-get :id run)))
+           (project (alist-get :project run))
+           (id (alist-get :id run)))
       (shell-command (concat "gh run -R " project " rerun " id " --failed")
-		     (concat project " github action run: " id))))
+                     (concat project " github action run: " id))))
 
 (defun my/open-github-action-rerun ()
   "Rerun the first github action link in buffer if it exists."
@@ -1901,15 +1901,15 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/github-pr-runs ()
   "get all runs for the current pull request"
   (if-let* ((txt (buffer-substring-no-properties 1 (buffer-end 1)))
-	    (_ (string-match (rx (
-				  seq "https://github.com/"
-				  (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
-				  "/pull/"
-				  (group (one-or-more num))))
-			     txt))
-	    (project (match-string 1 txt))
-	    (id (match-string 2 txt))
-	    (matches (s-split "\n" (shell-command-to-string (concat "gh pr -R " project " checks " id)))))
+            (_ (string-match (rx (
+                                  seq "https://github.com/"
+                                  (group (seq (one-or-more (not "/")) "/" (one-or-more (not "/"))))
+                                  "/pull/"
+                                  (group (one-or-more num))))
+                             txt))
+            (project (match-string 1 txt))
+            (id (match-string 2 txt))
+            (matches (s-split "\n" (shell-command-to-string (concat "gh pr -R " project " checks " id)))))
       (completing-read "run: " matches)))
 
 (defun my/select-github-action-run-and-open-in-buffer ()
@@ -1939,4 +1939,3 @@ If I let Windows handle DPI everything looks blurry."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package elpher)
-
