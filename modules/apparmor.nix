@@ -47,6 +47,10 @@ in {
                        ${lib.getExe' pkgs.openssh "sshfs"} Px,
                        ${lib.apparmor.generateFileRules {inherit config;}}
                     }
+                    /home/florian/meqo/**/server/scripts/changelog.py {
+                       ${lib.getExe pkgs.openssh} Px,
+                       ${lib.apparmor.generateFileRules {inherit config;}}
+                    }
                     /home/florian/meqo/**/server/prepare {
                        network,
                        ${lib.apparmor.generateFileRules {inherit config;}}
