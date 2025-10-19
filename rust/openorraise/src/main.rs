@@ -1,11 +1,11 @@
 use core::fmt;
+use serde_json::Value;
 use std::collections::HashMap;
-use std::io::{Write, BufReader};
-use std::process::{Command, Stdio};
 use std::fs::File;
+use std::io::{BufReader, Write};
+use std::process::{Command, Stdio};
 use swayipc::Connection;
 use swayipc::Node;
-use serde_json::Value;
 
 const BROWSE: &str = "firefox -new-window ";
 const WORK_BROWSE: &str = "firefox -P work -new-window ";
@@ -14,8 +14,14 @@ const PRIVATE_BROWSE: &str = "sudo -En firefox-airvpn ";
 pub const PROGRAMS: [(&str, &str); 15] = [
     ("firefox", "firefox"),
     ("grim (screenshot to file)", "grim -g \"$(slurp)\""),
-    ("grim (screenshot to clipboard)", "grim -g \"$(slurp)\" - | wl-copy"),
-    ("grim (screenshot to text)", "grim -g \"$(slurp)\" - | tesseract - stdout | wl-copy"),
+    (
+        "grim (screenshot to clipboard)",
+        "grim -g \"$(slurp)\" - | wl-copy",
+    ),
+    (
+        "grim (screenshot to text)",
+        "grim -g \"$(slurp)\" - | tesseract - stdout | wl-copy",
+    ),
     ("chromium", "chromium"),
     ("signal", "signal-desktop"),
     ("element", "element-desktop"),
@@ -29,23 +35,25 @@ pub const PROGRAMS: [(&str, &str); 15] = [
     ("blueman-manager", "blueman-manager"),
     ("remmina", "remmina"),
     ("slack", "slack"),
-    // Hotfix 
-    ("passmenu", "PASSWORD_STORE_DIR=\"${PASSWORD_STORE_DIR}\" wofi-pass")
+    // Hotfix
+    (
+        "passmenu",
+        "PASSWORD_STORE_DIR=\"${PASSWORD_STORE_DIR}\" wofi-pass",
+    ),
 ];
 
 fn parse_key_value_map<'a>(what: &'a str, v: Value) -> Result<Vec<(String, String)>, String> {
     match v {
-	Value::Object(map) =>
-	    map.into_iter().map(|pair| {
-	    match pair.1 {
-		Value::String(s) => Ok((pair.0, s)),
-		_ => Err("not a string".to_string()),
-	    }
-	} ).collect(),
-	_ => Err(format!("object {} is not a map", what)),
+        Value::Object(map) => map
+            .into_iter()
+            .map(|pair| match pair.1 {
+                Value::String(s) => Ok((pair.0, s)),
+                _ => Err("not a string".to_string()),
+            })
+            .collect(),
+        _ => Err(format!("object {} is not a map", what)),
     }
 }
-
 
 fn parse_bookmarks() -> Result<Vec<(String, String)>, String> {
     let file = File::open("/home/florian/.my-bookmarks.json").map_err(|err| err.to_string())?;
@@ -53,51 +61,50 @@ fn parse_bookmarks() -> Result<Vec<(String, String)>, String> {
     // Read the JSON contents of the file
     let v = serde_json::from_reader(reader).map_err(|err| err.to_string())?;
     match v {
-	Value::Object(map) => {
-	    let nested = map.into_iter().map(|kv| {
-		if kv.0 == "normal" {
-	            let key_values = parse_key_value_map("normal", kv.1)?;
-		    Ok(
-			key_values
-			    .into_iter()
-			    .map(|v| (v.0, format!("{} {}", BROWSE, v.1)))
-			    .collect::<Vec<_>>())
-		} else if kv.0 == "work" {
-		   // TODO add private firefox
-	            let key_values = parse_key_value_map("work", kv.1)?;
-		    Ok(
-			key_values
-			    .into_iter()
-			    .map(|v| (v.0, format!("{} {}", WORK_BROWSE, v.1)))
-			    .collect::<Vec<_>>())
-		} else if kv.0 == "private" {
-		   // TODO add private firefox
-	            let key_values = parse_key_value_map("private", kv.1)?;
-		    Ok(
-			key_values
-			    .into_iter()
-			    .map(|v| (v.0, format!("{} {}", PRIVATE_BROWSE, v.1)))
-			    .collect::<Vec<_>>())
-		} else {
-		   Err(format!("Unknown key: {}", kv.0))
-		}
-	    }).collect::<Result<Vec<_>, _>>()?;
+        Value::Object(map) => {
+            let nested = map
+                .into_iter()
+                .map(|kv| {
+                    if kv.0 == "normal" {
+                        let key_values = parse_key_value_map("normal", kv.1)?;
+                        Ok(key_values
+                            .into_iter()
+                            .map(|v| (v.0, format!("{} {}", BROWSE, v.1)))
+                            .collect::<Vec<_>>())
+                    } else if kv.0 == "work" {
+                        // TODO add private firefox
+                        let key_values = parse_key_value_map("work", kv.1)?;
+                        Ok(key_values
+                            .into_iter()
+                            .map(|v| (v.0, format!("{} {}", WORK_BROWSE, v.1)))
+                            .collect::<Vec<_>>())
+                    } else if kv.0 == "private" {
+                        // TODO add private firefox
+                        let key_values = parse_key_value_map("private", kv.1)?;
+                        Ok(key_values
+                            .into_iter()
+                            .map(|v| (v.0, format!("{} {}", PRIVATE_BROWSE, v.1)))
+                            .collect::<Vec<_>>())
+                    } else {
+                        Err(format!("Unknown key: {}", kv.0))
+                    }
+                })
+                .collect::<Result<Vec<_>, _>>()?;
             Ok(nested.into_iter().flatten().collect())
-	},
-	_ => return Err("my-bookmarks.json doesn't contain a map".to_string()),
-
+        }
+        _ => return Err("my-bookmarks.json doesn't contain a map".to_string()),
     }
 }
 
 /// move input into wofi and gives back result
 fn exec_wofi<A: ToString>(s: A) -> Result<std::process::Output, std::io::Error> {
     let mut child = Command::new("wofi")
-	.arg("--dmenu")
-	.arg("--insensitive")
-	.stdin(Stdio::piped())
-	.stdout(Stdio::piped())
-	.spawn()
-	.unwrap();
+        .arg("--dmenu")
+        .arg("--insensitive")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
     let child_stdin = child.stdin.as_mut().unwrap();
     child_stdin.write_all(s.to_string().as_bytes()).unwrap();
     child_stdin.flush().unwrap();
@@ -105,13 +112,13 @@ fn exec_wofi<A: ToString>(s: A) -> Result<std::process::Output, std::io::Error> 
 }
 
 /// prints error, if it exists on wofi and exits
-fn error_on_wofi<A,B: ToString>(v: Result<A,B>) -> A {
+fn error_on_wofi<A, B: ToString>(v: Result<A, B>) -> A {
     match v {
-	Err(s) => {
-	    exec_wofi(s).unwrap();
-	    std::process::exit(1)
-	},
-	Ok(res) => res,
+        Err(s) => {
+            exec_wofi(s).unwrap();
+            std::process::exit(1)
+        }
+        Ok(res) => res,
     }
 }
 
@@ -128,11 +135,11 @@ fn main() {
     let windows_and_cmds: Vec<(String, OpenOrRaise)> = windows
         .into_iter()
         .map(|nid| (nid.0, OpenOrRaise::WindowId(nid.1)))
-	.chain(
-	    programs
-		.into_iter()
+        .chain(
+            programs
+                .into_iter()
                 .map(|prgs| (prgs.0.to_string(), OpenOrRaise::Cmd(prgs.1.to_string()))),
-	)
+        )
         .chain(
             bookmarks
                 .into_iter()
@@ -142,7 +149,10 @@ fn main() {
     let input: Vec<String> = windows_and_cmds.clone().into_iter().map(|x| x.0).collect();
     let output = exec_wofi(input.join("\n")).unwrap();
     let output_string = std::str::from_utf8(&output.stdout).unwrap();
-    match &windows_and_cmds.into_iter().find(|kvs| kvs.0 == &output_string[..output_string.len() - 1]) {
+    match &windows_and_cmds
+        .into_iter()
+        .find(|kvs| kvs.0 == &output_string[..output_string.len() - 1])
+    {
         None => {
             if output_string.len() > 0 {
                 let search_string = str::replace(output_string, " ", "+");
@@ -187,7 +197,7 @@ fn get_windows(node: Node) -> Vec<Window> {
             Some(name) => {
                 return vec![Window {
                     name,
-		    app_id: node.app_id,
+                    app_id: node.app_id,
                     id: WindowId(node.id),
                 }]
             }
@@ -240,10 +250,10 @@ struct Window {
 
 impl fmt::Display for Window {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-	match &self.app_id {
-	    None => write!(f, "{} {}", self.name, self.id),
-	    Some(app_id) => write!(f, "{} - {} {}", app_id, self.name, self.id),
-	}
+        match &self.app_id {
+            None => write!(f, "{} {}", self.name, self.id),
+            Some(app_id) => write!(f, "{} - {} {}", app_id, self.name, self.id),
+        }
     }
 }
 
