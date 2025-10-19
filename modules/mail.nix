@@ -127,17 +127,19 @@ in
     security.apparmor.policies.mails.profile = ''
        ${lib.getExe config.home-manager.users.florian.programs.mbsync.package} {
          ${lib.apparmor.generateFileRules
-           [ "notmuch"
+           { allows = [
+              "notmuch"
               config.age.secrets.posteo.path
               config.age.secrets.librem.path
               config.age.secrets.gmail.path
               config.age.secrets.workMail.path
-           ]
-           config}
+           ];
+             inherit config;
+           }}
          network,
        }
        ${lib.getExe pkgs.notmuch} {
-         ${lib.apparmor.generateFileRules [ "notmuch" "gnupg"] config}
+         ${lib.apparmor.generateFileRules { allows = [ "notmuch" "gnupg"] ; inherit config; }}
        }
     '';
   };

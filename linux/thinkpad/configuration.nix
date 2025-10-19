@@ -179,7 +179,7 @@ in {
                 } ../../haskell/scans/Scan.hs)
                 csvkit
               ];
-              rules = lib.apparmor.generateFileRules [ "docs" ] config;
+              rules = lib.apparmor.generateFileRules { allows = [ "docs" ]; inherit config; };
             }
             {
               pkgs = with pkgs; [
@@ -270,9 +270,9 @@ in {
                 ''
                  ${lib.getExe pkgs.gnupg} Cx -> gnupg,
                  profile gnupg {
-                   ${lib.apparmor.generateFileRules [ "gnupg" "pass"] config}
+                   ${lib.apparmor.generateFileRules { allows = [ "gnupg" "pass"]; inherit config; }}
                  }
-                 ${lib.apparmor.generateFileRules [ "pass"] config }
+                 ${lib.apparmor.generateFileRules { allows = [ "pass"]; inherit config; } }
                 '';
             }
             {
@@ -280,7 +280,7 @@ in {
               rules = ''
                 ${lib.getExe pkgs.pass-wayland} Px,
                 ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules [] config}
+                ${lib.apparmor.generateFileRules { inherit config; }}
               '';
             }
             {
@@ -290,7 +290,7 @@ in {
                 capability sys_admin,
                 capability sys_chroot,
                 capability sys_ptrace,
-                ${lib.apparmor.generateFileRules [ "firefox" ] config}
+                ${lib.apparmor.generateFileRules { allows = [ "firefox" ]; inherit config; }}
               '';
             }
             {
@@ -299,7 +299,7 @@ in {
                 mount,
                 capability,
                 # age reads ssh directly
-                ${lib.apparmor.generateFileRules ["ssh"] config}
+                ${lib.apparmor.generateFileRules { allows = ["ssh"]; inherit config; }}
               '';
             }
             {
@@ -312,7 +312,7 @@ in {
                 # Allow unconfined processes to send us signals by default
                 signal (receive) peer=unconfined,
                 ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules [] config}
+                ${lib.apparmor.generateFileRules { inherit config; }}
               '';
             }
             {
@@ -321,10 +321,10 @@ in {
               ];
               rules = ''
                 ${lib.getExe pkgs.openssh} Cx -> sshRecive,
-                ${lib.apparmor.generateFileRules [] config}
+                ${lib.apparmor.generateFileRules { inherit config; }}
                 signal (send) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**//sshRecive,
                 profile sshRecive {
-                  ${lib.apparmor.generateFileRules [ "ssh" ] config}
+                  ${lib.apparmor.generateFileRules { allows = [ "ssh" ]; inherit config; }}
                   signal (receive) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**,
                   network,
                   capability,
@@ -344,7 +344,7 @@ in {
                 csvs-to-sqlite
               ];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "docs" ] config}
+                ${lib.apparmor.generateFileRules { allows = [ "docs" ]; inherit config; }}
               '';
             }
             {
@@ -354,7 +354,7 @@ in {
                 fd
               ];
               rules = ''
-                ${lib.apparmor.generateFileRules [ "docs" "notmuch" ] config}
+                ${lib.apparmor.generateFileRules { allows = [ "docs" "notmuch" ]; inherit config; }}
               '';
             }
           ];

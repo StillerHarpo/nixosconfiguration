@@ -26,7 +26,7 @@ in
               ];
 
               rules = ''
-                ${lib.apparmor.generateFileRules [ "pass" "gnupg" ] config}
+                ${lib.apparmor.generateFileRules { allows = [ "pass" "gnupg" ]; inherit config; }}
               '';
             }
           ];

@@ -38,25 +38,25 @@ in {
                 policies = {
                   scripts.profile = ''
                     /home/** {
-                       ${lib.apparmor.generateFileRules [] config}
+                       ${lib.apparmor.generateFileRules {inherit config; }}
                     }
                     /home/florian/meqo/checkpad-ssh/* {
                        ${lib.getExe pkgs.openssh} Px,
                        ${lib.getExe' pkgs.openssh "scp"} Px,
                        ${lib.getExe' pkgs.openssh "ssh-copy-id"} Px,
                        ${lib.getExe' pkgs.openssh "sshfs"} Px,
-                       ${lib.apparmor.generateFileRules [] config}
+                       ${lib.apparmor.generateFileRules {inherit config;}}
                     }
                     /home/florian/meqo/**/server/prepare {
                        network,
-                       ${lib.apparmor.generateFileRules [] config}
+                       ${lib.apparmor.generateFileRules {inherit config;}}
                     }
                     /home/florian/meqo/**/server/scripts/make-release {
                        ${lib.getExe pkgs.git} Px -> gitnodocs,
-                       ${lib.apparmor.generateFileRules [] config}
+                       ${lib.apparmor.generateFileRules {inherit config;}}
                     }
                     /home/florian/Dokumente/scans/generateTxts.sh {
-                       ${lib.apparmor.generateFileRules [ "docs" ] config}
+                       ${lib.apparmor.generateFileRules {allows = [ "docs" ]; inherit config;}}
                     }
                   '';
                   specialRules.profile = ''
@@ -64,38 +64,38 @@ in {
                          ${lib.getExe pkgs.gnupg} Px -> gnupgnonet,
                          ${lib.getExe pkgs.openssh} Px,
                          network,
-                         ${lib.apparmor.generateFileRules [ "docs"] config}
+                         ${lib.apparmor.generateFileRules { allows = [ "docs"]; inherit config; }}
                        } 
                        profile gitnodocs {
                          ${lib.getExe pkgs.gnupg} Px -> gnupgnonet,
                          ${lib.getExe pkgs.openssh} Px,
                          network,
-                         ${lib.apparmor.generateFileRules [ ] config}
+                         ${lib.apparmor.generateFileRules { inherit config; }}
                        } 
                        ${lib.getExe pkgs.gnupg} {
-                          ${lib.apparmor.generateFileRules [ "gnupg" ] config}
+                          ${lib.apparmor.generateFileRules { allows = [ "gnupg" ]; inherit config; }}
                           network,
                        }
                        profile gnupgnonet {
-                          ${lib.apparmor.generateFileRules [ "gnupg" ] config}
+                          ${lib.apparmor.generateFileRules { allows = [ "gnupg" ]; inherit config; }}
                        }
                        ${lib.getExe pkgs.openssh} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
+                         ${lib.apparmor.generateFileRules { allows = [ "ssh" ]; inherit config; }}
                          network,
                          capability,
                        }
                        ${lib.getExe' pkgs.openssh "scp"} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
+                         ${lib.apparmor.generateFileRules { allows = [ "ssh" ]; inherit config; }}
                          network,
                          capability,
                        }
                        ${lib.getExe' pkgs.openssh "ssh-copy-id"} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
+                         ${lib.apparmor.generateFileRules { allows = [ "ssh" ]; inherit config; }}
                          network,
                          capability,
                        }
                        ${lib.getExe' pkgs.openssh "sshfs"} {
-                         ${lib.apparmor.generateFileRules [ "ssh" ] config}
+                         ${lib.apparmor.generateFileRules { allows = [ "ssh" ]; inherit config; }}
                          network,
                          capability,
                        }

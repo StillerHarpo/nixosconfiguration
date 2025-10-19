@@ -73,7 +73,7 @@ in {
                 pkgs = [ firefoxAirvpn ];
                 rules = ''
                   network,
-                  ${lib.apparmor.generateFileRules [ "firefox" ] config}
+                  ${lib.apparmor.generateFileRules { allows = [ "firefox" ]; inherit config; }}
                 '';
               }
             ];

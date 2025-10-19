@@ -31,7 +31,7 @@ in
             { pkgs = [pkgs.wofi-pass];
               rules = ''
                 ${lib.getExe pkgs.pass-wayland} Px,
-                ${lib.apparmor.generateFileRules [ "pass" ] config}
+                ${lib.apparmor.generateFileRules { allows = [ "pass" ]; inherit config; }}
               '';
             }
           ];
@@ -167,7 +167,7 @@ in
                   titlebar = false;
                   border = 0;
                 };
-                terminal = "${pkgs.alacritty}/bin/alacritty";
+                terminal = "${osConfig.myUnprivilegedTerminal}";
                 bars = [
                   {
                     mode = "hide";

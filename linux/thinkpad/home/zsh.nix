@@ -17,11 +17,18 @@
       export BROWSER='${lib.getExe linkopen}'
       export CPM_ENABLE_TMUX=y
       eval "$(direnv hook zsh)"
+      privileged() {
+        if cat /proc/$PPID/cmdline | grep -qc Privileged; then
+          PRIVILEGED="%K{red}%F{black}Privileged %F{red}%K{$1}$(echo '\ue0b0')%k%f%{%f%b%k%}"
+        fi
+      }
       precmd_in_nix_shell() {
         if echo "$PATH" | grep -qc '/nix/store'; then
-          PROMPT='%K{green}%F{black} nix-shell %F{green}%K{black}$(echo "\ue0b0")%k%f%{%f%b%k%}$(build_prompt) '
+          privileged "green"
+          PROMPT='$PRIVILEGED%K{green}%F{black} nix-shell %F{green}%K{black}$(echo "\ue0b0")%k%f%{%f%b%k%}$(build_prompt) '
         else
-          PROMPT='%{%f%b%k%}$(build_prompt) '
+          privileged "black"
+          PROMPT='$PRIVILEGED%{%f%b%k%}$(build_prompt) '
         fi
       }
       add-zsh-hook precmd precmd_in_nix_shell

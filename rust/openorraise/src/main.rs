@@ -20,7 +20,10 @@ pub const PROGRAMS: [(&str, &str); 15] = [
     ("signal", "signal-desktop"),
     ("element", "element-desktop"),
     ("steam", "steam"),
-    ("alacritty", "alacritty"),
+    (
+        "alacritty (Privileged)",
+        "alacritty -T \"Alacritty (Privileged)\"",
+    ),
     ("pavucontrol", "pavucontrol"),
     ("wdisplays", "wdisplays"),
     ("blueman-manager", "blueman-manager"),
