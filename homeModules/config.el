@@ -1016,20 +1016,19 @@ a priority cookie and tags in the standard locations."
   :hook ((typescript-ts-mode . tide-setup)
          (tsx-ts-mode . tide-setup)
          (typescript-ts-mode . tide-hl-identifier-mode))
-  :config
-  (evil-add-command-properties #'tide-goto-line-reference :jump t)
-  (evil-add-command-properties #'tide-jump-to-definition :jump t)
   :general
   (:states '(normal visual motion)
-   :keymaps '(tsx-ts-mode typescript-ts-mode)
+   :keymaps '(tsx-ts-mode-map typescript-ts-mode-map)
   "g r" 'tide-references)
-  :general
   (:states '(normal visual motion)
-   :keymaps '(tsx-ts-mode typescript-ts-mode)
+   :keymaps '(tsx-ts-mode-map typescript-ts-mode-map)
   :prefix "SPC"
   "m r" 'tide-rename-symbol
   "m f" 'tide-rename-file
-  "m a" 'tide-fix))
+  "m a" 'tide-fix)
+  :config
+  (evil-add-command-properties #'tide-goto-line-reference :jump t)
+  (evil-add-command-properties #'tide-jump-to-definition :jump t))
 
 (use-package csv-mode
   :ensure t
