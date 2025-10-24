@@ -34,6 +34,12 @@ in
                 ${lib.apparmor.generateFileRules { allows = [ "pass" ]; inherit config; }}
               '';
             }
+            { pkgs = [config.home-manager.users.florian.programs.swaylock.package];
+              rules = ''
+                capability audit_write,
+                ${lib.apparmor.generateFileRules { inherit config; }}
+              '';
+            }
           ];
 
         hardware.graphics.enable = true;
