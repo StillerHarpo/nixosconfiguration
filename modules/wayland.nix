@@ -204,7 +204,10 @@ in
         security.pam.services.swaylock = {};
       }
       (mkIf config.wayland.autoLogin {
-        services.getty.autologinUser = "florian";
+        services.getty = {
+          autologinUser = "florian";
+          autologinOnce = true;
+        };
         environment.loginShellInit = ''
           [[ "$(tty)" == /dev/tty1 ]] && sway
         '';
