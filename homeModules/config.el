@@ -1115,9 +1115,6 @@ a priority cookie and tags in the standard locations."
      (let* ((from (message-sendmail-envelope-from))
            (mail-signature (if (-any (lambda (address) (string=  from address)) `(,nix-workmail "engel@medilyse.org")) nix-workmail-signature "")))
        (mail-signature))))
-   (defun my/test ()
-     (interactive)
-     (message (message-sendmail-envelope-from)))
   :general
   (:states '(normal visual)
    :prefix "SPC"
