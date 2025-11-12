@@ -1638,9 +1638,11 @@ If I let Windows handle DPI everything looks blurry."
 (defun my/meqo-format-on-save ()
   "Formats the current buffer with the meqo script if the project is meqo."
   (when (and (project-current)
-             (my/meqo-server-respository?)
-             (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
-                           (buffer-file-name (current-buffer))))
+	     (my/meqo-server-respository?)
+	     (string-match (rx (or (seq ".ts" eol) (seq ".tsx" eol) (seq ".hs" eol)))
+			   (buffer-file-name (current-buffer)))
+	     (not (string-match (rx (seq line-start "/demo/" (one-or-more anychar)))
+				(buffer-file-name (current-buffer)))))
     (my/meqo-format)))
 
 (add-hook 'after-save-hook 'my/meqo-format-on-save)
