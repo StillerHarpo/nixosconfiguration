@@ -1937,3 +1937,5 @@ If I let Windows handle DPI everything looks blurry."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package elpher)
+
+(setq yaml-indent-offset 2)
