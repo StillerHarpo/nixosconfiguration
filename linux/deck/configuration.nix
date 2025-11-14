@@ -89,7 +89,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       airshipper
       superTuxKart
       prismlauncher
-      minetest
+      luanti
       firefox
       vim
       git-crypt
