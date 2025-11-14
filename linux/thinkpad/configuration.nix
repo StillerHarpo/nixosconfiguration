@@ -210,7 +210,6 @@ in {
                 wget
                 vim
                 shellcheck
-                chromium
                 tuir
                 (mpv.override { scripts = [ mpvScripts.mpris ]; })
                 rlwrap
@@ -244,6 +243,7 @@ in {
             # electron apps
             {
               pkgs = with pkgs; [
+                chromium
                 signal-desktop
                 slack
                 element-desktop

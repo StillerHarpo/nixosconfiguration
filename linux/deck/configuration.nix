@@ -89,7 +89,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       airshipper
       superTuxKart
       prismlauncher
-      minetest
+      luanti
       firefox
       vim
       git-crypt
@@ -189,146 +189,94 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   system.stateVersion = "24.11";
 
-  specialisation =
-    { kodi.configuration =
-    let myKodi =
-          (pkgs.kodi.withPackages (kodiPkgs:
-            with kodiPkgs; [
-              mediathekview
-              invidious
-              jellyfin
-              (buildKodiAddon rec {
-                pname = "BluetoothManager";
-                namespace = pname;
-                version = "1.0.4";
-                src = pkgs.fetchFromGitHub {
-                  owner = "wastis";
-                  repo = pname;
-                  tag = "v${version}";
-                  hash = "sha256-KKaR7rIkflMYU6EDBEcorHQ3t7jsB4Qe6Ikg+eBblkA=";
-                };
-              })
-            ]
-          ));
-    in {
-      jovian.steam.enable = lib.mkForce false;
-      users.users = {
-        kodi = {
-          isNormalUser = true;
-          extraGroups =
-            [ "input"  "networkmanager" "dialout" "video" ];
-        };
-      };
-      services.getty.autologinUser = "kodi";
-      environment.loginShellInit = ''
-        [[ "$(tty)" == /dev/tty1 ]] && sway
-      '';
-      home-manager.users.kodi = {
-        home.stateVersion = "24.11";
-        wayland.windowManager.sway = {
-          enable = true;
-          config = {
-            input."type:touch" = {
-              calibration_matrix = ''0 1 0 "-1" 0 1'';
-            };
-            startup = [
-              { command = "${lib.getExe pkgs.pamixer} --set-volume 100"; }
-              { command = "${lib.getExe' myKodi "kodi"}"; }
-            ];
-          };
-        };
-      };
-      services.xserver.enable = lib.mkForce false;
+  specialisation.buffy.configuration = {
+    jovian.steam.enable = lib.mkForce false;
+    # Don't know why this was enabled
+    # Autologin was not working with out this
+    # Don't know why
+    systemd.services.display-manager.enable = lib.mkForce false;
+    i18n.defaultLocale = "en_US.UTF-8";
+    console = {
+      earlySetup = true;
+      font = "${pkgs.terminus_font}/share/consolefonts/ter-132n.psf.gz";
+      packages = with pkgs; [ terminus_font ];
+      keyMap = "us";
     };
-      buffy.configuration = {
-        jovian.steam.enable = lib.mkForce false;
-        # Don't know why this was enabled
-        # Autologin was not working with out this
-        # Don't know why
-        systemd.services.display-manager.enable = lib.mkForce false;
-        i18n.defaultLocale = "en_US.UTF-8";
-        console = {
-          earlySetup = true;
-          font = "${pkgs.terminus_font}/share/consolefonts/ter-132n.psf.gz";
-          packages = with pkgs; [ terminus_font ];
-          keyMap = "us";
-        };
-        services = {
-          getty.autologinUser = "florian";
-          buffyboard = {
-            enable = true;
-            extraFlags = ["--rotate=1"];
-          };
-          xserver.enable = lib.mkForce false;
-        };
-        environment =
-          let mediamenu = pkgs.rustPlatform.buildRustPackage {
-                name = "mediamenu";
-                src =  ../../rust/mediamenu;
-                buildInputs = [pkgs.openssl.dev pkgs.systemd.dev];
-                nativeBuildInputs = [pkgs.pkg-config];
-                cargoLock = {
-                  lockFile = ../../rust/mediamenu/Cargo.lock;
-                  outputHashes = {
-                    "mediathekviewtui-0.1.0" = "sha256-6aox5XNoK9ITsVliApMomZBz/8f9dUPjukmSfZZ1v8M=";
-                    "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
-                  };
-                };
-                buildFeatures = if inHydra then [] else ["real"];
+    services = {
+      getty.autologinUser = "florian";
+      buffyboard = {
+        enable = true;
+        extraFlags = ["--rotate=1"];
+      };
+      xserver.enable = lib.mkForce false;
+    };
+    environment =
+      let mediamenu = pkgs.rustPlatform.buildRustPackage {
+            name = "mediamenu";
+            src =  ../../rust/mediamenu;
+            buildInputs = [pkgs.openssl.dev pkgs.systemd.dev];
+            nativeBuildInputs = [pkgs.pkg-config];
+            cargoLock = {
+              lockFile = ../../rust/mediamenu/Cargo.lock;
+              outputHashes = {
+                "mediathekviewtui-0.1.0" = "sha256-6aox5XNoK9ITsVliApMomZBz/8f9dUPjukmSfZZ1v8M=";
+                "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
               };
-          in {
-            loginShellInit = ''
+            };
+            buildFeatures = if inHydra then [] else ["real"];
+          };
+      in {
+        loginShellInit = ''
              [[ "$(tty)" == /dev/tty1 ]] && ${mediamenu}/bin/mediamenu
           '';
-          systemPackages = with pkgs; [
-            inputs.jellytui.defaultPackage.x86_64-linux
-            mediamenu
-            pamixer
-          ];
-        };
-        age.secrets.jelltuiConfig = {
-          file = ./secrets/jellyfin_config.toml.age;
-          path = "/home/florian/.config/jellytui/config.toml";
-          owner = "florian";
-          group = "users";
-          mode = "400";
-        };
-        age.secrets.jelltuiConfigT = {
-          file = ./secrets/jellyfin_config_t.toml.age;
-          path = "/home/florian/.config/jellytui-t/config.toml";
-          owner = "florian";
-          group = "users";
-          mode = "400";
-        };
-        home-manager.users.florian.programs.mpv = {
-          enable = true;
-          config = {
-            input-gamepad = true;
-            vf-add = "sub";
-            video-rotate = 90;
-          };
-          profiles = {
-            "screen.external" = {
-              profile-cond = ''os.execute('mpv --drm-connector=help | grep " DP-1 (connected)"')'';
-              video-rotate = 0;
-              drm-connector = "DP-1";
-            };
-          };
-          bindings = {
-            "GAMEPAD_DPAD_UP" = "add volume 2";
-            "GAMEPAD_DPAD_DOWN" = "add volume -2";
-            "GAMEPAD_DPAD_RIGHT" = "seek +30";
-            "GAMEPAD_DPAD_LEFT" = "seek -30";
-            "GAMEPAD_ACTION_UP" = "cycle audio";
-            "GAMEPAD_ACTION_DOWN" = "cycle pause";
-            "GAMEPAD_ACTION_RIGHT" = "quit";
-            "GAMEPAD_ACTION_LEFT" = "run ${lib.getExe pkgs.pamixer} --set-volume 100";
-            "GAMEPAD_LEFT_TRIGGER" = "cycle sid";
-          };
-          profiles.external-monitor = {
-            video-rotate = 0;
-          };
+        systemPackages = with pkgs; [
+          inputs.jellytui.defaultPackage.x86_64-linux
+          mediamenu
+          pamixer
+        ];
+      };
+    age.secrets.jelltuiConfig = {
+      file = ./secrets/jellyfin_config.toml.age;
+      path = "/home/florian/.config/jellytui/config.toml";
+      owner = "florian";
+      group = "users";
+      mode = "400";
+    };
+    age.secrets.jelltuiConfigT = {
+      file = ./secrets/jellyfin_config_t.toml.age;
+      path = "/home/florian/.config/jellytui-t/config.toml";
+      owner = "florian";
+      group = "users";
+      mode = "400";
+    };
+    home-manager.users.florian.programs.mpv = {
+      enable = true;
+      config = {
+        input-gamepad = true;
+        vf-add = "sub";
+        video-rotate = 90;
+      };
+      profiles = {
+        "screen.external" = {
+          profile-cond = ''os.execute('mpv --drm-connector=help | grep " DP-1 (connected)"')'';
+          video-rotate = 0;
+          drm-connector = "DP-1";
         };
       };
+      bindings = {
+        "GAMEPAD_DPAD_UP" = "add volume 2";
+        "GAMEPAD_DPAD_DOWN" = "add volume -2";
+        "GAMEPAD_DPAD_RIGHT" = "seek +30";
+        "GAMEPAD_DPAD_LEFT" = "seek -30";
+        "GAMEPAD_ACTION_UP" = "cycle audio";
+        "GAMEPAD_ACTION_DOWN" = "cycle pause";
+        "GAMEPAD_ACTION_RIGHT" = "quit";
+        "GAMEPAD_ACTION_LEFT" = "run ${lib.getExe pkgs.pamixer} --set-volume 100";
+        "GAMEPAD_LEFT_TRIGGER" = "cycle sid";
+      };
+      profiles.external-monitor = {
+        video-rotate = 0;
+      };
     };
+  };
 }
