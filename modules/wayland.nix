@@ -13,7 +13,10 @@ in
     enable = mkEnableOption (lib.mdDoc "Wether to use wayland");
     autoLogin = mkEnableOption (lib.mdDoc "Wether to autologin into wayland");
   };
-  config = mkIf cfg.enable (
+  config =
+    let swaylock = config.home-manager.users.florian.programs.swaylock.package;
+        swaymsg = lib.getExe' config.home-manager.users.florian.wayland.windowManager.sway.package "swaymsg";
+      in mkIf cfg.enable (
     mkMerge [
       {
         apparmor.systemPackages =
@@ -34,7 +37,7 @@ in
                 ${lib.apparmor.generateFileRules { allows = [ "pass" ]; inherit config; }}
               '';
             }
-            { pkgs = [config.home-manager.users.florian.programs.swaylock.package];
+            { pkgs = [swaylock];
               rules = ''
                 capability audit_write,
                 ${lib.apparmor.generateFileRules { inherit config; }}
@@ -59,11 +62,11 @@ in
             swayidle = {
               enable = true;
               timeouts = [
-                { timeout = 900; command = "swaylock"; }
+                { timeout = 900; command = lib.getExe swaylock; }
               ];
               events = [
-                { event = "before-sleep"; command = "swaylock"; }
-                { event = "lock"; command = "swaylock"; }
+                { event = "before-sleep"; command = lib.getExe swaylock; }
+                { event = "lock"; command = lib.getExe swaylock; }
               ];
             };
             kanshi = {
