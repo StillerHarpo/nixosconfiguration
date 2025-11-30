@@ -62,8 +62,14 @@ in
             swayidle = {
               enable = true;
               timeouts = [
-                { timeout = 900; command = lib.getExe swaylock; }
-                { timeout = 5; command = ''if ${lib.getExe' pkgs.procps "pgrep"} swaylock; then ${swaymsg} "output * dpms off"; fi''; resumeCommand = ''${swaymsg} "output * dpms on"''; }
+                { timeout = 900;
+                  command = ''${lib.getExe swaylock}; ${swaymsg} "output * power off"'';
+                  resumeCommand = ''${swaymsg} "output * power on; ${swaymsg} "output * enable"'';
+                }
+                { timeout = 5;
+                  command = ''if ${lib.getExe' pkgs.procps "pgrep"} swaylock; then ${swaymsg} "output * power off"; fi'';
+                  resumeCommand = ''${swaymsg} "output * power on"; ${swaymsg} "output * enable"'';
+                }
               ];
               events = [
                 { event = "before-sleep"; command = lib.getExe swaylock; }
