@@ -459,9 +459,6 @@ in {
         }];
       };
 
-      # big font for high resolution
-      console.font = "sun12x22";
-
       services = {
         printing.enable = true;
         avahi = {
