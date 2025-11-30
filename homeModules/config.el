@@ -74,6 +74,7 @@
  (setq evil-undo-system 'undo-redo)
  :config
  (evil-mode t)
+ (evil-set-initial-state 'lsp-bridge-ref-mode 'emacs)
  (define-key evil-motion-state-map " " nil)
  (defhydra hydra-zoom (evil-normal-state-map "SPC z")
    "zoom"
@@ -907,10 +908,13 @@ a priority cookie and tags in the standard locations."
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode)
+  :hook
+  (nix-mode . flycheck-mode)
+  (emacs-lisp-mode . flycheck-mode)
+  (rust-mode . flycheck-mode)
   :general
   (:states '(normal visual motion emacs)
- :keymaps '(my-keys-minor-mode-map)
+ :keymaps '(my-keys-minor-mode-map flycheck-mode)
   :prefix "SPC"
    "c x" 'flycheck-list-errors))
 
@@ -922,7 +926,34 @@ a priority cookie and tags in the standard locations."
 (use-package eglot-booster
         :after eglot
         :config (eglot-booster-mode))
-;; Maybe https://github.com/manateelazycat/lsp-bridge
+
+(use-package lsp-bridge
+  :init
+  (defun enable-lsp-bridge()
+    (interactive)
+    (when-let* ((_ (my/meqo-server-respository?)))
+      (setq-local lsp-bridge-user-langserver-dir (my/meqo-server-directory)
+		  lsp-bridge-user-multiserver-dir (my/meqo-server-directory))
+      (lsp-bridge-mode)))
+  :hook
+  (haskell-mode . enable-lsp-bridge)
+  :general
+  (:states
+   '(normal visual motion)
+   :keymaps '(lsp-bridge-mode-map)
+   "g d" 'lsp-bridge-find-def
+   "g r" 'lsp-bridge-find-references)
+  (:states
+   '(normal visual motion)
+   :keymaps '(lsp-bridge-mode-map)
+   :prefix "SPC"
+   "c x" 'lsp-bridge-diagnostic-list
+   "c a" 'lsp-bridge-code-action
+   "c t" 'lsp-bridge-find-type-def
+   "c d" 'lsp-bridge-show-documentation
+   "c i" 'lsp-bridge-imenu
+   "c r" 'lsp-bridge-ref-replace-all-matches
+   ))
 
 (use-package lsp-mode
   :hook (;; if you want which-key integration
@@ -1539,7 +1570,6 @@ if one already exists."
  "c" '(:ignore t :which-key "code")
  "c c" 'compile
  "c i" 'eldoc-print-current-symbol-info
- "c r" 'eglot-rename
  "o" '(:ignore t :which-key "open")
  "o e" 'elfeed
  "o c" 'ement-connect
@@ -1812,11 +1842,15 @@ If I let Windows handle DPI everything looks blurry."
   (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
   :hook
   (nix-mode . eglot-ensure)
-  (haskell-mode . eglot-ensure))
-
+  :general
+  (:states
+   '(normal visual motion)
+   :keymaps '(eglot-mode-map)
+   :prefix "SPC"
+   "c r" 'eglot-rename))
 
 (defun joaot/eglot-project-find-function (dir)
-  (when eglot-lsp-context
+  (when (and (boundp  'eglot-lsp-context) eglot-lsp-context)
     (let* ((marker nil)
            ;; We use "dominating files" here, but we could use some
            ;; other criteria, like an Elisp data structure, or hack in
