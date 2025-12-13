@@ -232,10 +232,10 @@ in {
                 ## better rust tools ###
                 procs
                 delta
-                du-dust
+                dust
                 grex
                 ## better rust tools ###
-                tor-browser-bundle-bin
+                tor-browser
                 emacs-lsp-booster
               ];
               rules = lib.apparmor.defaultRules config;
@@ -334,7 +334,7 @@ in {
             {
               pkgs = with pkgs; [
                 imagemagick
-                poppler_utils
+                poppler-utils
                 eza
                 tesseract5
                 zathura
@@ -402,12 +402,10 @@ in {
         tlp.enable = true;
 
         # Go in hibernate at lid
-        logind = {
-          lidSwitch = "hibernate";
-          extraConfig = ''
-        HandlePowerKey=hibernate
-        RuntimeDirectorySize=30%
-      '';
+        logind.settings.Login = {
+          HandleLidSwitch  = "hibernate";
+          HandlePowerKey="hibernate";
+          RuntimeDirectorySize="30%";
         };
 
         blueman.enable = true;

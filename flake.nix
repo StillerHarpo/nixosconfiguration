@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -18,7 +18,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake-deck = {
@@ -373,6 +373,9 @@
                   cabal-install haskell-language-server hlint
                 ]);
             });
+          overrides = _: hPrev : {
+            net-mqtt = pkgs.haskell.lib.doJailbreak (hPrev.net-mqtt.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; }));
+          };
         }).overrideAttrs (_: previousAttrs: {
           buildInputs =
             previousAttrs.buildInputs ++

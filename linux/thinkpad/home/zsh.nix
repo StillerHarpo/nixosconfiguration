@@ -43,8 +43,8 @@
     };
   };
   home.file = {
-    ".private-home/.zshrc".source = config.home.file.".zshrc".source;
-    ".private-home/.zshenv".source = config.home.file.".zshenv".source;
+    ".private-home/.zshrc".source = config.home.file."/home/florian/.zshrc".source;
+    ".private-home/.zshenv".source = config.home.file."/home/florian/.zshenv".source;
     ".private/oh-my-zsh/.keep".text = "";
   };
 }

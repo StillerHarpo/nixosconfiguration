@@ -37,10 +37,20 @@ in {
       enable = true;
       enableZshIntegration = true;
     };
+    delta = {
+      enable = true;
+      enableGitIntegration = true;
+    };
     git = {
-      userName = realName;
-      userEmail = mailAddress;
-      delta.enable = true;
+      settings = {
+        user = {
+          name = realName;
+          email = mailAddress;
+        };
+        merge.conflictStyle = "zdiff3";
+        github.user = "StillerHarpo";
+        gitlab.user = "StillerHarpo";
+      };
       signing = {
         inherit key;
         signByDefault = true;
@@ -52,11 +62,6 @@ in {
         };
         condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
       }];
-      extraConfig = {
-        merge.conflictStyle = "zdiff3";
-        github.user = "StillerHarpo";
-        gitlab.user = "StillerHarpo";
-      };
       # TODO move this into includes. Debug endless loop
       hooks.pre-commit = pkgs.writeShellScript "pre-commit-hook" ''
         branch="$(git rev-parse --abbrev-ref HEAD)"

@@ -4,7 +4,7 @@ let cfg = config.dnscrypt;
 in {
   options = { dnscrypt.enable = mkEnableOption (mdDoc "Enable dnscript"); };
   config = mkIf cfg.enable {
-    services.dnscrypt-proxy2 = {
+    services.dnscrypt-proxy = {
       enable = true;
       settings = {
         ipv6_servers = true;

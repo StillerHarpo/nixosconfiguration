@@ -118,9 +118,9 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           };
         in { 
           permit_join = true;
-          homeassistant = config.services.home-assistant.enable;
           serial = {
             port = "/dev/serial/by-id/usb-Silicon_Labs_slae.sh_cc2652rb_stick_-_slaesh_s_iot_stuff_00_12_4B_00_23_93_30_07-if00-port0";
+            adapter = "zstack";
             disable_led = true;
           };
 

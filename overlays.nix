@@ -36,6 +36,7 @@
             "substituteInPlace Xrandr.hs --replace 'xrandr' '${prev.xorg.xrandr}/bin/xrandr'";
         });
       home-automation = hPrev.callPackage ./haskell/my-common/home-automation { };
+      net-mqtt = final.haskell.lib.doJailbreak (hPrev.net-mqtt.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; }));
     });
     monitor-changer = prev.writers.writeHaskellBin "monitor-changer" {
       libraries = [ final.haskellPackages.my-common ];
@@ -52,6 +53,9 @@
           inherit (eprev) trivialBuild;
           private = prev.private or (import ./fakePrivate.nix);
         };
+        pr-review = eprev.pr-review.overrideAttrs (attrs: {
+          nativeBuildInputs = (attrs.nativeBuildInputs or []) ++ [final.git];
+        });
       })
     );
   };
