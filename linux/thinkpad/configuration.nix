@@ -1,12 +1,22 @@
 # here are every configs that are used on my laptop but not on my workstation
 
-{ config, pkgs, lib, inputs, private, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  private,
+  ...
+}:
 let
-  key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzyDziAfoNLt5Y6ZX/cVUtOFst8pZkeQOlCB9QNPkAJDreQwPGpoTpxSL3U8Z03a7WcWrlcYNMzNOfDQp15P1TwGDb49PVwnXHgmOafthDyIZMJ3Vvr4clMHYGOt2bz/tYuNtUF7X5+i6O2VVhRcn5jEmGBmOubxSwaHo+3LVpZN+95iSyiN9Pt2rsP4BvL9ZXcfUT/DrUt8YglX78BanoKPCyQ2E7HdEc/NoRdTgOhws1AAVOB4sQjEjD07oGY2WSHRyoMzu1ErVfgloB8AG0E74A7bln7Eets8R5022BktyBofD2v2v7NuAAorzlb6JqyesyNnFIreKXQ/I+jN1emCTBBcR3i7yoXQ00Zeaa55dOGKtQ9+RTN/Pmd3iRw/Wi3By+XYFPKm8OydV9cMdjGqkVwA3iR5yjcqI0dF7n8jOlw/RkjWkce9nzKCR4KCHz8AnWk/NFCUIKwHtVAeWVc+sG+jfrIrDKOFEYxdkDZP2zoSsgC1RtM92YoIIQW8s="; 
-  mkFakeAgeSecret = path: pkgs.runCommand "secret.age" {} ''
+  key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCzyDziAfoNLt5Y6ZX/cVUtOFst8pZkeQOlCB9QNPkAJDreQwPGpoTpxSL3U8Z03a7WcWrlcYNMzNOfDQp15P1TwGDb49PVwnXHgmOafthDyIZMJ3Vvr4clMHYGOt2bz/tYuNtUF7X5+i6O2VVhRcn5jEmGBmOubxSwaHo+3LVpZN+95iSyiN9Pt2rsP4BvL9ZXcfUT/DrUt8YglX78BanoKPCyQ2E7HdEc/NoRdTgOhws1AAVOB4sQjEjD07oGY2WSHRyoMzu1ErVfgloB8AG0E74A7bln7Eets8R5022BktyBofD2v2v7NuAAorzlb6JqyesyNnFIreKXQ/I+jN1emCTBBcR3i7yoXQ00Zeaa55dOGKtQ9+RTN/Pmd3iRw/Wi3By+XYFPKm8OydV9cMdjGqkVwA3iR5yjcqI0dF7n8jOlw/RkjWkce9nzKCR4KCHz8AnWk/NFCUIKwHtVAeWVc+sG+jfrIrDKOFEYxdkDZP2zoSsgC1RtM92YoIIQW8s=";
+  mkFakeAgeSecret =
+    path:
+    pkgs.runCommand "secret.age" { } ''
       ${lib.getExe pkgs.rage} --recipient "${key}" -o $out < ${path}
     '';
-in {
+in
+{
   imports = [
     ./wireguard.nix
     ./work-container.nix
@@ -69,10 +79,8 @@ in {
           dataDir = "/home/florian/.syncthing";
           settings = {
             devices = {
-              "android".id =
-                "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
-              "macos".id =
-                "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
+              "android".id = "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+              "macos".id = "SEEGNGR-RV3PPXZ-AYPLTV3-VAEUOAO-IACRN32-Z4IEBCO-NECN453-FUF6OA3";
               "pi".id = "D5UJHLR-NVAXNBN-7HD6XXP-7IOAKHA-6VT4B2Y-IBYPHKU-2KFFDPW-PUSX4QV";
             };
             folders = {
@@ -90,7 +98,10 @@ in {
               };
               "android-backups" = {
                 path = "/home/florian/android/backups";
-                devices = [ "android" "pi" ];
+                devices = [
+                  "android"
+                  "pi"
+                ];
               };
               "android-share" = {
                 path = "/home/florian/android/share";
@@ -98,7 +109,10 @@ in {
               };
               "org-roam" = {
                 path = "/home/florian/Dokumente/org-roam";
-                devices = [ "android" "pi" ];
+                devices = [
+                  "android"
+                  "pi"
+                ];
                 versioning = {
                   type = "simple";
                   params.keep = "5";
@@ -147,217 +161,258 @@ in {
         };
       };
 
-
       mail.enable = true;
 
       zramSwap.enable = true;
 
       fonts.packages = [
         pkgs.terminus_font
-      ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+      ]
+      ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
       systemd.packages = [ pkgs.dconf ];
 
       home-manager = {
-        users.florian = import ./home/configuration.nix ;
+        users.florian = import ./home/configuration.nix;
         extraSpecialArgs.private = private;
       };
 
-      environment = { pathsToLink = [ "/share/agda" "/share/zsh" ]; };
+      environment = {
+        pathsToLink = [
+          "/share/agda"
+          "/share/zsh"
+        ];
+      };
 
       security.rtkit.enable = true;
-      environment.systemPackages  = [pkgs.sshfs];
+      environment.systemPackages = [ pkgs.sshfs ];
       apparmor = {
         enable = true;
-        systemPackages =
-          [
-            {
-              pkgs = with pkgs; [
-                xsane
-                (writers.writeHaskellBin "scan" {
-                  libraries = with haskellPackages; [ turtle extra ];
-                } ../../haskell/scans/Scan.hs)
-                csvkit
-              ];
-              rules = lib.apparmor.generateFileRules { allows = [ "docs" ]; inherit config; };
-            }
-            {
-              pkgs = with pkgs; [
-                inetutils
-                magic-wormhole
-                mediathekview
-                librespeed-cli
-                mqttx
-                nil
-                difftastic
-                nixpkgs-review
-                nixpkgs-hammering
-                adwaita-icon-theme
-                ical2orgpy
-                nixfmt-classic
-                libreoffice
-                textcleaner
-                file
-                ### screenshots ###
-                pinta
-                ### screenshots ###
-                languagetool
-                remmina
-                sqlite
-                pamixer
-                pavucontrol
-                mtpfs
-                wget
-                vim
-                shellcheck
-                tuir
-                (mpv.override { scripts = [ mpvScripts.mpris ]; })
-                rlwrap
-                you-get
-                xosd
-                pandoc
-                mytexlive
-                python3Packages.pygments
-                anki
-                nix-prefetch-git
-                yt-dlp
-                libnotify
-                unzip
-                cabal2nix
-                git-crypt
-                ### chat ###
-                mumble
-                ### chat ###
-                fzf
-                ## better rust tools ###
-                procs
-                delta
-                dust
-                grex
-                ## better rust tools ###
-                tor-browser
-                emacs-lsp-booster
-              ];
-              rules = lib.apparmor.defaultRules config;
-            }
-            # electron apps
-            {
-              pkgs = with pkgs; [
-                chromium
-                signal-desktop
-                slack
-                element-desktop
-              ];
-              rules = ''
-                capability sys_admin,
-                capability sys_chroot,
-                capability sys_ptrace,
-                ${lib.apparmor.defaultRules config}
-              '';
-            }
-            {
-              pkgs = with pkgs; [ psmisc bandwhich bottom ];
-              rules = ''
-                ptrace,
-                unix (getattr),
-                signal,
-                ${lib.apparmor.defaultRules config}
-              '';
-            }
-            {
-              pkgs = [ pkgs.pass-wayland ];
-              rules =
-                ''
-                 ${lib.getExe pkgs.gnupg} Cx -> gnupg,
-                 profile gnupg {
-                   ${lib.apparmor.generateFileRules { allows = [ "gnupg" "pass"]; inherit config; }}
-                 }
-                 ${lib.apparmor.generateFileRules { allows = [ "pass"]; inherit config; } }
-                '';
-            }
-            {
-              pkgs = [ pkgs.rpi4-install ];
-              rules = ''
-                ${lib.getExe pkgs.pass-wayland} Px,
-                ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules { inherit config; }}
-              '';
-            }
-            {
-              pkgs = [ pkgs.firefox ];
-              rules = ''
+        systemPackages = [
+          {
+            pkgs = with pkgs; [
+              xsane
+              (writers.writeHaskellBin "scan" {
+                libraries = with haskellPackages; [
+                  turtle
+                  extra
+                ];
+              } ../../haskell/scans/Scan.hs)
+              csvkit
+            ];
+            rules = lib.apparmor.generateFileRules {
+              allows = [ "docs" ];
+              inherit config;
+            };
+          }
+          {
+            pkgs = with pkgs; [
+              inetutils
+              magic-wormhole
+              mediathekview
+              librespeed-cli
+              mqttx
+              nil
+              difftastic
+              nixpkgs-review
+              nixpkgs-hammering
+              adwaita-icon-theme
+              ical2orgpy
+              nixfmt-classic
+              libreoffice
+              textcleaner
+              file
+              ### screenshots ###
+              pinta
+              ### screenshots ###
+              languagetool
+              remmina
+              sqlite
+              pamixer
+              pavucontrol
+              mtpfs
+              wget
+              vim
+              shellcheck
+              tuir
+              (mpv.override { scripts = [ mpvScripts.mpris ]; })
+              rlwrap
+              you-get
+              xosd
+              pandoc
+              mytexlive
+              python3Packages.pygments
+              anki
+              nix-prefetch-git
+              yt-dlp
+              libnotify
+              unzip
+              cabal2nix
+              git-crypt
+              ### chat ###
+              mumble
+              ### chat ###
+              fzf
+              ## better rust tools ###
+              procs
+              delta
+              dust
+              grex
+              ## better rust tools ###
+              tor-browser
+              # TODO use emacs module and remove this
+              emacs-lsp-booster
+            ];
+            rules = lib.apparmor.defaultRules config;
+          }
+          # electron apps
+          {
+            pkgs = with pkgs; [
+              chromium
+              signal-desktop
+              slack
+              element-desktop
+            ];
+            rules = ''
+              capability sys_admin,
+              capability sys_chroot,
+              capability sys_ptrace,
+              ${lib.apparmor.defaultRules config}
+            '';
+          }
+          {
+            pkgs = with pkgs; [
+              psmisc
+              bandwhich
+              bottom
+            ];
+            rules = ''
+              ptrace,
+              unix (getattr),
+              signal,
+              ${lib.apparmor.defaultRules config}
+            '';
+          }
+          {
+            pkgs = [ pkgs.pass-wayland ];
+            rules = ''
+              ${lib.getExe pkgs.gnupg} Cx -> gnupg,
+              profile gnupg {
+                ${lib.apparmor.generateFileRules {
+                  allows = [
+                    "gnupg"
+                    "pass"
+                  ];
+                  inherit config;
+                }}
+              }
+              ${lib.apparmor.generateFileRules {
+                allows = [ "pass" ];
+                inherit config;
+              }}
+            '';
+          }
+          {
+            pkgs = [ pkgs.rpi4-install ];
+            rules = ''
+              ${lib.getExe pkgs.pass-wayland} Px,
+              ${lib.getExe pkgs.openssh} Px,
+              ${lib.apparmor.generateFileRules { inherit config; }}
+            '';
+          }
+          {
+            pkgs = [ pkgs.firefox ];
+            rules = ''
+              network,
+              capability sys_admin,
+              capability sys_chroot,
+              capability sys_ptrace,
+              ${lib.apparmor.generateFileRules {
+                allows = [ "firefox" ];
+                inherit config;
+              }}
+            '';
+          }
+          {
+            pkgs = [ inputs.agenix.packages.x86_64-linux.agenix ];
+            rules = ''
+              mount,
+              capability,
+              # age reads ssh directly
+              ${lib.apparmor.generateFileRules {
+                allows = [ "ssh" ];
+                inherit config;
+              }}
+            '';
+          }
+          {
+            pkgs = [
+              # Aug 10 10:31:46 nixosThinkpad audit[58390]: AVC apparmor="DENIED" operation="signal" class="signal" profile="/nix/store/08rwmwxz8z3kwalxiwigwnxys0x5arr5-deploy-rs-0.1.0/bin/*//openssh" pid=58390 comm="nix" requested_mask="receive" denied_mask="receive" signal=kill peer="/nix/store/08rwmwxz8z3kwalxiwigwnxys0x5arr5-deploy-rs-0.1.0/bin/*"
+              pkgs.tmux
+              pkgs.tmux-xpanes
+            ];
+            rules = ''
+              # Allow unconfined processes to send us signals by default
+              signal (receive) peer=unconfined,
+              ${lib.getExe pkgs.openssh} Px,
+              ${lib.apparmor.generateFileRules { inherit config; }}
+            '';
+          }
+          {
+            pkgs = [
+              inputs.deploy-rs.packages.x86_64-linux.deploy-rs
+            ];
+            rules = ''
+              ${lib.getExe pkgs.openssh} Cx -> sshRecive,
+              ${lib.apparmor.generateFileRules { inherit config; }}
+              signal (send) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**//sshRecive,
+              profile sshRecive {
+                ${lib.apparmor.generateFileRules {
+                  allows = [ "ssh" ];
+                  inherit config;
+                }}
+                signal (receive) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**,
                 network,
-                capability sys_admin,
-                capability sys_chroot,
-                capability sys_ptrace,
-                ${lib.apparmor.generateFileRules { allows = [ "firefox" ]; inherit config; }}
-              '';
-            }
-            {
-              pkgs = [ inputs.agenix.packages.x86_64-linux.agenix ];
-              rules = ''
-                mount,
                 capability,
-                # age reads ssh directly
-                ${lib.apparmor.generateFileRules { allows = ["ssh"]; inherit config; }}
-              '';
-            }
-            {
-              pkgs = [
-                # Aug 10 10:31:46 nixosThinkpad audit[58390]: AVC apparmor="DENIED" operation="signal" class="signal" profile="/nix/store/08rwmwxz8z3kwalxiwigwnxys0x5arr5-deploy-rs-0.1.0/bin/*//openssh" pid=58390 comm="nix" requested_mask="receive" denied_mask="receive" signal=kill peer="/nix/store/08rwmwxz8z3kwalxiwigwnxys0x5arr5-deploy-rs-0.1.0/bin/*"
-                pkgs.tmux
-                pkgs.tmux-xpanes
-              ];
-              rules = ''
-                # Allow unconfined processes to send us signals by default
-                signal (receive) peer=unconfined,
-                ${lib.getExe pkgs.openssh} Px,
-                ${lib.apparmor.generateFileRules { inherit config; }}
-              '';
-            }
-            {
-              pkgs = [
-                inputs.deploy-rs.packages.x86_64-linux.deploy-rs
-              ];
-              rules = ''
-                ${lib.getExe pkgs.openssh} Cx -> sshRecive,
-                ${lib.apparmor.generateFileRules { inherit config; }}
-                signal (send) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**//sshRecive,
-                profile sshRecive {
-                  ${lib.apparmor.generateFileRules { allows = [ "ssh" ]; inherit config; }}
-                  signal (receive) set=(kill) peer=${inputs.deploy-rs.packages.x86_64-linux.deploy-rs}/bin/**,
-                  network,
-                  capability,
-                }
-              '';
-            }
-            {
-              pkgs = with pkgs; [
-                imagemagick
-                poppler-utils
-                eza
-                tesseract5
-                zathura
-                xournalpp
-                feh
-                litecli
-                csvs-to-sqlite
-              ];
-              rules = ''
-                ${lib.apparmor.generateFileRules { allows = [ "docs" ]; inherit config; }}
-              '';
-            }
-            {
-              pkgs = with pkgs; [
-                ripgrep
-                bat
-                fd
-              ];
-              rules = ''
-                ${lib.apparmor.generateFileRules { allows = [ "docs" "notmuch" ]; inherit config; }}
-              '';
-            }
-          ];
+              }
+            '';
+          }
+          {
+            pkgs = with pkgs; [
+              imagemagick
+              poppler-utils
+              eza
+              tesseract5
+              zathura
+              xournalpp
+              feh
+              litecli
+              csvs-to-sqlite
+            ];
+            rules = ''
+              ${lib.apparmor.generateFileRules {
+                allows = [ "docs" ];
+                inherit config;
+              }}
+            '';
+          }
+          {
+            pkgs = with pkgs; [
+              ripgrep
+              bat
+              fd
+            ];
+            rules = ''
+              ${lib.apparmor.generateFileRules {
+                allows = [
+                  "docs"
+                  "notmuch"
+                ];
+                inherit config;
+              }}
+            '';
+          }
+        ];
       };
 
       powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
@@ -371,13 +426,22 @@ in {
       };
 
       users = {
-        groups.fuse = {};
+        groups.fuse = { };
         users.florian = {
           isNormalUser = true;
           hashedPasswordFile = config.age.secrets.florian.path;
           description = "Florian Engel";
-          extraGroups =
-            [ "audio" "video" "wireshark" "adbusers" "wheel" "networkmanager" "scan" "lp" "fuse" ];
+          extraGroups = [
+            "audio"
+            "video"
+            "wireshark"
+            "adbusers"
+            "wheel"
+            "networkmanager"
+            "scan"
+            "lp"
+            "fuse"
+          ];
         };
       };
 
@@ -386,7 +450,10 @@ in {
         autoLogin = true;
       };
 
-      services.dbus.packages = [ pkgs.gcr pkgs.dconf ];
+      services.dbus.packages = [
+        pkgs.gcr
+        pkgs.dconf
+      ];
 
       # powerManagement.enable = false;
       services = {
@@ -403,9 +470,9 @@ in {
 
         # Go in hibernate at lid
         logind.settings.Login = {
-          HandleLidSwitch  = "hibernate";
-          HandlePowerKey="hibernate";
-          RuntimeDirectorySize="30%";
+          HandleLidSwitch = "hibernate";
+          HandlePowerKey = "hibernate";
+          RuntimeDirectorySize = "30%";
         };
 
         blueman.enable = true;
@@ -420,41 +487,50 @@ in {
         sane = {
           enable = true;
           # 2025-05-25: epkowa build was failing. epkowa is only necessary for epson scanner.
-          extraBackends = with pkgs; [ sane-airscan hplipWithPlugin ];
-          drivers.scanSnap = { enable = true; };
+          extraBackends = with pkgs; [
+            sane-airscan
+            hplipWithPlugin
+          ];
+          drivers.scanSnap = {
+            enable = true;
+          };
         };
       };
 
       # wifi
       networking.networkmanager = {
         enable = true;
-        dispatcherScripts = [{
-          source = let
-            nmcli = "${pkgs.networkmanager}/bin/nmcli";
-            lanInterface = "enp0s31f6";
-          in pkgs.writeText "wlan_auto_toggle" ''
-        if [ "$1" = "${lanInterface}" ]; then
-            case "$2" in
-                up)
-                    ${nmcli} radio wifi off
-                    ;;
-                down)
+        dispatcherScripts = [
+          {
+            source =
+              let
+                nmcli = "${pkgs.networkmanager}/bin/nmcli";
+                lanInterface = "enp0s31f6";
+              in
+              pkgs.writeText "wlan_auto_toggle" ''
+                if [ "$1" = "${lanInterface}" ]; then
+                    case "$2" in
+                        up)
+                            ${nmcli} radio wifi off
+                            ;;
+                        down)
+                            ${nmcli} radio wifi on
+                            ;;
+                        *)
+                            if [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
+                                echo "Lan is $2 (not up/down)"
+                                echo "Enabeling wifi"
+                                ${nmcli} radio wifi on
+                            fi
+                            ;;
+                    esac
+                elif [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
                     ${nmcli} radio wifi on
-                    ;;
-                *)
-                    if [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
-                        echo "Lan is $2 (not up/down)"
-                        echo "Enabeling wifi"
-                        ${nmcli} radio wifi on
-                    fi
-                    ;;
-            esac
-        elif [ "$(${nmcli} -g GENERAL.STATE device show ${lanInterface})" = "20 (unavailable)" ]; then
-            ${nmcli} radio wifi on
-        fi
-      '';
-          type = "basic";
-        }];
+                fi
+              '';
+            type = "basic";
+          }
+        ];
       };
 
       services = {
@@ -486,48 +562,59 @@ in {
       nix.envVars.SSH_AUTH_SOCK = "/run/user/1000/gnupg/S.gpg-agent.ssh";
 
       systemd = {
-        services = let
-          targets = [
-            "hibernate.target"
-            "hybrid-sleep.target"
-            "suspend.target"
-            "sleep.target"
-            "suspend-then-hibernate.target"
-          ];
-          serviceConfig = {
-            Type = "oneshot";
-            User = "florian";
-            Group = "users";
+        services =
+          let
+            targets = [
+              "hibernate.target"
+              "hybrid-sleep.target"
+              "suspend.target"
+              "sleep.target"
+              "suspend-then-hibernate.target"
+            ];
+            serviceConfig = {
+              Type = "oneshot";
+              User = "florian";
+              Group = "users";
+            };
+            environment = {
+              DISPLAY = ":0";
+            };
+          in
+          {
+            "my-post-resume" = {
+              description = "Post-Resume Actions";
+              after = targets;
+              wantedBy = targets;
+              script = ''
+                if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
+                  echo "Enabeling wifi"
+                  ${pkgs.networkmanager}/bin/nmcli radio wifi on
+                fi
+              '';
+              inherit serviceConfig environment;
+              enable = true;
+            };
           };
-          environment = { DISPLAY = ":0"; };
-        in {
-          "my-post-resume" = {
-            description = "Post-Resume Actions";
-            after = targets;
-            wantedBy = targets;
-            script = ''
-          if [ "$(${pkgs.networkmanager}/bin/nmcli -g GENERAL.STATE device show enp0s31f6)" = "20 (unavailable)" ]; then
-            echo "Enabeling wifi"
-            ${pkgs.networkmanager}/bin/nmcli radio wifi on
-          fi
-        '';
-            inherit serviceConfig environment;
-            enable = true;
-          };
-        };
       };
 
       programs.firejail.enable = true;
       nix = {
-        buildMachines = [{
-          hostName = "192.168.178.24";
-          system = "x86_64-linux";
-          sshUser = "root";
-          maxJobs = 8;
-          speedFactor = 2;
-          supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
-          mandatoryFeatures = [ ];
-        }];
+        buildMachines = [
+          {
+            hostName = "192.168.178.24";
+            system = "x86_64-linux";
+            sshUser = "root";
+            maxJobs = 8;
+            speedFactor = 2;
+            supportedFeatures = [
+              "nixos-test"
+              "benchmark"
+              "big-parallel"
+              "kvm"
+            ];
+            mandatoryFeatures = [ ];
+          }
+        ];
         distributedBuilds = false;
       };
 
