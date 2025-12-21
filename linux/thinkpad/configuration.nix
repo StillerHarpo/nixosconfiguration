@@ -207,6 +207,8 @@ in
           }
           {
             pkgs = with pkgs; [
+              ## comic reader
+              yacreader
               inetutils
               magic-wormhole
               mediathekview
