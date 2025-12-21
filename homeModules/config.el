@@ -923,10 +923,6 @@ a priority cookie and tags in the standard locations."
   :config
   (global-flycheck-eglot-mode 1))
 
-(use-package eglot-booster
-        :after eglot
-        :config (eglot-booster-mode))
-
 (use-package lsp-bridge
   :init
   (defun enable-lsp-bridge()
