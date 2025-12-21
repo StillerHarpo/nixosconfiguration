@@ -914,7 +914,7 @@ a priority cookie and tags in the standard locations."
   (rust-mode . flycheck-mode)
   :general
   (:states '(normal visual motion emacs)
- :keymaps '(my-keys-minor-mode-map flycheck-mode)
+ :keymaps '(flycheck-mode-map)
   :prefix "SPC"
    "c x" 'flycheck-list-errors))
 
