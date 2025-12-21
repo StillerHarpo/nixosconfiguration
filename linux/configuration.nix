@@ -53,6 +53,8 @@
         useUserPackages = true;
       };
 
+      fileSystems."/boot".options = [ "umask=0077" "defaults" ];
+
     }
   ];
 }
