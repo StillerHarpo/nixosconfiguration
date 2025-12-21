@@ -909,9 +909,9 @@ a priority cookie and tags in the standard locations."
 (use-package flycheck
   :ensure t
   :hook
-  (nix-mode . flycheck-mode)
   (emacs-lisp-mode . flycheck-mode)
-  (rust-mode . flycheck-mode)
+  (eglot-mode . flycheck-mode)
+  (tide-mode . flycheck-mode)
   :general
   (:states '(normal visual motion emacs)
  :keymaps '(flycheck-mode-map)
