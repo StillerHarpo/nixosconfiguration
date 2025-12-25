@@ -1,11 +1,18 @@
-{ lib, pkgs, private, osConfig, ... }:
+{
+  lib,
+  pkgs,
+  private,
+  osConfig,
+  ...
+}:
 
 let
   realName = "Florian Engel";
   mailAddress = "engelflorian@posteo.de";
   key = "4E2D9B26940E0DABF376B7AF76762421D45837DE";
 
-in {
+in
+{
   imports = [
     ../../../home.nix
     ./zsh.nix
@@ -14,15 +21,15 @@ in {
     ../../home/configuration.nix
   ];
 
-  xsession.windowManager.xmonad.extraPackages = haskellPackages:
-    with haskellPackages; [
+  xsession.windowManager.xmonad.extraPackages =
+    haskellPackages: with haskellPackages; [
       my-common
       MissingH
       protolude
       pretty-simple
     ];
 
-  firefox = {
+  librewolf = {
     enable = true;
     additionalProfiles.work.id = 1;
   };
@@ -31,7 +38,9 @@ in {
     nix-index.enable = true;
     gh = {
       enable = true;
-      settings = { git_protocol = "ssh"; };
+      settings = {
+        git_protocol = "ssh";
+      };
     };
     zoxide = {
       enable = true;
@@ -55,13 +64,15 @@ in {
         inherit key;
         signByDefault = true;
       };
-      includes = [{
-        contents.user = {
-          email = private.workMail;
-          signingKey = "66ADDC714AD52330F69371F2BEC83EA3C41DBF14";
-        };
-        condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
-      }];
+      includes = [
+        {
+          contents.user = {
+            email = private.workMail;
+            signingKey = "66ADDC714AD52330F69371F2BEC83EA3C41DBF14";
+          };
+          condition = "hasconfig:remote.*.url:git@github.com:factisresearch/**";
+        }
+      ];
       # TODO move this into includes. Debug endless loop
       hooks.pre-commit = pkgs.writeShellScript "pre-commit-hook" ''
         branch="$(git rev-parse --abbrev-ref HEAD)"
@@ -87,10 +98,9 @@ in {
     enable = true;
     defaultCacheTtl = 1800;
     enableSshSupport = true;
-    pinentry.package =  pkgs.pinentry-gnome3;
+    pinentry.package = pkgs.pinentry-gnome3;
   };
   emacs.enable = true;
-
 
   services.dunst = {
     enable = true;
@@ -129,16 +139,15 @@ in {
     };
   };
 
-  xdg.configFile."networkmanager-dmenu/config.ini".text =
-    lib.generators.toINI { } {
-      dmenu.dmenu_command = "rofi";
-      dmenu_passphrase.rofi_obscure = true;
-      editor.terminal = "alacritty";
-    };
+  xdg.configFile."networkmanager-dmenu/config.ini".text = lib.generators.toINI { } {
+    dmenu.dmenu_command = "rofi";
+    dmenu_passphrase.rofi_obscure = true;
+    editor.terminal = "alacritty";
+  };
 
-  home.file.".aspell.conf".source = pkgs.runCommand "aspell.conf" {} ''
-        ${lib.getExe' pkgs.myAspellWithDicts "aspell"} dump config > $out
-      '';
+  home.file.".aspell.conf".source = pkgs.runCommand "aspell.conf" { } ''
+    ${lib.getExe' pkgs.myAspellWithDicts "aspell"} dump config > $out
+  '';
 
   home.file.".authinfo.gpg".source = ./authinfo.gpg;
 

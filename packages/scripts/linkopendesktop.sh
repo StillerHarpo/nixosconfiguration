@@ -85,7 +85,7 @@ then
     tuir -l "${1}"
 elif echo "${1}" | grep -q -e medilyse -e factisresearch -e docs\.google -e meqo
 then
-    firefox -P work --new-window "${1}"
+    librewolf -P work --new-window "${1}"
 else
-    sudo -En firefox-airvpn "${1}"
-fi || sudo -En firefox-airvpn "${1}"
+    sudo -En librewolf-airvpn "${1}"
+fi || sudo -En librewolf-airvpn "${1}"

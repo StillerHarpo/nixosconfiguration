@@ -7,12 +7,12 @@ use std::process::{Command, Stdio};
 use swayipc::Connection;
 use swayipc::Node;
 
-const BROWSE: &str = "firefox -new-window ";
-const WORK_BROWSE: &str = "firefox -P work -new-window ";
-const PRIVATE_BROWSE: &str = "sudo -En firefox-airvpn ";
+const BROWSE: &str = "librewolf -new-window ";
+const WORK_BROWSE: &str = "librewolf -P work -new-window ";
+const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
 
 pub const PROGRAMS: [(&str, &str); 15] = [
-    ("firefox", "firefox"),
+    ("librewolf", "librewolf"),
     ("grim (screenshot to file)", "grim -g \"$(slurp)\""),
     (
         "grim (screenshot to clipboard)",
@@ -72,14 +72,14 @@ fn parse_bookmarks() -> Result<Vec<(String, String)>, String> {
                             .map(|v| (v.0, format!("{} {}", BROWSE, v.1)))
                             .collect::<Vec<_>>())
                     } else if kv.0 == "work" {
-                        // TODO add private firefox
+                        // TODO add private librewolf
                         let key_values = parse_key_value_map("work", kv.1)?;
                         Ok(key_values
                             .into_iter()
                             .map(|v| (v.0, format!("{} {}", WORK_BROWSE, v.1)))
                             .collect::<Vec<_>>())
                     } else if kv.0 == "private" {
-                        // TODO add private firefox
+                        // TODO add private librewolf
                         let key_values = parse_key_value_map("private", kv.1)?;
                         Ok(key_values
                             .into_iter()
@@ -157,7 +157,7 @@ fn main() {
             if output_string.len() > 0 {
                 let search_string = str::replace(output_string, " ", "+");
                 conn.run_command(format!(
-                    "exec sudo -En firefox-airvpn 'duckduckgo.com\\?q={search_string}'"
+                    "exec sudo -En librewolf-airvpn 'duckduckgo.com\\?q={search_string}'"
                 ))
                 .unwrap();
             }

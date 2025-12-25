@@ -1,6 +1,16 @@
-{ config, lib, pkgs, inputs, outputs, inHydra ? false, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  outputs,
+  inHydra ? false,
+  ...
+}:
 
-let sshKeys = import ../thinkpad/sshKeys.nix; in
+let
+  sshKeys = import ../thinkpad/sshKeys.nix;
+in
 
 {
 
@@ -34,7 +44,6 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       enableGyroDsuService = true;
     };
   };
-
 
   # Select internationalisation properties.
   console.keyMap = "us";
@@ -90,7 +99,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       superTuxKart
       prismlauncher
       luanti
-      firefox
+      librewolf
       vim
       git-crypt
       git
@@ -104,8 +113,11 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       nvtopPackages.amd
       lutris
       wine-staging
-      (kodi.withPackages (kodiPkgs:
-        with kodiPkgs; [mediathekview invidious]
+      (kodi.withPackages (
+        kodiPkgs: with kodiPkgs; [
+          mediathekview
+          invidious
+        ]
       ))
       libcec
       v4l-utils
@@ -125,7 +137,12 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
 
   boot = {
     initrd = {
-      availableKernelModules = ["evdev" "hid-generic" "i2c_hid_api" "hid_multitouch"];
+      availableKernelModules = [
+        "evdev"
+        "hid-generic"
+        "i2c_hid_api"
+        "hid_multitouch"
+      ];
       unl0kr.enable = true;
       systemd.enable = true;
     };
@@ -143,31 +160,40 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     florian = {
       hashedPasswordFile = config.age.secrets.florian.path;
       description = "Florian Engel";
-      extraGroups =
-        [ "wheel" "networkmanager" "dialout" "video" ];
+      extraGroups = [
+        "wheel"
+        "networkmanager"
+        "dialout"
+        "video"
+      ];
       isNormalUser = true;
       openssh.authorizedKeys.keys = sshKeys;
     };
     steam = {
       isNormalUser = true;
-      extraGroups =
-        [  "networkmanager" "dialout" "video" ];
+      extraGroups = [
+        "networkmanager"
+        "dialout"
+        "video"
+      ];
     };
     kodi = {
       isNormalUser = true;
-      extraGroups =
-        [  "networkmanager" "dialout" "video" ];
+      extraGroups = [
+        "networkmanager"
+        "dialout"
+        "video"
+      ];
     };
     root.openssh.authorizedKeys.keys = sshKeys;
   };
-
 
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     users.florian = {
-      imports = [  outputs.homeModules ];
-      firefox.enable = true;
+      imports = [ outputs.homeModules ];
+      librewolf.enable = true;
       home.stateVersion = "24.11";
       home.file.".kodi/userdata/addon_data/plugin.video.invidious/settings.xml".source = ./invidious.xml;
     };
@@ -206,29 +232,34 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       getty.autologinUser = "florian";
       buffyboard = {
         enable = true;
-        extraFlags = ["--rotate=1"];
+        extraFlags = [ "--rotate=1" ];
       };
       xserver.enable = lib.mkForce false;
     };
     environment =
-      let mediamenu = pkgs.rustPlatform.buildRustPackage {
-            name = "mediamenu";
-            src =  ../../rust/mediamenu;
-            buildInputs = [pkgs.openssl.dev pkgs.systemd.dev];
-            nativeBuildInputs = [pkgs.pkg-config];
-            cargoLock = {
-              lockFile = ../../rust/mediamenu/Cargo.lock;
-              outputHashes = {
-                "mediathekviewtui-0.1.0" = "sha256-6aox5XNoK9ITsVliApMomZBz/8f9dUPjukmSfZZ1v8M=";
-                "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
-              };
+      let
+        mediamenu = pkgs.rustPlatform.buildRustPackage {
+          name = "mediamenu";
+          src = ../../rust/mediamenu;
+          buildInputs = [
+            pkgs.openssl.dev
+            pkgs.systemd.dev
+          ];
+          nativeBuildInputs = [ pkgs.pkg-config ];
+          cargoLock = {
+            lockFile = ../../rust/mediamenu/Cargo.lock;
+            outputHashes = {
+              "mediathekviewtui-0.1.0" = "sha256-6aox5XNoK9ITsVliApMomZBz/8f9dUPjukmSfZZ1v8M=";
+              "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
             };
-            buildFeatures = if inHydra then [] else ["real"];
           };
-      in {
+          buildFeatures = if inHydra then [ ] else [ "real" ];
+        };
+      in
+      {
         loginShellInit = ''
-             [[ "$(tty)" == /dev/tty1 ]] && ${mediamenu}/bin/mediamenu
-          '';
+          [[ "$(tty)" == /dev/tty1 ]] && ${mediamenu}/bin/mediamenu
+        '';
         systemPackages = with pkgs; [
           inputs.jellytui.defaultPackage.x86_64-linux
           mediamenu

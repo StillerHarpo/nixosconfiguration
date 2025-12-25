@@ -1,15 +1,24 @@
-{ config, lib, pkgs, home-manager-flake, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  home-manager-flake,
+  ...
+}:
 
 with lib;
 
 let
   outerPkgs = pkgs;
   cfg = config.workContainer;
-in {
+in
+{
 
   options = {
 
-    workContainer = { enable = mkEnableOption (lib.mdDoc "Work container"); };
+    workContainer = {
+      enable = mkEnableOption (lib.mdDoc "Work container");
+    };
 
     userName = mkOption {
       type = types.str;
@@ -41,7 +50,9 @@ in {
         internalInterfaces = [ "ve-+" ];
         externalInterface = "+";
       };
-      networkmanager = { unmanaged = [ "interface-name:ve-*" ]; };
+      networkmanager = {
+        unmanaged = [ "interface-name:ve-*" ];
+      };
     };
 
     security.polkit = {
@@ -95,26 +106,34 @@ in {
           shell = pkgs.zsh;
         };
 
-        systemd.services.fix-nix-dirs = let
-          profileDir = "/nix/var/nix/profiles/per-user/${userName}";
-          gcrootsDir = "/nix/var/nix/gcroots/per-user/${userName}";
-        in {
-          script = ''
-            #!${pkgs.stdenv.shell}
-            set -euo pipefail
+        systemd.services.fix-nix-dirs =
+          let
+            profileDir = "/nix/var/nix/profiles/per-user/${userName}";
+            gcrootsDir = "/nix/var/nix/gcroots/per-user/${userName}";
+          in
+          {
+            script = ''
+              #!${pkgs.stdenv.shell}
+              set -euo pipefail
 
-            mkdir -p ${profileDir} ${gcrootsDir}
-            chown ${userName}:root ${profileDir} ${gcrootsDir}
-          '';
-          wantedBy = [ "multi-user.target" ];
-          serviceConfig = { Type = "oneshot"; };
-        };
+              mkdir -p ${profileDir} ${gcrootsDir}
+              chown ${userName}:root ${profileDir} ${gcrootsDir}
+            '';
+            wantedBy = [ "multi-user.target" ];
+            serviceConfig = {
+              Type = "oneshot";
+            };
+          };
         hardware.opengl = {
           enable = true;
           extraPackages = hostCfg.hardware.opengl.extraPackages;
         };
 
-        environment.systemPackages = with pkgs; [ git firefox remmina ];
+        environment.systemPackages = with pkgs; [
+          git
+          librewolf
+          remmina
+        ];
 
         services.openvpn.servers.officeVPN = {
           config = "config ${config.age.secrets.officeOvpn.path}";
@@ -126,7 +145,7 @@ in {
 
         home-manager = {
           users."${cfg.userName}" = {
-            firefox.enable = true;
+            librewolf.enable = true;
             imports = [ ../../zsh.nix ];
             programs.zsh = {
               enable = true;
@@ -141,7 +160,10 @@ in {
               autosuggestion.enable = true;
               oh-my-zsh = {
                 enable = true;
-                plugins = [ "vi-mode" "per-directory-history" ];
+                plugins = [
+                  "vi-mode"
+                  "per-directory-history"
+                ];
               };
             };
             programs.ssh.enable = true;

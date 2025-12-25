@@ -1,7 +1,12 @@
-{ osConfig, lib, pkgs, ... }:
+{
+  osConfig,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  # FIXME doesn't work if firefox is closed (directly executing $BROWSER works)
+  # FIXME doesn't work if librewolf is closed (directly executing $BROWSER works)
   # Properly the environment variables are different. (the execution in strace is the same)
   xdg = {
     mimeApps = {
@@ -37,11 +42,16 @@
     desktopEntries = {
       linkopen =
         let
-          linkopen = if osConfig.wayland.enable then pkgs.my-linkopen-wayland-or-tty else pkgs.my-linkopen-x-or-tty;
-        in {
+          linkopen =
+            if osConfig.wayland.enable then pkgs.my-linkopen-wayland-or-tty else pkgs.my-linkopen-x-or-tty;
+        in
+        {
           name = "linkopen";
           exec = "${lib.getExe linkopen} %u";
-          mimeType = [ "text/html" "text/xml" ];
+          mimeType = [
+            "text/html"
+            "text/xml"
+          ];
         };
     };
   };

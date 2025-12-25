@@ -1289,10 +1289,10 @@ Returns nil if not and (sec min hour) if it has."
 (defun browse (prog url)
   (setq url (browse-url-encode-url url))
   (apply #'start-process (append `(,(concat (car prog) " " url) nil) prog `(,url))))
-(defun browse-url-firefox-new-window (url &rest agrs)
-  (browse-url-firefox url t))
+(defun browse-url-librewolf-new-window (url &rest agrs)
+  (browse-url-librewolf url t))
 
-(setq browse-url-secondary-browser-function 'browse-url-firefox-new-window)
+(setq browse-url-secondary-browser-function 'browse-url-librewolf-new-window)
 
 (general-define-key
  :states '(normal visual motion)

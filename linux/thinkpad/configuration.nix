@@ -323,14 +323,14 @@ in
             '';
           }
           {
-            pkgs = [ pkgs.firefox ];
+            pkgs = [ pkgs.librewolf ];
             rules = ''
               network,
               capability sys_admin,
               capability sys_chroot,
               capability sys_ptrace,
               ${lib.apparmor.generateFileRules {
-                allows = [ "firefox" ];
+                allows = [ "librewolf" ];
                 inherit config;
               }}
             '';
