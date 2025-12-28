@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 {
 
   options.backup.enable = lib.mkEnableOption (lib.mdDoc "Wether to enable backups");
@@ -12,6 +17,7 @@
         "/home/florian/.password-store"
         "/home/florian/Maildir"
         "/home/florian/android"
+        "/home/florian/Bilder"
       ];
       repository = "rclone:b2:restic-backup-flo";
       initialize = true;
@@ -36,15 +42,18 @@
         RandomizedDelaySec = "3h";
       };
     };
-    environment.systemPackages = map (name:
-      let envVars =
-            lib.concatStringsSep
-              " "
-              (lib.mapAttrsToList
-                (key: value: "${key}=${if value == null then "" else value}")
-                config.systemd.services."restic-backups-${name}".environment);
-      in pkgs.writers.writeBashBin "restic-${name}" ''
+    environment.systemPackages = map (
+      name:
+      let
+        envVars = lib.concatStringsSep " " (
+          lib.mapAttrsToList (
+            key: value: "${key}=${if value == null then "" else value}"
+          ) config.systemd.services."restic-backups-${name}".environment
+        );
+      in
+      pkgs.writers.writeBashBin "restic-${name}" ''
         ${envVars} ${lib.getExe pkgs.restic} $@
-      '') (lib.attrNames config.services.restic.backups);
+      ''
+    ) (lib.attrNames config.services.restic.backups);
   };
 }
