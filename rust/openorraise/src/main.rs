@@ -11,7 +11,7 @@ const BROWSE: &str = "librewolf -new-window ";
 const WORK_BROWSE: &str = "librewolf -P work -new-window ";
 const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
 
-pub const PROGRAMS: [(&str, &str); 15] = [
+pub const PROGRAMS: [(&str, &str); 16] = [
     ("librewolf", "librewolf"),
     ("grim (screenshot to file)", "grim -g \"$(slurp)\""),
     (
@@ -40,6 +40,7 @@ pub const PROGRAMS: [(&str, &str); 15] = [
         "passmenu",
         "PASSWORD_STORE_DIR=\"${PASSWORD_STORE_DIR}\" wofi-pass",
     ),
+    ("firefox-airvpn", "sudo -En firefox-airvpn"),
 ];
 
 fn parse_key_value_map<'a>(what: &'a str, v: Value) -> Result<Vec<(String, String)>, String> {

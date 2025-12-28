@@ -317,7 +317,8 @@ programms bookmarks =
     ("windows-vnc", "vncviewer 192.168.178.24:5900"),
     ("linux-vnc", "vncviewer localhost:9900"),
     ("remmina", "remmina"),
-    ("slack", "slack")
+    ("slack", "slack"),
+    ("firefox-airvpn" "sudo -En firefox-airvpn")
   ]
     ++ map (second browser) (normal bookmarks)
     ++ map (second vpnBrowser) (private bookmarks)

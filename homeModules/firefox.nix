@@ -7,13 +7,13 @@
 }:
 
 let
-  cfg = config.librewolf;
-  librewolf-addons = pkgs.nur.repos.rycee.firefox-addons;
+  cfg = config.firefox;
+  firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   ffreszoom =
     let
       version = "0.4";
     in
-    librewolf-addons.buildFirefoxXpiAddon {
+    firefox-addons.buildFirefoxXpiAddon {
       pname = "ffreszoom";
       inherit version;
       addonId = "{b2e3360c-a72c-4ba4-813c-603a1fa34356}";
@@ -31,7 +31,7 @@ let
     let
       version = "2.1";
     in
-    librewolf-addons.buildFirefoxXpiAddon {
+    firefox-addons.buildFirefoxXpiAddon {
       pname = "german_dictonary";
       inherit version;
       addonId = "de-DE@dictionaries.addons.mozilla.org";
@@ -45,7 +45,7 @@ let
       };
     };
   extensions =
-    with librewolf-addons;
+    with firefox-addons;
     [
       user-agent-string-switcher
       tridactyl
@@ -102,41 +102,80 @@ let
   };
 in
 {
-  options.librewolf = {
-    enable = lib.mkEnableOption (lib.mdDoc "Wether to use librewolf");
+  options = {
+    firefox = {
+      enable = lib.mkEnableOption (lib.mdDoc "Wether to use firefox");
+      additionalProfiles = lib.mkOption {
+        description = "Firefox profiles which have my extensions and settings as default";
+        default = { };
+        type = lib.types.attrsOf (
+          lib.types.submodule {
+            options.id = lib.mkOption {
+              type = lib.types.int;
+              description = "id of the profile";
+            };
 
-    additionalProfiles = lib.mkOption {
-      description = "Librewolf profiles which have my extensions and settings as default";
-      default = { };
-      type = lib.types.attrsOf (
-        lib.types.submodule {
-          options.id = lib.mkOption {
-            type = lib.types.int;
-            description = "id of the profile";
-          };
-
-        }
-      );
-    };
-  };
-  config = lib.mkIf cfg.enable {
-    programs.librewolf = {
-      enable = true;
-      profiles = lib.mkMerge [
-        {
-          default = {
-            settings = commonSettings;
-            extensions.packages = extensions;
-          };
-        }
-        (lib.flip lib.mapAttrs cfg.additionalProfiles (
-          _: v: {
-            id = v.id;
-            settings = commonSettings;
-            extensions.packages = extensions;
           }
-        ))
-      ];
+        );
+      };
+    };
+    librewolf = {
+      enable = lib.mkEnableOption (lib.mdDoc "Wether to use librewolf");
+      additionalProfiles = lib.mkOption {
+        description = "Librewolf profiles which have my extensions and settings as default";
+        default = { };
+        type = lib.types.attrsOf (
+          lib.types.submodule {
+            options.id = lib.mkOption {
+              type = lib.types.int;
+              description = "id of the profile";
+            };
+
+          }
+        );
+      };
     };
   };
+  config = lib.mkMerge [
+    (lib.mkIf config.firefox.enable {
+      programs.firefox = {
+        enable = true;
+        profiles = lib.mkMerge [
+          {
+            default = {
+              settings = commonSettings;
+              extensions.packages = extensions;
+            };
+          }
+          (lib.flip lib.mapAttrs config.firefox.additionalProfiles (
+            _: v: {
+              id = v.id;
+              settings = commonSettings;
+              extensions.packages = extensions;
+            }
+          ))
+        ];
+      };
+    })
+    (lib.mkIf config.librewolf.enable {
+      programs.librewolf = {
+        enable = true;
+        profiles = lib.mkMerge [
+          {
+            default = {
+              settings = commonSettings;
+              extensions.packages = extensions;
+            };
+          }
+          (lib.flip lib.mapAttrs config.librewolf.additionalProfiles (
+            _: v: {
+              id = v.id;
+              settings = commonSettings;
+              extensions.packages = extensions;
+            }
+          ))
+        ];
+      };
+    })
+  ];
 }

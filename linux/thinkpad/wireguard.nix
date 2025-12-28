@@ -47,6 +47,9 @@ in
         librewolfAirvpn = pkgs.writeScriptBin "librewolf-airvpn" ''
           ${runInNetworkNamespace} ${lib.getExe pkgs.librewolf} -P private --new-window ''${1}
         '';
+        firefoxAirvpn = pkgs.writeScriptBin "firefox-airvpn" ''
+          ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} -P private --new-window ''${1}
+        '';
       in
       {
 
@@ -95,12 +98,29 @@ in
               }}
             '';
           }
+          {
+            pkgs = [ firefoxAirvpn ];
+            rules = ''
+              network,
+              ${lib.apparmor.generateFileRules {
+                allows = [ "firefox" ];
+                inherit config;
+              }}
+            '';
+          }
         ];
         security.sudo.extraRules = [
           {
             commands = [
               {
                 command = "/run/current-system/sw/bin/librewolf-airvpn";
+                options = [
+                  "SETENV"
+                  "NOPASSWD"
+                ];
+              }
+              {
+                command = "/run/current-system/sw/bin/firefox-airvpn";
                 options = [
                   "SETENV"
                   "NOPASSWD"
@@ -113,6 +133,10 @@ in
         ];
         home-manager.users.florian = {
           librewolf = {
+            enable = true;
+            additionalProfiles.private.id = 2;
+          };
+          firefox = {
             enable = true;
             additionalProfiles.private.id = 2;
           };
