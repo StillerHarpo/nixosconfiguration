@@ -281,6 +281,7 @@ in
       mode = "400";
     };
     home-manager.users.florian.programs.mpv = {
+      package = pkgs.mpv-unwrapped.override { sdl2Support = true; };
       enable = true;
       config = {
         input-gamepad = true;

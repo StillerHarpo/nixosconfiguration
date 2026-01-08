@@ -19,7 +19,6 @@
           collection-basic
           ;
       };
-    mpv = prev.mpv-unwrapped.override { sdl2Support = true; };
     pass = prev.pass.override {
       dmenu = prev.writeScriptBin "dmenu" ''${prev.rofi}/bin/rofi -dmenu "$@"'';
     };
