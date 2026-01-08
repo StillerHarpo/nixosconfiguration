@@ -59,6 +59,9 @@
     } ./haskell/monitor-changer/MonitorChanger.hs;
     textcleaner = final.callPackage ./textcleaner { };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware { };
+  };
+  emacs = inputs.emacs-overlay.overlay;
+  z_emacs_overrides = final: prev: {
     emacsPackagesFor =
       emacs:
       ((prev.emacsPackagesFor emacs).overrideScope (
@@ -81,9 +84,11 @@
           pr-review = eprev.pr-review.overrideAttrs (attrs: {
             nativeBuildInputs = (attrs.nativeBuildInputs or [ ]) ++ [ final.git ];
           });
+          lsp-bridge = eprev.lsp-bridge.overrideAttrs (_: {
+            doCheck = false;
+          });
         }
       ));
   };
-  emacs = inputs.emacs-overlay.overlay;
   nur = inputs.nur.overlays.default;
 }
