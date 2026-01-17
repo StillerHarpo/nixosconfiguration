@@ -45,10 +45,10 @@ in
       let
         runInNetworkNamespace = "nsenter --net=/var/run/netns/airvpnns sudo -E -u florian -g users";
         librewolfAirvpn = pkgs.writeScriptBin "librewolf-airvpn" ''
-          ${runInNetworkNamespace} ${lib.getExe pkgs.librewolf} --private-window ''${1}
+          ${runInNetworkNamespace} ${lib.getExe pkgs.librewolf} -P private --new-window ''${1}
         '';
         firefoxAirvpn = pkgs.writeScriptBin "firefox-airvpn" ''
-          ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} --private-window ''${1}
+          ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} -P private --private-window ''${1}
         '';
       in
       {
