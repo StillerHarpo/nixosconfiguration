@@ -7,8 +7,8 @@ use std::process::{Command, Stdio};
 use swayipc::Connection;
 use swayipc::Node;
 
-const BROWSE: &str = "librewolf -new-window ";
-const WORK_BROWSE: &str = "librewolf -P work -new-window ";
+const BROWSE: &str = "librewolf --new-window ";
+const WORK_BROWSE: &str = "librewolf -P work --new-window ";
 const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
 
 pub const PROGRAMS: [(&str, &str); 16] = [
@@ -73,14 +73,12 @@ fn parse_bookmarks() -> Result<Vec<(String, String)>, String> {
                             .map(|v| (v.0, format!("{} {}", BROWSE, v.1)))
                             .collect::<Vec<_>>())
                     } else if kv.0 == "work" {
-                        // TODO add private librewolf
                         let key_values = parse_key_value_map("work", kv.1)?;
                         Ok(key_values
                             .into_iter()
                             .map(|v| (v.0, format!("{} {}", WORK_BROWSE, v.1)))
                             .collect::<Vec<_>>())
                     } else if kv.0 == "private" {
-                        // TODO add private librewolf
                         let key_values = parse_key_value_map("private", kv.1)?;
                         Ok(key_values
                             .into_iter()

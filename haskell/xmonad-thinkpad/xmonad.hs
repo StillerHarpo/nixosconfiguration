@@ -106,7 +106,7 @@ main = do
               spawn "systemctl --user start themeChange"
               spawn "autorandr --cycle"
               spawnOn "1" "signal-desktop"
-              spawnOn "2" "librewolf -new-window https://web.whatsapp.com"
+              spawnOn "2" "librewolf --new-window https://web.whatsapp.com"
           }
         `additionalKeys` ( [ ((0, 0x1008ff13), volume Plus),
                              ((0, 0x1008ff11), volume Minus),
@@ -393,7 +393,7 @@ mkBrowser myBrowser url = myBrowser <> " \"" <> urlWithSearch <> "\""
 
 -- | open url in browser with specified profile
 browserWithProfile :: Text -> Text -> Text
-browserWithProfile profile = mkBrowser $ "librewolf -P " <> profile <> " -new-window \""
+browserWithProfile profile = mkBrowser $ "librewolf -P " <> profile <> " --new-window \""
 
 -- | open url in browser
 browser :: Text -> Text
