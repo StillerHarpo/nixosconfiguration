@@ -1,15 +1,37 @@
-{ config, pkgs, private, lib, ... }:
+{
+  config,
+  pkgs,
+  private,
+  lib,
+  ...
+}:
 
 let
   cfg = config.mail;
 
   mkMail =
-    { addressPrefix ? "", host ? "", address ? "${addressPrefix}@${host}"
-    , userName ? address, imapHost ? "imap.${host}", smtpHost ? "smtp.${host}"
-    , realName, key ? "", aliases ? [],
-      passPath, primary ? false, patterns ? [ "*" ]
-    }: {
-      inherit address realName primary userName aliases;
+    {
+      addressPrefix ? "",
+      host ? "",
+      address ? "${addressPrefix}@${host}",
+      userName ? address,
+      imapHost ? "imap.${host}",
+      smtpHost ? "smtp.${host}",
+      realName,
+      key ? "",
+      aliases ? [ ],
+      passPath,
+      primary ? false,
+      patterns ? [ "*" ],
+    }:
+    {
+      inherit
+        address
+        realName
+        primary
+        userName
+        aliases
+        ;
       imap.host = imapHost;
       smtp = {
         host = smtpHost;
@@ -89,7 +111,10 @@ in
           # anyway
           # Either Gmail removed Entw&APw-rfe this or its a bug. It is
           # probably a bug because it happens after a major update of nixos
-          patterns = ["*" "![Gmail]/Entw&APw-rfe"];
+          patterns = [
+            "*"
+            "![Gmail]/Entw&APw-rfe"
+          ];
           passPath = config.age.secrets.gmail.path;
         };
         cpMedOld = mkMail {
@@ -100,22 +125,25 @@ in
             private.workMailAlt
           ];
           host = "gmail.com";
-          patterns = [ "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" ];
+          patterns = [
+            "INBOX"
+            "[Gmail]/Sent Mail"
+            "[Gmail]/Starred"
+          ];
           passPath = config.age.secrets.workMail.path;
         };
       };
       systemd.user = {
         services.update-mail.Service = {
           Environment = "PATH=${pkgs.coreutils-full}/bin";
-          ExecStart =
-            pkgs.writeShellScript "update-mail" ''
-              ${lib.getExe config.home-manager.users.florian.programs.mbsync.package} -a
-              ${lib.getExe pkgs.notmuch} new --decrypt=false
-              MAIL_NUM=$(${lib.getExe pkgs.notmuch} search tag:unread | wc -l)
-              if [[ $MAIL_NUM > 0 ]]; then
-                ${lib.getExe pkgs.libnotify} "You got $MAIL_NUM new mails"
-              fi
-            '';
+          ExecStart = pkgs.writeShellScript "update-mail" ''
+            ${lib.getExe config.home-manager.users.florian.programs.mbsync.package} -a
+            ${lib.getExe pkgs.notmuch} new --decrypt=false
+            MAIL_NUM=$(${lib.getExe pkgs.notmuch} search tag:unread | wc -l)
+            if [[ $MAIL_NUM > 0 ]]; then
+              ${lib.getExe pkgs.libnotify} "You got $MAIL_NUM new mails"
+            fi
+          '';
         };
         timers.update-mail = {
           Timer = {
@@ -128,22 +156,28 @@ in
       };
     };
     security.apparmor.policies.mails.profile = ''
-       ${lib.getExe config.home-manager.users.florian.programs.mbsync.package} {
-         ${lib.apparmor.generateFileRules
-           { allows = [
-              "notmuch"
-              config.age.secrets.posteo.path
-              config.age.secrets.librem.path
-              config.age.secrets.gmail.path
-              config.age.secrets.workMail.path
-           ];
-             inherit config;
-           }}
-         network,
-       }
-       ${lib.getExe pkgs.notmuch} {
-         ${lib.apparmor.generateFileRules { allows = [ "notmuch" "gnupg"] ; inherit config; }}
-       }
+      ${lib.getExe config.home-manager.users.florian.programs.mbsync.package} {
+        ${lib.apparmor.generateFileRules {
+          allows = [
+            "notmuch"
+            config.age.secrets.posteo.path
+            config.age.secrets.librem.path
+            config.age.secrets.gmail.path
+            config.age.secrets.workMail.path
+          ];
+          inherit config;
+        }}
+        network,
+      }
+      ${lib.getExe pkgs.notmuch} {
+        ${lib.apparmor.generateFileRules {
+          allows = [
+            "notmuch"
+            "gnupg"
+          ];
+          inherit config;
+        }}
+      }
     '';
   };
 }
