@@ -24,7 +24,9 @@ trivialBuild {
           nix-jdk-path "${jdk}/bin/java"
           nix-languagetool-path "${languagetool}"
           nix-workmail "${private.workMail}"
-          nix-workmail-signature "${lib.replaceStrings ["\n"] ["\\n"] private.workSignature}")
+          nix-workmail-alt "${private.workMailAlt}"
+          nix-workmail-old "${private.workMailOld}"
+          nix-workmail-signature "${lib.replaceStrings [ "\n" ] [ "\\n" ] private.workSignature}")
 
     (provide 'my-nix-variables)
   '';

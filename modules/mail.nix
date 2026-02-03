@@ -95,7 +95,10 @@ in
         cpMedOld = mkMail {
           inherit realName key;
           address = private.workMailOld;
-          aliases = [ private.workMail ];
+          aliases = [
+            private.workMail
+            private.workMailAlt
+          ];
           host = "gmail.com";
           patterns = [ "INBOX" "[Gmail]/Sent Mail" "[Gmail]/Starred" ];
           passPath = config.age.secrets.workMail.path;

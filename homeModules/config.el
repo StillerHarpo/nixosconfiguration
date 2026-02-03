@@ -1117,12 +1117,18 @@ a priority cookie and tags in the standard locations."
     "Open notmuch in search mode"
     (interactive)
      (notmuch-search "tag:inbox and date:3M..today"))
+  (defun my/notmuch-get-mail-signature ()
+    "Get signature for mail"
+    (if (-any
+	 (lambda (address)
+	   (string=  from address))
+	 `(,nix-workmail ,nix-workmail-alt ,nix-workmail-old)) nix-workmail-signature ""))
    ;;;###autoload
   (defun +notmuch/compose ()
     "Compose new mail"
     (interactive)
     (let* ((from (completing-read "From: " (notmuch-user-emails)))
-          (mail-signature (if (string= from nix-workmail) nix-workmail-signature "")))
+          (mail-signature (my/notmuch-get-mail-signature)))
       (notmuch-mua-mail
        nil
        nil
@@ -1132,16 +1138,19 @@ a priority cookie and tags in the standard locations."
      "Add trash label to mail"
      (interactive)
      (notmuch-search-add-tag '("+trash" "-inbox" "-flagged" "-unread")))
-   (advice-mapc (lambda (a r) (advice-remove 'notmuch-show-reply-sender a)) 'notmuch-show-reply-sender)
-   (advice-mapc (lambda (a r) (advice-remove 'notmuch-show-reply a)) 'notmuch-show-reply)
+   (defun notmuch-add-mail-signature (&rest args)
+     "add mail signature to reply"
+     (let* ((from (message-sendmail-envelope-from))
+	    (mail-signature (my/notmuch-get-mail-signature)))
+       (mail-signature)))
+   (advice-add
+    'notmuch-show-reply
+    :after
+    #'notmuch-add-mail-signature)
    (advice-add
     'notmuch-show-reply-sender
     :after
-    (lambda
-     (&rest args)
-     (let* ((from (message-sendmail-envelope-from))
-           (mail-signature (if (-any (lambda (address) (string=  from address)) `(,nix-workmail "engel@medilyse.org")) nix-workmail-signature "")))
-       (mail-signature))))
+    #'notmuch-add-mail-signature)
   :general
   (:states '(normal visual)
    :prefix "SPC"
