@@ -1978,3 +1978,10 @@ If I let Windows handle DPI everything looks blurry."
 (use-package elpher)
 
 (setq yaml-indent-offset 2)
+
+(defun eww-insert ()
+  (interactive)
+  "insert in form"
+  (evil-insert-state)
+  (evil-paste-after 1)
+  (evil-normal-state))
