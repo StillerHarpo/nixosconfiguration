@@ -242,7 +242,6 @@ in
               you-get
               xosd
               pandoc
-              mytexlive
               python3Packages.pygments
               anki
               nix-prefetch-git
@@ -390,6 +389,7 @@ in
               feh
               litecli
               csvs-to-sqlite
+              mytexlive
             ];
             rules = ''
               ${lib.apparmor.generateFileRules {
