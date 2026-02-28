@@ -130,6 +130,7 @@ in
           hash = "sha256-0ynous5tUVF+0IJIPR+DKMkQKwtMCkzYHCu4VzzuYyQ=";
         };
       }))
+      sqlite
     ];
   };
 
@@ -249,7 +250,7 @@ in
           cargoLock = {
             lockFile = ../../rust/mediamenu/Cargo.lock;
             outputHashes = {
-              "mediathekviewtui-0.1.0" = "sha256-6aox5XNoK9ITsVliApMomZBz/8f9dUPjukmSfZZ1v8M=";
+              "mediathekviewtui-0.1.0" = "sha256-kEtugakpT1C/kUil8m5NdZ1MmiHqa9/pSZ3hc/MI9tk=";
               "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
             };
           };
@@ -305,6 +306,7 @@ in
         "GAMEPAD_ACTION_RIGHT" = "quit";
         "GAMEPAD_ACTION_LEFT" = "run ${lib.getExe pkgs.pamixer} --set-volume 100";
         "GAMEPAD_LEFT_TRIGGER" = "cycle sid";
+        "GAMEPAD_RIGHT_TRIGGER" = "cycle sid down";
       };
       profiles.external-monitor = {
         video-rotate = 0;
