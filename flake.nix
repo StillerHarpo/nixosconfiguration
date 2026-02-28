@@ -53,7 +53,6 @@
       url = "github:Mic92/envfs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     darwin = {
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -66,30 +65,30 @@
       };
     };
   };
-  outputs = inputs@{ self, ... }:
+  outputs =
+    inputs@{ self, ... }:
 
     let
       inherit (self) outputs;
-      lib =
-        (inputs.nixpkgs.lib.extend (_: _: inputs.home-manager-flake.lib)).extend
-        (import ./mylib);
+      lib = (inputs.nixpkgs.lib.extend (_: _: inputs.home-manager-flake.lib)).extend (import ./mylib);
 
       thinkpad-modules = [
         inputs.nixpkgs.nixosModules.notDetected
         inputs.home-manager-flake.nixosModules.home-manager
         {
           home-manager = {
-            users.florian = { pkgs, config, ... }: {
-              imports = [ outputs.homeModules ];
-              xdg = {
-                enable = true;
-                configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
+            users.florian =
+              { pkgs, config, ... }:
+              {
+                imports = [ outputs.homeModules ];
+                xdg = {
+                  enable = true;
+                  configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
+                };
+                home.sessionVariables.NIX_PATH = "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs\${NIX_PATH:+:$NIX_PATH}";
+                # Das enthält nicht die overlays
+                nix.registry.nixpkgs.flake = inputs.nixpkgs;
               };
-              home.sessionVariables.NIX_PATH =
-                "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs\${NIX_PATH:+:$NIX_PATH}";
-              # Das enthält nicht die overlays
-              nix.registry.nixpkgs.flake = inputs.nixpkgs;
-            };
             extraSpecialArgs = {
               inherit inputs outputs;
               lib = lib.extend (_: _: inputs.home-manager-flake.lib);
@@ -108,7 +107,9 @@
       };
       fakePrivate = import ./fakePrivate.nix;
 
-      mkNixosRpi4 = private: inputs.nixpkgs.lib.nixosSystem {
+      mkNixosRpi4 =
+        private:
+        inputs.nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit inputs outputs private;
           };
@@ -122,9 +123,16 @@
           ];
         };
 
-      mkFlosDeck = private: inHydra: inputs.nixpkgs-unstable.lib.nixosSystem {
+      mkFlosDeck =
+        private: inHydra:
+        inputs.nixpkgs-unstable.lib.nixosSystem {
           specialArgs = {
-            inherit inputs outputs private inHydra;
+            inherit
+              inputs
+              outputs
+              private
+              inHydra
+              ;
           };
           modules = [
             inputs.jovian.nixosModules.jovian
@@ -135,7 +143,9 @@
             outputs.nixosModules
           ];
         };
-      mkNixosThinkpad = private: inputs.nixpkgs.lib.nixosSystem {
+      mkNixosThinkpad =
+        private:
+        inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
           specialArgs = thinkpad-specialArgs // {
             inherit private;
@@ -144,7 +154,8 @@
             inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
           ];
         };
-    in {
+    in
+    {
 
       overlays = import ./overlays.nix { inherit inputs outputs; };
 
@@ -160,54 +171,66 @@
           inherit lib;
           specialArgs = thinkpad-specialArgs // {
             private = fakePrivate;
-          } ;
+          };
           modules = thinkpad-modules ++ [
-            ({ pkgs, lib, config, ... }: {
-              config = lib.mkMerge [
-                { isRealSystem = false; }
-                (lib.mkIf config.wayland.enable {
-                  virtualisation.vmVariant = {
-                    virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
-                  };
-                })
-              ];
-            })
+            (
+              {
+                pkgs,
+                lib,
+                config,
+                ...
+              }:
+              {
+                config = lib.mkMerge [
+                  { isRealSystem = false; }
+                  (lib.mkIf config.wayland.enable {
+                    virtualisation.vmVariant = {
+                      virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                    };
+                  })
+                ];
+              }
+            )
           ];
         };
 
         minimalVM = inputs.nixpkgs.lib.nixosSystem {
           modules = [
-            ({ pkgs, lib, ... }: {
-              services.xserver = {
-                enable = true;
-                windowManager.i3.enable = true;
-                displayManager =  {
-                  defaultSession = "none+i3";
-                  autoLogin = {
-                    enable = true;
-                    user = "florian";
+            (
+              { pkgs, lib, ... }:
+              {
+                services.xserver = {
+                  enable = true;
+                  windowManager.i3.enable = true;
+                  displayManager = {
+                    defaultSession = "none+i3";
+                    autoLogin = {
+                      enable = true;
+                      user = "florian";
+                    };
                   };
                 };
-              };
 
-              users = {
-                mutableUsers = false;
                 users = {
-                  florian = {
-                    isNormalUser = true;
-                    extraGroups = [ "wheel" "audio" "video" ];
-                    hashedPasswordFile = 
-                      "${pkgs.writeText "password"
-                        "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+                  mutableUsers = false;
+                  users = {
+                    florian = {
+                      isNormalUser = true;
+                      extraGroups = [
+                        "wheel"
+                        "audio"
+                        "video"
+                      ];
+                      hashedPasswordFile = "${pkgs.writeText "password" "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+                    };
                   };
                 };
-              };
-              nixpkgs.hostPlatform = "x86_64-linux";
-              system.stateVersion = "24.11";
-            })
+                nixpkgs.hostPlatform = "x86_64-linux";
+                system.stateVersion = "24.11";
+              }
+            )
           ];
         };
-          
 
         desktop = inputs.nixpkgs.lib.nixosSystem {
           specialArgs = {
@@ -228,7 +251,7 @@
         };
 
         nixosRpi4 = mkNixosRpi4 (import ./private.nix);
-        
+
         flosDeck = mkFlosDeck (import ./private.nix) false;
 
         rpi2 = inputs.nixpkgs.lib.nixosSystem {
@@ -245,19 +268,17 @@
                 ];
               };
               system.stateVersion = "24.11";
-              boot.supportedFilesystems =
-                inputs.nixpkgs.legacyPackages."x86_64-linux".lib.mkForce [
-                  "btrfs"
-                  "reiserfs"
-                  "vfat"
-                  "f2fs"
-                  "xfs"
-                  "ntfs"
-                  "cifs"
-                ];
+              boot.supportedFilesystems = inputs.nixpkgs.legacyPackages."x86_64-linux".lib.mkForce [
+                "btrfs"
+                "reiserfs"
+                "vfat"
+                "f2fs"
+                "xfs"
+                "ntfs"
+                "cifs"
+              ];
               nixpkgs = {
-                pkgs =
-                  inputs.nixpkgs.legacyPackages."x86_64-linux".pkgsCross.armv7l-hf-multiplatform;
+                pkgs = inputs.nixpkgs.legacyPackages."x86_64-linux".pkgsCross.armv7l-hf-multiplatform;
                 overlays = [
                   (prev: final: {
                     libxcrypt = final.libxcrypt.overrideAttrs (oldAttrs: {
@@ -276,15 +297,14 @@
       };
 
       hydraJobs = {
-        nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel)
-          { nixosRpi4 = mkNixosRpi4 fakePrivate;
-            flosDeck = mkFlosDeck fakePrivate true;
-            nixosThinkpad = mkNixosThinkpad fakePrivate;
-          };
+        nixosConfigurations = builtins.mapAttrs (_: value: value.config.system.build.toplevel) {
+          nixosRpi4 = mkNixosRpi4 fakePrivate;
+          flosDeck = mkFlosDeck fakePrivate true;
+          nixosThinkpad = mkNixosThinkpad fakePrivate;
+        };
         deploy-rs = inputs.deploy-rs.packages.x86_64-linux.deploy-rs;
         deploy-rs-aarch64-linux = inputs.deploy-rs.packages.aarch64-linux.deploy-rs;
       };
-
 
       images.rpi2 = self.nixosConfigurations.rpi2.config.system.build.sdImage;
 
@@ -295,8 +315,7 @@
             user = "root";
             sshUser = "root";
             remoteBuild = true;
-            path = inputs.deploy-rs.lib.aarch64-linux.activate.nixos
-              self.nixosConfigurations.nixosRpi4;
+            path = inputs.deploy-rs.lib.aarch64-linux.activate.nixos self.nixosConfigurations.nixosRpi4;
           };
         };
         flosDeck = {
@@ -307,28 +326,34 @@
             remoteBuild = true;
             autoRollback = false;
             magicRollback = false;
-            path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos
-              self.nixosConfigurations.flosDeck;
+            path = inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.flosDeck;
           };
         };
       };
 
       # This is highly advised, and will prevent many possible mistakes
-      checks = lib.recursiveUpdate (builtins.mapAttrs
-        (system: deployLib: deployLib.deployChecks self.deploy)
-        inputs.deploy-rs.lib) {
-          x86_64-linux.screenlocker =
-            (import "${inputs.nixpkgs}/nixos/lib" { }).runTest {
+      checks =
+        lib.recursiveUpdate
+          (builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib)
+          {
+            x86_64-linux.screenlocker = (import "${inputs.nixpkgs}/nixos/lib" { }).runTest {
               name = "screenlocker";
-              nodes.machine = { pkgs, lib, config, ... }: {
-                imports = thinkpad-modules;
-                config = lib.mkMerge [
-                  { isRealSystem = false; }
-                  (lib.mkIf config.wayland.enable {
-                   virtualisation.vmVariant.virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
-                  })
-                ];
-              };
+              nodes.machine =
+                {
+                  pkgs,
+                  lib,
+                  config,
+                  ...
+                }:
+                {
+                  imports = thinkpad-modules;
+                  config = lib.mkMerge [
+                    { isRealSystem = false; }
+                    (lib.mkIf config.wayland.enable {
+                      virtualisation.vmVariant.virtualisation.qemu.options = [ "-vga none -device virtio-gpu-pci" ];
+                    })
+                  ];
+                };
               node.specialArgs = thinkpad-specialArgs // {
                 inherit lib;
                 pkgs = outputs.packages."x86_64-linux";
@@ -337,54 +362,80 @@
               testScript = import ./checks.nix;
               hostPkgs = outputs.packages."x86_64-linux";
             };
-        };
+          };
       darwinConfigurations."Florians-MBP" = inputs.darwin.lib.darwinSystem {
         modules = [
           ./mac/configuration.nix
           inputs.home-manager-flake.darwinModules.home-manager
         ];
       };
-    } // inputs.flake-utils.lib.eachDefaultSystem (system: {
-      packages = import inputs.nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-        overlays = builtins.attrValues outputs.overlays;
-      } // {
-        my-install-iso = inputs.nixos-generators.nixosGenerate {
-          system = system;
-          modules = [{
-            users.users.root.openssh.authorizedKeys.keys = import linux/thinkpad/sshKeys.nix;
-          }];
-          format = "install-iso";
+    }
+    // inputs.flake-utils.lib.eachDefaultSystem (system: {
+      packages =
+        import inputs.nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = builtins.attrValues outputs.overlays;
+        }
+        // {
+          my-install-iso = inputs.nixos-generators.nixosGenerate {
+            system = system;
+            modules = [
+              {
+                users.users.root.openssh.authorizedKeys.keys = import linux/thinkpad/sshKeys.nix;
+              }
+            ];
+            format = "install-iso";
+          };
         };
-      };
       legacyPackages = outputs.packages."${system}";
       devShells.default =
-        let pkgs = outputs.packages."${system}";
-        in (pkgs.haskellPackages.developPackage {
+        let
+          pkgs = outputs.packages."${system}";
+        in
+        (pkgs.haskellPackages.developPackage {
           returnShellEnv = true;
           root = ./.;
           withHoogle = false;
-          modifier = drv:
+          modifier =
+            drv:
             pkgs.haskell.lib.overrideCabal drv (attrs: {
               buildTools =
-                (attrs.buildTools or [ ]) ++
-                (with pkgs; [
-                  cabal-install haskell-language-server hlint
+                (attrs.buildTools or [ ])
+                ++ (with pkgs; [
+                  cabal-install
+                  haskell-language-server
+                  hlint
                 ]);
             });
-          overrides = _: hPrev : {
-            net-mqtt = pkgs.haskell.lib.doJailbreak (hPrev.net-mqtt.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; }));
+          overrides = _: hPrev: {
+            net-mqtt = pkgs.haskell.lib.doJailbreak (
+              hPrev.net-mqtt.overrideAttrs (attrs: {
+                meta = attrs.meta // {
+                  broken = false;
+                };
+              })
+            );
           };
-        }).overrideAttrs (_: previousAttrs: {
-          buildInputs =
-            previousAttrs.buildInputs ++
-            (with pkgs; [
-              cargo rustc rustfmt pre-commit rustPackages.clippy
-              rust-analyzer pkg-config libxkbcommon openssl.dev
-              systemd.dev
-            ]);
-          RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
-        });
+        }).overrideAttrs
+          (
+            _: previousAttrs: {
+              buildInputs =
+                previousAttrs.buildInputs
+                ++ (with pkgs; [
+                  cargo
+                  rustc
+                  rustfmt
+                  pre-commit
+                  rustPackages.clippy
+                  rust-analyzer
+                  pkg-config
+                  libxkbcommon
+                  openssl.dev
+                  systemd.dev
+                ]);
+              RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
+            }
+          );
     });
 }
