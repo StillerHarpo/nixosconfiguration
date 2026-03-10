@@ -13,7 +13,10 @@ const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
 
 pub const PROGRAMS: [(&str, &str); 16] = [
     ("librewolf", "librewolf"),
-    ("grim (screenshot to file)", "grim -g \"$(slurp)\""),
+    (
+        "grim (screenshot to file)",
+        "GRIM_DEFAULT_DIR=~/screenshots/ grim -g \"$(slurp)\"",
+    ),
     (
         "grim (screenshot to clipboard)",
         "grim -g \"$(slurp)\" - | wl-copy",
