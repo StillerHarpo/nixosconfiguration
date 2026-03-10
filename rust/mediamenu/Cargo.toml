@@ -25,6 +25,7 @@ regex = "1.12.3"
 simple-regex = "1.0.1"
 env_logger = "0.11.9"
 log = "0.4.29"
+sdl2 = "0.38.0"
 
 [features]
 real = []

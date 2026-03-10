@@ -245,12 +245,13 @@ in
           buildInputs = [
             pkgs.openssl.dev
             pkgs.systemd.dev
+            pkgs.SDL2.dev
           ];
           nativeBuildInputs = [ pkgs.pkg-config ];
           cargoLock = {
             lockFile = ../../rust/mediamenu/Cargo.lock;
             outputHashes = {
-              "mediathekviewtui-0.1.0" = "sha256-kEtugakpT1C/kUil8m5NdZ1MmiHqa9/pSZ3hc/MI9tk=";
+              "mediathekviewtui-0.1.0" = "sha256-0PQWf0UxEN/CEcNIQvybe9rgmz1mrj5muEsp/SpD9kw=";
               "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
             };
           };

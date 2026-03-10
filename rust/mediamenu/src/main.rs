@@ -3,16 +3,14 @@ mod searches;
 
 use battery::{Error, Manager};
 use chrono::Local;
-use crokey::key;
 use crossterm::event::{self, Event};
 use crossterm::terminal::ClearType;
 use crossterm::ExecutableCommand;
 use directories::BaseDirs;
 use env_logger::Target;
-use gilrs::Button;
 use log::error;
 use mediathekviewtui::run_app;
-use mediathekviewtui::types::{AppConfig, Binding, KeyAction, ParsableKeyAction};
+use mediathekviewtui::types::{AppConfig, KeyAction, ParsableKeyAction};
 use ratatui::layout::Constraint::{Length, Min};
 use ratatui::layout::{Alignment, Constraint, Direction, Flex, Layout, Rect};
 use ratatui::style::Color;
@@ -23,6 +21,7 @@ use ratatui::{
     widgets::{List, ListItem, ListState},
     Frame,
 };
+use sdl2::controller::Button;
 #[cfg(feature = "real")]
 use searches::mk_searches;
 use simple_regex::RegexBuilder;
@@ -141,55 +140,49 @@ async fn main() {
                                         player: &String::from("mpv"),
                                         player_args: &None,
                                         enable_continue_watching: true,
-                                        keybindings: &HashMap::from([
+                                        sdl_controller_button_bindings: &HashMap::from([
                                             (
-                                                Binding::KeyboardKey(key!(down)),
+                                                Button::DPadDown,
                                                 KeyAction::ParsableKeyAction(
                                                     ParsableKeyAction::Down,
                                                 ),
                                             ),
                                             (
-                                                Binding::KeyboardKey(key!(up)),
+                                                Button::DPadUp,
                                                 KeyAction::ParsableKeyAction(ParsableKeyAction::Up),
                                             ),
                                             (
-                                                Binding::KeyboardKey(key!(left)),
+                                                Button::DPadLeft,
                                                 KeyAction::ParsableKeyAction(
                                                     ParsableKeyAction::Left,
                                                 ),
                                             ),
                                             (
-                                                Binding::KeyboardKey(key!(right)),
+                                                Button::DPadRight,
                                                 KeyAction::ParsableKeyAction(
                                                     ParsableKeyAction::Right,
                                                 ),
                                             ),
                                             (
-                                                Binding::KeyboardKey(key!(esc)),
-                                                KeyAction::ParsableKeyAction(
-                                                    ParsableKeyAction::Quit,
-                                                ),
-                                            ),
-                                            (
-                                                Binding::KeyboardKey(key!(enter)),
+                                                Button::A,
                                                 KeyAction::ParsableKeyAction(
                                                     ParsableKeyAction::Open,
                                                 ),
                                             ),
                                             (
-                                                Binding::GamepadButton(Button::North),
+                                                Button::B,
+                                                KeyAction::ParsableKeyAction(
+                                                    ParsableKeyAction::Quit,
+                                                ),
+                                            ),
+                                            (
+                                                Button::Y,
                                                 KeyAction::ParsableKeyAction(
                                                     ParsableKeyAction::Download,
                                                 ),
                                             ),
                                             (
-                                                Binding::GamepadButton(Button::RightTrigger),
-                                                KeyAction::ParsableKeyAction(
-                                                    ParsableKeyAction::RemoveItem,
-                                                ),
-                                            ),
-                                            (
-                                                Binding::GamepadButton(Button::West),
+                                                Button::X,
                                                 KeyAction::SearchWithInitial(Box::new(|item| {
                                                     item.map_or("".to_string(), |i| {
                                                         let series_regex = RegexBuilder::new()
@@ -221,12 +214,19 @@ async fn main() {
                                                 })),
                                             ),
                                             (
-                                                Binding::GamepadButton(Button::LeftTrigger),
+                                                Button::RightShoulder,
+                                                KeyAction::ParsableKeyAction(
+                                                    ParsableKeyAction::RemoveItem,
+                                                ),
+                                            ),
+                                            (
+                                                Button::LeftShoulder,
                                                 KeyAction::ParsableKeyAction(
                                                     ParsableKeyAction::DeleteView,
                                                 ),
                                             ),
                                         ]),
+                                        keybindings: &HashMap::new(),
                                     };
                                     if let Err(err) = run_app(
                                         &mut terminal,
