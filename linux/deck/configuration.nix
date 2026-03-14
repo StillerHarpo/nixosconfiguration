@@ -251,8 +251,8 @@ in
           cargoLock = {
             lockFile = ../../rust/mediamenu/Cargo.lock;
             outputHashes = {
-              "mediathekviewtui-0.1.0" = "sha256-0PQWf0UxEN/CEcNIQvybe9rgmz1mrj5muEsp/SpD9kw=";
-              "jellytui-0.1.5" = "sha256-aCDz8RzvEJa7rP4dWefMTdW7/FkndHXxTbYG8WqARUs=";
+              "mediathekviewtui-0.1.0" = "sha256-XD7hK0gG8+r/muCJagzzqps/Syi9m07zE1nAOd5zGMs=";
+              "jellytui-0.1.5" = "sha256-9aHhbKNoLs2c3Tg5CK0tbyBy2oTdAD1SaNMmqU9lQrA=";
             };
           };
           buildFeatures = if inHydra then [ ] else [ "real" ];
