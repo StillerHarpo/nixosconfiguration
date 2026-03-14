@@ -96,7 +96,7 @@ in
       librespeed-cli
       xonotic
       airshipper
-      superTuxKart
+      supertuxkart
       prismlauncher
       luanti
       librewolf
