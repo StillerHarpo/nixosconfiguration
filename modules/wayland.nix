@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 with lib;
 
@@ -7,130 +12,150 @@ let
 
 in
 
-
 {
   options.wayland = {
     enable = mkEnableOption (lib.mdDoc "Wether to use wayland");
     autoLogin = mkEnableOption (lib.mdDoc "Wether to autologin into wayland");
   };
   config =
-    let swaylock = config.home-manager.users.florian.programs.swaylock.package;
-        swaymsg = lib.getExe' config.home-manager.users.florian.wayland.windowManager.sway.package "swaymsg";
-      in mkIf cfg.enable (
-    mkMerge [
+    let
+      swaylock = config.home-manager.users.florian.programs.swaylock.package;
+      swaymsg = lib.getExe' config.home-manager.users.florian.wayland.windowManager.sway.package "swaymsg";
+    in
+    mkIf cfg.enable (mkMerge [
       {
-        apparmor.systemPackages =
-          [ { pkgs = with pkgs; [
-                wl-clipboard
-                grim
-                slurp
-                adw-gtk3
-                adwaita-qt
-                adwaita-qt6
-                wdisplays
-              ];
-              rules = lib.apparmor.defaultRules config;
-            }
-            { pkgs = [pkgs.wofi-pass];
-              rules = ''
-                ${lib.getExe pkgs.pass-wayland} Px,
-                ${lib.apparmor.generateFileRules { allows = [ "pass" ]; inherit config; }}
-              '';
-            }
-            { pkgs = [swaylock];
-              rules = ''
-                capability audit_write,
-                ${lib.apparmor.generateFileRules { inherit config; }}
-              '';
-            }
-          ];
+        apparmor.systemPackages = [
+          {
+            pkgs = with pkgs; [
+              wl-clipboard
+              grim
+              slurp
+              adw-gtk3
+              adwaita-qt
+              adwaita-qt6
+              wdisplays
+            ];
+            rules = lib.apparmor.defaultRules config;
+          }
+          {
+            pkgs = [ pkgs.wofi-pass ];
+            rules = ''
+              ${lib.getExe pkgs.pass-wayland} Px,
+              ${lib.apparmor.generateFileRules {
+                allows = [ "pass" ];
+                inherit config;
+              }}
+            '';
+          }
+          {
+            pkgs = [ swaylock ];
+            rules = ''
+              capability audit_write,
+              ${lib.apparmor.generateFileRules { inherit config; }}
+            '';
+          }
+        ];
 
         hardware.graphics.enable = true;
 
-        home-manager.users.florian = { config, osConfig, ... }: {
+        home-manager.users.florian =
+          { config, osConfig, ... }:
+          {
 
-          programs = {
-            wofi.enable = true;
-            swaylock.enable = true;
-          };
-          services = {
-            gammastep = {
-              enable = true;
-              longitude = osConfig.location.longitude;
-              latitude = osConfig.location.latitude;
+            programs = {
+              wofi.enable = true;
+              swaylock.enable = true;
             };
-            swayidle = {
-              enable = true;
-              timeouts = [
-                { timeout = 900;
-                  command = ''${lib.getExe swaylock}; ${swaymsg} "output * power off"'';
-                  resumeCommand = ''${swaymsg} "output * power on; ${swaymsg} "output * enable"'';
-                }
-                { timeout = 5;
-                  command = ''if ${lib.getExe' pkgs.procps "pgrep"} swaylock; then ${swaymsg} "output * power off"; fi'';
-                  resumeCommand = ''${swaymsg} "output * power on"; ${swaymsg} "output * enable"'';
-                }
-              ];
-              events = [
-                { event = "before-sleep"; command = lib.getExe swaylock; }
-                { event = "lock"; command = lib.getExe swaylock; }
-              ];
+            services = {
+              gammastep = {
+                enable = true;
+                longitude = osConfig.location.longitude;
+                latitude = osConfig.location.latitude;
+              };
+              swayidle = {
+                enable = true;
+                timeouts = [
+                  {
+                    timeout = 900;
+                    command = ''${lib.getExe swaylock}; ${swaymsg} "output * power off"'';
+                    resumeCommand = ''${swaymsg} "output * power on; ${swaymsg} "output * enable"'';
+                  }
+                  {
+                    timeout = 5;
+                    command = ''if ${lib.getExe' pkgs.procps "pgrep"} swaylock; then ${swaymsg} "output * power off"; fi'';
+                    resumeCommand = ''${swaymsg} "output * power on"; ${swaymsg} "output * enable"'';
+                  }
+                ];
+                events = [
+                  {
+                    event = "before-sleep";
+                    command = lib.getExe swaylock;
+                  }
+                  {
+                    event = "lock";
+                    command = lib.getExe swaylock;
+                  }
+                ];
+              };
+              kanshi = {
+                enable = true;
+                settings = [
+                  {
+                    profile = {
+                      name = "default";
+                      outputs = [
+                        {
+                          criteria = "AU Optronics 0x2336 Unknown";
+                          position = "0,0";
+                          mode = "2560x1440@60.01";
+                        }
+                      ];
+                    };
+                  }
+                  {
+                    profile = {
+                      name = "home";
+                      outputs = [
+                        {
+                          criteria = "AU Optronics 0x2336 Unknown";
+                          position = "0,1080";
+                          mode = "2560x1440@60.01Hz";
+                          scale = 1.5;
+                        }
+                        {
+                          criteria = "BNQ BenQ GL2450H G6G05576019";
+                          position = "0,0";
+                          mode = "1920x1080@60.01Hz";
+                        }
+                      ];
+                    };
+                  }
+                  {
+                    profile = {
+                      name = "work";
+                      outputs = [
+                        {
+                          criteria = "AU Optronics 0x2336 Unknown";
+                          position = "1309,1440";
+                          mode = "2560x1440@60.01Hz";
+                          scale = 1.5;
+                        }
+                        {
+                          criteria = "Dell Inc. DELL U2721DE FJD1C23";
+                          position = "456,0";
+                          mode = "2560x1440@59.951Hz";
+                          scale = 1.0;
+                        }
+                      ];
+                    };
+                  }
+                ];
+              };
             };
-            kanshi = {
-              enable = true;
-              settings = [
-                {
-                  profile = {
-                    name = "default";
-                    outputs = [{
-                      criteria = "AU Optronics 0x2336 Unknown";
-                      position = "0,0";
-                      mode = "2560x1440@60.01";
-                    }];
-                  };
-                }
-                {
-                  profile = {
-                    name = "home";
-                    outputs = [
-                      {
-                        criteria = "AU Optronics 0x2336 Unknown";
-                        position = "0,1080";
-                        mode = "2560x1440@60.01Hz";
-                        scale = 1.5;
-                      }
-                      {
-                        criteria = "BNQ BenQ GL2450H G6G05576019";
-                        position = "0,0";
-                        mode = "1920x1080@60.01Hz";
-                      }
-                    ];
-                  };
-                }
-                { profile = {
-                    name = "work";
-                    outputs = [
-                      {
-                        criteria = "AU Optronics 0x2336 Unknown";
-                        position = "1309,1440";
-                        mode = "2560x1440@60.01Hz";
-                        scale = 1.5;
-                      }
-                      {
-                        criteria = "Dell Inc. DELL U2721DE FJD1C23";
-                        position = "456,0";
-                        mode = "2560x1440@59.951Hz";
-                        scale = 1.0;
-                      }
-                    ];
-                  };
-                }
-              ];
-            };
-          };
 
-          wayland.windowManager.sway =
-            let modifier = "Mod4";
+            wayland.windowManager.sway =
+              let
+                modifier = "Mod4";
                 dbus = "dbus-send --print-reply ";
                 dest = "--dest=org.mpris.MediaPlayer2.mpv ";
                 org = "/org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.";
@@ -139,79 +164,88 @@ in
                   src = ../rust/openorraise;
                   cargoLock.lockFile = ../rust/openorraise/Cargo.lock;
                 };
-            in {
+              in
+              {
+                enable = true;
+                extraSessionCommands = ''
+                  export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+                  export XDG_SESSION_TYPE=wayland
+                  export NIXOS_OZONE_WL=1
+                '';
+                wrapperFeatures.gtk = true;
+                systemd.enable = true;
+                config = {
+                  inherit modifier;
+                  keybindings = lib.mkMerge [
+                    (lib.mkIf config.services.emacs.enable (
+                      lib.mkOptionDefault {
+                        "${modifier}+n" = "exec ${config.services.emacs.package}/bin/emacsclient -c";
+                      }
+                    ))
+                    (lib.mkOptionDefault {
+                      "${modifier}+d" = "exec ${openorraise}/bin/openorraise";
+                      "XF86MonBrightnessDown" = "exec ${getExe pkgs.light} -U 10";
+                      "XF86MonBrightnessUp" = "exec ${getExe pkgs.light} -A 10";
+                      "XF86AudioRaiseVolume" = "exec 'pamixer -i 5'";
+                      "XF86AudioLowerVolume" = "exec 'pamixer -d 5'";
+                      "XF86AudioMute" = "exec 'paxmixer -t'";
+                      "${modifier}+p" = "exec '" + dbus + dest + org + "PlayPause'";
+                      "${modifier}+i" = "exec '" + dbus + dest + org + "Next'";
+                      "${modifier}+o" = "exec '" + dbus + dest + org + "Previous'";
+                    })
+                  ];
+                  input."type:keyboard" = {
+                    xkb_layout = "us";
+                    xkb_options = "eurosign:e,caps:escape";
+                    xkb_variant = "altgr-intl";
+                  };
+                  startup = [
+                    { command = "${lib.getExe pkgs.sway-contrib.inactive-windows-transparency}"; }
+                  ];
+                  window = {
+                    titlebar = false;
+                    border = 0;
+                    hideEdgeBorders = "both";
+                  };
+                  floating = {
+                    titlebar = false;
+                    border = 0;
+                  };
+                  terminal = "${osConfig.myUnprivilegedTerminal}";
+                  bars = [
+                    {
+                      mode = "hide";
+                      statusCommand = "${pkgs.i3status}/bin/i3status";
+                      fonts = {
+                        names = [ "monospace" ];
+                        size = 10.0;
+                      };
+                    }
+                  ];
+                };
+              };
+            xdg.portal = {
               enable = true;
-              extraSessionCommands = ''
-                export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-                export XDG_SESSION_TYPE=wayland
-                export NIXOS_OZONE_WL=1
-              '';
-              wrapperFeatures.gtk = true;
-              systemd.enable = true;
-              config = {
-                inherit modifier; 
-                keybindings = lib.mkMerge [
-                  (lib.mkIf config.services.emacs.enable (lib.mkOptionDefault {
-                    "${modifier}+n" = "exec ${config.services.emacs.package}/bin/emacsclient -c";
-                  }))
-                  (lib.mkOptionDefault {
-                    "${modifier}+d" = "exec ${openorraise}/bin/openorraise";
-                    "XF86MonBrightnessDown" = "exec ${getExe pkgs.light} -U 10";
-                    "XF86MonBrightnessUp" = "exec ${getExe pkgs.light} -A 10";
-                    "XF86AudioRaiseVolume" = "exec 'pamixer -i 5'";
-                    "XF86AudioLowerVolume" = "exec 'pamixer -d 5'";
-                    "XF86AudioMute" = "exec 'paxmixer -t'";
-                    "${modifier}+p" = "exec '" + dbus + dest + org + "PlayPause'";
-                    "${modifier}+i" = "exec '" + dbus + dest + org + "Next'";
-                    "${modifier}+o" = "exec '" + dbus + dest + org + "Previous'";
-                  })
-                ];
-                input."type:keyboard" = {
-                  xkb_layout = "us";
-                  xkb_options = "eurosign:e,caps:escape";
-                  xkb_variant = "altgr-intl";
-                };
-                startup = [
-                  { command = "${lib.getExe pkgs.sway-contrib.inactive-windows-transparency}"; }
-                ];
-                window = {
-                  titlebar = false;
-                  border = 0;
-                  hideEdgeBorders = "both";
-                };
-                floating = {
-                  titlebar = false;
-                  border = 0;
-                };
-                terminal = "${osConfig.myUnprivilegedTerminal}";
-                bars = [
-                  {
-                    mode = "hide";
-                    statusCommand = "${pkgs.i3status}/bin/i3status";
-                    fonts = {
-                      names = [ "monospace" ];
-                      size = 10.0;
-                    };
-                  }
-                ];
+              xdgOpenUsePortal = true;
+              extraPortals = [
+                pkgs.xdg-desktop-portal-wlr
+                pkgs.xdg-desktop-portal-gtk
+              ];
+              config.common = {
+                # use xdg-desktop-portal-gtk for every portal interface
+                default = "gtk";
+                # except for the xdg-desktop-portal-wlr supplied interfaces
+                # this are the only portals, that xdg-desktop-portal-wlr supports
+                "org.freedesktop.impl.portal.Screencast" = "wlr";
+                "org.freedesktop.impl.portal.Screenshot" = "wlr";
               };
             };
-          xdg.portal = {
-            enable = true;
-            xdgOpenUsePortal = true;
-            extraPortals = [pkgs.xdg-desktop-portal-wlr pkgs.xdg-desktop-portal-gtk];
-            config.common = {
-              # use xdg-desktop-portal-gtk for every portal interface
-              default="gtk";
-              # except for the xdg-desktop-portal-wlr supplied interfaces
-              # this are the only portals, that xdg-desktop-portal-wlr supports
-              "org.freedesktop.impl.portal.Screencast"="wlr";
-              "org.freedesktop.impl.portal.Screenshot"="wlr";
-            };
           };
-        };
-        environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
-        security.pam.services.swaylock = {};
+        environment.pathsToLink = [
+          "/share/xdg-desktop-portal"
+          "/share/applications"
+        ];
+        security.pam.services.swaylock = { };
       }
       (mkIf config.wayland.autoLogin {
         services.getty = {
