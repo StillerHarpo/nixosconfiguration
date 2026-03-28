@@ -251,7 +251,7 @@ in
           cargoLock = {
             lockFile = ../../rust/mediamenu/Cargo.lock;
             outputHashes = {
-              "mediathekviewtui-0.1.0" = "sha256-XD7hK0gG8+r/muCJagzzqps/Syi9m07zE1nAOd5zGMs=";
+              "mediathekviewtui-0.1.0" = "sha256-JaSj6u93Z6Rh+BWqNZ0bREIobPGRwckaqLL3v3kHVeo=";
               "jellytui-0.1.5" = "sha256-9aHhbKNoLs2c3Tg5CK0tbyBy2oTdAD1SaNMmqU9lQrA=";
             };
           };
