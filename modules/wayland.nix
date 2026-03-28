@@ -58,6 +58,22 @@ in
 
         hardware.graphics.enable = true;
 
+        xdg.portal = {
+          enable = true;
+          xdgOpenUsePortal = true;
+          extraPortals = [
+            pkgs.xdg-desktop-portal-wlr
+            pkgs.xdg-desktop-portal-gtk
+          ];
+          config.common = {
+            # use xdg-desktop-portal-gtk for every portal interface
+            default = "gtk";
+            # except for the xdg-desktop-portal-wlr supplied interfaces
+            # this are the only portals, that xdg-desktop-portal-wlr supports
+            "org.freedesktop.impl.portal.Screencast" = "wlr";
+            "org.freedesktop.impl.portal.Screenshot" = "wlr";
+          };
+        };
         home-manager.users.florian =
           { config, osConfig, ... }:
           {
@@ -224,22 +240,6 @@ in
                   ];
                 };
               };
-            xdg.portal = {
-              enable = true;
-              xdgOpenUsePortal = true;
-              extraPortals = [
-                pkgs.xdg-desktop-portal-wlr
-                pkgs.xdg-desktop-portal-gtk
-              ];
-              config.common = {
-                # use xdg-desktop-portal-gtk for every portal interface
-                default = "gtk";
-                # except for the xdg-desktop-portal-wlr supplied interfaces
-                # this are the only portals, that xdg-desktop-portal-wlr supports
-                "org.freedesktop.impl.portal.Screencast" = "wlr";
-                "org.freedesktop.impl.portal.Screenshot" = "wlr";
-              };
-            };
           };
         environment.pathsToLink = [
           "/share/xdg-desktop-portal"

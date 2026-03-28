@@ -89,7 +89,8 @@ let
           librewolf
         ]
         ++ inputs;
-      fake.external = [ "sudo" ] ++ fakes;
+      fake.external = fakes;
+      keep = [ "/run/wrappers/bin/sudo" ];
       execer = [
         "cannot:${pkgs.lib.getExe pkgs.you-get}"
         "cannot:${pkgs.lib.getExe pkgs.tuir}"

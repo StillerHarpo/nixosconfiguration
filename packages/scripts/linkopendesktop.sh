@@ -87,5 +87,5 @@ elif echo "${1}" | grep -q -e medilyse -e factisresearch -e docs\.google -e meqo
 then
     librewolf -P work --new-window "${1}"
 else
-    sudo -En librewolf-airvpn "${1}"
-fi || sudo -En librewolf-airvpn "${1}"
+    /run/wrappers/bin/sudo -En librewolf-airvpn "${1}"
+fi || /run/wrappers/bin/sudo -En librewolf-airvpn "${1}"
