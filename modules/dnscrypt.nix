@@ -1,8 +1,12 @@
 { config, lib, ... }:
 with lib;
-let cfg = config.dnscrypt;
-in {
-  options = { dnscrypt.enable = mkEnableOption (mdDoc "Enable dnscript"); };
+let
+  cfg = config.dnscrypt;
+in
+{
+  options = {
+    dnscrypt.enable = mkEnableOption (mdDoc "Enable dnscript");
+  };
   config = mkIf cfg.enable {
     services.dnscrypt-proxy = {
       enable = true;
@@ -17,8 +21,7 @@ in {
           ];
           # can't use default because it is in nix store. Should be fixed upstream
           cache_file = "/var/lib/dnscrypt-proxy2/public-resolvers.md";
-          minisign_key =
-            "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
+          minisign_key = "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
         };
         # TODO load blocklist over systemd service
         # blocked_names.blocked_names_file = blocklist;
