@@ -111,7 +111,6 @@ in
       steamdeck-firmware
       steam-rom-manager
       nvtopPackages.amd
-      lutris
       wine-staging
       (kodi.withPackages (
         kodiPkgs: with kodiPkgs; [
