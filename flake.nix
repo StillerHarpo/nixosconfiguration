@@ -1,5 +1,8 @@
 {
   inputs = {
+    nixpkgs-postgres.url = "github:NixOS/nixpkgs?rev=7f523aa88a31fc3b34615b4075544ccedb995d5e";
+    nixpkgs-old.url = "github:NixOS/nixpkgs?rev=062ca2a9370a27a35c524dc82d540e6e9824b652";
+    claude-code.url = "github:sadjow/claude-code-nix";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -53,6 +56,10 @@
       url = "github:Mic92/envfs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     darwin = {
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -73,6 +80,7 @@
       lib = (inputs.nixpkgs.lib.extend (_: _: inputs.home-manager-flake.lib)).extend (import ./mylib);
 
       thinkpad-modules = [
+        inputs.microvm.nixosModules.host
         inputs.nixpkgs.nixosModules.notDetected
         inputs.home-manager-flake.nixosModules.home-manager
         {
@@ -95,6 +103,8 @@
             };
           };
         }
+        # TODO use modules
+        ./microvm/work.nix
         ./linux/thinkpad/configuration.nix
         inputs.agenix.nixosModules.age
         inputs.envfs.nixosModules.envfs
