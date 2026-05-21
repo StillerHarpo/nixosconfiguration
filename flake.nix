@@ -53,6 +53,10 @@
       url = "github:Mic92/envfs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    microvm = {
+      url = "github:microvm-nix/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     darwin = {
       url = "github:lnl7/nix-darwin/master";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -73,6 +77,7 @@
       lib = (inputs.nixpkgs.lib.extend (_: _: inputs.home-manager-flake.lib)).extend (import ./mylib);
 
       thinkpad-modules = [
+        inputs.microvm.nixosModules.host
         inputs.nixpkgs.nixosModules.notDetected
         inputs.home-manager-flake.nixosModules.home-manager
         {
@@ -95,6 +100,8 @@
             };
           };
         }
+        # TODO use modules
+        ./microvm/work.nix
         ./linux/thinkpad/configuration.nix
         inputs.agenix.nixosModules.age
         inputs.envfs.nixosModules.envfs
