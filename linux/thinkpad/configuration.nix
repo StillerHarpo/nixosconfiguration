@@ -263,6 +263,7 @@ in
               tor-browser
               # TODO use emacs module and remove this
               emacs-lsp-booster
+              orca-slicer
             ];
             rules = lib.apparmor.defaultRules config;
           }
