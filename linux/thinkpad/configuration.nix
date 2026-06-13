@@ -163,6 +163,12 @@ in
         };
       };
 
+      fileSystems."/".options = [
+        "x-systemd.device-timeout=infinity"
+      ];
+
+      services.envfs.enable = true;
+
       mail.enable = true;
 
       zramSwap.enable = true;
@@ -266,6 +272,7 @@ in
               # TODO use emacs module and remove this
               emacs-lsp-booster
               orca-slicer
+              android-tools
             ];
             rules = lib.apparmor.defaultRules config;
           }
@@ -549,12 +556,10 @@ in
       };
 
       programs = {
-        light.enable = true;
         ssh.knownHosts.tim = {
           hostNames = [ private.serverIP ];
           publicKeyFile = ./backup.pub;
         };
-        adb.enable = true;
         fuse.userAllowOther = true;
         gnupg.dirmngr.enable = true;
         nix-ld.enable = true;

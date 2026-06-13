@@ -102,16 +102,10 @@ in
                     resumeCommand = ''${swaymsg} "output * power on"; ${swaymsg} "output * enable"'';
                   }
                 ];
-                events = [
-                  {
-                    event = "before-sleep";
-                    command = lib.getExe swaylock;
-                  }
-                  {
-                    event = "lock";
-                    command = lib.getExe swaylock;
-                  }
-                ];
+                events = {
+                  before-sleep = lib.getExe swaylock;
+                  lock = lib.getExe swaylock;
+                };
               };
               kanshi = {
                 enable = true;
@@ -200,8 +194,8 @@ in
                     ))
                     (lib.mkOptionDefault {
                       "${modifier}+d" = "exec ${openorraise}/bin/openorraise";
-                      "XF86MonBrightnessDown" = "exec ${getExe pkgs.light} -U 10";
-                      "XF86MonBrightnessUp" = "exec ${getExe pkgs.light} -A 10";
+                      "XF86MonBrightnessDown" = "exec ${getExe pkgs.brightnessctl} set 10%-";
+                      "XF86MonBrightnessUp" = "exec ${getExe pkgs.brightnessctl} set 10%-";
                       "XF86AudioRaiseVolume" = "exec 'pamixer -i 5'";
                       "XF86AudioLowerVolume" = "exec 'pamixer -d 5'";
                       "XF86AudioMute" = "exec 'paxmixer -t'";

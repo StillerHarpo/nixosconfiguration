@@ -37,11 +37,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           enable = true;
           port = 2222;
           hostKeys = [ "/boot/initrd-ssh-key" ];
-          authorizedKeys = sshKeys;
+          authorizedKeys = map (key: ''command="systemctl default" '' + key) sshKeys;
         };
-        postCommands = ''
-          echo 'cryptsetup-askpass' >> /root/.profile
-        '';
       };
     };
 

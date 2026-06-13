@@ -41,7 +41,7 @@
     haskellPackages = prev.haskellPackages.extend (
       _: hPrev: {
         my-common = prev.haskell.lib.overrideCabal (hPrev.callPackage ./haskell/my-common { }) (_: {
-          prePatch = "substituteInPlace Xrandr.hs --replace 'xrandr' '${prev.xorg.xrandr}/bin/xrandr'";
+          prePatch = "substituteInPlace Xrandr.hs --replace 'xrandr' '${prev.xrandr}/bin/xrandr'";
         });
         home-automation = hPrev.callPackage ./haskell/my-common/home-automation { };
         net-mqtt = final.haskell.lib.doJailbreak (

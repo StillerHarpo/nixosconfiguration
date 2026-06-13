@@ -159,6 +159,7 @@ in
           environment.systemPackages =
             let
               pkgs-old = import inputs.nixpkgs-old { system = "x86_64-linux"; };
+              pkgs-ghc9102 = import inputs.nixpkgs-ghc9102 { system = "x86_64-linux"; };
               myDevToolsAndLibraries = with pkgs; [ protobuf ];
               stack-wrapped =
                 with pkgs;
@@ -202,7 +203,7 @@ in
                   postgresql
                   pcre
                   leveldb
-                  unixODBC
+                  unixodbc
                   pkg-config
                   cairo
                   pango
@@ -213,7 +214,7 @@ in
                   pcre2
                   util-linux.dev
                   expat.dev
-                  xorg.libXdmcp.dev
+                  libXdmcp.dev
                   libselinux.dev
                   libsepol.dev
                   fribidi.dev
@@ -227,11 +228,11 @@ in
                 [
                   postgresql96-wrapped
                   stack-wrapped
-                  haskell.compiler.ghc9102
-                  haskell.packages.ghc9102.hasktags
-                  haskell.packages.ghc9102.ghcid
-                  haskell.packages.ghc9102.haskell-language-server
-                  haskell.packages.ghc9102.HTF
+                  pkgs-ghc9102.haskell.compiler.ghc9102
+                  pkgs-ghc9102.haskell.packages.ghc9102.hasktags
+                  pkgs-ghc9102.haskell.packages.ghc9102.ghcid
+                  pkgs-ghc9102.haskell.packages.ghc9102.haskell-language-server
+                  pkgs-ghc9102.haskell.packages.ghc9102.HTF
                   hlint
                   openapi-generator-cli
                   tzdata
@@ -286,7 +287,7 @@ in
                     })
                   ]))
                   python3Packages.supervisor
-                  python310Packages.fontforge
+                  python3Packages.fontforge
                   pgcli
                   pyright
                   libxslt

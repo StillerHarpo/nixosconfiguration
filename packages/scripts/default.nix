@@ -103,7 +103,7 @@ let
       ]
       ++ excers;
     } (builtins.readFile ./linkopendesktop.sh);
-  my-linkopen-x = my-linkopen-desktop [ pkgs.xsel pkgs.xorg.xrandr ] [ "wl-copy" "swaymsg" ] [ ];
+  my-linkopen-x = my-linkopen-desktop [ pkgs.xsel pkgs.xrandr ] [ "wl-copy" "swaymsg" ] [ ];
   my-linkopen-wayland = my-linkopen-desktop [
     pkgs.wl-clipboard
     pkgs.sway

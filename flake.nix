@@ -1,9 +1,10 @@
 {
   inputs = {
     nixpkgs-postgres.url = "github:NixOS/nixpkgs?rev=7f523aa88a31fc3b34615b4075544ccedb995d5e";
+    nixpkgs-ghc9102.url = "github:NixOS/nixpkgs?rev=d233902339c02a9c334e7e593de68855ad26c4cb";
     nixpkgs-old.url = "github:NixOS/nixpkgs?rev=062ca2a9370a27a35c524dc82d540e6e9824b652";
     claude-code.url = "github:sadjow/claude-code-nix";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -21,7 +22,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-flake-deck = {
@@ -49,11 +50,6 @@
     };
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    envfs = {
-      url = "github:Mic92/envfs";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     microvm = {
@@ -107,7 +103,6 @@
         ./microvm/work.nix
         ./linux/thinkpad/configuration.nix
         inputs.agenix.nixosModules.age
-        inputs.envfs.nixosModules.envfs
         outputs.nixosModules
       ];
 
