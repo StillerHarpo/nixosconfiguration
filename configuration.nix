@@ -1,13 +1,22 @@
-{ lib, pkgs, outputs, private, ... }:
+{
+  lib,
+  pkgs,
+  outputs,
+  private,
+  ...
+}:
 
 {
   environment.systemPackages = [
-     pkgs.myAspellWithDicts
+    pkgs.myAspellWithDicts
   ];
 
   fonts = {
     fontDir.enable = true;
-    packages = with pkgs; [ dejavu_fonts source-code-pro ];
+    packages = with pkgs; [
+      dejavu_fonts
+      source-code-pro
+    ];
   };
 
   nix = {
@@ -27,8 +36,9 @@
 
   nixpkgs = {
     overlays = [
-      (final: prev: {inherit private;} )
-    ] ++ builtins.attrValues outputs.overlays;
+      (final: prev: { inherit private; })
+    ]
+    ++ builtins.attrValues outputs.overlays;
     config.allowUnfree = true;
   };
 

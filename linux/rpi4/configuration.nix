@@ -1,6 +1,16 @@
-{ config, pkgs, lib, inputs, private, outputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  private,
+  outputs,
+  ...
+}:
 
-let sshKeys = import ../thinkpad/sshKeys.nix; in
+let
+  sshKeys = import ../thinkpad/sshKeys.nix;
+in
 
 {
 
@@ -30,7 +40,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     # there is nothing in the systemd log
     initrd = {
       enable = true;
-      availableKernelModules = [ "genet" "brcmfmac" ];
+      availableKernelModules = [
+        "genet"
+        "brcmfmac"
+      ];
       network = {
         enable = true;
         ssh = {
@@ -49,7 +62,14 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   };
 
   environment.systemPackages = with pkgs; [
-    vim pciutils lshw ripgrep bat fd bottom busybox
+    vim
+    pciutils
+    lshw
+    ripgrep
+    bat
+    fd
+    bottom
+    busybox
     (haskellPackages.ghcWithPackages (hpkgs: [ hpkgs.net-mqtt ]))
     (python3.withPackages (py: [ py.zigpy-znp ]))
   ];
@@ -81,7 +101,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
     adguardhome = {
       enable = true;
       openFirewall = true;
-      settings = {};
+      settings = { };
     };
     mosquitto = {
       enable = true;
@@ -91,7 +111,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           omitPasswordAuth = true;
           settings.allow_anonymous = true;
         }
-  ];
+      ];
     };
     zigbee2mqtt = {
       enable = true;
@@ -113,7 +133,8 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
             switch_livingRoom = "0x980c33fffefa99a2";
             switch_bedroom = "0x60b647fffecf33dd";
           };
-        in { 
+        in
+        {
           permit_join = true;
           serial = {
             port = "/dev/serial/by-id/usb-Silicon_Labs_slae.sh_cc2652rb_stick_-_slaesh_s_iot_stuff_00_12_4B_00_23_93_30_07-if00-port0";
@@ -121,31 +142,49 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
             disable_led = true;
           };
 
-          passlist = lib.attrValues devices; 
-          devices =
-            lib.concatMapAttrs
-              (name: device: { ${device}.friendly_name = builtins.replaceStrings ["_"] ["/"] name; })
-              devices;
+          passlist = lib.attrValues devices;
+          devices = lib.concatMapAttrs (name: device: {
+            ${device}.friendly_name = builtins.replaceStrings [ "_" ] [ "/" ] name;
+          }) devices;
           groups = {
             "1" = {
               friendly_name = "lights/kitchen/all";
-              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three];
+              devices = with devices; [
+                lights_kitchen_one
+                lights_kitchen_two
+                lights_kitchen_three
+              ];
             };
             "2" = {
               friendly_name = "lights/kitchenAndDinerRoom";
-              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_dinerRoom];
+              devices = with devices; [
+                lights_kitchen_one
+                lights_kitchen_two
+                lights_kitchen_three
+                lights_dinerRoom
+              ];
             };
             "3" = {
               friendly_name = "lights/all";
-              devices = with devices; [ lights_kitchen_one lights_kitchen_two lights_kitchen_three lights_hallway lights_livingRoom lights_dinerRoom lights_bedroom];
+              devices = with devices; [
+                lights_kitchen_one
+                lights_kitchen_two
+                lights_kitchen_three
+                lights_hallway
+                lights_livingRoom
+                lights_dinerRoom
+                lights_bedroom
+              ];
             };
           };
         };
     };
     home-assistant =
-      let bedroomAlarmClockTime = "bedroom_alarm_clock_time";
-          eveningTimeButton = "evening_time_button";
-      in {
+      let
+        bedroomAlarmClockTime = "bedroom_alarm_clock_time";
+        eveningTimeButton = "evening_time_button";
+      in
+      {
         enable = true;
         extraComponents = [
           "default_config"
@@ -156,10 +195,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
         ];
         openFirewall = true;
         config = {
-          default_config = {};
+          default_config = { };
           input_datetime = {
             "${bedroomAlarmClockTime}" = {
-              name =  "Wecker";
+              name = "Wecker";
               has_date = true;
               has_time = true;
             };
@@ -167,32 +206,38 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           input_button = {
             "${eveningTimeButton}" = {
               name = "Evening time";
-              icon =  "mdi:bell";
+              icon = "mdi:bell";
             };
           };
           automation = [
-            { alias = "Evening Time";
+            {
+              alias = "Evening Time";
               triggers = [
-                { trigger = "state";
+                {
+                  trigger = "state";
                   entity_id = "input_button.${eveningTimeButton}";
                 }
               ];
               actions = [
-                { action = "mqtt.publish";
+                {
+                  action = "mqtt.publish";
                   data = {
                     topic = "home_assistant/evening_time";
                   };
                 }
               ];
             }
-            { alias = "Alarm Clock";
+            {
+              alias = "Alarm Clock";
               triggers = [
-                { trigger = "time";
+                {
+                  trigger = "time";
                   at = "input_datetime.${bedroomAlarmClockTime}";
                 }
               ];
               actions = [
-                { action = "mqtt.publish";
+                {
+                  action = "mqtt.publish";
                   data = {
                     topic = "home_assistant/bedroom/alarm";
                   };
@@ -204,48 +249,61 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           homeassistant = {
             name = "Home";
             unit_system = "metric";
-          } // private.cords;
+          }
+          // private.cords;
         };
         lovelaceConfig = {
           title = "Home";
           views = [
-            { title = "Home";
+            {
+              title = "Home";
               cards = [
-                { type = "entities";
+                {
+                  type = "entities";
                   entities = [
                     "input_datetime.${bedroomAlarmClockTime}"
                   ];
                 }
-                { type = "entities";
+                {
+                  type = "entities";
                   entities = [
                     "input_button.${eveningTimeButton}"
                   ];
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.kichen";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.livingroom";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.lights_bedroom";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.lights_dinerroom";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.lights_kitchen_all";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.kitchen_two";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.kitchen_three";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.kitchen_one";
                 }
-                { type = "light";
+                {
+                  type = "light";
                   entity = "light.lights_hallway";
                 }
               ];
@@ -259,19 +317,23 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       cert = config.age.secrets.syncthingCert.path;
       settings = {
         devices = {
-          "android".id =
-            "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
-          "thinkpad".id =
-            "GS7BXPV-7IXKM6U-MF2SCHO-XSBUAKM-WMQ7XQT-2P6NW3C-H6Y2VW4-X7XP6AI";
+          "android".id = "VWFGCVO-56ZMY6L-5N7MQ5F-GB4TJFS-AHAGT5L-WYN4WTS-TQJHEVN-NBBOOAS";
+          "thinkpad".id = "GS7BXPV-7IXKM6U-MF2SCHO-XSBUAKM-WMQ7XQT-2P6NW3C-H6Y2VW4-X7XP6AI";
         };
         folders = {
           "android-backups" = {
             path = "/root/android/backups";
-            devices = [ "android" "thinkpad" ];
+            devices = [
+              "android"
+              "thinkpad"
+            ];
           };
           "org-roam" = {
             path = "/root/org-roam";
-            devices = [ "android" "thinkpad" ];
+            devices = [
+              "android"
+              "thinkpad"
+            ];
             versioning = {
               type = "simple";
               params.keep = "5";
@@ -281,7 +343,7 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       };
     };
   };
-  
+
   users.users.root.openssh.authorizedKeys.keys = sshKeys;
 
   networking = {
@@ -290,7 +352,10 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
       externalInterface = "enabcm6e4ei0";
       internalInterfaces = [ "wgHome" ];
     };
-    firewall.allowedUDPPorts = [ 51820 53 ];
+    firewall.allowedUDPPorts = [
+      51820
+      53
+    ];
     firewall.allowedTCPPorts = [ 5232 ];
 
     wireguard = {
@@ -304,15 +369,16 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
           privateKeyFile = config.age.secrets.rpi4WireguardPrivate.path;
 
           postSetup = ''
-         ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
-       '';
+            ${pkgs.iptables}/bin/iptables -t nat -A POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
+          '';
 
           postShutdown = ''
-         ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
-       '';
+            ${pkgs.iptables}/bin/iptables -t nat -D POSTROUTING -s 10.100.0.0/24 -o enabcm6e4ei0 -j MASQUERADE
+          '';
 
           peers = [
-            { name = "thinkpad";
+            {
+              name = "thinkpad";
               publicKey = "2uKX2MDYjMUHghbb+csZJ5MZwqRnIQCVSBt6hYJzNRQ=";
               allowedIPs = [ "10.100.0.2/32" ];
             }
@@ -328,54 +394,67 @@ let sshKeys = import ../thinkpad/sshKeys.nix; in
   };
 
   systemd.services.lightAutomation = {
-      enable = true;
-      description = "Automatically change color";
-      wantedBy = [ "zigbee2mqtt.service" "mosquitto.service" ];
-      after = [ "zigbee2mqtt.service" "mosquitto.service" ];
-      partOf = [ "zigbee2mqtt.service" "mosquitto.service" ];
-      bindsTo = [ "zigbee2mqtt.service" "mosquitto.service" ];
-      serviceConfig = {
-        ExecStart = pkgs.writers.writeHaskell
-          "light-automation"
-          {
-            libraries = with pkgs.haskellPackages;
-              [ aeson net-mqtt network-uri home-automation unbounded-delays];
-          }
-          ../../haskell/home-automation/Main.hs;
-        CapabilityBoundingSet = "";
-        LockPersonality = true;
-        MemoryDenyWriteExecute = false;
-        NoNewPrivileges = true;
-        PrivateDevices = false;
-        PrivateUsers = true;
-        PrivateTmp = true;
-        ProtectClock = true;
-        ProtectControlGroups = true;
-        ProtectHome = true;
-        ProtectHostname = true;
-        ProtectKernelLogs = true;
-        ProtectKernelModules = true;
-        ProtectKernelTunables = true;
-        ProtectProc = "invisible";
-        ProcSubset = "pid";
-        ProtectSystem = "strict";
-        RemoveIPC = true;
-        RestrictAddressFamilies = [
-          "AF_INET"
-          "AF_INET6"
+    enable = true;
+    description = "Automatically change color";
+    wantedBy = [
+      "zigbee2mqtt.service"
+      "mosquitto.service"
+    ];
+    after = [
+      "zigbee2mqtt.service"
+      "mosquitto.service"
+    ];
+    partOf = [
+      "zigbee2mqtt.service"
+      "mosquitto.service"
+    ];
+    bindsTo = [
+      "zigbee2mqtt.service"
+      "mosquitto.service"
+    ];
+    serviceConfig = {
+      ExecStart = pkgs.writers.writeHaskell "light-automation" {
+        libraries = with pkgs.haskellPackages; [
+          aeson
+          net-mqtt
+          network-uri
+          home-automation
+          unbounded-delays
         ];
-        RestrictNamespaces = true;
-        RestrictRealtime = true;
-        RestrictSUIDSGID = true;
-        SystemCallArchitectures = "native";
-        SystemCallFilter = [
-          "@system-service @pkey"
-          "~@privileged @resources"
-        ];
-        UMask = "0077";
-      };
+      } ../../haskell/home-automation/Main.hs;
+      CapabilityBoundingSet = "";
+      LockPersonality = true;
+      MemoryDenyWriteExecute = false;
+      NoNewPrivileges = true;
+      PrivateDevices = false;
+      PrivateUsers = true;
+      PrivateTmp = true;
+      ProtectClock = true;
+      ProtectControlGroups = true;
+      ProtectHome = true;
+      ProtectHostname = true;
+      ProtectKernelLogs = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      ProtectProc = "invisible";
+      ProcSubset = "pid";
+      ProtectSystem = "strict";
+      RemoveIPC = true;
+      RestrictAddressFamilies = [
+        "AF_INET"
+        "AF_INET6"
+      ];
+      RestrictNamespaces = true;
+      RestrictRealtime = true;
+      RestrictSUIDSGID = true;
+      SystemCallArchitectures = "native";
+      SystemCallFilter = [
+        "@system-service @pkey"
+        "~@privileged @resources"
+      ];
+      UMask = "0077";
+    };
   };
-
 
   flake-remote-update = {
     enable = true;

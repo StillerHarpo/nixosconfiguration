@@ -1,5 +1,10 @@
 # FIXME Use right font for mac
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib.converters;
 
@@ -33,8 +38,11 @@ let
       size = 11;
     };
   };
-  alacrittyConf = colors:
-    (pkgs.formats.toml { }).generate "alacritty.toml" (lib.attrsets.recursiveUpdate colors alacrittyCommon);
+  alacrittyConf =
+    colors:
+    (pkgs.formats.toml { }).generate "alacritty.toml" (
+      lib.attrsets.recursiveUpdate colors alacrittyCommon
+    );
   darkBackground = "#282828";
   alacrittyDark = alacrittyConf {
     env.BAT_THEME = "gruvbox-dark";
@@ -108,13 +116,18 @@ let
   alacrittyConfLoc = "~/.config/alacritty";
   alacrittyConfPath = "${alacrittyConfLoc}/alacritty.toml";
   rofiCommon.window.fullscreen = true;
-  rofiConf = theme:
-    builtins.toFile "rofi.rasi" (toRofiRasi rofiCommon + ''
+  rofiConf =
+    theme:
+    builtins.toFile "rofi.rasi" (
+      toRofiRasi rofiCommon
+      + ''
 
-      @theme "${theme}"'');
+        @theme "${theme}"''
+    );
   rofiDark = rofiConf "gruvbox-dark";
   rofiLight = rofiConf "gruvbox-light";
-  gtk3Conf = theme:
+  gtk3Conf =
+    theme:
     builtins.toFile "settings.ini" (toGtk3Ini {
       Settings = {
         gtk-icon-theme-name = theme;
@@ -123,7 +136,8 @@ let
     });
   gtk3ConfDark = gtk3Conf "Adwaita-dark";
   gtk3ConfLight = gtk3Conf "Adwaita";
-  gtk2Conf = theme:
+  gtk2Conf =
+    theme:
     builtins.toFile "gtkrc-2.0" ''
       gtk-icon-theme-name = "${theme}"
       gtk-theme-name = "${theme}"
@@ -131,7 +145,8 @@ let
   gtk2ConfDark = gtk2Conf "Adwaita-dark";
   gtk2ConfLight = gtk2Conf "Adwaita";
   gtk2ConfPath = "~/.gtkrc-2.0";
-  dconf = theme:
+  dconf =
+    theme:
     builtins.toFile "tc-${theme}.ini" (toDconfIni {
       "org/gnome/desktop/interface" = {
         gtk-theme = theme;
@@ -144,24 +159,24 @@ let
   rofiConfPath = "${rofiConfLoc}/config.rasi";
   gtk3ConfLoc = "~/.config/gtk-3.0";
   gtk4ConfLoc = "~/.config/gtk-4.0";
-  gtk4Css = theme:
-    pkgs.writeTextFile
-      { name = "gtk.css";
-        text = ''
-          /**
-           * GTK 4 reads the theme configured by gtk-theme-name, but ignores it.
-           * It does however respect user CSS, so import the theme from here.
-          **/
-          @import url("file://${pkgs.adw-gtk3}/share/themes/${theme}/gtk-4.0/gtk.css");
-   '';
-      };
+  gtk4Css =
+    theme:
+    pkgs.writeTextFile {
+      name = "gtk.css";
+      text = ''
+        /**
+         * GTK 4 reads the theme configured by gtk-theme-name, but ignores it.
+         * It does however respect user CSS, so import the theme from here.
+        **/
+        @import url("file://${pkgs.adw-gtk3}/share/themes/${theme}/gtk-4.0/gtk.css");
+      '';
+    };
   gtk4CssDark = gtk4Css "Adwaita-dark";
   gtk4CssLight = dconf "Adwaita";
   gtk3ConfPath = "${gtk3ConfLoc}/settings.ini";
   gtk4ConfPath = "${gtk4ConfLoc}/settings.ini";
   gtk4CssPath = "${gtk4ConfLoc}/gtk.css";
-  xsettingsd = theme:
-    builtins.toFile "xsettingsd" ''Net/ThemeName "${theme}"'';
+  xsettingsd = theme: builtins.toFile "xsettingsd" ''Net/ThemeName "${theme}"'';
   xsettingsdDark = xsettingsd "Adwaita-dark";
   xsettingsdLight = xsettingsd "Adwaita";
   xsettingsdPath = "~/.xsettingsd";
@@ -192,16 +207,22 @@ let
     ${pkgs.coreutils-full}/bin/touch ${gtk2ConfPath}
     ${pkgs.coreutils-full}/bin/touch ${xsettingsdPath}
   '';
-  blackWallpaper = pkgs.runCommand "dark.png" { }
-    "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${darkBackground} $out";
-  whiteWallpaper = pkgs.runCommand "white.png" { }
-    "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${lightBackground} $out";
-in {
+  blackWallpaper =
+    pkgs.runCommand "dark.png" { }
+      "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${darkBackground} $out";
+  whiteWallpaper =
+    pkgs.runCommand "white.png" { }
+      "${pkgs.imagemagick}/bin/convert -size 1920x1080 xc:${lightBackground} $out";
+in
+{
   systemd.user = {
     timers.themeChange = {
       Install.WantedBy = [ "timers.target" ];
       Timer = {
-        OnCalendar = [ "*-*-* 20:00:00" "*-*-* 07:00:00" ];
+        OnCalendar = [
+          "*-*-* 20:00:00"
+          "*-*-* 07:00:00"
+        ];
         Persistent = true;
       };
     };

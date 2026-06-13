@@ -17,7 +17,7 @@ trivialBuild {
     hash = "sha256-6XFcyqSTx1CwNWqQvIc25cuQMwh3YXnbgr5cDiOCxBk=";
   };
   packageRequires = [
-    dash 
+    dash
     flycheck
     lsp-mode
     magit-section

@@ -1,9 +1,16 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
-let cfg = config.services.batteryNotifier;
-in {
+let
+  cfg = config.services.batteryNotifier;
+in
+{
   options = {
     services.batteryNotifier = {
       enable = mkEnableOption (mdDoc "Whether to enable battery notifier.");
@@ -47,14 +54,10 @@ in {
         export battery_capacity
         battery_status=$(${pkgs.coreutils}/bin/cat /sys/class/power_supply/${cfg.device}/status)
         export battery_status
-        if [[ $battery_capacity -le ${
-          builtins.toString cfg.notifyCapacity
-        } && $battery_status = "Discharging" ]]; then
+        if [[ $battery_capacity -le ${builtins.toString cfg.notifyCapacity} && $battery_status = "Discharging" ]]; then
             ${pkgs.libnotify}/bin/notify-send --urgency=critical --hint=int:transient:1 --icon=battery_empty "Battery Low" "You should probably plug-in."
         fi
-        if [[ $battery_capacity -le ${
-          builtins.toString cfg.suspendCapacity
-        } && $battery_status = "Discharging" ]]; then
+        if [[ $battery_capacity -le ${builtins.toString cfg.suspendCapacity} && $battery_status = "Discharging" ]]; then
             ${pkgs.libnotify}/bin/notify-send --urgency=critical --hint=int:transient:1 --icon=battery_empty "Battery Critically Low" "Computer will suspend in 60 seconds."
             sleep 60s
             battery_status=$(${pkgs.coreutils}/bin/cat /sys/class/power_supply/${cfg.device}/status)

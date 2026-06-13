@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 with lib;
 
@@ -15,13 +20,14 @@ in
     apparmor.systemPackages = [
       {
         pkgs = with pkgs; [
-          (kodi.withPackages (kodiPkgs:
-            with kodiPkgs; [
+          (kodi.withPackages (
+            kodiPkgs: with kodiPkgs; [
               netflix
               steam-controller
               invidious
               arteplussept
-            ]))
+            ]
+          ))
         ];
         rules = lib.apparmor.defaultRules config;
       }

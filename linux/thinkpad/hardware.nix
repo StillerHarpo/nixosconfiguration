@@ -1,6 +1,5 @@
 { config, lib, ... }:
 
-
 {
   options.myHardware.enable = lib.mkEnableOption (lib.mdDoc "Wether to use my hardware");
 
@@ -8,9 +7,13 @@
     boot = {
       initrd = {
         # luks encryption
-        luks.devices.luksroot.device =
-          "/dev/disk/by-uuid/6d8ca465-1ff7-45a5-88d3-9aa0b4807cb7";
-        availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" ];
+        luks.devices.luksroot.device = "/dev/disk/by-uuid/6d8ca465-1ff7-45a5-88d3-9aa0b4807cb7";
+        availableKernelModules = [
+          "xhci_pci"
+          "nvme"
+          "usb_storage"
+          "sd_mod"
+        ];
       };
       kernelModules = [ "kvm-intel" ];
     };
@@ -27,8 +30,7 @@
       };
     };
 
-    swapDevices =
-      [{ device = "/dev/disk/by-uuid/f1429c26-3127-4932-8051-face01ca9ac8"; }];
+    swapDevices = [ { device = "/dev/disk/by-uuid/f1429c26-3127-4932-8051-face01ca9ac8"; } ];
 
   };
 }

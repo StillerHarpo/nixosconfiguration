@@ -228,7 +228,7 @@ in
               nixpkgs-hammering
               adwaita-icon-theme
               ical2orgpy
-              nixfmt-classic
+              nixfmt
               libreoffice
               textcleaner
               file

@@ -12,12 +12,14 @@
       # Select internationalisation properties.
       i18n = {
         defaultLocale = "en_US.UTF-8";
-        supportedLocales = [ "de_DE.UTF-8/UTF-8" "en_US.UTF-8/UTF-8" ];
+        supportedLocales = [
+          "de_DE.UTF-8/UTF-8"
+          "en_US.UTF-8/UTF-8"
+        ];
       };
 
       # Set your time zone.
       time.timeZone = "Europe/Berlin";
-
 
       services.snowflake-proxy.enable = true;
 
@@ -37,9 +39,15 @@
         extraOptions = ''
           keep-outputs = true
           keep-derivations = true
-        '' + (if config.isRealSystem then ''
-          !include ${config.age.secrets.github-token.path}
-        '' else "");
+        ''
+        + (
+          if config.isRealSystem then
+            ''
+              !include ${config.age.secrets.github-token.path}
+            ''
+          else
+            ""
+        );
         gc = {
           persistent = true;
           automatic = true;
@@ -53,7 +61,10 @@
         useUserPackages = true;
       };
 
-      fileSystems."/boot".options = [ "umask=0077" "defaults" ];
+      fileSystems."/boot".options = [
+        "umask=0077"
+        "defaults"
+      ];
 
     }
   ];

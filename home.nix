@@ -4,10 +4,9 @@
 
   home = {
     sessionVariables.SHELL = pkgs.myshell;
-    packages = with pkgs;
-      [
-        afew # needed for notmuch update in emacs
-      ];
+    packages = with pkgs; [
+      afew # needed for notmuch update in emacs
+    ];
     stateVersion = "24.11";
   };
 

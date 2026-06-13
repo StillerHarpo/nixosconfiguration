@@ -6,7 +6,11 @@
     autosuggestion.enable = true;
     oh-my-zsh = {
       enable = true;
-      plugins = [ "vi-mode" "per-directory-history" "pass" ];
+      plugins = [
+        "vi-mode"
+        "per-directory-history"
+        "pass"
+      ];
     };
     shellAliases = {
       ll = "ls -a";
