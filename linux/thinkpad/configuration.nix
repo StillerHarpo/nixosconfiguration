@@ -46,6 +46,8 @@ in
           thinkpadWireguardPrivate.file = ./secrets/thinkpadWireguardPrivate.age;
           vpnPrivateKey.file = ./secrets/vpnPrivateKey.age;
           vpnPresharedKey.file = ./secrets/vpnPresharedKey.age;
+          vpnWorkPrivateKey.file = ./secrets/vpnWorkPrivateKey.age;
+          vpnWorkPresharedKey.file = ./secrets/vpnWorkPresharedKey.age;
           officeOvpn.file = ./secrets/office.ovpn.age;
           bookmarks.file = ./secrets/my-bookmarks.json.age;
           notmuchTags.file = ./secrets/notmuchTags.age;

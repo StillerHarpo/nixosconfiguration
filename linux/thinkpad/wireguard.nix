@@ -84,6 +84,20 @@ in
               }
             ];
           };
+          wireguard.interfaces.work = {
+            ips = [ "192.168.42.6/32" ];
+            privateKeyFile = config.age.secrets.vpnWorkPrivateKey.path;
+            peers = [
+              {
+                publicKey = "YIoEH1PX+9bXW28Cyhcy5UEO13sgyMIgvCJ24bSMbSo=";
+                presharedKeyFile = config.age.secrets.vpnWorkPresharedKey.path;
+                endpoint = private.workEndpoint;
+                allowedIPs = [
+                  "192.168.1.122/32"
+                ];
+              }
+            ];
+          };
         };
         environment.etc."netns/airvpnns/resolv.conf".text = "nameserver 10.128.0.1";
 
