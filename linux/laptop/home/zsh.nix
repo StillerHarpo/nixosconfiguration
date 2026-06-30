@@ -52,9 +52,5 @@
       CPM_COMPILE_CACHE_SPEC = "local:/tmp/";
     };
   };
-  home.file = {
-    ".private-home/.zshrc".source = config.home.file."./.zshrc".source;
-    ".private-home/.zshenv".source = config.home.file."./.zshenv".source;
-    ".private/oh-my-zsh/.keep".text = "";
-  };
+  home.file.".private/oh-my-zsh/.keep".text = "";
 }

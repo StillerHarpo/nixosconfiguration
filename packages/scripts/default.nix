@@ -157,6 +157,19 @@ in
       }
     ]
   );
+  framework-install = makeScript "framework-install" (
+    [ substitutes.pass ]
+    ++ [
+      {
+        pattern = "nixos-anywhere";
+        replacement = "${inputs.nixos-anywhere.packages.x86_64-linux.nixos-anywhere}/bin/nixos-anywhere";
+      }
+      {
+        pattern = "frameworkIP";
+        replacement = (import ../../variables.nix).nixosDeckIP;
+      }
+    ]
+  );
   live-streams =
     let
       database = pkgs.fetchurl {

@@ -7,7 +7,6 @@
     packages = with pkgs; [
       afew # needed for notmuch update in emacs
     ];
-    stateVersion = "24.11";
   };
 
   programs = {

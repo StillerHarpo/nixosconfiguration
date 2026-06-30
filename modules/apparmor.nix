@@ -49,7 +49,7 @@ in
               /home/** {
                  ${lib.apparmor.generateFileRules { inherit config; }}
               }
-              /home/florian/meqo/checkpad-ssh/* {
+              /home/florian/meqo/ssh/* {
                  ${lib.getExe pkgs.openssh} Px,
                  ${lib.getExe' pkgs.openssh "scp"} Px,
                  ${lib.getExe' pkgs.openssh "ssh-copy-id"} Px,

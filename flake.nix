@@ -102,11 +102,44 @@
         # TODO use modules
         ./microvm/work.nix
         ./linux/thinkpad/configuration.nix
+        ./linux/thinkpad/hardware.nix
         inputs.agenix.nixosModules.age
         outputs.nixosModules
       ];
 
-      thinkpad-specialArgs = {
+      framework-modules = [
+        inputs.microvm.nixosModules.host
+        inputs.nixpkgs.nixosModules.notDetected
+        inputs.home-manager-flake.nixosModules.home-manager
+        {
+          home-manager = {
+            users.florian =
+              { pkgs, config, ... }:
+              {
+                imports = [ outputs.homeModules ];
+                xdg = {
+                  enable = true;
+                  configFile."nix/inputs/nixpkgs".source = inputs.nixpkgs.outPath;
+                };
+                home.sessionVariables.NIX_PATH = "nixpkgs=${config.xdg.configHome}/nix/inputs/nixpkgs\${NIX_PATH:+:$NIX_PATH}";
+                # Das enthält nicht die overlays
+                nix.registry.nixpkgs.flake = inputs.nixpkgs;
+              };
+            extraSpecialArgs = {
+              inherit inputs outputs;
+              lib = lib.extend (_: _: inputs.home-manager-flake.lib);
+            };
+          };
+        }
+        inputs.disko.nixosModules.disko
+        # TODO use modules
+        ./microvm/work.nix
+        ./linux/framework/configuration.nix
+        inputs.agenix.nixosModules.age
+        outputs.nixosModules
+      ];
+
+      laptop-specialArgs = {
         inherit inputs outputs;
         home-manager-flake = inputs.home-manager-flake.nixosModule;
       };
@@ -152,11 +185,23 @@
         private:
         inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
-          specialArgs = thinkpad-specialArgs // {
+          specialArgs = laptop-specialArgs // {
             inherit private;
           };
           modules = thinkpad-modules ++ [
             inputs.nixos-hardware.nixosModules.lenovo-thinkpad-t480s
+          ];
+        };
+
+      mkNixosFramework =
+        private:
+        inputs.nixpkgs.lib.nixosSystem {
+          inherit lib;
+          specialArgs = laptop-specialArgs // {
+            inherit private;
+          };
+          modules = framework-modules ++ [
+            inputs.nixos-hardware.nixosModules.framework-16-amd-ai-300-series
           ];
         };
     in
@@ -172,9 +217,11 @@
 
         nixosThinkpad = mkNixosThinkpad (import ./private.nix);
 
+        nixosFramework = mkNixosFramework (import ./private.nix);
+
         thinkpadVM = inputs.nixpkgs.lib.nixosSystem {
           inherit lib;
-          specialArgs = thinkpad-specialArgs // {
+          specialArgs = laptop-specialArgs // {
             private = fakePrivate;
           };
           modules = thinkpad-modules ++ [
@@ -359,7 +406,7 @@
                     })
                   ];
                 };
-              node.specialArgs = thinkpad-specialArgs // {
+              node.specialArgs = laptop-specialArgs // {
                 inherit lib;
                 pkgs = outputs.packages."x86_64-linux";
                 private = fakePrivate;
