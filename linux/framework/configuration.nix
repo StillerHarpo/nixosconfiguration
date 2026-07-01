@@ -22,6 +22,14 @@
   };
   networkmanager.lanInterface = "enp195s0f0u2u3";
 
+  microvm.work = {
+    sshKeys = import ./sshKeys.nix;
+    externalInterfaces = [
+      "wlp191s0"
+      "enp195s0f0u2u3"
+    ];
+  };
+
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "26.05";
   home-manager.users.florian = { config, ... }: {

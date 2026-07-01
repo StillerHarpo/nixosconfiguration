@@ -99,8 +99,6 @@
             };
           };
         }
-        # TODO use modules
-        ./microvm/work.nix
         ./linux/thinkpad/configuration.nix
         ./linux/thinkpad/hardware.nix
         inputs.agenix.nixosModules.age
@@ -132,8 +130,6 @@
           };
         }
         inputs.disko.nixosModules.disko
-        # TODO use modules
-        ./microvm/work.nix
         ./linux/framework/configuration.nix
         inputs.agenix.nixosModules.age
         outputs.nixosModules

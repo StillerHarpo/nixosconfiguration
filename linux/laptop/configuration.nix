@@ -524,6 +524,9 @@ in
       programs.ssh.kexAlgorithms = [ "curve25519-sha256" ];
       boot.supportedFilesystems."fuse.sshfs" = true;
       youtube-tui.enable = true;
+
+      microvm.work.enable = true;
+
       # https://github.com/CachyOS/linux-cachyos/issues/878#issuecomment-4754587751
       security.lsm = [
         "capability"
