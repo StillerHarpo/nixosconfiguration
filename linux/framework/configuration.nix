@@ -28,6 +28,7 @@
       "wlp191s0"
       "enp195s0f0u2u3"
     ];
+    mem = 49152;
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.

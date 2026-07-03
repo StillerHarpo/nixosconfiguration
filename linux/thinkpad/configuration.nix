@@ -29,6 +29,7 @@
       "enp0s20f0u4u4c2"
       "enp0s31f6"
     ];
+    mem = 8192;
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.

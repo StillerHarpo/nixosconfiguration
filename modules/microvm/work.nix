@@ -23,6 +23,10 @@ in
         type = lib.types.listOf lib.types.str;
         description = lib.mdDoc "external interfaces over which the microvm should get access to the internet";
       };
+      mem = lib.mkOption {
+        type = lib.types.number;
+        description = lib.mdDoc "available memory for the vm";
+      };
     };
   };
 
