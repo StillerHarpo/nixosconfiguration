@@ -76,185 +76,263 @@ in
       };
     };
 
-    # TODO use constant sshkey
-    # programs.ssh.knownHosts.micvmwork = {
-    #   hostNames = [ vmIp ];
-    #   publicKeyFile = ./backup.pub;
-    # };
-
     microvm.vms = {
-      work = {
-        autostart = false;
-        config =
-          { pkgs, config, ... }:
-          {
-            microvm = {
+      work =
+        let
+          pkgs = import inputs.nixpkgs-unstable {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+            overlays = [
+              inputs.claude-code.overlays.default
+              # inputs.emacs-overlay.overlay
+            ];
+          };
+        in
+        {
+          autostart = false;
+          config =
+            { config, ... }:
 
-              mem = 8192;
-              balloon = true;
-              writableStoreOverlay = "/nix/.rw-store";
-
-              volumes = [
-                {
-                  image = "nix-store-overlay.img";
-                  mountPoint = config.microvm.writableStoreOverlay;
-                  size = 20480;
-                }
+            let
+              myDevToolsAndLibraries = with pkgs; [
+                protobuf
               ];
-              registerWithMachined = true;
-              shares = [
-                {
-                  source = "/nix/store";
-                  mountPoint = "/nix/.ro-store";
-                  tag = "ro-store";
-                  proto = "virtiofs";
-                }
-                {
-                  proto = "virtiofs";
-                  tag = "meqo";
-                  source = "/home/florian/meqo";
-                  mountPoint = "/home/work/meqo";
-                }
-                {
-                  proto = "virtiofs";
-                  tag = "claude";
-                  source = "claude";
-                  mountPoint = "/home/work/.claude";
-                }
-                {
-                  source = "/var/lib/microvms/work/ssh-host-keys";
-                  mountPoint = "/etc/ssh/persistent-keys";
-                  tag = "ssh-keys-share";
-                  proto = "virtiofs";
-                }
-                {
-                  source = "claude-state"; # host path
-                  mountPoint = "/home/work/.claude-state";
-                  tag = "claude-state";
-                  proto = "virtiofs"; # virtiofs preferred over 9p for correctness/perf
-                }
-              ];
+              myLibraries =
+                with pkgs;
+                [
+                  qrencode
+                  snappy
+                  icu63
+                  gmp
+                  libffi
+                  postgresql.lib
+                  pcre
+                  leveldb
+                  unixodbc
+                  pkg-config
+                  cairo
+                  pango
+                  which
+                  libphonenumber
+                  glib
+                  harfbuzz
+                  pcre2
+                  util-linux
+                  expat
+                  libxdmcp
+                  libselinux
+                  libsepol
+                  fribidi
+                  libthai
+                  libdatrie
+                  libsysprof-capture
+                  zlib
+                ]
+                ++ myDevToolsAndLibraries;
+            in
+            {
+              microvm = {
 
-              interfaces = [
-                {
-                  type = "tap";
-                  id = "vm-tap0";
-                  mac = "02:00:00:00:00:01";
-                }
-              ];
-            };
+                mem = cfg.mem;
+                balloon = true;
+                writableStoreOverlay = "/nix/.rw-store";
 
-            services.qemuGuest.enable = true;
-            systemd.services."qemu-guest-agent".wantedBy = [ "multi-user.target" ];
+                volumes = [
+                  {
+                    image = "nix-store-overlay.img";
+                    mountPoint = config.microvm.writableStoreOverlay;
+                    size = 20480;
+                  }
+                  {
+                    image = "node-modules.img";
+                    mountPoint = "/home/work/meqo/meqo/server/js/node_modules";
+                    size = 4096;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
+                    mountPoint = "/home/work/.cache";
+                    image = "cache.img";
+                    size = 4096;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
+                    mountPoint = "/home/work/.DociSSL";
+                    image = "docissl.img";
+                    size = 1024;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
+                    mountPoint = "/home/work/meqo/meqo/server/demo/node_modules";
+                    image = "nodemodules.img";
+                    size = 128;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                ];
+                registerWithMachined = true;
+                shares = [
+                  {
+                    source = "/nix/store";
+                    mountPoint = "/nix/.ro-store";
+                    tag = "ro-store";
+                    proto = "virtiofs";
+                  }
+                  {
+                    proto = "virtiofs";
+                    tag = "meqo";
+                    source = "/home/florian/meqo";
+                    mountPoint = "/home/work/meqo";
+                  }
+                  # TODO move everything below to volumes
+                  {
+                    proto = "virtiofs";
+                    tag = "claude";
+                    source = "claude";
+                    mountPoint = "/home/work/.claude";
+                  }
+                  # TODO can be remvoved and replaced with socat
+                  {
+                    source = "/var/lib/microvms/work/ssh-host-keys";
+                    mountPoint = "/etc/ssh/persistent-keys";
+                    tag = "ssh-keys-share";
+                    proto = "virtiofs";
+                  }
+                  {
+                    source = "claude-state";
+                    mountPoint = "/home/work/.claude-state";
+                    tag = "claude-state";
+                    proto = "virtiofs";
+                  }
+                  {
+                    source = "DociSSL-state";
+                    mountPoint = "/home/work/.DociSSL-state";
+                    tag = "DociSSL-state";
+                    proto = "virtiofs";
+                  }
+                  # 8GB
+                  {
+                    source = "stack";
+                    mountPoint = "/home/work/.stack";
+                    tag = "stack";
+                    proto = "virtiofs";
+                  }
+                  {
+                    proto = "virtiofs";
+                    tag = "DociGateway";
+                    source = "/home/florian/.DociGateway-Cache";
+                    mountPoint = "/home/work/.DociGateway-Cache";
+                  }
+                  {
+                    proto = "virtiofs";
+                    tag = "checkpad";
+                    source = "/home/florian/.checkpad";
+                    mountPoint = "/home/work/.checkpad";
+                  }
+                ];
 
-            services.openssh = {
-              enable = true;
-              settings = {
-                PermitRootLogin = "yes";
-                PasswordAuthentication = false;
+                interfaces = [
+                  {
+                    type = "tap";
+                    id = "vm-tap0";
+                    mac = "02:00:00:00:00:01";
+                  }
+                ];
               };
-              hostKeys = [
-                {
-                  path = "/etc/ssh/persistent-keys/ssh_host_rsa_key";
-                  type = "rsa";
-                  bits = 4096;
-                }
-                {
-                  path = "/etc/ssh/persistent-keys/ssh_host_ed25519_key";
-                  type = "ed25519";
-                }
-              ];
-            };
 
-            systemd.network = {
-              enable = true;
-              networks."20-lan" = {
-                matchConfig.Type = "ether";
-                networkConfig = {
-                  Address = [ "${vmIp}/${ipRange}" ];
-                  Gateway = gatewayIp;
-                  DNS = [ "1.1.1.1" ];
-                  DHCP = "no";
+              # we are inside a vm and the host already has a firewall
+              networking.firewall.enable = false;
+
+              services.qemuGuest.enable = true;
+              systemd.services."qemu-guest-agent".wantedBy = [ "multi-user.target" ];
+
+              services.openssh = {
+                enable = true;
+                settings = {
+                  PermitRootLogin = "yes";
+                  PasswordAuthentication = false;
+                };
+                hostKeys = [
+                  {
+                    path = "/etc/ssh/persistent-keys/ssh_host_rsa_key";
+                    type = "rsa";
+                    bits = 4096;
+                  }
+                  {
+                    path = "/etc/ssh/persistent-keys/ssh_host_ed25519_key";
+                    type = "ed25519";
+                  }
+                ];
+              };
+
+              systemd.network = {
+                enable = true;
+                networks."20-lan" = {
+                  matchConfig.Type = "ether";
+                  networkConfig = {
+                    Address = [ "${vmIp}/${ipRange}" ];
+                    Gateway = gatewayIp;
+                    DNS = [ "1.1.1.1" ];
+                    DHCP = "no";
+                  };
                 };
               };
-            };
 
-            users.users.work = {
-              isNormalUser = true;
-              hashedPasswordFile = "${pkgs.writeText "password" "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
-              openssh.authorizedKeys.keys = cfg.sshKeys;
-            };
-
-            environment.systemPackages =
-              let
-                pkgs-old = import inputs.nixpkgs-old { system = "x86_64-linux"; };
-                pkgs-ghc9102 = import inputs.nixpkgs-ghc9102 { system = "x86_64-linux"; };
-                myDevToolsAndLibraries = with pkgs; [ protobuf ];
-                stack-wrapped =
-                  with pkgs;
-                  symlinkJoin {
-                    name = "stack";
-                    paths = [ stack ];
-                    buildInputs = [ makeWrapper ];
-                    postBuild = ''
-                      wrapProgram $out/bin/stack \
-                        --add-flags "\
-                          --no-nix \
-                          --system-ghc \
-                          --no-install-ghc \
-                        "\
-                        --set LD_LIBRARY_PATH ${pkgs.lib.makeLibraryPath myLibraries}
-                    '';
-                  };
-                postgresql96-wrapped =
-                  with pkgs-old;
-                  symlinkJoin {
-                    name = "postgresql96";
-                    paths = [
-                      (import "${inputs.nixpkgs-postgres}/pkgs/servers/sql/postgresql" pkgs-old).postgresql_9_6
-                    ];
-                    buildInputs = [ makeWrapper ];
-                    postBuild = ''
-                      for exe in $(ls $out/bin/); do
-                        wrapProgram $out/bin/''${exe} \
-                          --unset LD_LIBRARY_PATH
-                      done
-                    '';
-                  };
-                myLibraries =
+              users.users.work = {
+                isNormalUser = true;
+                hashedPasswordFile = "${pkgs.writeText "password" "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+                openssh.authorizedKeys.keys = cfg.sshKeys;
+                extraGroups = [ "wheel" ];
+              };
+              environment = {
+                systemPackages =
+                  let
+                    pkgs-old = import inputs.nixpkgs-old { system = "x86_64-linux"; };
+                    pkgs-ghc9102 = import inputs.nixpkgs-ghc9102 { system = "x86_64-linux"; };
+                    stack-wrapped =
+                      with pkgs;
+                      symlinkJoin {
+                        name = "stack";
+                        paths = [ stack ];
+                        buildInputs = [ makeWrapper ];
+                        postBuild = ''
+                          wrapProgram $out/bin/stack \
+                            --add-flags "\
+                              --no-nix \
+                              --system-ghc \
+                              --no-install-ghc \
+                            "
+                        '';
+                      };
+                    postgresql96-wrapped =
+                      with pkgs-old;
+                      symlinkJoin {
+                        name = "postgresql96";
+                        paths = [
+                          (import "${inputs.nixpkgs-postgres}/pkgs/servers/sql/postgresql" pkgs-old).postgresql_9_6
+                        ];
+                        buildInputs = [ makeWrapper ];
+                        postBuild = ''
+                          for exe in $(ls $out/bin/); do
+                            wrapProgram $out/bin/''${exe} \
+                              --unset LD_LIBRARY_PATH
+                          done
+                        '';
+                      };
+                  in
                   with pkgs;
                   [
-                    qrencode
-                    snappy
-                    icu63
-                    gmp
-                    libffi
-                    postgresql
-                    pcre
-                    leveldb
-                    unixodbc
-                    pkg-config
-                    cairo
-                    pango
-                    which
-                    libphonenumber
-                    glib
-                    harfbuzz
-                    pcre2
-                    util-linux.dev
-                    expat.dev
-                    libXdmcp.dev
-                    libselinux.dev
-                    libsepol.dev
-                    fribidi.dev
-                    libthai.dev
-                    libdatrie.dev
-                    libsysprof-capture
-                  ]
-                  ++ myDevToolsAndLibraries;
-                myDevTools =
-                  with pkgs;
-                  [
+                    gnupg
                     postgresql96-wrapped
                     stack-wrapped
                     pkgs-ghc9102.haskell.compiler.ghc9102
@@ -331,50 +409,62 @@ in
                     iputils
                     pdftk
                     llvmPackages.bintools
+                    pkgs.claude-code
+                    pkgs.ripgrep
+                    pkgs.fd
+                    pkgs.git
                   ]
-                  ++ myLibraries;
-              in
-              myDevTools
-              ++ [
-                pkgs.claude-code
-                pkgs.ripgrep
-                pkgs.fd
-                pkgs.git
+                  ++ myDevToolsAndLibraries;
+
+                pathsToLink = [ "/share/postgresql" ];
+              };
+
+              environment.variables =
+                let
+                  withDev = pkg: [ pkg ] ++ lib.optional (pkg ? dev) pkg.dev;
+                  libs = lib.closePropagation (lib.concatMap withDev myLibraries);
+                in
+                {
+                  PKG_CONFIG_PATH = lib.concatStringsSep ":" [
+                    (lib.makeSearchPath "lib/pkgconfig" libs)
+                    (lib.makeSearchPath "share/pkgconfig" libs)
+                  ];
+                  LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
+                  LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
+                  C_INCLUDE_PATH = lib.makeSearchPath "include" libs;
+                  CPLUS_INCLUDE_PATH = lib.makeSearchPath "include" libs;
+                  IN_NIX_SHELL = "microvm";
+                  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD = 1;
+                  PUPPETEER_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
+                  CPM_TIMEZONEFILE = "${pkgs.tzdata}/share/zoneinfo/Europe/Berlin";
+                  LOCALE_ARCHIVE_2_27 = "${pkgs.glibcLocales}/lib/locale/locale-archive";
+                  way = "f";
+                  CPM_COMPILE_CACHE_SPEC = "local";
+                  JAVA_HOME = pkgs.openjdk8;
+                };
+
+              system.stateVersion = "25.11";
+
+              nix = {
+                extraOptions = ''
+                  experimental-features = nix-command flakes
+                '';
+                settings = {
+                  substituters = [ "https://claude-code.cachix.org" ];
+                  trusted-public-keys = [ "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk=" ];
+                };
+              };
+              systemd.tmpfiles.rules = [
+                "L+ /home/work/.claude.json - - - - /home/work/.claude-state/claude.json"
+                "L+ /home/work/DociSSL.tar.xz.gpg  - - - - /home/work/.DociSSL-state/DociSSL.tar.xz.gpg"
               ];
 
-            system.stateVersion = "25.11";
-
-            # imports = [
-            #   inputs.home-manager-flake.nixosModules.home-manager
-            #   inputs.agenix.nixosModules.age
-            #   outputs.nixosModules
-            # ];
-
-            # home-manager.users.work.emacs.enable = true;
-
-            services.emacs = {
-              enable = true;
-              package = pkgs.emacs-unstable;
-            };
-            nix = {
-              extraOptions = ''
-                experimental-features = nix-command flakes
+              programs.bash.loginShellInit = ''
+                export PATH="/home/work/meqo/meqo/server/js/node_modules/.bin:$PATH"
               '';
-              settings = {
-                substituters = [ "https://claude-code.cachix.org" ];
-                trusted-public-keys = [ "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk=" ];
-              };
-            };
-            systemd.tmpfiles.rules = [
-              "L+ /home/work/.claude.json - - - - /home/work/.claude-state/claude.json"
-            ];
 
-            nixpkgs.overlays = [
-              inputs.claude-code.overlays.default
-              inputs.emacs-overlay.overlay
-            ];
-          };
-      };
+            };
+        };
     };
   };
 }
