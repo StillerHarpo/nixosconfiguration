@@ -543,7 +543,7 @@ a priority cookie and tags in the standard locations."
             org-caldav-files org-agenda-files))
   (my/org-roam-refresh-agenda-list)
   :custom
-  (org-roam-file-exclude-regexp '("data/" ".stversions/"))
+  (org-roam-file-exclude-regexp '("data/" ".stversions/" "logseq/"))
   (org-roam-directory (file-truename "~/Dokumente/org-roam"))
   (org-roam-completion-everywhere t)
   (org-roam-capture-templates
