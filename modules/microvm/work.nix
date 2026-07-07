@@ -250,6 +250,10 @@ in
                 ];
               };
 
+              imports = [
+                inputs.home-manager-flake.nixosModules.home-manager
+              ];
+
               # we are inside a vm and the host already has a firewall
               networking.firewall.enable = false;
 
@@ -395,7 +399,6 @@ in
                     ]))
                     python3Packages.supervisor
                     python3Packages.fontforge
-                    pgcli
                     pyright
                     libxslt
                     openjdk17
@@ -462,6 +465,14 @@ in
               programs.bash.loginShellInit = ''
                 export PATH="/home/work/meqo/meqo/server/js/node_modules/.bin:$PATH"
               '';
+
+              home-manager.users.work = { config, ... }: {
+                home.stateVersion = "26.05";
+                programs.pgcli = {
+                  enable = true;
+                  settings.main.keyring = false;
+                };
+              };
 
             };
         };
