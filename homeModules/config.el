@@ -1980,8 +1980,8 @@ If I let Windows handle DPI everything looks blurry."
 (setq yaml-indent-offset 2)
 
 (defun eww-insert ()
-  (interactive)
   "insert in form"
+  (interactive)
   (evil-insert-state)
   (evil-paste-after 1)
   (evil-normal-state))
