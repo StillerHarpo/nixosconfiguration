@@ -45,5 +45,7 @@
   };
   myHardware.enable = true;
 
+  services.batteryNotifier.device = "BAT0";
+
   age.identityPaths = [ "/root/.ssh/id_rsa" ];
 }

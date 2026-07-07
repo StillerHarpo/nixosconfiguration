@@ -15,7 +15,6 @@ in
     services.batteryNotifier = {
       enable = mkEnableOption (mdDoc "Whether to enable battery notifier.");
       device = mkOption {
-        default = "BAT0";
         type = types.str;
         description = mdDoc ''
           Device to monitor.

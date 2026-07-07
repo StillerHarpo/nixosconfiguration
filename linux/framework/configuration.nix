@@ -43,5 +43,7 @@
     };
   };
 
+  services.batteryNotifier.device = "BAT1";
+
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
 }
