@@ -446,7 +446,7 @@ in
                   JAVA_HOME = pkgs.openjdk8;
                 };
 
-              system.stateVersion = "25.11";
+              system.stateVersion = "26.05";
 
               nix = {
                 extraOptions = ''
