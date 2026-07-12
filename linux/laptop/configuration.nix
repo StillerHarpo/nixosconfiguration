@@ -364,8 +364,6 @@ in
         ];
       };
 
-      powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
-
       networking = {
         firewall.allowedTCPPorts = [
           24800
