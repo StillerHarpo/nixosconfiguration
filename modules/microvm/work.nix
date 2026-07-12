@@ -1,7 +1,10 @@
 {
   inputs,
+  outputs,
   config,
   lib,
+  pkgs,
+  private,
   ...
 }:
 let
@@ -83,9 +86,10 @@ in
             system = "x86_64-linux";
             config.allowUnfree = true;
             overlays = [
+              (final: prev: { inherit private; })
               inputs.claude-code.overlays.default
-              # inputs.emacs-overlay.overlay
-            ];
+            ]
+            ++ builtins.attrValues outputs.overlays;
           };
         in
         {
@@ -132,7 +136,7 @@ in
             in
             {
               microvm = {
-
+                vmHostPackages = pkgs;
                 mem = cfg.mem;
                 balloon = true;
                 writableStoreOverlay = "/nix/.rw-store";
@@ -457,6 +461,13 @@ in
                   trusted-public-keys = [ "claude-code.cachix.org-1:YeXf2aNu7UTX8Vwrze0za1WEDS+4DuI2kVeWEE4fsRk=" ];
                 };
               };
+
+              nixpkgs = {
+                overlays = [
+                  (final: prev: { inherit private; })
+                ]
+                ++ builtins.attrValues outputs.overlays;
+              };
               systemd.tmpfiles.rules = [
                 "L+ /home/work/.claude.json - - - - /home/work/.claude-state/claude.json"
                 "L+ /home/work/DociSSL.tar.xz.gpg  - - - - /home/work/.DociSSL-state/DociSSL.tar.xz.gpg"
@@ -465,12 +476,18 @@ in
               programs.bash.loginShellInit = ''
                 export PATH="/home/work/meqo/meqo/server/js/node_modules/.bin:$PATH"
               '';
-
-              home-manager.users.work = { config, ... }: {
-                home.stateVersion = "26.05";
-                programs.pgcli = {
-                  enable = true;
-                  settings.main.keyring = false;
+              home-manager = {
+                useGlobalPkgs = true;
+                users.work = { config, ... }: {
+                  imports = [
+                    outputs.homeModules
+                  ];
+                  home.stateVersion = "26.05";
+                  programs.pgcli = {
+                    enable = true;
+                    settings.main.keyring = false;
+                  };
+                  emacs.enable = true;
                 };
               };
 

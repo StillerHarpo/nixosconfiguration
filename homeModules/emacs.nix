@@ -28,9 +28,9 @@ in
       base =
         if cfg.base != null then
           cfg.base
-        else if osConfig.xserver.enable then
+        else if (osConfig.xserver.enable or false) then
           pkgs.emacs-unstable
-        else if osConfig.wayland.enable then
+        else if (osConfig.wayland.enable or false) then
           pkgs.emacs-git-pgtk
         else
           pkgs.emacs-unstable-nox;
