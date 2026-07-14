@@ -40,8 +40,8 @@ in
   config = lib.mkIf (cfg.enable == true) {
     services.syncthing = {
       enable = true;
-      key = cfg.cert;
-      cert = cfg.key;
+      key = cfg.key;
+      cert = cfg.cert;
       user = "florian";
       dataDir = "/home/florian/.syncthing";
       settings = {
