@@ -76,8 +76,10 @@ in
         ];
         windowManager.xmonad.extraPackages =
           haskellPackages: with haskellPackages; [
+            my-common
             MissingH
             protolude
+            pretty-simple
           ];
         xautolock = {
           enable = true;

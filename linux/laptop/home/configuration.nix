@@ -19,13 +19,6 @@ in
     ./themeChanger.nix
   ];
 
-  xsession.windowManager.xmonad.extraPackages =
-    haskellPackages: with haskellPackages; [
-      my-common
-      MissingH
-      protolude
-      pretty-simple
-    ];
   zsh = {
     enableMeqoSsh = true;
     extraPlugins = [ "pass" ];
