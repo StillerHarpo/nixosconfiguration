@@ -18,7 +18,7 @@
   syncthing = {
     key = config.age.secrets.syncthingKey.path;
     cert = config.age.secrets.syncthingCert.path;
-    otherLaptopId = "NFIUBE2-MSTQY3I-224N27N-SCGENYM-3ZHYZJN-OSPDX2K-XSHTZXG-CWYYNAL";
+    otherLaptopId = "GS7BXPV-7IXKM6U-MF2SCHO-XSBUAKM-WMQ7XQT-2P6NW3C-H6Y2VW4-X7XP6AI";
   };
   networkmanager.lanInterface = "enp195s0f0u2u3";
 
