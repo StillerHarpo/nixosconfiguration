@@ -9,6 +9,8 @@
     ];
   };
 
+  zsh.enable = true;
+
   programs = {
     alacritty.enable = true;
     git.enable = true;

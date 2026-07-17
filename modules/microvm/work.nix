@@ -255,6 +255,9 @@ in
               };
 
               imports = [
+                outputs.nixosModules
+                inputs.microvm.nixosModules.host
+                inputs.agenix.nixosModules.age
                 inputs.home-manager-flake.nixosModules.home-manager
               ];
 
@@ -426,6 +429,20 @@ in
                 pathsToLink = [ "/share/postgresql" ];
               };
 
+              # Select internationalisation properties.
+              console.keyMap = "us";
+              # Select internationalisation properties.
+              i18n = {
+                defaultLocale = "en_US.UTF-8";
+                supportedLocales = [
+                  "de_DE.UTF-8/UTF-8"
+                  "en_US.UTF-8/UTF-8"
+                ];
+              };
+
+              # Set your time zone.
+              time.timeZone = "Europe/Berlin";
+
               environment.variables =
                 let
                   withDev = pkg: [ pkg ] ++ lib.optional (pkg ? dev) pkg.dev;
@@ -487,6 +504,7 @@ in
                     enable = true;
                     settings.main.keyring = false;
                   };
+                  zsh.enable = true;
                   emacs.enable = true;
                 };
               };

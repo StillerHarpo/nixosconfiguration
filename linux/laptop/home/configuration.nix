@@ -15,10 +15,8 @@ in
 {
   imports = [
     ../../../home.nix
-    ./zsh.nix
     ./defaultApplications.nix
     ./themeChanger.nix
-    ../../home/configuration.nix
   ];
 
   xsession.windowManager.xmonad.extraPackages =
@@ -28,6 +26,10 @@ in
       protolude
       pretty-simple
     ];
+  zsh = {
+    enableMeqoSsh = true;
+    extraPlugins = [ "pass" ];
+  };
 
   librewolf = {
     enable = true;

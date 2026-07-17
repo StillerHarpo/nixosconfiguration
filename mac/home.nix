@@ -9,7 +9,6 @@ in
 {
   imports = [
     ../home.nix
-    ./zsh.nix
   ];
   config.home = {
     stateVersion = "24.11";
