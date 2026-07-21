@@ -183,6 +183,15 @@ in
                       "root_owner=1000:100"
                     ];
                   }
+                  {
+                    mountPoint = "/home/work/.directory_history";
+                    image = "directory_history.img";
+                    size = 1024;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
                 ];
                 registerWithMachined = true;
                 shares = [
