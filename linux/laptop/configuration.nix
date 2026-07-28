@@ -216,7 +216,7 @@ in
           {
             pkgs = with pkgs; [
               chromium
-              signal-desktop
+              inputs.nixpkgs-unstable.legacyPackages."x86_64-linux".signal-desktop
               inputs.nixpkgs-unstable.legacyPackages."x86_64-linux".deltachat-desktop
               slack
               element-desktop

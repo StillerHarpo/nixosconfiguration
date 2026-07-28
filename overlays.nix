@@ -3,6 +3,8 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
+    # fix insecure issue
+    pnpm_10_29_2 = final.pnpm_10;
     steam = prev.steam.override {
       extraPkgs = pkgs: [
         pkgs.libpng
