@@ -317,6 +317,7 @@ in
                 hashedPasswordFile = "${pkgs.writeText "password" "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
                 openssh.authorizedKeys.keys = cfg.sshKeys;
                 extraGroups = [ "wheel" ];
+                shell = pkgs.zsh;
               };
               environment = {
                 systemPackages =
@@ -441,6 +442,8 @@ in
 
                 pathsToLink = [ "/share/postgresql" ];
               };
+
+              programs.zsh.enable = true;
 
               # Select internationalisation properties.
               console.keyMap = "us";
