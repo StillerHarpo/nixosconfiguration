@@ -270,7 +270,6 @@ in
 
               imports = [
                 outputs.nixosModules
-                inputs.microvm.nixosModules.host
                 inputs.agenix.nixosModules.age
                 inputs.home-manager-flake.nixosModules.home-manager
               ];

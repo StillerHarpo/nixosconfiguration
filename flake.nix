@@ -76,7 +76,6 @@
       lib = (inputs.nixpkgs.lib.extend (_: _: inputs.home-manager-flake.lib)).extend (import ./mylib);
 
       thinkpad-modules = [
-        inputs.microvm.nixosModules.host
         inputs.nixpkgs.nixosModules.notDetected
         inputs.home-manager-flake.nixosModules.home-manager
         {
@@ -106,7 +105,6 @@
       ];
 
       framework-modules = [
-        inputs.microvm.nixosModules.host
         inputs.nixpkgs.nixosModules.notDetected
         inputs.home-manager-flake.nixosModules.home-manager
         {
@@ -205,7 +203,12 @@
 
       overlays = import ./overlays.nix { inherit inputs outputs; };
 
-      nixosModules = ./modules;
+      nixosModules = {
+        imports = [
+          ./modules
+          inputs.microvm.nixosModules.host
+        ];
+      };
 
       homeModules = ./homeModules;
 
