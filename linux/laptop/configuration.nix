@@ -523,6 +523,9 @@ in
       boot.supportedFilesystems."fuse.sshfs" = true;
       youtube-tui.enable = true;
 
+      # make apropos work
+      documentation.man.cache.enable = true;
+
       microvm.work.enable = true;
 
       # https://github.com/CachyOS/linux-cachyos/issues/878#issuecomment-4754587751
