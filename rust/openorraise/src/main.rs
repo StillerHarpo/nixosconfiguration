@@ -11,7 +11,7 @@ const BROWSE: &str = "librewolf --new-window ";
 const WORK_BROWSE: &str = "librewolf -P work --new-window ";
 const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
 
-pub const PROGRAMS: [(&str, &str); 16] = [
+pub const PROGRAMS: [(&str, &str); 17] = [
     ("librewolf", "librewolf"),
     (
         "grim (screenshot to file)",
@@ -24,6 +24,10 @@ pub const PROGRAMS: [(&str, &str); 16] = [
     (
         "grim (screenshot to text)",
         "grim -g \"$(slurp)\" - | tesseract - stdout | wl-copy",
+    ),
+    (
+        "scan datamatrix",
+        "grim -g \"$(slurp)\" - | dmtxread - | wl-copy",
     ),
     ("chromium", "chromium"),
     ("signal", "signal-desktop"),

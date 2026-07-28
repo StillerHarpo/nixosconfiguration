@@ -34,6 +34,7 @@ in
               adwaita-qt
               adwaita-qt6
               wdisplays
+              dmtx-utils
             ];
             rules = lib.apparmor.defaultRules config;
           }
