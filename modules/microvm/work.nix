@@ -30,6 +30,10 @@ in
         type = lib.types.number;
         description = lib.mdDoc "available memory for the vm";
       };
+      vcpu = lib.mkOption {
+        type = lib.types.number;
+        description = lib.mdDoc "available virtual cpus for the vm";
+      };
     };
   };
 
@@ -138,6 +142,7 @@ in
               microvm = {
                 vmHostPackages = pkgs;
                 mem = cfg.mem;
+                vcpu = cfg.vcpu;
                 balloon = true;
                 writableStoreOverlay = "/nix/.rw-store";
 

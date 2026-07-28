@@ -30,6 +30,7 @@
       "enp0s31f6"
     ];
     mem = 8192;
+    vcpu = 4;
   };
 
   # The NixOS release to be compatible with for stateful data such as databases.
