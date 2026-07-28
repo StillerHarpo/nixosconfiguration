@@ -44,6 +44,9 @@
     };
   };
 
+  # https://github.com/NixOS/nixpkgs/issues/477924
+  hardware.enableRedistributableFirmware = true;
+
   services.batteryNotifier.device = "BAT1";
 
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
