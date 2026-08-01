@@ -352,6 +352,7 @@
           nixosRpi4 = mkNixosRpi4 fakePrivate;
           flosDeck = mkFlosDeck fakePrivate true;
           nixosThinkpad = mkNixosThinkpad fakePrivate;
+          nixosFramework = mkNixosFramework fakePrivate;
         };
         deploy-rs = inputs.deploy-rs.packages.x86_64-linux.deploy-rs;
         deploy-rs-aarch64-linux = inputs.deploy-rs.packages.aarch64-linux.deploy-rs;
