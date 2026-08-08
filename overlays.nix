@@ -3,7 +3,7 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
-    # fix insecure issue
+    # WORKAROUNG insecure issue
     pnpm_10_29_2 = final.pnpm_10;
     steam = prev.steam.override {
       extraPkgs = pkgs: [
@@ -23,6 +23,16 @@
       };
     pass = prev.pass.override {
       dmenu = prev.writeScriptBin "dmenu" ''${prev.rofi}/bin/rofi -dmenu "$@"'';
+    };
+    # WORKAROUND flaky tests https://github.com/NixOS/nixpkgs/issues/542586
+    python314 = prev.python314.override {
+      packageOverrides = _: prev: {
+        paho-mqtt = prev.paho-mqtt.overridePythonAttrs (
+          _: _: {
+            doCheck = false;
+          }
+        );
+      };
     };
   };
   additions = final: prev: {
