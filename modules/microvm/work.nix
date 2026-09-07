@@ -199,6 +199,15 @@ in
                     ];
                   }
                   {
+                    mountPoint = "/home/work/Dokumente";
+                    image = "dokumente.img";
+                    size = 1024;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
                     image = "DociSSL-state.img";
                     mountPoint = "/home/work/.DociSSL-state";
                     size = 1024;
