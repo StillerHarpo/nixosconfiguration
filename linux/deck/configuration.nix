@@ -105,7 +105,6 @@ in
       mumble
       pavucontrol
       arc-kde-theme # theme
-      arc-theme # theme
       tailscale
       steamdeck-firmware
       steam-rom-manager
