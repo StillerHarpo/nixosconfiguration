@@ -108,6 +108,7 @@ in
               myLibraries =
                 with pkgs;
                 [
+                  libpng
                   qrencode
                   snappy
                   icu63
