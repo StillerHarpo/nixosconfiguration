@@ -198,6 +198,15 @@ in
                       "root_owner=1000:100"
                     ];
                   }
+                  {
+                    image = "DociSSL-state.img";
+                    mountPoint = "/home/work/.DociSSL-state";
+                    size = 1024;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
                 ];
                 registerWithMachined = true;
                 shares = [
@@ -231,12 +240,6 @@ in
                     source = "claude-state";
                     mountPoint = "/home/work/.claude-state";
                     tag = "claude-state";
-                    proto = "virtiofs";
-                  }
-                  {
-                    source = "DociSSL-state";
-                    mountPoint = "/home/work/.DociSSL-state";
-                    tag = "DociSSL-state";
                     proto = "virtiofs";
                   }
                   # 8GB
