@@ -521,7 +521,10 @@ in
                     settings.main.keyring = false;
                   };
                   zsh.enable = true;
-                  emacs.enable = true;
+                  emacs = {
+                    enable = true;
+                    isWork = true;
+                  };
                 };
               };
 

@@ -98,6 +98,9 @@
           lsp-bridge = eprev.lsp-bridge.overrideAttrs (_: {
             doCheck = false;
           });
+          claude-code-ide = final.callPackage ./packages/emacs/claude-code-ide {
+            inherit (eprev) trivialBuild websocket;
+          };
         }
       ));
   };

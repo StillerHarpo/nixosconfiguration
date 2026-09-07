@@ -21,6 +21,11 @@ in
       default = null;
       description = lib.mdDoc "the emacs package to use";
     };
+    isWork = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = lib.mdDoc "is this a work emacs";
+    };
   };
 
   config =
@@ -35,7 +40,11 @@ in
         else
           pkgs.emacs-unstable-nox;
       package = pkgs.emacsWithPackagesFromUsePackage {
-        config = ./config.el;
+        config =
+          if cfg.isWork then
+            pkgs.writeText "config.el" (builtins.readFile ./config.el + builtins.readFile ./workConfig.el)
+          else
+            ./config.el;
         defaultInitFile = true;
         alwaysEnsure = true;
         package = base;
