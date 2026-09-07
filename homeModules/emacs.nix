@@ -69,7 +69,8 @@ in
         inherit package;
         defaultEditor = true;
         client.enable = true;
-        startWithUserSession = "graphical";
+        startWithUserSession =
+          if osConfig.wayland.enable or osConfig.xserver.enable then "graphical" else true;
       };
       programs.emacs = {
         enable = true;
