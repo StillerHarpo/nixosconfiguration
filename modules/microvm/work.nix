@@ -450,6 +450,7 @@ in
                     pkgs.ripgrep
                     pkgs.fd
                     pkgs.git
+                    libreoffice
                   ]
                   ++ myDevToolsAndLibraries;
 
