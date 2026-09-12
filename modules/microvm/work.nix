@@ -84,7 +84,7 @@ in
     };
 
     microvm.vms = {
-      work =
+      meqoworkvm =
         let
           pkgs = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
