@@ -401,7 +401,6 @@ in
         pkgs.dconf
       ];
 
-      # powerManagement.enable = false;
       services = {
 
         pipewire = {
