@@ -180,7 +180,6 @@ in
               wget
               vim
               shellcheck
-              tuir
               (mpv.override { scripts = [ mpvScripts.mpris ]; })
               rlwrap
               you-get

@@ -40,7 +40,6 @@ let
         "wget"
         "zathura"
         "you-get"
-        "tuir"
         "w3m"
         "pass"
         "jq"
@@ -83,7 +82,6 @@ let
           wget
           zathura
           you-get
-          tuir
           jq
           w3m
           librewolf
@@ -93,7 +91,6 @@ let
       keep = [ "/run/wrappers/bin/sudo" ];
       execer = [
         "cannot:${pkgs.lib.getExe pkgs.you-get}"
-        "cannot:${pkgs.lib.getExe pkgs.tuir}"
         "cannot:${pkgs.lib.getExe pkgs.mpv}"
         "cannot:${pkgs.lib.getExe pkgs.feh}"
         "cannot:${pkgs.lib.getExe pkgs.wget}"
