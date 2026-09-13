@@ -55,6 +55,8 @@ in
       firewall.trustedInterfaces = [ "br0" ];
     };
 
+    environment.systemPackages = [ pkgs.waypipe ];
+
     boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
     systemd.network = {
@@ -451,6 +453,7 @@ in
                     pkgs.fd
                     pkgs.git
                     libreoffice
+                    waypipe
                   ]
                   ++ myDevToolsAndLibraries;
 
