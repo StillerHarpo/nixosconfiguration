@@ -463,6 +463,7 @@ in
                     pkgs.git
                     libreoffice
                     waypipe
+                    google-chrome
                   ]
                   ++ myDevToolsAndLibraries;
 
