@@ -482,6 +482,14 @@ in
                 ];
               };
 
+              fonts = {
+                fontDir.enable = true;
+                packages = with pkgs; [
+                  dejavu_fonts
+                  source-code-pro
+                ];
+              };
+
               # Set your time zone.
               time.timeZone = "Europe/Berlin";
 
