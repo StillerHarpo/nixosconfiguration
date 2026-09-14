@@ -145,6 +145,10 @@ in
               settings = commonSettings;
               extensions.packages = extensions;
             };
+            private = {
+              settings = commonSettings;
+              extensions.packages = extensions;
+            };
           }
           (lib.flip lib.mapAttrs config.firefox.additionalProfiles (
             _: v: {
@@ -164,6 +168,11 @@ in
             default = {
               settings = commonSettings;
               extensions.packages = extensions;
+            };
+            private = {
+              settings = commonSettings;
+              extensions.packages = extensions;
+              id = 2;
             };
           }
           (lib.flip lib.mapAttrs config.librewolf.additionalProfiles (
