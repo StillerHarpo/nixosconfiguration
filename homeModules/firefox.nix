@@ -7,7 +7,6 @@
 }:
 
 let
-  cfg = config.firefox;
   firefox-addons = pkgs.nur.repos.rycee.firefox-addons;
   ffreszoom =
     let
