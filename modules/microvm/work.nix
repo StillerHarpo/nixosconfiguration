@@ -49,6 +49,15 @@ in
         internalInterfaces = [ "br0" ];
         extraCommands = lib.concatMapStringsSep "\n" (interface: ''
           iptables -t nat -A POSTROUTING -s ${ipPrefix}.0/${ipRange} -o ${interface} -j MASQUERADE
+          ${lib.concatMapStringsSep "\n"
+            (port: ''
+              iptables -t nat -A PREROUTING -i ${interface} -p tcp --dport ${port} -j  DNAT --to-destination ${vmIp}:${port}
+            '')
+            [
+              "28108"
+              "28100"
+            ]
+          }
         '') cfg.externalInterfaces;
       };
 
