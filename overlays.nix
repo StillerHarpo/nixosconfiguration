@@ -99,7 +99,7 @@
             doCheck = false;
           });
           claude-code-ide = final.callPackage ./packages/emacs/claude-code-ide {
-            inherit (eprev) trivialBuild websocket;
+            inherit (eprev) trivialBuild websocket web-server;
           };
         }
       ));

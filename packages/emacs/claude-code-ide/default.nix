@@ -2,6 +2,7 @@
   trivialBuild,
   pkgs,
   websocket,
+  web-server,
   ...
 }:
 trivialBuild {
@@ -13,5 +14,8 @@ trivialBuild {
     rev = "32a8a904ac21e52c54231b99796d12ae36df9c22";
     hash = "sha256-LlJn5lbJpN/fHLggy8KmOAFt3abcG0oZAahruuxCSgM=";
   };
-  packageRequires = [ websocket ];
+  packageRequires = [
+    websocket
+    web-server
+  ];
 }
