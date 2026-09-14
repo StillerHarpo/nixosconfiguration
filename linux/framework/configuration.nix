@@ -47,7 +47,19 @@
   # https://github.com/NixOS/nixpkgs/issues/477924
   hardware.enableRedistributableFirmware = true;
 
+  # https://github.com/NixOS/nixpkgs/issues/409934
+  systemd.services = {
+    systemd-suspend.serviceConfig.Environment = "SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=0";
+    systemd-hibernate.serviceConfig.Environment = "SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=0";
+  };
+
   services.batteryNotifier.device = "BAT1";
+
+  systemd.services.disable-wake = {
+    description = "disable NHI1 wake";
+    script = "echo NHI1 > /proc/acpi/wakeup";
+    wantedBy = [ "multi-user.target" ];
+  };
 
   age.identityPaths = [ "/root/.ssh/id_ed25519" ];
 }
