@@ -1032,10 +1032,11 @@ a priority cookie and tags in the standard locations."
   :init
   (defun my/set-tide-from-direnv ()
     "sets the right node executable"
-     (interactive)
-     (setq
-      tide-node-executable
-      (string-trim (shell-command-to-string "direnv exec . which node 2>/dev/null || echo node"))))
+    (interactive)
+    (unless (file-remote-p buffer-file-name))
+    (setq
+     tide-node-executable
+     (string-trim (shell-command-to-string "direnv exec . which node 2>/dev/null || echo node"))))
   (add-hook 'typescript-ts-mode-hook (lambda () (setq indent-tabs-mode nil)))
   (add-hook 'tide-mode-hook (lambda () (setq indent-tabs-mode nil)))
   (add-hook 'typescript-ts-mode-hook 'my/set-tide-from-direnv -90)
@@ -1727,11 +1728,10 @@ If I let Windows handle DPI everything looks blurry."
      `((,(rx "server/protos") "/protos")
        (,(rx (literal prefix)) "/js")))))
 
-(defun my/meqo-compile ()
+(defun my/meqo-compile (target)
   "Uses shake in meqo to compile."
-  (interactive)
-  (let* ((default-directory (my/meqo-server-directory))
-         (target (my/meqo-shake-targets)))
+  (interactive (let ((default-directory (my/meqo-server-directory))) `(,(my/meqo-shake-targets))))
+  (let ((default-directory (my/meqo-server-directory)))
     (compile (format "way=f cd %s && ./shake %s %s" default-directory (my/direnv-prefix) target) 'meqo-compilation-mode)))
 
 (defun my/meqo-webpack-entry-points ()
@@ -1752,11 +1752,10 @@ If I let Windows handle DPI everything looks blurry."
      (make-local-variable 'compilation-transform-file-match-alist)
        `((,(rx (literal prefix)) ,(string-join `(,(my/meqo-server-directory) "/js")))))))
 
-(defun my/meqo-webpack ()
+(defun my/meqo-webpack (entry-point)
   "Run wepack"
-  (interactive)
-  (let* ((default-directory (my/meqo-server-directory))
-         (entry-point (my/meqo-webpack-entry-points)))
+  (interactive (let ((default-directory (my/meqo-server-directory))) `(,(my/meqo-webpack-entry-points))))
+  (let ((default-directory (my/meqo-server-directory)))
 	(compile (format "way=f cd %s && %s ./js/scripts/webpack --watch %s" default-directory (my/direnv-prefix) entry-point) 'meqo-webpack-compilation-mode)))
 
 (define-compilation-mode meqo-ts-test-compilation-mode "Meqo-Test"
@@ -1771,11 +1770,10 @@ If I let Windows handle DPI everything looks blurry."
        (,(rx (literal prefix)) ,(string-join `(,(my/meqo-server-directory) "/js")))))))
 
 
-(defun my/meqo-run-ts-tests ()
+(defun my/meqo-run-ts-tests (filter)
   "Run meqo ts tests"
-  (interactive)
-  (let* ((default-directory (my/meqo-server-directory))
-         (filter (read-from-minibuffer "Filter: ")))
+  (interactive "sFilter: ")
+  (let ((default-directory (my/meqo-server-directory)))
     (compile
      (format "cd %s && %s ./js/scripts/runTests %s" default-directory (my/direnv-prefix) filter)
      'meqo-ts-test-compilation-mode)))
