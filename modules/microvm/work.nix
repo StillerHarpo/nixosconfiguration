@@ -467,6 +467,7 @@ in
                   ++ myDevToolsAndLibraries;
 
                 pathsToLink = [ "/share/postgresql" ];
+                etc."current-flake".source = inputs.self;
               };
 
               programs.zsh.enable = true;
