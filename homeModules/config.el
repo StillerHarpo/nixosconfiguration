@@ -1661,13 +1661,17 @@ If I let Windows handle DPI everything looks blurry."
   "Gets the demo directory of meqo."
   (string-join `(,(my/meqo-server-directory) "demo/")))
 
+(defun my/direnv-prefix ()
+    "Add direnv prefix if we work locally"
+    (if (executable-find "direnv") (format "direnv exec %s " default-directory) ""))
+
 (defun my/meqo-format ()
   "Formats the current buffer with the meqo script."
   (interactive)
   (let ((default-directory (my/meqo-server-directory)))
     (shell-command
      (string-join
-      `("direnv exec scripts/format_one.sh" " " ,(buffer-file-name (current-buffer)))))
+      `(,(my/direnv-prefix) "scripts/format_one.sh" " " ,(file-local-name (buffer-file-name (current-buffer))))))
     (revert-buffer :NOCONFIRM t)))
 
 (defun my/meqo-format-on-save ()
@@ -1688,7 +1692,7 @@ If I let Windows handle DPI everything looks blurry."
   (let ((default-directory (my/meqo-demo-directory)))
     (shell-command
      (string-join
-      `("direnv exec . npm run format -- --write" " " ,(buffer-file-name (current-buffer)))))
+      `((my/direnv-prefix) "npm run format -- --write" " " ,(buffer-file-name (file-local-name (current-buffer))))))
     (revert-buffer :NOCONFIRM t)))
 
 (defun my/meqo-demo-format-on-save ()
@@ -1707,7 +1711,7 @@ If I let Windows handle DPI everything looks blurry."
          (programs
           (-filter
            (lambda (x) (string-match (rx (seq alnum " " "(" (one-or-more anychar) ")" )) x))
-           (s-split "\n" (shell-command-to-string (format "direnv exec %s ./shake -l" default-directory)))))
+           (s-split "\n" (shell-command-to-string (concat (my/direnv-prefix) "./shake -l")))))
          (what (completing-read "programm: " programs)))
     (car (s-split " " what))))
 
@@ -1728,13 +1732,13 @@ If I let Windows handle DPI everything looks blurry."
   (interactive)
   (let* ((default-directory (my/meqo-server-directory))
          (target (my/meqo-shake-targets)))
-    (compile (format "way=f cd %s && direnv exec %s ./shake %s" default-directory default-directory target) 'meqo-compilation-mode)))
+    (compile (format "way=f cd %s && ./shake %s %s" default-directory (my/direnv-prefix) target) 'meqo-compilation-mode)))
 
 (defun my/meqo-webpack-entry-points ()
-  "Selects a entry points from webpack."
+  "Selects a entry point from webpack."
   (let* ((default-directory (my/meqo-server-directory))
          (programs
-           (s-split "\n" (shell-command-to-string (format "direnv exec %s ./js/scripts/webpack --list" default-directory))))
+           (s-split "\n" (shell-command-to-string (concat (my/direnv-prefix) "./js/scripts/webpack --list" ))))
          (what (completing-read "entry point: " programs)))
     (car (s-split " " what))))
 
@@ -1753,7 +1757,7 @@ If I let Windows handle DPI everything looks blurry."
   (interactive)
   (let* ((default-directory (my/meqo-server-directory))
          (entry-point (my/meqo-webpack-entry-points)))
-    (compile (format "way=f cd %s && direnv exec %s ./js/scripts/webpack --watch %s" default-directory default-directory entry-point) 'meqo-webpack-compilation-mode)))
+	(compile (format "way=f cd %s && %s ./js/scripts/webpack --watch %s" default-directory (my/direnv-prefix) entry-point) 'meqo-webpack-compilation-mode)))
 
 (define-compilation-mode meqo-ts-test-compilation-mode "Meqo-Test"
   "Meqo ts tests compilation mode."
@@ -1773,7 +1777,7 @@ If I let Windows handle DPI everything looks blurry."
   (let* ((default-directory (my/meqo-server-directory))
          (filter (read-from-minibuffer "Filter: ")))
     (compile
-     (format "cd %s && direnv exec %s ./js/scripts/runTests %s" default-directory default-directory filter)
+     (format "cd %s && %s ./js/scripts/runTests %s" default-directory (my/direnv-prefix) filter)
      'meqo-ts-test-compilation-mode)))
 
 (defun my/org-roam-commit-on-save ()
