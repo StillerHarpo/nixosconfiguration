@@ -55,7 +55,7 @@ in
             '')
             [
               "28108"
-              "28100"
+              "8100"
             ]
           }
         '') cfg.externalInterfaces;
