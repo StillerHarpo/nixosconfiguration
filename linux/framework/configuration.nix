@@ -55,6 +55,11 @@
 
   services.batteryNotifier.device = "BAT1";
 
+  wayland.screen = {
+    id = "BOE NE160QDM-NZ6 Unknown";
+    mode = "2560x1600@165.000";
+  };
+
   systemd.services.disable-wake = {
     description = "disable NHI1 wake";
     script = "echo NHI1 > /proc/acpi/wakeup";

@@ -16,6 +16,20 @@ in
   options.wayland = {
     enable = mkEnableOption (lib.mdDoc "Wether to use wayland");
     autoLogin = mkEnableOption (lib.mdDoc "Wether to autologin into wayland");
+    screen = mkOption {
+      description = "the laptop screen";
+      default = { };
+      type = lib.types.submodule {
+        options.id = lib.mkOption {
+          type = lib.types.str;
+          description = "id of the screen";
+        };
+        options.mode = lib.mkOption {
+          type = lib.types.str;
+          description = "mode of the screen";
+        };
+      };
+    };
   };
   config =
     let
@@ -116,9 +130,9 @@ in
                       name = "default";
                       outputs = [
                         {
-                          criteria = "AU Optronics 0x2336 Unknown";
+                          criteria = cfg.screen.id;
                           position = "0,0";
-                          mode = "2560x1440@60.01";
+                          mode = cfg.screen.mode;
                         }
                       ];
                     };
@@ -128,9 +142,9 @@ in
                       name = "home";
                       outputs = [
                         {
-                          criteria = "AU Optronics 0x2336 Unknown";
+                          criteria = cfg.screen.id;
                           position = "0,1080";
-                          mode = "2560x1440@60.01Hz";
+                          mode = cfg.screen.mode;
                           scale = 1.5;
                         }
                         {
@@ -146,9 +160,9 @@ in
                       name = "work";
                       outputs = [
                         {
-                          criteria = "AU Optronics 0x2336 Unknown";
+                          criteria = cfg.screen.id;
                           position = "1309,1440";
-                          mode = "2560x1440@60.01Hz";
+                          mode = cfg.screen.mode;
                           scale = 1.5;
                         }
                         {

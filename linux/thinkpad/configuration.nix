@@ -33,6 +33,11 @@
     vcpu = 4;
   };
 
+  wayland.screen = {
+    id = "AU Optronics 0x2336 Unknown";
+    mode = "2560x1440@60.01";
+  };
+
   # The NixOS release to be compatible with for stateful data such as databases.
   system.stateVersion = "24.11";
   home-manager.users.florian = { config, ... }: {
