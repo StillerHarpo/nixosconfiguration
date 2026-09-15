@@ -30,6 +30,11 @@ in
         };
       };
     };
+    programShortcuts = mkOption {
+      description = "Program shortcuts which are available in wofi. Key is the text in wofi";
+      default = { };
+      type = lib.types.attrsOf lib.types.str;
+    };
   };
   config =
     let
@@ -189,6 +194,21 @@ in
                   name = "openorraise";
                   src = ../rust/openorraise;
                   cargoLock.lockFile = ../rust/openorraise/Cargo.lock;
+                  preBuild =
+                    let
+                      numPrograms = lib.toString (lib.length (lib.attrsToList cfg.programShortcuts));
+                      rustListElements = lib.replaceString "&" "\\&" (
+                        lib.replaceString "/" "\\/" (
+                          lib.concatMapAttrsStringSep "," (
+                            k: v: "(\"${lib.replaceString "\"" "\\\\\"" k}\", \"${lib.replaceString "\"" "\\\\\"" v}\")"
+                          ) cfg.programShortcuts
+                        )
+                      );
+                      substitutionStr = "pub const PROGRAMS: [(\\&str, \\&str); ${numPrograms}] = [${rustListElements}]";
+                    in
+                    ''
+                      ${lib.getExe pkgs.gnused} -i 's/pub const PROGRAMS: \[(&str, &str); 0\] = \[\]/${substitutionStr}/' src/main.rs
+                    '';
                 };
               in
               {

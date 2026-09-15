@@ -394,6 +394,25 @@ in
       wayland = {
         enable = true;
         autoLogin = true;
+        programShortcuts = {
+          "librewolf" = "librewolf";
+          "grim (screenshot to file)" = "GRIM_DEFAULT_DIR=~/screenshots/ grim -g \"$(slurp)\"";
+          "grim (screenshot to clipboard)" = "grim -g \"$(slurp)\" - | wl-copy";
+          "grim (screenshot to text)" = "grim -g \"$(slurp)\" - | tesseract - stdout | wl-copy";
+          "scan datamatrix" = "grim -g \"$(slurp)\" - | dmtxread - | wl-copy";
+          "chromium" = "chromium";
+          "signal" = "signal-desktop";
+          "element" = "element-desktop";
+          "steam" = "steam";
+          "alacritty (Privileged)" = "alacritty -T \"Alacritty (Privileged)\"";
+          "pavucontrol" = "pavucontrol";
+          "wdisplays" = "wdisplays";
+          "blueman-manager" = "blueman-manager";
+          "remmina" = "remmina";
+          "slack" = "slack";
+          "passmenu" = "wofi-pass";
+          "firefox-airvpn" = "sudo -En firefox-airvpn";
+        };
       };
 
       services.dbus.packages = [

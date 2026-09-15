@@ -11,44 +11,7 @@ const BROWSE: &str = "librewolf --new-window ";
 const WORK_BROWSE: &str = "librewolf -P work --new-window ";
 const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
 
-pub const PROGRAMS: [(&str, &str); 17] = [
-    ("librewolf", "librewolf"),
-    (
-        "grim (screenshot to file)",
-        "GRIM_DEFAULT_DIR=~/screenshots/ grim -g \"$(slurp)\"",
-    ),
-    (
-        "grim (screenshot to clipboard)",
-        "grim -g \"$(slurp)\" - | wl-copy",
-    ),
-    (
-        "grim (screenshot to text)",
-        "grim -g \"$(slurp)\" - | tesseract - stdout | wl-copy",
-    ),
-    (
-        "scan datamatrix",
-        "grim -g \"$(slurp)\" - | dmtxread - | wl-copy",
-    ),
-    ("chromium", "chromium"),
-    ("signal", "signal-desktop"),
-    ("element", "element-desktop"),
-    ("steam", "steam"),
-    (
-        "alacritty (Privileged)",
-        "alacritty -T \"Alacritty (Privileged)\"",
-    ),
-    ("pavucontrol", "pavucontrol"),
-    ("wdisplays", "wdisplays"),
-    ("blueman-manager", "blueman-manager"),
-    ("remmina", "remmina"),
-    ("slack", "slack"),
-    // Hotfix
-    (
-        "passmenu",
-        "PASSWORD_STORE_DIR=\"${PASSWORD_STORE_DIR}\" wofi-pass",
-    ),
-    ("firefox-airvpn", "sudo -En firefox-airvpn"),
-];
+pub const PROGRAMS: [(&str, &str); 0] = [];
 
 fn parse_key_value_map<'a>(what: &'a str, v: Value) -> Result<Vec<(String, String)>, String> {
     match v {

@@ -66,6 +66,12 @@ in
 
     environment.systemPackages = [ pkgs.waypipe ];
 
+    wayland.programShortcuts = {
+      "google-chrome" =
+        "${lib.getExe pkgs.waypipe} --no-gpu ssh work@${vmIp} ${lib.getExe pkgs.google-chrome} --ozone-platform=wayland";
+      "emacs (work)" = "${lib.getExe pkgs.waypipe} --no-gpu ssh work@${vmIp} emacsclient -c";
+    };
+
     boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
     systemd.network = {
