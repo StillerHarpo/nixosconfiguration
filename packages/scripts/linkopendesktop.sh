@@ -80,9 +80,6 @@ then
 elif echo "${1}" | grep -q -e gfycat.com 
 then
     mpv --save-position-on-quit --really-quiet --loop --no-osc "$(you-get -u "${1}" | grep -q \.gif$ | head -1)"
-elif echo "${1}" | grep -q -e www.reddit
-then
-    tuir -l "${1}"
 elif echo "${1}" | grep -q -e medilyse -e factisresearch -e docs\.google -e meqo
 then
     librewolf -P work --new-window "${1}"
