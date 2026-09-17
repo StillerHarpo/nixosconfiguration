@@ -11,6 +11,7 @@
   age.secrets = {
     syncthingKey.file = ./secrets/syncthingKey.age;
     syncthingCert.file = ./secrets/syncthingCert.age;
+    nixCachePriv.file = ./secrets/nixCachePrivKey.age;
   };
 
   networking.hostName = "nixosFramework";
@@ -53,7 +54,14 @@
     systemd-hibernate.serviceConfig.Environment = "SYSTEMD_SLEEP_FREEZE_USER_SESSIONS=0";
   };
 
-  services.batteryNotifier.device = "BAT1";
+  services = {
+    batteryNotifier.device = "BAT1";
+    nix-serve = {
+      enable = true;
+      openFirewall = true;
+      secretKeyFile = config.age.secrets.nixCachePriv.path;
+    };
+  };
 
   wayland.screen = {
     id = "BOE NE160QDM-NZ6 Unknown";
