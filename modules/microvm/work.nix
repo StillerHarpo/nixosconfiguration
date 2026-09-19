@@ -227,6 +227,16 @@ in
                       "root_owner=1000:100"
                     ];
                   }
+                  {
+                    image = "chrome-config.img";
+                    mountPoint = "/home/work/.config/google-chrome";
+                    size = 1024;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  # TODO readonly .env
                 ];
                 registerWithMachined = true;
                 shares = [
@@ -540,6 +550,7 @@ in
               systemd.tmpfiles.rules = [
                 "L+ /home/work/.claude.json - - - - /home/work/.claude-state/claude.json"
                 "L+ /home/work/DociSSL.tar.xz.gpg  - - - - /home/work/.DociSSL-state/DociSSL.tar.xz.gpg"
+                "d /home/work/.config 0755 work users -"
               ];
 
               programs.bash.loginShellInit = ''
