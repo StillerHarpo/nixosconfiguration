@@ -6,6 +6,6 @@ author:             Florian Engel
 maintainer:         engelflorian@posteo.de
 
 library
-  build-depends:    base, protolude, text, xmonad-contrib
-  exposed-modules:  Xrandr, Utils
+  build-depends:    base, protolude, text, xmonad-contrib, aeson, bytestring, turtle
+  exposed-modules:  Xrandr, Utils, Bookmarks
   ghc-options:      -Wall -Werror

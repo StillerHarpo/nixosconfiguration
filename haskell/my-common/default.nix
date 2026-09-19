@@ -5,6 +5,8 @@
   protolude,
   text,
   xmonad-contrib,
+  aeson,
+  turtle,
 }:
 mkDerivation {
   pname = "my-common";
@@ -15,6 +17,8 @@ mkDerivation {
     protolude
     text
     xmonad-contrib
+    aeson
+    turtle
   ];
   license = "unknown";
 }

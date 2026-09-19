@@ -85,6 +85,8 @@ let
           jq
           w3m
           librewolf
+          is-normal-bookmark
+          is-work-bookmark
         ]
         ++ inputs;
       fake.external = fakes;

@@ -80,7 +80,10 @@ then
 elif echo "${1}" | grep -q -e gfycat.com 
 then
     mpv --save-position-on-quit --really-quiet --loop --no-osc "$(you-get -u "${1}" | grep -q \.gif$ | head -1)"
-elif echo "${1}" | grep -q -e medilyse -e factisresearch -e docs\.google -e meqo
+elif is-normal-bookmark "${1}"
+then
+    librewolf --new-window "${1}"
+elif is-work-bookmark "${1}"
 then
     librewolf -P work --new-window "${1}"
 else

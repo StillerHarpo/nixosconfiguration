@@ -68,6 +68,15 @@
     monitor-changer = prev.writers.writeHaskellBin "monitor-changer" {
       libraries = [ final.haskellPackages.my-common ];
     } ./haskell/monitor-changer/MonitorChanger.hs;
+    is-normal-bookmark = prev.writers.writeHaskellBin "is-normal-bookmark" {
+      libraries = [ final.haskellPackages.my-common ];
+    } ./haskell/is-normal-bookmark/Main.hs;
+    is-work-bookmark = prev.writers.writeHaskellBin "is-work-bookmark" {
+      libraries = [ final.haskellPackages.my-common ];
+    } ./haskell/is-work-bookmark/Main.hs;
+    is-normal-work-bookmark = prev.writers.writeHaskellBin "is-normal-work-bookmark" {
+      libraries = [ final.haskellPackages.my-common ];
+    } ./haskell/is-normal-work-bookmark/Main.hs;
     textcleaner = final.callPackage ./textcleaner { };
     rpi4-uefi-firmware = final.callPackage ./packages/rpi4-uefi-firmware { };
   };

@@ -8,6 +8,7 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
+import Bookmarks
 import Data.Aeson
 import Data.Aeson.Types (typeMismatch)
 import qualified Data.ByteString.Lazy as BSL
@@ -63,33 +64,9 @@ instance ExtensionClass ListStorage where
 termCommand :: (IsString a) => a
 termCommand = "alacritty"
 
-data Bookmarks = Bookmarks
-  { normal :: [(Text, Text)],
-    private :: [(Text, Text)],
-    work :: [(Text, Text)]
-  }
-
-instance FromJSON Bookmarks where
-  parseJSON (Object v) = do
-    normal <- v .: "normal"
-    private <- v .: "private"
-    work <- v .: "work"
-    pure Bookmarks {..}
-  parseJSON other = typeMismatch "object" other
-
 main :: IO ()
 main = do
-  bookmarksJson <- BSL.readFile "/home/florian/.my-bookmarks.json"
-  bookmarks <- case eitherDecode bookmarksJson of
-    Left err -> do
-      hPutStrLn stderr $ "Error while parsing bookmarks: " <> err
-      pure
-        Bookmarks
-          { normal = [],
-            private = [],
-            work = []
-          }
-    Right v -> pure v
+  bookmarks <- getBookmarks
   xmonad $
     withUrgencyHook LibNotifyUrgencyHook $
       ewmhFullscreen

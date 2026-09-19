@@ -1294,6 +1294,7 @@ Returns nil if not and (sec min hour) if it has."
              nil
              `((From  . ,(completing-read "From: " (notmuch-user-emails)))))))
         (,no-eww-reg . browse-url-linkopen)
+        ((lambda (url) (= 0 (call-process nix-is-normal-work-bookmark-path nil nil nil url)))  . browse-url-linkopen)
         ("." . eww-browse-url)))
 
 (defun browse (prog url)

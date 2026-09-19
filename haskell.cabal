@@ -22,6 +22,24 @@ executable home-automation
   default-language: Haskell2010
   ghc-options:      -Wall -Werror
 
+executable is-work-bookmark
+  main-is:          haskell/is-work-bookmark/Main.hs
+  build-depends:    base, haskell
+  default-language: Haskell2010
+  ghc-options:      -Wall -Werror
+
+executable is-normal-bookmark
+  main-is:          haskell/is-normal-bookmark/Main.hs
+  build-depends:    base, haskell
+  default-language: Haskell2010
+  ghc-options:      -Wall -Werror
+
+executable is-normal-work-bookmark
+  main-is:          haskell/is-normal-work-bookmark/Main.hs
+  build-depends:    base, haskell
+  default-language: Haskell2010
+  ghc-options:      -Wall -Werror
+
 test-suite tests
   default-language: Haskell2010
   type: exitcode-stdio-1.0
@@ -54,6 +72,6 @@ executable xmonad-thinkpad
 
 library
   hs-source-dirs:   haskell/my-common, haskell/my-common/home-automation
-  build-depends:    base, protolude, text, xmonad-contrib, net-mqtt, time, aeson
-  exposed-modules:  Xrandr, Utils, HomeAutomation
+  build-depends:    base, protolude, text, xmonad-contrib, net-mqtt, time, aeson, bytestring, turtle
+  exposed-modules:  Xrandr, Utils, HomeAutomation, Bookmarks
   ghc-options:      -Wall -Werror

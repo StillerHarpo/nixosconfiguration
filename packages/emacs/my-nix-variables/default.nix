@@ -9,6 +9,7 @@
   isWayland ? true,
   my-linkopen-wayland-or-tty,
   my-linkopen-x-or-tty,
+  is-normal-work-bookmark,
   private,
   lib,
   ...
@@ -23,6 +24,7 @@ trivialBuild {
           nix-linkopen-path "${
             if isWayland then my-linkopen-wayland-or-tty else my-linkopen-x-or-tty
           }/bin/linkopen"
+          nix-is-normal-work-bookmark-path "${lib.getExe is-normal-work-bookmark}"
           nix-jdk-path "${jdk}/bin/java"
           nix-languagetool-path "${languagetool}"
           nix-workmail "${private.workMail}"
