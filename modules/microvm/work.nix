@@ -474,6 +474,7 @@ in
                     libreoffice
                     waypipe
                     google-chrome
+                    uv
                   ]
                   ++ myDevToolsAndLibraries;
 
