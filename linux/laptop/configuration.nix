@@ -208,6 +208,7 @@ in
               emacs-lsp-booster
               orca-slicer
               android-tools
+              wifi-qr
             ];
             rules = lib.apparmor.defaultRules config;
           }
