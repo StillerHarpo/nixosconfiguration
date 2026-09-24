@@ -261,7 +261,7 @@ in
                   }
                   # TODO can be remvoved and replaced with socat
                   {
-                    source = "/var/lib/microvms/work/ssh-host-keys";
+                    source = "/var/lib/microvms/meqoworkvm/ssh-host-keys";
                     mountPoint = "/etc/ssh/persistent-keys";
                     tag = "ssh-keys-share";
                     proto = "virtiofs";
