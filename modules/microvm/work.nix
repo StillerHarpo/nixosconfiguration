@@ -176,7 +176,7 @@ in
                   {
                     mountPoint = "/home/work/.cache";
                     image = "cache.img";
-                    size = 4096;
+                    size = 8192;
                     mkfsExtraArgs = [
                       "-E"
                       "root_owner=1000:100"
