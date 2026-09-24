@@ -46,6 +46,8 @@ in
         (lib.mkIf osConfig.programs.firejail.enable {
           firejail-nix = "firejail --private=~/.private-home nix";
         })
+      ];
+      sessionVariables = lib.mkMerge [
         (lib.mkIf osConfig.wayland.enable {
           BROWSER = lib.getExe pkgs.my-linkopen-wayland-or-tty;
         })
