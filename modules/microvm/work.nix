@@ -557,6 +557,9 @@ in
               programs.bash.loginShellInit = ''
                 export PATH="/home/work/meqo/meqo/server/js/node_modules/.bin:$PATH"
               '';
+
+              spelling.enable = true;
+
               home-manager = {
                 useGlobalPkgs = true;
                 users.work = { config, ... }: {

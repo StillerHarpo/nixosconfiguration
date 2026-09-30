@@ -140,10 +140,6 @@ in
     editor.terminal = "alacritty";
   };
 
-  home.file.".aspell.conf".source = pkgs.runCommand "aspell.conf" { } ''
-    ${lib.getExe' pkgs.myAspellWithDicts "aspell"} dump config > $out
-  '';
-
   home.file.".authinfo.gpg".source = ./authinfo.gpg;
 
 }

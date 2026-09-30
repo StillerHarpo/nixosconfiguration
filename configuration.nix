@@ -7,9 +7,8 @@
 }:
 
 {
-  environment.systemPackages = [
-    pkgs.myAspellWithDicts
-  ];
+
+  spelling.enable = true;
 
   fonts = {
     fontDir.enable = true;
