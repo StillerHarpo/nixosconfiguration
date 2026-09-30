@@ -183,7 +183,6 @@ in
               (mpv.override { scripts = [ mpvScripts.mpris ]; })
               rlwrap
               you-get
-              xosd
               pandoc
               python3Packages.pygments
               anki
