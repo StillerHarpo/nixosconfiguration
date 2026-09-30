@@ -87,6 +87,10 @@ in
       };
     };
     home-manager.users.florian = {
+      programs = {
+        mbsync.enable = true;
+        msmtp.enable = true;
+      };
       accounts.email.accounts = {
         posteo = mkMail {
           inherit realName key;

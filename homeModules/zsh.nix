@@ -54,6 +54,7 @@ in
         (lib.mkIf osConfig.xserver.enable {
           BROWSER = lib.getExe pkgs.my-linkopen-x-or-tty;
         })
+        { SHELL = pkgs.myshell; }
       ];
       initContent = ''
         precmd() {
