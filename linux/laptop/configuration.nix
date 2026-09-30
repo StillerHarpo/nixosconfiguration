@@ -176,7 +176,9 @@ in
               sqlite
               pamixer
               pavucontrol
+              # access phone
               mtpfs
+              android-tools
               wget
               vim
               shellcheck
@@ -206,7 +208,6 @@ in
               # TODO use emacs module and remove this
               emacs-lsp-booster
               orca-slicer
-              android-tools
               wifi-qr
             ];
             rules = lib.apparmor.defaultRules config;
