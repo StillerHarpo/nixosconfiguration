@@ -352,6 +352,7 @@ in
                 openssh.authorizedKeys.keys = cfg.sshKeys;
                 extraGroups = [ "wheel" ];
                 shell = pkgs.zsh;
+                linger = true;
               };
               environment = {
                 systemPackages =
