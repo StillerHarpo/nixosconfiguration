@@ -9,7 +9,7 @@
 }:
 
 let
-  sshKeys = import ../thinkpad/sshKeys.nix ++ ../framework/sshKeys.nix;
+  sshKeys = import ../thinkpad/sshKeys.nix ++ import ../framework/sshKeys.nix;
 in
 
 {
