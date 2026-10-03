@@ -94,7 +94,6 @@
               magit-section
               ;
           };
-          eglot-booster = final.callPackage ./packages/emacs/eglot-booster { inherit (eprev) trivialBuild; };
           my-nix-variables = final.callPackage ./packages/emacs/my-nix-variables {
             inherit (eprev) trivialBuild;
             private = prev.private or (import ./fakePrivate.nix);

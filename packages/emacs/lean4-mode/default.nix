@@ -13,8 +13,8 @@ trivialBuild {
   src = pkgs.fetchFromGitHub {
     owner = "leanprover-community";
     repo = "lean4-mode";
-    rev = "1388f9d1429e38a39ab913c6daae55f6ce799479";
-    hash = "sha256-6XFcyqSTx1CwNWqQvIc25cuQMwh3YXnbgr5cDiOCxBk=";
+    rev = "6d4030e494039383664a0c08348a5c137eb4641c";
+    hash = "sha256-FzeGnxjtCpeYbDU3GzadCTnLGtDPoe1q8aTpaZBck7A=";
   };
   packageRequires = [
     dash
