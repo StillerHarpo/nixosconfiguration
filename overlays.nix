@@ -46,7 +46,6 @@
       final.aspellWithDicts (dicts: [
         dicts.de
         dicts.en
-        dicts.en-science
       ])
     );
     haskellPackages = prev.haskellPackages.extend (
