@@ -106,6 +106,7 @@ in
             ]
             ++ builtins.attrValues outputs.overlays;
           };
+          pkgs-ghc9102 = import inputs.nixpkgs-ghc9102 { system = "x86_64-linux"; };
         in
         {
           autostart = false;
@@ -117,7 +118,7 @@ in
                 protobuf
               ];
               myLibraries =
-                with pkgs;
+                with pkgs-ghc9102;
                 [
                   libpng
                   qrencode
@@ -358,7 +359,6 @@ in
                 systemPackages =
                   let
                     pkgs-old = import inputs.nixpkgs-old { system = "x86_64-linux"; };
-                    pkgs-ghc9102 = import inputs.nixpkgs-ghc9102 { system = "x86_64-linux"; };
                     stack-wrapped =
                       with pkgs;
                       symlinkJoin {
@@ -517,7 +517,6 @@ in
                     (lib.makeSearchPath "lib/pkgconfig" libs)
                     (lib.makeSearchPath "share/pkgconfig" libs)
                   ];
-                  LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
                   LIBRARY_PATH = pkgs.lib.makeLibraryPath libs;
                   C_INCLUDE_PATH = lib.makeSearchPath "include" libs;
                   CPLUS_INCLUDE_PATH = lib.makeSearchPath "include" libs;
