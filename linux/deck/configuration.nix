@@ -102,7 +102,9 @@ in
       vim
       git-crypt
       git
-      mumble
+      # FIXME don't use master, when
+      # https://github.com/NixOS/nixpkgs/pull/568501 is in unstable
+      inputs.nixpkgs-master.legacyPackages.x86_64-linux.mumble
       pavucontrol
       arc-kde-theme # theme
       tailscale
