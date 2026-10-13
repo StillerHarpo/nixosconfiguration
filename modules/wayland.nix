@@ -133,6 +133,7 @@ in
                           criteria = cfg.screen.id;
                           position = "0,0";
                           mode = cfg.screen.mode;
+                          scale = 1.5;
                         }
                       ];
                     };
