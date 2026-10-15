@@ -1521,6 +1521,7 @@ if one already exists."
  "b b" 'consult-buffer
  "b r" 'revert-buffer
  "b d" 'kill-current-buffer
+ "b n" 'rename-buffer
  "b s" 'save-some-buffers
  "w" '(:ignore t :which-key "Window")
  "w m m" 'maximize-window
