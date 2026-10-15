@@ -1698,6 +1698,18 @@ If I let Windows handle DPI everything looks blurry."
       `((my/direnv-prefix) "npm run format -- --write" " " ,(buffer-file-name (file-local-name (current-buffer))))))
     (revert-buffer :NOCONFIRM t)))
 
+(defun my/compilation-buffer-name-function (name-of-mode)
+  "names the compilation buffer after the current worktree"
+  (cond ((or (eq major-mode (intern-soft name-of-mode))
+	     (eq major-mode (intern-soft (concat name-of-mode "-mode"))))
+	 (buffer-name))
+	((and (project-current) (project-root (project-current)))
+	 (downcase (concat "*" name-of-mode "-" (file-name-nondirectory (directory-file-name (project-root (project-current)))) "*")))
+	(t
+	 (downcase (concat "*" name-of-mode "*")))))
+
+(setq compilation-buffer-name-function 'my/compilation-buffer-name-function)
+
 (defun my/meqo-demo-format-on-save ()
   "Formats the current buffer with the meqo script if the project is meqo demo."
   (when (and (project-current)
