@@ -107,6 +107,11 @@
           claude-code-ide = final.callPackage ./packages/emacs/claude-code-ide {
             inherit (eprev) trivialBuild websocket web-server;
           };
+          # https://github.com/NixOS/nixpkgs/issues/544713
+          evil-ghostel = eprev.evil-ghostel.overrideAttrs (prev: {
+            version = eprev.ghostel.version;
+            src = eprev.ghostel.src;
+          });
         }
       ));
   };

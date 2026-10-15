@@ -1,4 +1,6 @@
 (use-package claude-code-ide
+  :custom
+  (claude-code-ide-terminal-backend 'ghostel)
   :config
   (claude-code-ide-emacs-tools-setup)
   (defun claude-code-ide-mcp-buffer-list ()
@@ -131,8 +133,15 @@ If KILL_RUNNING is non-nil, kill an already-running meqo test run first."
 		  :optional t)))
   )
 
-(general-define-key :states '(normal visual motion emacs)
+(use-package ghostel)
+
+(use-package evil-ghostel
+  :after (ghostel evil)
+  :hook (ghostel-mode . evil-ghostel-mode))
+
+(general-define-key
+ :states '(normal visual motion emacs)
  :keymaps '(my-keys-minor-mode-map)
  :prefix "SPC"
  "o a" 'claude-code-ide-menu
-)
+ )
