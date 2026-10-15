@@ -380,26 +380,11 @@ in
                             "
                         '';
                       };
-                    postgresql96-wrapped =
-                      with pkgs-old;
-                      symlinkJoin {
-                        name = "postgresql96";
-                        paths = [
-                          (import "${inputs.nixpkgs-postgres}/pkgs/servers/sql/postgresql" pkgs-old).postgresql_9_6
-                        ];
-                        buildInputs = [ makeWrapper ];
-                        postBuild = ''
-                          for exe in $(ls $out/bin/); do
-                            wrapProgram $out/bin/''${exe} \
-                              --unset LD_LIBRARY_PATH
-                          done
-                        '';
-                      };
                   in
                   with pkgs;
                   [
                     gnupg
-                    postgresql96-wrapped
+                    (import "${inputs.nixpkgs-postgres}/pkgs/servers/sql/postgresql" pkgs-old).postgresql_9_6
                     stack-wrapped
                     pkgs-ghc9102.haskell.compiler.ghc9102
                     pkgs-ghc9102.haskell.packages.ghc9102.hasktags
