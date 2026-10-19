@@ -3,8 +3,6 @@
 {
   aliases = _: prev: { myshell = "${prev.zsh}/bin/zsh"; };
   modifications = final: prev: {
-    # WORKAROUNG insecure issue
-    pnpm_10_29_2 = final.pnpm_10;
     steam = prev.steam.override {
       extraPkgs = pkgs: [
         pkgs.libpng
@@ -24,10 +22,10 @@
     pass = prev.pass.override {
       dmenu = prev.writeScriptBin "dmenu" ''${prev.rofi}/bin/rofi -dmenu "$@"'';
     };
-    # WORKAROUND flaky tests https://github.com/NixOS/nixpkgs/issues/542586
-    python314 = prev.python314.override {
+    # WORKAROUND test https://github.com/NixOS/nixpkgs/issues/570271
+    python312 = prev.python312.override {
       packageOverrides = _: prev: {
-        paho-mqtt = prev.paho-mqtt.overridePythonAttrs (
+        anyio = prev.anyio.overridePythonAttrs (
           _: _: {
             doCheck = false;
           }
