@@ -66,11 +66,15 @@ in
 
     environment.systemPackages = [ pkgs.waypipe ];
 
-    wayland.programShortcuts = {
-      "google-chrome" =
-        "${lib.getExe pkgs.waypipe} --no-gpu ssh work@${vmIp} ${lib.getExe pkgs.google-chrome} --ozone-platform=wayland";
-      "emacs (work)" = "${lib.getExe pkgs.waypipe} --no-gpu ssh work@${vmIp} emacsclient -c";
-    };
+    wayland.programShortcuts =
+      let
+        runInVm = "${lib.getExe pkgs.waypipe} --no-gpu --secctx work-vm ssh work@${vmIp} ";
+      in
+      {
+        "google-chrome" = "${runInVm} ${lib.getExe pkgs.google-chrome} --ozone-platform=wayland";
+        "emacs (work)" = "${runInVm} emacsclient -c";
+
+      };
 
     boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
