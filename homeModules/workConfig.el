@@ -137,7 +137,16 @@ If KILL_RUNNING is non-nil, kill an already-running meqo test run first."
 
 (use-package evil-ghostel
   :after (ghostel evil)
-  :hook (ghostel-mode . evil-ghostel-mode))
+  :hook (ghostel-mode . evil-ghostel-mode)
+  :config
+  (defun my/ghostel-paste-and-insert ()
+    "Paste kill ring into the ghostel terminal and enter insert state."
+    (interactive)
+    (ghostel-yank)
+    (evil-insert-state))
+  (evil-define-key* 'normal evil-ghostel-mode-map
+    "p" #'my/ghostel-paste-and-insert
+    "P" #'my/ghostel-paste-and-insert))
 
 (general-define-key
  :states '(normal visual motion emacs)
