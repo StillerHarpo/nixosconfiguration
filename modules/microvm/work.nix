@@ -247,8 +247,26 @@ in
                     ];
                   }
                   {
+                    image = "gh-config.img";
+                    mountPoint = "/home/work/.config/gh";
+                    size = 128;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
                     image = "gnupg.img";
                     mountPoint = "/home/work/.gnupg";
+                    size = 256;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
+                    image = "ssh.img";
+                    mountPoint = "/home/work/.ssh";
                     size = 256;
                     mkfsExtraArgs = [
                       "-E"
@@ -575,6 +593,8 @@ in
                 export PATH="/home/work/meqo/meqo/server/js/node_modules/.bin:$PATH"
               '';
 
+              fileSystems."/etc/ssh/persistent-keys".neededForBoot = true;
+
               spelling.enable = true;
 
               home-manager = {
@@ -597,6 +617,27 @@ in
                   programs.notmuch.new.ignore = [ "lost+found" ];
 
                   programs = {
+                    gh = {
+                      enable = true;
+                      settings = {
+                        git_protocol = "ssh";
+                      };
+                    };
+                    git = {
+                      enable = true;
+                      settings = {
+                        user = {
+                          name = "Florian Engel";
+                          email = private.workMail;
+                        };
+                        merge.conflictStyle = "zdiff3";
+                        github.user = private.workGithubUser;
+                      };
+                      signing = {
+                        key = "86B7DC01668C9273E8852EDF6C72EDC6303A82FF";
+                        signByDefault = true;
+                      };
+                    };
                     gpg = {
                       enable = true;
                       settings.keyserver = "hkps://keys.openpgp.org";
