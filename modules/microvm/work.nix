@@ -173,6 +173,10 @@ in
                     image = "nix-store-overlay.img";
                     mountPoint = config.microvm.writableStoreOverlay;
                     size = 20480;
+                    mkfsExtraArgs = [
+                      "-i"
+                      "4096"
+                    ];
                   }
                   {
                     image = "node-modules.img";
