@@ -74,10 +74,7 @@ in
       settings.keyserver = "hkps://keys.openpgp.org";
     };
 
-    notmuch = {
-      enable = true;
-      hooks.postNew = "notmuch tag --input=${osConfig.age.secrets.notmuchTags.path}";
-    };
+    notmuch.hooks.postNew = "notmuch tag --input=${osConfig.age.secrets.notmuchTags.path}";
   };
 
   services.gpg-agent = {

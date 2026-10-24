@@ -116,6 +116,9 @@ in
         in
         {
           autostart = false;
+          specialArgs = {
+            inherit inputs outputs private;
+          };
           config =
             { config, ... }:
 
@@ -243,6 +246,24 @@ in
                       "root_owner=1000:100"
                     ];
                   }
+                  {
+                    image = "gnupg.img";
+                    mountPoint = "/home/work/.gnupg";
+                    size = 256;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
+                  {
+                    image = "maildir.img";
+                    mountPoint = "/home/work/Maildir";
+                    size = 8192;
+                    mkfsExtraArgs = [
+                      "-E"
+                      "root_owner=1000:100"
+                    ];
+                  }
                   # TODO readonly .env
                 ];
                 registerWithMachined = true;
@@ -360,6 +381,11 @@ in
                 extraGroups = [ "wheel" ];
                 shell = pkgs.zsh;
                 linger = true;
+              };
+
+              mail = {
+                user = "work";
+                work.enable = true;
               };
               environment = {
                 systemPackages =
@@ -566,6 +592,15 @@ in
                   emacs = {
                     enable = true;
                     isWork = true;
+                  };
+
+                  programs.notmuch.new.ignore = [ "lost+found" ];
+
+                  programs = {
+                    gpg = {
+                      enable = true;
+                      settings.keyserver = "hkps://keys.openpgp.org";
+                    };
                   };
                 };
               };

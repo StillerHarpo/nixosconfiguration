@@ -105,7 +105,12 @@ in
 
       services.envfs.enable = true;
 
-      mail.enable = true;
+      mail = {
+        user = "florian";
+        posteo.enable = true;
+        librem.enable = true;
+        gmail.enable = true;
+      };
 
       zramSwap.enable = true;
 
