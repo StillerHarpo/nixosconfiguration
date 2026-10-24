@@ -139,6 +139,18 @@ If KILL_RUNNING is non-nil, kill an already-running meqo test run first."
   :after (ghostel evil)
   :hook (ghostel-mode . evil-ghostel-mode)
   :config
+  (defun my/ghostel-pad-to-cursor (&rest _)
+    "Pad the cursor line so point reaches the terminal cursor column.
+  The renderer trims trailing blanks, so a just-typed space would
+  otherwise not move point."
+    (when-let* ((term ghostel--term)
+		(pos (ghostel--cursor-position term))
+		(col (car pos)))
+      (when (and (eolp) (< (current-column) col))
+	(let ((inhibit-read-only t)
+	      (inhibit-modification-hooks t))
+	  (insert (make-string (- col (current-column)) ?\s))))))
+  (advice-add 'ghostel--redraw :after #'my/ghostel-pad-to-cursor)
   (defun my/ghostel-paste-and-insert ()
     "Paste kill ring into the ghostel terminal and enter insert state."
     (interactive)
