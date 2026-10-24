@@ -5,10 +5,12 @@ with lib;
     allows: config:
     flatten (
       (optional (!elem "ssh" allows) [
+        "/run/user/*/gnupg"
         "/home/florian/.ssh"
         "/root/.ssh"
       ])
       ++ (optional (!elem "gnupg" allows) [
+        "/run/user/*/gnupg"
         "/home/florian/.gnupg"
         "/root/.gnupg"
       ])
