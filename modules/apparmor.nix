@@ -159,6 +159,7 @@ in
           extraConfig = ''
             *.*  -/var/log/syslog
           '';
+          extraParams = [ "-d" ];
         };
         journald.forwardToSyslog = true;
       };
