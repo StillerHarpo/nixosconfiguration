@@ -9,7 +9,7 @@ use swayipc::Node;
 
 const BROWSE: &str = "librewolf --new-window ";
 const WORK_BROWSE: &str = "librewolf -P work --new-window ";
-const PRIVATE_BROWSE: &str = "sudo -En librewolf-airvpn ";
+const PRIVATE_BROWSE: &str = "sudo -n librewolf-airvpn ";
 
 pub const PROGRAMS: [(&str, &str); 0] = [];
 
@@ -126,7 +126,7 @@ fn main() {
             if output_string.len() > 0 {
                 let search_string = str::replace(output_string, " ", "+");
                 conn.run_command(format!(
-                    "exec sudo -En librewolf-airvpn 'duckduckgo.com\\?q={search_string}'"
+                    "exec sudo -n librewolf-airvpn 'duckduckgo.com\\?q={search_string}'"
                 ))
                 .unwrap();
             }

@@ -43,11 +43,11 @@ in
     }
     (lib.mkIf cfg.vpn.enable (
       let
-        runInNetworkNamespace = "nsenter --net=/var/run/netns/airvpnns sudo -E -u florian -g users";
-        librewolfAirvpn = pkgs.writeScriptBin "librewolf-airvpn" ''
+        runInNetworkNamespace = "${pkgs.util-linux}/bin/nsenter --net=/var/run/netns/airvpnns /run/wrappers/bin/sudo -H -u florian -g users --preserve-env=WAYLAND_DISPLAY,XDG_RUNTIME_DIR,DBUS_SESSION_BUS_ADDRESS";
+        librewolfAirvpn = pkgs.writeShellScriptBin "librewolf-airvpn" ''
           ${runInNetworkNamespace} ${lib.getExe pkgs.librewolf} -P private --new-window ''${1}
         '';
-        firefoxAirvpn = pkgs.writeScriptBin "firefox-airvpn" ''
+        firefoxAirvpn = pkgs.writeShellScriptBin "firefox-airvpn" ''
           ${runInNetworkNamespace} ${lib.getExe pkgs.firefox} -P private --private-window ''${1}
         '';
       in
@@ -101,21 +101,18 @@ in
         };
         environment.etc."netns/airvpnns/resolv.conf".text = "nameserver 10.128.0.1";
 
+        environment.systemPackages = [
+          librewolfAirvpn
+          firefoxAirvpn
+        ];
         apparmor.systemPackages = [
           {
-            pkgs = [ librewolfAirvpn ];
+            pkgs = [ pkgs.firefox ];
             rules = ''
               network,
-              ${lib.apparmor.generateFileRules {
-                allows = [ "librewolf" ];
-                inherit config;
-              }}
-            '';
-          }
-          {
-            pkgs = [ firefoxAirvpn ];
-            rules = ''
-              network,
+              capability sys_admin,
+              capability sys_chroot,
+              capability sys_ptrace,
               ${lib.apparmor.generateFileRules {
                 allows = [ "firefox" ];
                 inherit config;
@@ -123,28 +120,32 @@ in
             '';
           }
         ];
-        security.sudo.extraRules = [
-          {
-            commands = [
-              {
-                command = "/run/current-system/sw/bin/librewolf-airvpn";
-                options = [
-                  "SETENV"
-                  "NOPASSWD"
-                ];
-              }
-              {
-                command = "/run/current-system/sw/bin/firefox-airvpn";
-                options = [
-                  "SETENV"
-                  "NOPASSWD"
-                ];
-              }
-            ];
-            runAs = "root";
-            users = [ "florian" ];
-          }
-        ];
+        security.sudo = {
+          extraRules = [
+            {
+              commands = [
+                {
+                  command = "/run/current-system/sw/bin/librewolf-airvpn";
+                  options = [
+                    "NOPASSWD"
+                  ];
+                }
+                {
+                  command = "/run/current-system/sw/bin/firefox-airvpn";
+                  options = [
+                    "NOPASSWD"
+                  ];
+                }
+              ];
+              runAs = "root";
+              users = [ "florian" ];
+            }
+          ];
+          extraConfig = ''
+            Defaults!/run/current-system/sw/bin/librewolf-airvpn env_keep += "WAYLAND_DISPLAY XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS"
+            Defaults!/run/current-system/sw/bin/firefox-airvpn env_keep += "WAYLAND_DISPLAY XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS"
+          '';
+        };
         home-manager.users.florian = {
           librewolf = {
             enable = true;

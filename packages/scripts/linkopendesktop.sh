@@ -87,5 +87,5 @@ elif is-work-bookmark "${1}"
 then
     librewolf -P work --new-window "${1}"
 else
-    /run/wrappers/bin/sudo -En librewolf-airvpn "${1}"
-fi || /run/wrappers/bin/sudo -En librewolf-airvpn "${1}"
+    /run/wrappers/bin/sudo -n librewolf-airvpn "${1}"
+fi || /run/wrappers/bin/sudo -n librewolf-airvpn "${1}"

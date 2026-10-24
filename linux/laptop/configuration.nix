@@ -416,7 +416,7 @@ in
           "remmina" = "remmina";
           "slack" = "slack";
           "passmenu" = "wofi-pass";
-          "firefox-airvpn" = "sudo -En firefox-airvpn";
+          "firefox-airvpn" = "sudo -n firefox-airvpn";
         };
       };
 

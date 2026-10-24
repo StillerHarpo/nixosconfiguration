@@ -295,7 +295,7 @@ programms bookmarks =
     ("linux-vnc", "vncviewer localhost:9900"),
     ("remmina", "remmina"),
     ("slack", "slack"),
-    ("firefox-airvpn" "sudo -En firefox-airvpn")
+    ("firefox-airvpn" "sudo -n firefox-airvpn")
   ]
     ++ map (second browser) (normal bookmarks)
     ++ map (second vpnBrowser) (private bookmarks)
@@ -378,7 +378,7 @@ browser = browserWithProfile "default"
 
 -- | open url vpn in browser
 vpnBrowser :: Text -> Text
-vpnBrowser = mkBrowser "sudo -En librewolf-airvpn"
+vpnBrowser = mkBrowser "sudo -n librewolf-airvpn"
 
 getFontFromScreenWidth :: X Text
 getFontFromScreenWidth = do
