@@ -108,7 +108,7 @@ in
       pavucontrol
       arc-kde-theme # theme
       tailscale
-      steamdeck-firmware
+      jovianPackages.steamdeck-firmware
       steam-rom-manager
       nvtopPackages.amd
       wine-staging
@@ -120,7 +120,7 @@ in
       ))
       libcec
       v4l-utils
-      (jupiter-dock-updater-bin.overrideAttrs (_: {
+      (jovianPackages.jupiter-dock-updater-bin.overrideAttrs (_: {
         version = "20231121.01";
         src = pkgs.fetchFromGitHub {
           owner = "Jovian-Experiments";
