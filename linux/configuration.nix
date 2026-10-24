@@ -66,6 +66,12 @@
         "defaults"
       ];
 
+      # Don't use nix profile
+      environment.profiles = lib.mkForce [
+        "/etc/profiles/per-user/$USER"
+        "/run/current-system/sw"
+      ];
+
     }
   ];
 }
