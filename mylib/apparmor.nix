@@ -29,6 +29,14 @@ rec {
         audit deny ${x} mrwlkx,
         audit deny ${x}/{,**} mrwlkx,
       '') (protectFiles allows config)}
+
+      # Dont allow overriding init files
+      deny /home/florian/.{zshrc,zshenv,zprofile,profile,zlogin,zlogout} wl,
+      deny /home/florian/.config/{sway,systemd,autostart,direnv,environment.d}/** wl,
+      deny /home/florian/.local/share/applications/** wl,
+      deny /home/florian/.config/alacritty/** wl,
+      deny /home/florian/.emacs.d/** wl,
+      deny /home/florian/.config/emacs wl,
     '';
   defaultRules = config: ''
     ${generateFileRules { inherit config; }}
