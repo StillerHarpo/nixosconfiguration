@@ -144,7 +144,6 @@ in
         "hid_multitouch"
       ];
       unl0kr.enable = true;
-      systemd.enable = true;
     };
     loader = {
       efi.canTouchEfiVariables = true;
