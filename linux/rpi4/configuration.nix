@@ -22,7 +22,6 @@ in
     identityPaths = [ "/root/.ssh/rpi4" ];
     secrets = {
       rpi4WireguardPrivate.file = ./secrets/rpi4WireguardPrivate.age;
-      flake-update.file = ./secrets/flake-update.age;
       syncthingKey.file = ./secrets/syncthingKey.age;
       syncthingCert.file = ./secrets/syncthingCert.age;
     };
@@ -455,19 +454,6 @@ in
       UMask = "0077";
     };
   };
-
-  flake-remote-update = {
-    enable = true;
-    remote = "https://gitlab.com/StillerHarpo/nixosconfiguration";
-    credentials = {
-      user = "StillerHarpo";
-      passwordFile = config.age.secrets.flake-update.path;
-    };
-    updateBranch = "update";
-    mainBranch = "master";
-    dates = "Monday 01:00";
-  };
-
   system.stateVersion = "24.11";
 
 }
