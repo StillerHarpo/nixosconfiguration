@@ -29,6 +29,7 @@
       ];
       trusted-public-keys = [
         "gradient.ts.haering.dev-nixconfig:II5Re1ZjWdDCZBSXWC2gA35H57r5eJTRl5bv++delZ4="
+        "serve:sFMUNbcn7Laygzzq7CuIT+9hgPdQSLOtDDu90uO3FnQ="
       ];
     };
   };
