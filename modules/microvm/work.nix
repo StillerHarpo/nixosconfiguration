@@ -13,6 +13,8 @@ let
   ipRange = "24";
   gatewayIp = "${ipPrefix}.1";
   vmIp = "${ipPrefix}.2";
+  vmName = "meqoworkvm";
+  vmStateDir = "${config.microvm.stateDir}/${vmName}";
 in
 {
   options.microvm = {
@@ -104,8 +106,18 @@ in
       };
     };
 
+    systemd.tmpfiles.rules = [
+      "d ${vmStateDir}/claude 0755 1000 100 -"
+      "d ${vmStateDir}/claude-state 0755 1000 100 -"
+      "d ${vmStateDir}/stack 0755 1000 100 -"
+      "d ${vmStateDir}/ssh-host-keys 0700 root root -"
+      "d /home/florian/meqo 0755 florian users -"
+      "d /home/florian/.DociGateway-Cache 0755 florian users -"
+      "d /home/florian/.checkpad 0755 florian users -"
+    ];
+
     microvm.vms = {
-      meqoworkvm =
+      ${vmName} =
         let
           pkgs = import inputs.nixpkgs-unstable {
             system = "x86_64-linux";
@@ -315,7 +327,7 @@ in
                   }
                   # TODO can be remvoved and replaced with socat
                   {
-                    source = "/var/lib/microvms/meqoworkvm/ssh-host-keys";
+                    source = "ssh-host-keys";
                     mountPoint = "/etc/ssh/persistent-keys";
                     tag = "ssh-keys-share";
                     proto = "virtiofs";
