@@ -72,6 +72,8 @@
         "/run/current-system/sw"
       ];
 
+      boot.tmp.cleanOnBoot = true;
+
     }
   ];
 }
