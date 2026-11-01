@@ -15,6 +15,9 @@ let
   vmIp = "${ipPrefix}.2";
   vmName = "meqoworkvm";
   vmStateDir = "${config.microvm.stateDir}/${vmName}";
+  secretsPath = "${vmStateDir}/secrets/";
+  mailPassPath = "${secretsPath}/mail-pass";
+  persistentSecrets = "/etc/persistent-secrets";
 in
 {
   options.microvm = {
@@ -40,6 +43,41 @@ in
   };
 
   config = lib.mkIf (cfg.enable == true) {
+    age.secrets = {
+      meqoworkvm-signing-key = {
+        file = secrets/work-signing.age;
+        path = "${secretsPath}/work-signing.asc";
+        symlink = false;
+        mode = "0600";
+      };
+      meqoworkvm-user-ssh-key = {
+        file = secrets/id-ed25519-meqoworkvm.age;
+        path = "${secretsPath}/id_ed25519";
+        symlink = false;
+        mode = "0600";
+      };
+      workMail = {
+        file = secrets/workMail.age;
+        path = mailPassPath;
+        symlink = false;
+        owner = "florian";
+        mode = "0600";
+      };
+    };
+
+    system.activationScripts.meqoworkvm-ssh-host-key = ''
+      install -D -m600 -o root -g root ${./meqoworkvm_ssh_host_ed25519_key} \
+        ${secretsPath}/ssh_host_ed25519_key
+    '';
+
+    programs.ssh.knownHosts.meqoworkvm = {
+      hostNames = [
+        vmIp
+        "meqoworkvm"
+      ];
+      publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMEyls2WLnT4qAR+OdJQIQdVQ4jKRBm3HNnPNdX20XCB";
+    };
+
     networking = {
       networkmanager.unmanaged = [
         "interface-name:br0"
@@ -66,7 +104,13 @@ in
       firewall.trustedInterfaces = [ "br0" ];
     };
 
-    environment.systemPackages = [ pkgs.waypipe ];
+    environment.systemPackages = [
+      pkgs.waypipe
+      (pkgs.writeShellScriptBin "live-update-vm" ''
+        nix build /home/florian/nixosconfiguration#nixosConfigurations.nixosThinkpad.config.microvm.vms.meqoworkvm.config.config.system.build.toplevel -o /tmp/meqoworkvm-system
+        ssh root${vmIp} /tmp/meqoworkvm-system/bin/switch-to-configuration test
+      '')
+    ];
 
     wayland.programShortcuts =
       let
@@ -110,7 +154,7 @@ in
       "d ${vmStateDir}/claude 0755 1000 100 -"
       "d ${vmStateDir}/claude-state 0755 1000 100 -"
       "d ${vmStateDir}/stack 0755 1000 100 -"
-      "d ${vmStateDir}/ssh-host-keys 0700 root root -"
+      "d ${secretsPath} 0700 root root -"
       "d /home/florian/meqo 0755 florian users -"
       "d /home/florian/.DociGateway-Cache 0755 florian users -"
       "d /home/florian/.checkpad 0755 florian users -"
@@ -139,8 +183,9 @@ in
             { config, ... }:
 
             let
-              myDevToolsAndLibraries = with pkgs; [
+              myDevToolsAndLibraries = with pkgs-ghc9102; [
                 protobuf
+                pkg-config
               ];
               myLibraries =
                 with pkgs-ghc9102;
@@ -155,7 +200,6 @@ in
                   pcre
                   leveldb
                   unixodbc
-                  pkg-config
                   cairo
                   pango
                   which
@@ -276,15 +320,6 @@ in
                     ];
                   }
                   {
-                    image = "gnupg.img";
-                    mountPoint = "/home/work/.gnupg";
-                    size = 256;
-                    mkfsExtraArgs = [
-                      "-E"
-                      "root_owner=1000:100"
-                    ];
-                  }
-                  {
                     image = "ssh.img";
                     mountPoint = "/home/work/.ssh";
                     size = 256;
@@ -327,8 +362,8 @@ in
                   }
                   # TODO can be remvoved and replaced with socat
                   {
-                    source = "ssh-host-keys";
-                    mountPoint = "/etc/ssh/persistent-keys";
+                    source = "secrets";
+                    mountPoint = persistentSecrets;
                     tag = "ssh-keys-share";
                     proto = "virtiofs";
                   }
@@ -388,12 +423,7 @@ in
                 };
                 hostKeys = [
                   {
-                    path = "/etc/ssh/persistent-keys/ssh_host_rsa_key";
-                    type = "rsa";
-                    bits = 4096;
-                  }
-                  {
-                    path = "/etc/ssh/persistent-keys/ssh_host_ed25519_key";
+                    path = "${persistentSecrets}/ssh_host_ed25519_key";
                     type = "ed25519";
                   }
                 ];
@@ -410,20 +440,29 @@ in
                     DHCP = "no";
                   };
                 };
+
               };
 
-              users.users.work = {
-                isNormalUser = true;
-                hashedPasswordFile = "${pkgs.writeText "password" "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
-                openssh.authorizedKeys.keys = cfg.sshKeys;
-                extraGroups = [ "wheel" ];
-                shell = pkgs.zsh;
-                linger = true;
+              systemd.services.syncthing.unitConfig.RequiresMountsFor = [ "/home/work/.gnupg" ];
+
+              users.users = {
+                work = {
+                  isNormalUser = true;
+                  hashedPasswordFile = "${pkgs.writeText "password" "$y$j9T$DrA2chw40lirPPr5xy/ka0$p36qBLHR8L0bNGDTwVE4RtAw93QTh2WOvtvW4JrpyR7"}";
+                  openssh.authorizedKeys.keys = cfg.sshKeys;
+                  extraGroups = [ "wheel" ];
+                  shell = pkgs.zsh;
+                  linger = true;
+                };
+                root.openssh.authorizedKeys.keys = cfg.sshKeys;
               };
 
               mail = {
                 user = "work";
-                work.enable = true;
+                work = {
+                  enable = true;
+                  passPath = mailPassPath;
+                };
               };
               environment = {
                 systemPackages =
@@ -613,9 +652,37 @@ in
                 export PATH="/home/work/meqo/meqo/server/js/node_modules/.bin:$PATH"
               '';
 
-              fileSystems."/etc/ssh/persistent-keys".neededForBoot = true;
+              fileSystems."${persistentSecrets}".neededForBoot = true;
 
               spelling.enable = true;
+              systemd.services.import-keys = {
+                wantedBy = [ "multi-user.target" ];
+                unitConfig = {
+                  RequiresMountsFor = [
+                    persistentSecrets
+                    "/home/work"
+                  ];
+                  ConditionPathExists = [
+                    "${persistentSecrets}/work-signing.asc"
+                    "${persistentSecrets}/id_ed25519"
+                  ];
+                };
+                serviceConfig = {
+                  Type = "oneshot";
+                  RemainAfterExit = true;
+                };
+                path = [
+                  pkgs.gnupg
+                  pkgs.util-linux
+                ];
+                script = ''
+                  install -D -m600 -o root -g root ${persistentSecrets}/ssh-host-keys/id_ed25519 /home/work/.ssh/id_ed25519
+                  install -D -m644 -o root -g root ${./meqoworkvm_id_ed25519.pub} /home/work/.ssh/id_ed25519.pub
+                  install -D -m600 -o root -g root ${persistentSecrets}/ssh-host-keys/id_ed25519 /home/work/.mailpass
+                  runuser -u work -- gpg --batch --import < ${persistentSecrets}/work-signing.asc
+                  runuser -u work -- gpgconf --kill gpg-agent
+                '';
+              };
 
               home-manager = {
                 useGlobalPkgs = true;

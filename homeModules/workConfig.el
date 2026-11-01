@@ -131,7 +131,13 @@ If KILL_RUNNING is non-nil, kill an already-running meqo test run first."
 		  :type boolean
 		  :description "If true, kill an already-running meqo test run and start this one instead of reporting that one is running"
 		  :optional t)))
-  )
+  :general
+  (:states
+   '(normal visual motion emacs)
+   :keymaps '(my-keys-minor-mode-map)
+   :prefix "SPC"
+   "o a" 'claude-code-ide-menu
+   ))
 
 (use-package ghostel)
 
@@ -156,13 +162,39 @@ If KILL_RUNNING is non-nil, kill an already-running meqo test run first."
     (interactive)
     (ghostel-yank)
     (evil-insert-state))
-  (evil-define-key* 'normal evil-ghostel-mode-map
-    "p" #'my/ghostel-paste-and-insert
-    "P" #'my/ghostel-paste-and-insert))
+  :general
+  (:states
+   '(normal)
+   :keymaps '(evil-ghostel-mode-map)
+   "p" 'my/ghostel-paste-and-insert
+   "P" 'my/ghostel-paste-and-insert))
 
-(general-define-key
- :states '(normal visual motion emacs)
- :keymaps '(my-keys-minor-mode-map)
- :prefix "SPC"
- "o a" 'claude-code-ide-menu
- )
+
+(use-package org-jira
+  :ensure
+  :commands
+  (org-jira-get-issues org-jira-get-issues-from-custom-jql org-jira-get-projects)
+  :custom
+  (jiralib-url "https://meqo.atlassian.net")
+  (jiralib-user "engel@medilyse.org")
+  (org-jira-working-dir "~/Dokumente/org-jira")
+  (org-jira-custom-jqls
+   '((:jql "assignee = currentUser() AND resolution = Unresolved ORDER BY updated DESC"
+	   :limit 100
+	   :filename "my-open")))
+  :config
+  (unless (file-directory-p org-jira-working-dir)
+    (make-directory org-jira-working-dir t))
+  ;; Jira Cloud only accepts basic auth with an API token. The token is read
+  ;; from ~/.authinfo.gpg so it never ends up in the Nix store.
+  (when-let* ((token (auth-source-pick-first-password :host "meqo.atlassian.net")))
+    (setq jiralib-token
+	  (cons "Authorization"
+		(concat "Basic "
+			(base64-encode-string (concat jiralib-user ":" token) t)))))
+  :general
+  (:states '(normal visual motion emacs)
+   :keymaps '(org-jira-mode-map)
+   :prefix "SPC"
+   "m i" 'tempel-insert))
+

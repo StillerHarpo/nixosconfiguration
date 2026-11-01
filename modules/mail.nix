@@ -63,7 +63,13 @@ in
     posteo.enable = lib.mkEnableOption (lib.mdDoc "Enable posteo mail");
     librem.enable = lib.mkEnableOption (lib.mdDoc "Enable librem mail");
     gmail.enable = lib.mkEnableOption (lib.mdDoc "Enable gmail mail");
-    work.enable = lib.mkEnableOption (lib.mdDoc "Enable work mail");
+    work = {
+      enable = lib.mkEnableOption (lib.mdDoc "Enable work mail");
+      passPath = lib.mkOption {
+        type = lib.types.path;
+        description = lib.mdDoc "Path to password of work mail";
+      };
+    };
   };
   config = lib.mkIf (cfg.posteo.enable || cfg.librem.enable || cfg.gmail.enable || cfg.work.enable) {
     age.secrets = lib.mkMerge [
@@ -160,7 +166,7 @@ in
               "[Gmail]/Starred"
             ];
             primary = !cfg.posteo.enable;
-            passPath = config.age.secrets.workMail.path;
+            passPath = cfg.work.passPath;
           };
         })
       ];
